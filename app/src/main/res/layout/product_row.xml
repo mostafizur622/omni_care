@@ -1,0 +1,44 @@
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:layout_weight="0.8"
+    android:weightSum="3"
+    android:layout_marginLeft="5dp"
+    android:orientation="horizontal"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView
+        android:id="@+id/product_name"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1.8"
+        android:gravity="left|center"
+        android:textAlignment="gravity"
+        android:textSize="16sp"
+        android:text="Raja Super"
+        >
+    </TextView>
+    <EditText
+        android:id="@+id/quantity"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.8"
+        android:layout_marginTop="9dp"
+        android:layout_marginBottom="9dp"
+        android:textAlignment="center"
+        android:text="0.00"
+        android:visibility="invisible"
+        android:inputType="numberDecimal"
+        android:background="@drawable/select_product"
+        android:textSize="14sp">
+    </EditText>
+    <CheckBox
+        android:id="@+id/checkbox"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="8dp"
+        android:button="@drawable/custom_checkbox"
+        android:scaleX="0.8"
+        android:scaleY="0.8"
+        android:layout_weight="0.4"></CheckBox>
+
+</LinearLayout>

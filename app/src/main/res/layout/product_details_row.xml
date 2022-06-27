@@ -1,0 +1,52 @@
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:layout_weight="0.8"
+    android:weightSum="3"
+
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_weight="3"
+        android:orientation="horizontal"
+        android:weightSum="8"
+        android:layout_height="0dp">
+
+        <TextView
+            android:id="@+id/product_name"
+            android:layout_width="0dp"
+            android:text="Product Name"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:layout_weight="3"/>
+        <TextView
+            android:id="@+id/od"
+            android:layout_width="0dp"
+            android:text="Order quntity"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:layout_weight="1.8"/>
+
+        <TextView
+            android:id="@+id/id"
+            android:layout_width="0dp"
+            android:text="invoice quntity"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:layout_weight="1.8"/>
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="0dp"
+            android:text="Fail"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:layout_weight="1.4"/>
+
+
+
+
+    </LinearLayout>
+
+</LinearLayout>

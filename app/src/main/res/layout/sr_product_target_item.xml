@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:weightSum="5">
+
+    <TextView
+        android:id="@+id/product"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1.1"
+        android:gravity="left|center"
+        android:textAlignment="gravity"
+        android:text="Product"
+
+        >
+
+    </TextView>
+    <TextView
+        android:id="@+id/target_qty"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:text="Target(Q)">
+
+    </TextView>
+    <TextView
+        android:id="@+id/achv_qty"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.9"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:text="Ach(Q)">
+
+    </TextView>
+    <TextView
+        android:id="@+id/target_vol"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center|right"
+        android:textAlignment="gravity"
+        android:text="Target(V)">
+
+    </TextView>
+    <TextView
+        android:id="@+id/achv_vol"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center|right"
+        android:textAlignment="gravity"
+        android:text="Ach(V)">
+
+    </TextView>
+
+</LinearLayout>

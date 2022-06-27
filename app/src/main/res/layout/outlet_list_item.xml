@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:weightSum="4"
+    >
+    <TextView
+        android:id="@+id/name_outlet_item"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:text="Name"
+        android:gravity="left|center"
+        android:layout_weight="1.8">
+
+    </TextView>
+    <Button
+        android:id="@+id/edit_outlet_item"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.1"
+        android:layout_marginRight="10dp"
+        android:scaleY="0.9"
+        android:text="Edit"
+        android:textSize="18dp"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:background="@drawable/capsule_btn_orng">
+
+    </Button>
+    <Button
+        android:id="@+id/view_outlet_item"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.1"
+        android:scaleY="0.9"
+        android:text="View"
+        android:textSize="18dp"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:background="@drawable/capsule_green_button_bg">
+
+    </Button>
+
+</LinearLayout>

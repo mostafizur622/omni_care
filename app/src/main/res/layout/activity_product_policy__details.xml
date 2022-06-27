@@ -1,0 +1,161 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="40"
+    android:orientation="vertical"
+    tools:context=".UnProcessOrder">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/secondary_color"
+        android:weightSum="2"
+        android:orientation="horizontal"
+        android:layout_weight="4">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:weightSum="1"
+            android:orientation="horizontal"
+            android:gravity="left"
+            android:layout_weight="1">
+            <ImageView
+                android:id="@+id/back"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:src="@drawable/backicon"
+                android:layout_margin="15dp"></ImageView>
+            <TextView
+                android:id="@+id/title_tv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.7"
+                android:gravity="center|left"
+                android:textColor="@color/white"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="12sp"
+                android:autoSizeMaxTextSize="20sp"
+                android:autoSizeStepGranularity="2sp"
+                android:text="Outlet Wise Sales Report">
+
+            </TextView>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:weightSum="1"
+            android:gravity="right"
+            android:orientation="horizontal"
+            android:layout_weight="1">
+            <TextView
+                android:id="@+id/user_txt_view"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.7"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="15dp"
+                android:background="@drawable/login_id_bg_shade"
+                android:text="273638"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="12sp"
+                android:autoSizeMaxTextSize="20sp"
+                android:autoSizeStepGranularity="2sp"
+                android:textColor="@color/background_white"
+                android:textAlignment="center"
+                android:gravity="center"></TextView>
+            <ImageView
+                android:id="@+id/home"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:src="@drawable/home"
+                android:layout_margin="15dp">
+
+            </ImageView>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_weight="36"
+        android:weightSum="50"
+        android:orientation="vertical"
+        android:layout_height="0dp">
+        <TextView
+            android:padding="8dp"
+            android:id="@+id/product_name"
+            android:layout_width="match_parent"
+            android:textSize="20dp"
+            android:textColor="@color/background_color_outlet_report"
+            android:layout_height="wrap_content"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_weight="5"
+            android:orientation="horizontal"
+            android:weightSum="8"
+            android:layout_height="0dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:text="Bonus Product"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:layout_weight="2.5"/>
+            <TextView
+                android:layout_width="0dp"
+                android:text="R Qty"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:layout_weight="1.1"/>
+
+            <TextView
+                android:id="@+id/sale_quntity"
+                android:layout_width="0dp"
+                android:text="B qty"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:layout_weight="1.1"/>
+            <TextView
+                android:layout_width="0dp"
+                android:text="Condition"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:layout_weight="1.2"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:text="Price"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:layout_weight="1.06"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:text="Discount"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:layout_weight="1.06"/>
+
+
+
+
+        </LinearLayout>
+        <ListView
+            android:id="@+id/productRecycleView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="8dp"
+            android:layout_weight="45"/>
+
+    </LinearLayout>
+
+</LinearLayout>

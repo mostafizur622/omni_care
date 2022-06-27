@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="@dimen/_4sdp"
+    app:cardBackgroundColor="#EBEBF4"
+    app:cardElevation="@dimen/_10sdp"
+    app:cardPreventCornerOverlap="false"
+    app:cardUseCompatPadding="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:paddingBottom="@dimen/_4sdp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/_4sdp"
+                        android:background="@drawable/card_back_1"
+                        android:text="Min Qty :"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/_11sdp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_below="@+id/rootLayout"
+                        android:background="#000"
+                        android:textSize="@dimen/_9sdp"
+                        android:textStyle="normal"
+                        android:visibility="visible"
+                         />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Policy Type"
+                        android:paddingStart="@dimen/_2sdp"
+                        android:paddingLeft="@dimen/_2sdp"
+                        android:textColor="@android:color/black" />
+
+                    <TextView
+                        android:id="@+id/txtDisAmtTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Discount Amount"
+                        android:paddingStart="@dimen/_2sdp"
+                        android:paddingLeft="@dimen/_2sdp"
+                        android:textColor="@android:color/black" />
+
+                    <TextView
+                        android:id="@+id/txtDisProductNameTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Price Slab:"
+                        android:paddingStart="@dimen/_2sdp"
+                        android:paddingLeft="@dimen/_2sdp"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtDisProductName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:textStyle="normal"
+                        android:paddingStart="@dimen/_2sdp"
+                        android:paddingLeft="@dimen/_2sdp"
+                        tools:text="---" />
+
+                    <TextView
+                        android:id="@+id/txtBonusProductNameTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Bonus Product:"
+                        android:textColor="@android:color/black"
+                        android:paddingStart="@dimen/_2sdp"
+                        android:paddingLeft="@dimen/_2sdp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtBonusProductName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        android:paddingStart="@dimen/_2sdp"
+                        android:paddingLeft="@dimen/_2sdp"
+                        android:textStyle="normal"
+                        tools:text="--" />
+
+                    <TextView
+                        android:id="@+id/txtFormulaTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Formula:"
+                        android:paddingStart="@dimen/_2sdp"
+                        android:paddingLeft="@dimen/_2sdp"
+                        android:textColor="@android:color/black" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txtMinQty"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/card_back_2"
+                        android:padding="@dimen/_4sdp"
+                        android:text="1 Pack"
+                        android:textColor="@android:color/black"
+                        android:textSize="@dimen/_11sdp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_below="@+id/rootLayout"
+                        android:background="#000"
+                        android:textSize="@dimen/_9sdp"
+                        android:textStyle="normal"
+                        android:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/txtPolicyType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        tools:text="Only Bonus" />
+
+                    <TextView
+                        android:id="@+id/txtDisAmt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        tools:text="100" />
+
+                    <TextView
+                        android:id="@+id/txtDisPriceTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Price:"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtDisPrice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        tools:text="--" />
+
+                    <TextView
+                        android:id="@+id/txtBonusQtyTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Qty:"
+                        android:textColor="@android:color/black"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtBonusQty"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        tools:text="--" />
+
+                    <TextView
+                        android:id="@+id/txtFormula"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/black"
+                        tools:text="(AUB) AND (AUC) " />
+                </LinearLayout>
+            </LinearLayout>
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

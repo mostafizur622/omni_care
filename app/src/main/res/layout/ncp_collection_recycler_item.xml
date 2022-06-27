@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="55dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <TextView
+            android:id="@+id/product_name"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1.8"
+            android:autoSizeMaxTextSize="14sp"
+            android:autoSizeMinTextSize="10sp"
+            android:autoSizeStepGranularity="2sp"
+            android:autoSizeTextType="uniform"
+            android:gravity="center|left"
+            android:text="Product 1">
+
+        </TextView>
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/check_box"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:buttonTint="@color/text_focus_orng_color"
+            android:layout_weight="0.2"
+            android:gravity="right|center">
+
+        </androidx.appcompat.widget.AppCompatCheckBox>
+
+    </LinearLayout>
+
+
+</LinearLayout>

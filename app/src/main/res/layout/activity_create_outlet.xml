@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="4"
+    android:orientation="vertical"
+    android:background="@color/new_outlet"
+    tools:context=".CreateOutlet">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/secondary_color"
+        android:weightSum="2"
+        android:orientation="horizontal"
+        android:layout_weight="0.4">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:weightSum="1"
+            android:orientation="horizontal"
+            android:gravity="left"
+            android:layout_weight="1">
+            <ImageView
+                android:id="@+id/back"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:src="@drawable/backicon"
+                android:layout_margin="15dp"></ImageView>
+            <TextView
+                android:id="@+id/title_tv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.7"
+                android:gravity="center|left"
+                android:textColor="@color/white"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="12sp"
+                android:autoSizeMaxTextSize="20sp"
+                android:autoSizeStepGranularity="2sp"
+                android:text="Create Outlet">
+
+            </TextView>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:weightSum="1"
+            android:gravity="right"
+            android:orientation="horizontal"
+            android:layout_weight="1">
+            <TextView
+                android:id="@+id/user_txt_view"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.7"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="15dp"
+                android:background="@drawable/login_id_bg_shade"
+                android:text="273638"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="12sp"
+                android:autoSizeMaxTextSize="20sp"
+                android:autoSizeStepGranularity="2sp"
+                android:textColor="@color/background_white"
+                android:textAlignment="center"
+                android:gravity="center"></TextView>
+            <ImageView
+                android:id="@+id/home"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:src="@drawable/home"
+                android:layout_margin="15dp">
+
+            </ImageView>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+    /*toolbar = 0.4 now main layout = 3.6*/
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3.6"
+        android:orientation="vertical">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+
+                >
+                //create new outlet
+                <LinearLayout
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginBottom="10dp"
+                    android:orientation="vertical"
+                    >
+                    <TextView
+                        android:id="@+id/page_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:text="Create New Outlet"
+                        android:textStyle="bold"
+                        android:textColor="@color/background_white"
+                        android:textSize="22sp"
+                        android:gravity="center"
+                        android:layout_marginBottom="10dp"
+                        android:layout_weight="1">
+
+                    </TextView>
+
+                </LinearLayout>
+
+                // spinners
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="3"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp">
+                    //spiner 1
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:orientation="vertical"
+                        android:weightSum="2">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:weightSum="1"
+                            android:orientation="horizontal"
+                            android:gravity="center"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="15dp"
+                            android:layout_marginBottom="15dp"
+                            >
+                        <Button
+                            android:id="@+id/save_btn"
+                            android:layout_width="1dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="0.7"
+                            android:background="@drawable/button_shadow"
+                            android:gravity="center"
+                            android:text="Save"
+                            android:textColor="@color/background_white"
+                            android:textSize="22sp">
+
+                        </Button>
+                        </LinearLayout>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Market Name*:"
+                            android:textSize="15sp"
+                            android:textColor="@color/text_color_hint">
+
+                        </TextView>
+                        <Spinner
+                            android:id="@+id/market_spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/spinner2"
+                            android:theme="@style/MatchSpinnerTheme"
+                            >
+                        </Spinner>
+                        <TextView
+
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/spinner_line"
+                            android:alpha="50"></TextView>
+
+                    </LinearLayout>
+                    //spiner 2
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:orientation="vertical"
+                        android:weightSum="2">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Outlet Category*:"
+                            android:textSize="15sp"
+                            android:textColor="@color/text_color_hint">
+
+                        </TextView>
+                        <Spinner
+                            android:id="@+id/outlet_category_spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/spinner2"
+                            android:theme="@style/MatchSpinnerTheme"
+                            >
+                        </Spinner>
+                        <TextView
+
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/spinner_line"
+                            android:alpha="50"></TextView>
+
+                    </LinearLayout>
+                    //spiner 3
+
+
+                </LinearLayout>
+
+                //white form cardview
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="35dp"
+                    >
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="18dp"
+                        android:layout_marginTop="18dp"
+
+                        >
+                        <CheckBox
+                            android:layout_width="wrap_content"
+                            android:layout_gravity="center"
+                            android:id="@+id/is_active"
+                            android:visibility="gone"
+                            android:text="Is Active"
+                            android:layout_height="wrap_content"/>
+
+                        <RadioGroup
+                            android:id="@+id/pharma_type_radio_group"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
+                            android:visibility="gone"
+                            android:layout_marginRight="15dp"
+                            android:orientation="horizontal"
+                            android:weightSum="2"
+
+                            >
+                            <RadioButton
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Pharma"
+                                android:buttonTint="@color/text_focus_orng_color"
+                                >
+
+                            </RadioButton>
+
+                            <RadioButton
+                                android:layout_width="wrap_content"
+
+                                android:layout_height="wrap_content"
+                                android:buttonTint="@color/text_focus_orng_color"
+                                android:text="Non Pharma">
+
+                            </RadioButton>
+
+
+                        </RadioGroup>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="15dp"
+                            android:layout_marginTop="5dp"
+                            android:focusedByDefault="false"
+                            android:focusableInTouchMode="true"
+                            android:theme="@style/text_input_lebel_color"
+
+
+
+                            >
+                            <EditText
+                                android:id="@+id/outlet_name_et"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Outlet Name*"
+                                android:singleLine="true"
+                                android:outlineAmbientShadowColor="@color/text_field_line"
+                                android:outlineSpotShadowColor="@color/text_field_line"
+                                android:alpha="40"
+                                android:textSize="18sp"
+                                >
+
+                            </EditText>
+
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="15dp"
+                            android:theme="@style/text_input_lebel_color"
+                            android:layout_height="match_parent">
+                            <EditText
+                                android:id="@+id/owner_name_et"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:textSize="18sp"
+                                android:singleLine="true"
+                                android:hint="Contact Name">
+
+                            </EditText>
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="15dp"
+                            android:theme="@style/text_input_lebel_color"
+                            android:layout_height="match_parent">
+                            <EditText
+                                android:id="@+id/address"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:textSize="18sp"
+                                android:singleLine="true"
+                                android:hint="Address">
+
+                            </EditText>
+
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="15dp"
+                            android:theme="@style/text_input_lebel_color"
+
+                            >
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Owner Name*"
+                                android:textSize="18sp"
+                                >
+
+                            </EditText>
+
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="15dp"
+                            android:theme="@style/text_input_lebel_color"
+                            android:layout_height="match_parent">
+                            <EditText
+                                android:id="@+id/mobilee_et"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:textSize="18sp"
+                                android:singleLine="true"
+                                android:inputType="number"
+                                android:hint="Mobile Number">
+
+                            </EditText>
+
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="15dp"
+                            android:theme="@style/text_input_lebel_color"
+                            android:visibility="gone"
+
+                            >
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Address*"
+                                android:textSize="18sp"
+                                >
+
+                            </EditText>
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="2"
+                            android:visibility="gone"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="15dp">
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_weight="1.6"
+                                android:layout_marginLeft="3dp"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:text="Outlet Status"
+                                    android:textSize="18sp">
+
+                                </TextView>
+
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_weight="0.4"
+                                android:layout_height="wrap_content">
+                                <Switch
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:theme="@style/SwitchTheme"
+                                    android:textSize="18sp">
+
+                                </Switch>
+
+                            </LinearLayout>
+
+
+                        </LinearLayout>
+                        //line
+                        <LinearLayout
+                            android:layout_height="1dp"
+                            android:layout_width="match_parent"
+                            android:background="@color/text_field_line"
+                            android:layout_marginLeft="18dp"
+                            android:layout_marginRight="18dp"
+                            android:layout_marginTop="3dp"
+                            android:visibility="gone"
+                            android:layout_marginBottom="4dp">
+
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="2"
+                            android:visibility="gone"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="15dp">
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_weight="1.6"
+                                android:layout_marginLeft="3dp"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+
+                                    android:text="Is NGO"
+                                    android:textSize="18sp">
+
+                                </TextView>
+
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_weight="0.4"
+                                android:gravity="right"
+                                android:layout_height="wrap_content">
+                                <androidx.appcompat.widget.AppCompatCheckBox
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:buttonTint="@color/text_focus_orng_color"
+                                    android:layout_marginRight="3dp">
+
+                                </androidx.appcompat.widget.AppCompatCheckBox>
+
+                            </LinearLayout>
+
+
+                        </LinearLayout>
+                        //line
+                        <LinearLayout
+                            android:layout_height="1dp"
+                            android:layout_width="match_parent"
+                            android:background="@color/text_field_line"
+                            android:layout_marginLeft="18dp"
+                            android:layout_marginRight="18dp"
+                            android:layout_marginTop="3dp"
+                            android:visibility="gone"
+                            android:layout_marginBottom="4dp">
+
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="2"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="15dp">
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_weight="0.8"
+                                android:layout_marginLeft="3dp"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+
+                                    android:text="Outlet Picture"
+                                    android:textSize="18sp">
+
+                                </TextView>
+
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_weight="1.2"
+                                android:gravity="right|center"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:weightSum="4">
+                                <ImageView
+                                    android:id="@+id/img1"
+                                    android:layout_width="30dp"
+                                    android:layout_height="30dp"
+                                    android:visibility="invisible"
+                                    android:layout_marginRight="10dp"
+                                    android:onClick="onImageClick"
+                                    android:src="@drawable/goicon">
+
+                                </ImageView>
+                                <ImageView
+                                    android:id="@+id/img2"
+                                    android:layout_width="30dp"
+                                    android:layout_height="30dp"
+                                    android:visibility="invisible"
+                                    android:layout_marginRight="10dp"
+                                    android:onClick="onImageClick"
+                                    android:src="@drawable/goicon">
+
+                                </ImageView>
+                                <ImageView
+                                    android:id="@+id/img3"
+                                    android:layout_width="30dp"
+                                    android:layout_height="30dp"
+                                    android:visibility="invisible"
+                                    android:layout_marginRight="30dp"
+                                    android:onClick="onImageClick"
+                                    android:src="@drawable/goicon">
+
+                                </ImageView>
+                                <ImageView
+                                    android:id="@+id/capture"
+                                    android:layout_width="30dp"
+                                    android:layout_height="30dp"
+                                    android:layout_marginRight="9dp"
+                                    android:src="@drawable/capture">
+
+                                </ImageView>
+
+
+                            </LinearLayout>
+
+
+                        </LinearLayout>
+
+
+
+                    </LinearLayout>
+
+
+                </androidx.cardview.widget.CardView>
+                // save button
+
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>

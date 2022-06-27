@@ -1,0 +1,585 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="4"
+    tools:context=".Create_New_Memo">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/secondary_color"
+        android:weightSum="2"
+        android:orientation="horizontal"
+        android:layout_weight="0.4">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:weightSum="1"
+            android:orientation="horizontal"
+            android:gravity="left"
+            android:layout_weight="1">
+            <ImageView
+                android:id="@+id/back"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:src="@drawable/backicon"
+                android:layout_margin="15dp"></ImageView>
+            <TextView
+                android:id="@+id/title_tv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.7"
+                android:gravity="center|left"
+                android:textColor="@color/white"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="12sp"
+                android:autoSizeMaxTextSize="20sp"
+                android:autoSizeStepGranularity="2sp"
+                android:text="Outlets">
+
+            </TextView>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:weightSum="1"
+            android:gravity="right"
+            android:orientation="horizontal"
+            android:layout_weight="1">
+            <TextView
+                android:id="@+id/user_txt_view"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.7"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="15dp"
+                android:background="@drawable/login_id_bg_shade"
+                android:text="273638"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="12sp"
+                android:autoSizeMaxTextSize="20sp"
+                android:autoSizeStepGranularity="2sp"
+                android:textColor="@color/background_white"
+                android:textAlignment="center"
+                android:gravity="center"></TextView>
+            <ImageView
+                android:id="@+id/home"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:src="@drawable/home"
+                android:layout_margin="15dp">
+
+            </ImageView>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_weight="3.6"
+        android:layout_height="0dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="3.6"
+            android:orientation="vertical"
+            android:background="@color/background_card"
+            android:weightSum="14.2">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@color/background"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginLeft="25dp"
+                    android:textSize="18sp"
+                    android:text="Sales Order"
+                    android:layout_marginBottom="50dp"
+                    android:textColor="@color/white">
+
+                </TextView>
+            </LinearLayout>
+
+
+
+
+
+            <LinearLayout
+                android:id="@+id/logo"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="-50dp"
+                android:elevation="8dp"
+                android:visibility="visible"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:weightSum="3"
+                android:background="@drawable/layout_bg"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    android:layout_weight="1">
+
+
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.7"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_color"
+                        android:text="GPS Update"></TextView>
+
+                    <CheckBox
+                        android:id="@+id/gpsUpdateChk"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:button="@drawable/custom_checkbox"
+                        android:scaleX="0.8"
+                        android:scaleY="0.8"
+                        android:layout_weight="0.3"></CheckBox>
+
+
+                </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.2dp"
+                    android:background="@android:color/darker_gray"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.7"
+                        android:textColor="@color/text_color"
+                        android:textSize="16sp"
+                        android:text="View Last Order"></TextView>
+
+                    <CheckBox
+                        android:id="@+id/viewlastMemoChk"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:scaleX="0.8"
+                        android:scaleY="0.8"
+                        android:button="@drawable/custom_checkbox"
+                        android:layout_weight="0.3"></CheckBox>
+
+
+                </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.2dp"
+                    android:background="@android:color/darker_gray"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.7"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_color"
+                        android:text="Sales Order"></TextView>
+
+                    <CheckBox
+                        android:id="@+id/salesMemoChk"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:button="@drawable/custom_checkbox"
+                        android:scaleX="0.8"
+                        android:scaleY="0.8"
+                        android:layout_weight="0.3"></CheckBox>
+
+
+                </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.2dp"
+                    android:visibility="gone"
+                    android:background="@android:color/darker_gray"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    android:padding="10dp"
+                    android:visibility="gone"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.7"
+                        android:textColor="@color/text_color"
+                        android:textSize="16sp"
+                        android:text="Collect Ncp"></TextView>
+
+                    <CheckBox
+                        android:id="@+id/outletReturnChk"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:scaleX="0.8"
+                        android:scaleY="0.8"
+                        android:button="@drawable/custom_checkbox"
+                        android:layout_weight="0.3"></CheckBox>
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="8dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:weightSum="2"
+                    android:layout_marginLeft="7dp"
+                    >
+
+                    <TextView
+                        android:id="@+id/txt_Thana"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:text="Route"
+                        android:textSize="18sp"
+                        android:layout_weight="0.7"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:weightSum="1.8"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:orientation="vertical"
+                            android:layout_height="match_parent">
+                            <Spinner
+                                android:id="@+id/thana_Spinner"
+                                android:layout_width="match_parent"
+                                android:layout_weight="1.5"
+                                android:layout_height="match_parent"
+                                android:layout_below="@+id/txt_Thana" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="0.2dp"
+                                android:background="@android:color/darker_gray"/>
+                        </LinearLayout>
+
+                        <Button
+                            android:id="@+id/outletadd"
+                            android:layout_width="50dp"
+                            android:visibility="visible"
+                            android:layout_height="50dp"
+                            android:background="@drawable/plus_shadow"
+                            />
+
+
+
+
+                    </LinearLayout>
+
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:weightSum="2"
+                    android:layout_marginLeft="7dp"
+                    >
+
+                    <TextView
+                        android:id="@+id/txt_market"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="Market"
+                        android:textSize="18sp"
+                        android:layout_weight="0.7"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:weightSum="1.8"
+                        android:orientation="horizontal">
+
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_weight="1.8"
+                            android:orientation="vertical"
+                            android:layout_height="match_parent">
+                            <Spinner
+                                android:id="@+id/market_Spinner"
+                                android:visibility="gone"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_below="@+id/txt_market" />
+                            <AutoCompleteTextView
+                                android:id="@+id/marketauto"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_below="@+id/txt_market" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="0.2dp"
+                                android:background="@android:color/darker_gray"/>
+                        </LinearLayout>
+
+
+
+
+                        <Button
+                            android:id="@+id/marketAddBtn"
+                            android:layout_width="50dp"
+                            android:visibility="visible"
+                            android:layout_height="50dp"
+
+                            android:background="@drawable/plus_shadow"
+                           >
+
+                        </Button>
+
+
+                    </LinearLayout>
+
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:weightSum="2"
+                    android:layout_marginLeft="7dp"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:text="Outlet Type"
+
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_weight="1"
+                        android:weightSum="10"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:orientation="vertical"
+                            android:layout_height="match_parent">
+                            <Spinner
+                                android:id="@+id/outlet_Type_Spinner"
+                                android:layout_width="match_parent"
+                                android:layout_weight="8"
+                                android:layout_height="match_parent"
+                                android:layout_below="@+id/txt_outlet" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="0.2dp"
+                                android:background="@android:color/darker_gray"/>
+                        </LinearLayout>
+
+
+
+
+
+
+                    </LinearLayout>
+
+
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:weightSum="2"
+                    android:layout_marginLeft="7dp"
+                    >
+
+                    <TextView
+                        android:id="@+id/txt_outlet"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="Outlet"
+                        android:textSize="18sp"
+                        android:layout_weight="0.7"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:weightSum="1.8"
+                        android:layout_weight="1.2"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="1.8"
+                            android:orientation="vertical"
+                            android:weightSum="1.8">
+
+                            <AutoCompleteTextView
+                                android:id="@+id/outltateauto"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1.5"
+                                android:nextFocusLeft="@id/outltateauto"
+                                android:nextFocusUp="@id/outltateauto"
+                                android:singleLine="true"
+                                android:textSize="15dp" />
+
+                            <Spinner
+                                android:id="@+id/outlet_spinner"
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="1.8"
+                                android:visibility="gone" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="0.2dp"
+                                android:background="@android:color/darker_gray" />
+
+
+                        </LinearLayout>
+
+                        <Button
+                            android:id="@+id/addoutlet"
+                            android:layout_width="50dp"
+                            android:visibility="visible"
+                            android:layout_height="50dp"
+                            android:background="@drawable/plus_shadow"
+                            />
+                    </LinearLayout>
+
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="0.8"
+                android:orientation="horizontal"
+                android:gravity="center"
+                >
+                <LinearLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:elevation="8dp"
+                    android:background="@drawable/bottom_layout_bg"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/lastmemo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="20dp"
+                        android:text="Last Memo Date: "
+                        android:textSize="18dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:elevation="8dp"
+                    android:background="@drawable/bottom_layout_bg"
+                    android:orientation="horizontal">
+
+
+                    <Button
+                        android:id="@+id/nextBtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_weight="0.5"
+                        android:background="@drawable/capsul_shape"
+                        android:text="Next"
+                        android:textAllCaps="false"
+                        android:textColor="@color/background_white"
+                        android:textSize="18sp"></Button>
+
+                </LinearLayout>
+                </LinearLayout>
+
+
+
+
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+
+
+
+</LinearLayout>

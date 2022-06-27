@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="4"
+    android:orientation="vertical"
+    android:background="@color/background_sales_memo"
+    tools:context=".Visit_Plan_Activity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/secondary_color"
+        android:weightSum="2"
+        android:orientation="horizontal"
+        android:layout_weight="0.4">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:weightSum="1"
+            android:orientation="horizontal"
+            android:gravity="left"
+            android:layout_weight="1">
+            <ImageView
+                android:id="@+id/back"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:src="@drawable/backicon"
+                android:layout_margin="15dp"></ImageView>
+            <TextView
+                android:id="@+id/title_tv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.7"
+                android:gravity="center|left"
+                android:textColor="@color/white"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="12sp"
+                android:autoSizeMaxTextSize="20sp"
+                android:autoSizeStepGranularity="2sp"
+                android:text="Visit Plan">
+
+            </TextView>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:weightSum="1"
+            android:gravity="right"
+            android:orientation="horizontal"
+            android:layout_weight="1">
+            <TextView
+                android:id="@+id/user_txt_view"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.7"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="15dp"
+                android:background="@drawable/login_id_bg_shade"
+                android:text="273638"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="12sp"
+                android:autoSizeMaxTextSize="20sp"
+                android:autoSizeStepGranularity="2sp"
+                android:textColor="@color/background_white"
+                android:textAlignment="center"
+                android:gravity="center"></TextView>
+            <ImageView
+                android:id="@+id/home"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:src="@drawable/home"
+                android:layout_margin="15dp">
+
+            </ImageView>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3.6"
+        android:weightSum="6"
+        android:orientation="vertical">
+        // text Title = 0.3
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.7"
+            android:background="@color/background"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_margin="15dp"
+                android:weightSum="2.3">
+
+                <LinearLayout
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:orientation="horizontal"
+                    android:layout_weight="0.7"
+                    android:layout_marginTop="5dp"
+                    android:weightSum="2">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="0.9"
+                        android:textSize="20sp"
+                        android:textColor="@color/white"
+                        android:layout_height="wrap_content"
+                        android:text="Visit Plan"></TextView>
+
+                    <!--<Button
+                        android:id="@+id/sendMessageBtn"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1.1"
+                        android:text="Out of Plan Visit"
+                        android:background="@drawable/round_button"
+                        android:gravity="center|right"
+                        android:textAlignment="center"
+                        android:scaleX="0.8"
+                        android:scaleY="0.8"
+                        android:drawableLeft="@drawable/add_icon"
+                        android:paddingLeft="20dp"
+                        android:drawablePadding="5dp"
+                        android:paddingRight="5dp"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"></Button>-->
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:orientation="vertical"
+                    android:weightSum="2"
+                    android:layout_weight="1.5">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="2"
+                        android:layout_marginBottom="5dp"
+                        android:orientation="vertical"
+                        android:weightSum="2">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.7"
+                            android:text="Visit Day*:"
+                            android:textSize="15sp"
+                            android:textColor="@color/text_color_hint">
+
+                        </TextView>
+                        <TextView
+                            android:id="@+id/visit_date_picker"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1.2"
+                            android:gravity="center|left"
+                            android:textColor="@color/white"
+                            android:background="@drawable/spinner2"
+                            android:theme="@style/MatchSpinnerTheme"
+                            >
+                        </TextView>
+                        <TextView
+
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/spinner_line"
+                            android:alpha="50"></TextView>
+
+                    </LinearLayout>
+                    <!--<LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:weightSum="2"
+                        android:orientation="vertical"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Visit Day"
+                            android:layout_weight="0.2"
+                            android:textSize="16sp"
+                            android:textColor="@color/datepicker">
+
+                        </TextView>
+                        <Spinner
+                            android:id="@+id/day_spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/spinner2"
+                            >
+                        </Spinner>
+
+
+                    </LinearLayout>-->
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:orientation="horizontal"
+                    android:layout_weight="0.8"
+                    android:layout_marginTop="0dp"
+                    android:weightSum="4">
+
+                    <TextView
+                        android:id="@+id/mkt_rt_lable"
+                        android:layout_width="0dp"
+                        android:layout_weight="1.2"
+                        android:textSize="15sp"
+                        android:textColor="@color/white"
+                        android:layout_height="wrap_content"
+                        android:text="Route List"></TextView>
+                    <LinearLayout
+                        android:id="@+id/route_days_lbles"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1.6"
+                        android:orientation="vertical"
+                        android:visibility="invisible"
+                        android:weightSum="2">
+                        <TextView
+                            android:id="@+id/days_lable"
+                            android:layout_width="match_parent"
+                            android:layout_weight="1"
+                            android:textColor="@color/text_target"
+                            android:layout_height="0dp"
+                            android:text="Days: Sat Sun"></TextView>
+                        <TextView
+                            android:id="@+id/route_lable"
+                            android:layout_width="match_parent"
+                            android:layout_weight="1"
+                            android:textColor="@color/text_target"
+                            android:layout_height="0dp"
+                            android:text="Route: Sat Sun"></TextView>
+
+                    </LinearLayout>
+                    <Button
+                        android:id="@+id/route_btn"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1.2"
+                        android:text="Route List"
+                        android:textColor="@color/white"
+                        android:textAllCaps="false"
+                        android:visibility="invisible"
+                        android:background="@drawable/round_button">
+
+                    </Button>
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4.3"
+            >
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/Market_recycleView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+            </androidx.recyclerview.widget.RecyclerView>
+        </LinearLayout>
+
+
+    </LinearLayout>
+</LinearLayout>

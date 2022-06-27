@@ -1,0 +1,90 @@
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:layout_weight="0.5"
+    android:weightSum="5"
+    android:orientation="horizontal"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:id="@+id/product_name"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1.2"
+        android:gravity="left|center"
+        android:text="Product Name"
+        android:textAlignment="gravity"
+        android:textSize="14sp"
+
+        >
+
+    </TextView>
+
+    <TextView
+        android:id="@+id/vat"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight=".6"
+        android:gravity="center"
+        android:textAlignment="gravity"
+        android:textSize="14sp"
+        android:text="5%"
+
+        >
+
+    </TextView>
+    <EditText
+        android:id="@+id/price"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.9"
+        android:singleLine="true"
+        android:inputType="numberDecimal"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textSize="14sp"
+        android:background="@drawable/rounded_et_tv_bg"
+        android:text="Price">
+
+    </EditText>
+
+    <EditText
+        android:id="@+id/quantity"
+        android:layout_width="0dp"
+        android:layout_marginLeft="5dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.7"
+        android:background="@drawable/rounded_et_tv_bg"
+        android:gravity="center"
+        android:singleLine="true"
+        android:text="Quantity"
+        android:inputType="numberDecimal"
+        android:layout_marginRight="5dp"
+        android:textAlignment="center"
+        android:textSize="14sp">
+
+    </EditText>
+
+    <TextView
+        android:id="@+id/total_price"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textAlignment="gravity"
+        android:textSize="14sp"
+        android:text="T. Price">
+
+    </TextView>
+    <ImageView
+        android:id="@+id/dlt_product_sales_item"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/crossx"
+        android:scaleX="0.5"
+        android:scaleY="0.5"
+        android:layout_weight="0.6">
+
+    </ImageView>
+
+</LinearLayout>

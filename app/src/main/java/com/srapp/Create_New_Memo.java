@@ -1,0 +1,986 @@
+package com.srapp;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+
+import com.srapp.Db_Actions.DBListener;
+import com.srapp.Db_Actions.Data_Source;
+import com.srapp.Db_Actions.Tables;
+import com.srapp.Util.Parent;
+
+import android.content.Context;
+import android.os.Build;
+import android.os.Bundle;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.preference.PreferenceManager;
+import android.text.TextUtils;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.Spinner;
+
+import androidx.annotation.RequiresApi;
+
+import static com.srapp.TempData.BPSelected_bonus;
+import static com.srapp.TempData.BPSelected_option_id;
+import static com.srapp.TempData.BPSelected_policy_type;
+import static com.srapp.TempData.BPSelected_product;
+import static com.srapp.TempData.BPSelected_set;
+import static com.srapp.TempData.MEMO_EDIT;
+import static com.srapp.TempData.ORDER_TO_MEMO;
+import static com.srapp.TempData.PolicySetRelation;
+import static com.srapp.TempData.policyArrayList;
+
+public class Create_New_Memo extends Parent implements OnClickListener, DBListener {
+
+    Button buttonLogin;
+    Spinner routeSp, MarketSp, OutletCategorySp, OutletSp;
+    int autoPos;
+    ArrayAdapter<String> dataAdapter;
+    ArrayAdapter<String> marketAdapter;
+
+    ArrayList<String> Route_id = new ArrayList<String>();
+    ArrayList<String> Route_name = new ArrayList<String>();
+    String _routeid;
+
+    ArrayList<String> MarketID = new ArrayList<String>();
+    ArrayList<String> MarketName = new ArrayList<String>();
+    String _MarketID;
+
+    ArrayList<String> OutletCategoryID = new ArrayList<String>();
+    ArrayList<String> OutletCategoryName = new ArrayList<String>();
+    String _OutletCategoryID;
+
+
+    ArrayList<String> OutletID = new ArrayList<String>();
+    ArrayList<String> OutletName = new ArrayList<String>();
+
+
+    ArrayList<String> Is_Pharma_Type = new ArrayList<String>();
+    ArrayList<String> OutletCode = new ArrayList<String>();
+
+    ArrayList<String> ProjectID = new ArrayList<String>();
+    ArrayList<String> InstituteID = new ArrayList<String>();
+    ArrayList<String> BonusPartyType = new ArrayList<String>();
+    ArrayList<String> IsWithinGroup = new ArrayList<String>();
+    AutoCompleteTextView outltateauto , marketauto;
+
+    String _OutletID, _InstituteID, _ProjectID, OUTLET_ID = "", _Is_Pharma_Type = "", _is_group_within_group;
+
+
+    private Button btnBack, btnHome;
+    TextView lastmemo, HeaderTitleTv, CodeNoTv, lastoutlatememodate;
+
+    ArrayList<HashMap<String, String>> list;
+
+
+    String Distributor_Id = "", RSO_Id = "", RSO_Code = "";
+    public static final String MyPREFERENCES = "MyPrefs";
+    SharedPreferences sharedpreferences;
+
+    String itemName = "";
+    Button marketAddBtn,addoutlet;
+    ImageView homeBtn, backBtn;
+    TextView userIdTV, titleTV;
+    Button OuletlinkBtn, MarketLinkBtn;
+
+    CheckBox radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_CreditCollection, radio_CollectedList, radio_ProductReturn;
+
+    Data_Source db;
+    TextView title;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setContentView(R.layout.activity_create_new_memo);
+        outltateauto = findViewById(R.id.outltateauto);
+        marketauto = findViewById(R.id.marketauto);
+        _OutletID="00";
+        TextView txtUser = (TextView) findViewById(R.id.user_txt_view);
+        title = (TextView) findViewById(R.id.title);
+        txtUser.setText(getPreference("UserName"));
+        db = new Data_Source(this, this);
+        //outltateauto.setText("");
+        //savePreference("OutletID", "0") ;
+        homeBtn = findViewById(R.id.home);
+        backBtn = findViewById(R.id.back);
+        addoutlet = findViewById(R.id.addoutlet);
+        marketAddBtn = findViewById(R.id.marketAddBtn);
+
+        userIdTV = findViewById(R.id.user_txt_view);
+        titleTV = findViewById(R.id.title_tv);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String value = prefs.getString(Tables.SR_ID, "0");
+        userIdTV.setText(value);
+
+        homeBtn.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent( Create_New_Memo.this, Dashboard.class));
+                finishAffinity();
+            }
+        });
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent( Create_New_Memo.this, Dashboard.class));
+                finishAffinity();
+            }
+        });
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int width = dm.widthPixels / 15;
+        buttonLogin = (Button) findViewById(R.id.nextBtn);
+        routeSp = (Spinner) findViewById(R.id.thana_Spinner);
+        MarketSp = (Spinner) findViewById(R.id.market_Spinner);
+        OutletCategorySp = (Spinner) findViewById(R.id.outlet_Type_Spinner);
+        OutletSp = (Spinner) findViewById(R.id.outlet_spinner);
+
+        radio_GPSUpdate = findViewById(R.id.gpsUpdateChk);
+        radio_ViewLastMemo = findViewById(R.id.viewlastMemoChk);
+        radio_SalesMemo = findViewById(R.id.salesMemoChk);
+        lastmemo = findViewById(R.id.lastmemo);
+        radio_ProductReturn = findViewById(R.id.outletReturnChk);
+
+        radio_SalesMemo.setChecked(true);
+        outltateauto.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+              //  outltateauto.setText("");
+                outltateauto.showDropDown();
+
+            }
+        });
+
+        marketauto.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+              //  outltateauto.setText("");
+                marketauto.showDropDown();
+
+            }
+        });
+
+        MarketLinkBtn = findViewById(R.id.marketAddBtn);
+        OuletlinkBtn = findViewById(R.id.outletadd);
+
+        itemName = radio_SalesMemo.getText().toString();
+        radio_GPSUpdate.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                itemName = radio_GPSUpdate.getText().toString();
+                itemName = "GPS Update";
+                title.setText(itemName);
+                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn}, 0);
+            }
+        });
+        radio_ViewLastMemo.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                itemName = "View Last Memo";
+                title.setText(itemName);
+                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn}, 1);
+            }
+        });
+        radio_SalesMemo.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                itemName = "Sales Order";
+                title.setText(itemName);
+                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn}, 2);
+            }
+        });
+        radio_ProductReturn.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                itemName = "Collect Ncp";
+                title.setText(itemName);
+                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn}, 3);
+            }
+        });
+
+
+        MarketLinkBtn.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+               /* final String route_id = getPreference("thanaID");
+                Intent idn = new Intent(Create_New_Memo.this, CreateNewMarket.class);
+
+                Log.e("Route_id123",route_id);
+               // finish();
+                startActivity(idn);*/
+            }
+        });
+        Log.e("Route_id123", getPreference("thanaID"));
+        OuletlinkBtn.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+
+                Intent idn = new Intent(Create_New_Memo.this, CreateOutlet.class);
+                idn.putExtra("PathName", "OutletAccount");
+                startActivity(idn);
+                finish();
+            }
+        });
+
+        marketAddBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Create_New_Memo.this,CreateNewMarket.class);
+                i.putExtra("page_from",25);
+                i.putExtra("PathName", "OutletAccount");
+                i.putExtra("Route_id",getPreference("thanaID"));
+                startActivity(i);
+            }
+        });
+
+        addoutlet.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Create_New_Memo.this,CreateOutlet.class);
+                i.putExtra("page_from",-25);
+                i.putExtra("MarketID",getPreference("MarketID"));
+                i.putExtra("OutletCategoryID",getPreference("OutletCategoryID"));
+                startActivity(i);
+            }
+        });
+
+        ThanaParse();
+        OutletCategoriesTableParse();
+
+        //.................spinnner selecton................................
+
+
+        //.................spinnner selecton................................
+
+        routeSp.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                                       int arg2, long arg3) {
+                // TODO Auto-generated method stub
+
+                _routeid = Route_id.get(arg2);
+                String name = Route_name.get(arg2);
+                savePreference("Thana", name);
+                savePreference("thanaID", _routeid);
+
+                MarketParse(_routeid);
+                Log.e("****************", "&&&&&&&&&&&&&&&&&&&&&&" + _routeid + "     " + name);
+                if (!Route_id.equals("00")) {
+
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+                //TODO Auto-generated method stub
+
+            }
+        });
+
+        MarketSp.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                                       int arg2, long arg3) {
+                // TODO Auto-generated method stub
+
+                _MarketID = MarketID.get(arg2);
+                savePreference("MarketID", _MarketID);
+                String Market_name = MarketName.get(arg2);
+                savePreference("Market", Market_name);
+
+                //OutletCategoriesTableParse();
+
+                Log.e("****************", "&&&&&&&&&&&&&&&&&&&&&&_Market  " + _MarketID + "     " + Market_name);
+
+
+                if (!_MarketID.equals("00")) {
+                    if (MarketID.size() > 0 && OutletCategoryID.size() > 0)
+                        OutletAllTableParse(_MarketID, OutletCategoryID.get(OutletCategorySp.getSelectedItemPosition()));
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+                // TODO Auto-generated method stub
+
+            }
+        });
+
+
+        marketauto.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+               int  autoPos=MarketName.indexOf(marketAdapter.getItem(position));
+
+                _MarketID = MarketID.get(autoPos);
+                savePreference("MarketID", _MarketID);
+                String Market_name = MarketName.get(autoPos);
+                savePreference("Market", Market_name);
+
+                //OutletCategoriesTableParse();
+
+                Log.e("****************", "&&&&&&&&&&&&&&&&&&&&&&_Market  " + _MarketID + "     " + Market_name);
+
+                if (!_MarketID.equals("00")) {
+                    if (MarketID.size() > 0 && OutletCategoryID.size() > 0)
+                        OutletAllTableParse(_MarketID, OutletCategoryID.get(OutletCategorySp.getSelectedItemPosition()));
+                }
+            }
+        });
+
+        OutletCategorySp.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                                       int arg2, long arg3) {
+                // TODO Auto-generated method stub
+
+                _OutletCategoryID = OutletCategoryID.get(arg2);
+                savePreference("OutletCategoryID", _OutletCategoryID);
+                String _OutletCategoryName = OutletCategoryName.get(arg2);
+                savePreference("OutletCategoryName", _OutletCategoryName);
+
+                // OutletTableParse();
+
+                Log.d("OutletCategoryName",  _OutletCategoryID + OutletCategoryName );
+
+
+                Log.e("MarketID size", "...." + MarketID.size());
+                Log.e("utletCategoryID size", "...." + OutletCategoryID.size());
+                Log.e("utletCategoryID size", "...." + MarketSp.getSelectedItemPosition());
+
+               /* if (MarketSp.getSelectedItemPosition() >= 0) {
+                    if (MarketID.size() > 0 && OutletCategoryID.size() > 0) {
+
+                        OutletAllTableParse(MarketID.get(MarketSp.getSelectedItemPosition()), _OutletCategoryID);
+                    }
+                }*/
+
+                try {
+                    if (!_MarketID.equals("00")) {
+                        if (MarketID.size() > 0 && OutletCategoryID.size() > 0)
+                            OutletAllTableParse(_MarketID, OutletCategoryID.get(OutletCategorySp.getSelectedItemPosition()));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+                // TODO Auto-generated method stub
+
+            }
+        });
+        outltateauto.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int arg2, long id) {
+
+                autoPos=OutletName.indexOf(dataAdapter.getItem(arg2));
+
+                _OutletID = OutletID.get(autoPos);
+
+
+
+                Log.e("UUUUUUUUUUUUUUUUUU","UUUUUUUUUUU  _OutletID  UUUUUUUUUUUUU "+_OutletID);
+                String _OutletCode = OutletCode.get(autoPos);
+                String _OutletName = OutletName.get(autoPos);
+                String ins = InstituteID.get(autoPos);
+                String ngo = ProjectID.get(autoPos);
+                String is_withinGroup = IsWithinGroup.get(autoPos);
+
+                savePreference("OutletName", _OutletName) ;
+                savePreference("OutletID", _OutletID) ;
+                setLastMemoDate(_OutletID);
+                savePreference("BonusPartyType", BonusPartyType.get(arg2));
+                savePreference("Is_WithinGroup", is_withinGroup);
+
+                Log.e("------------","--  is_withinGroup  -- "+is_withinGroup);
+                Log.e("------------","--  Is_WithinGroup  -- "+getPreference("Is_WithinGroup"));
+
+                TempData.OutletID= _OutletID;
+                TempData.OutletName=_OutletName;
+
+                TempData.TargetCustomer = ngo;
+                TempData.InstituteID = ins;
+
+
+                Log.e("TargetCustomer", " "+ngo);
+                Log.e("InstituteID", " "+ins);
+
+
+                if(!_OutletID.equals("00"))
+                {
+                    savePreference("OutletCode", _OutletCode);
+
+
+                }
+                lastmemo.setText("Last Memo Date: " + db.getLastmemodate(_OutletID));
+
+                InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                in.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
+            }
+        });
+
+        OutletSp.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                                       int arg2, long arg3) {
+                // TODO Auto-generated method stub
+
+                _OutletID = OutletID.get(arg2);
+
+                Log.e("UUUUUUUUUUUUUUUUUU", "UUUUUUUUUUU  _OutletID  UUUUUUUUUUUUU " + _OutletID);
+                String _OutletCode = OutletCode.get(arg2);
+                String _OutletName = OutletName.get(arg2);
+                String ins = InstituteID.get(arg2);
+                String ngo = ProjectID.get(arg2);
+                String is_withinGroup = IsWithinGroup.get(arg2);
+
+                savePreference("OutletName", _OutletName);
+                savePreference("OutletID", _OutletID);
+                savePreference("BonusPartyType", BonusPartyType.get(arg2));
+                savePreference("Is_WithinGroup", is_withinGroup);
+
+                Log.e("------------", "--  is_withinGroup  -- " + is_withinGroup);
+                Log.e("------------", "--  Is_WithinGroup  -- " + getPreference("Is_WithinGroup"));
+
+                TempData.OutletID = _OutletID;
+                TempData.OutletName = _OutletName;
+
+                TempData.TargetCustomer = ngo;
+                TempData.InstituteID = ins;
+
+
+                Log.e("TargetCustomer", " " + ngo);
+                Log.e("InstituteID", " " + ins);
+
+                lastmemo.setText("Last Memo Date: " + db.getLastmemodate(_OutletID));
+
+                if (!_OutletID.equals("00")) {
+                    savePreference("OutletCode", _OutletCode);
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+                // TODO Auto-generated method stub
+
+            }
+        });
+        itemName = "Sales Order";
+        buttonLogin.setOnClickListener(new OnClickListener() {
+
+
+            @Override
+            public void onClick(View v) {
+                Runtime.getRuntime().freeMemory();//
+               // Runtime.getRuntime().gc();
+
+                System.gc();
+
+                buttonLogin.setEnabled(false);
+                 clearPrefarance();
+                // TODO Auto-generated method stub
+                savePreference(OUTLET_ID, _OutletID);
+                Log.e("itemName",itemName);
+                TempData.SaleScreen = "OutletAccount";
+                if (CheckOutletValidation()) {
+                    TempData.MarketID = _MarketID;
+                    Cursor c5 = db.rawQuery("SELECT * FROM outlets where outlet_id = " + "'" + _OutletID + "'");
+                    if (c5 != null) {
+                        if (c5.moveToFirst()) {
+                            do {
+                                _Is_Pharma_Type = c5.getString(c5.getColumnIndex("pharma_type"));
+                                savePreference("PharmaType", _Is_Pharma_Type);
+                            } while (c5.moveToNext());
+                        }
+                    }
+
+
+                    if (itemName.equals("Sales Order")) {
+
+                        BPSelected_bonus.clear();
+                        BPSelected_product.clear();
+                        BPSelected_set.clear();
+                        BPSelected_policy_type.clear();
+                        BPSelected_option_id.clear();
+                        policyArrayList.clear();
+                        PolicySetRelation.clear();
+
+                        TempData.isPushed = "0";
+                        savePreference("Thana", routeSp.getSelectedItem().toString());
+                        TempData.tempThana = routeSp.getSelectedItem().toString();
+                        savePreference("Thana", routeSp.getSelectedItem().toString());
+                        TempData.tempThana = routeSp.getSelectedItem().toString();
+                        savePreference("BonusPartyType", BonusPartyType.get(autoPos));
+                        TempData.editMemo = "false";
+                        db.prepareDataForOrder(_OutletID);
+                        ORDER_TO_MEMO = 0;
+                        MEMO_EDIT = false;
+
+//					}
+
+
+                    }
+                    if (itemName.equalsIgnoreCase("View Last Memo")) {
+                        Intent idn = new Intent(Create_New_Memo.this, ViewLastRecord.class);
+                        startActivity(idn);
+                        finish();
+                    }
+                    if (itemName.equalsIgnoreCase("GPS Update")) {
+                        Intent idn = new Intent(Create_New_Memo.this, GPS_UPdate.class);
+                        startActivity(idn);
+                        finish();
+                    }
+                  /*  if(itemName.equalsIgnoreCase("Collected List"))
+                    {
+                        Intent idn = new Intent(OutletAccountActivity.this, CollectedListActivity.class);
+                        startActivity(idn);
+                        finish();
+                    }
+
+                    if(itemName.equalsIgnoreCase("Outlet Return NCP to SO"))
+                    {
+
+                        Intent idn = new Intent(OutletAccountActivity.this, SO_ProductReturnActivity.class);
+                        TempData.RerurnProductDetails.clear();
+                        TempData.SelectedProductList.clear();
+                        idn.putExtra("From", "MEMO");
+                        TempData.OutletID=getPreference("OutletID");
+                        startActivity(idn);
+                        finish();
+
+                    }*/
+
+/*				Intent idn = new Intent(OutletAccountActivity.this, SalesOrderActivity.class);
+				idn.putExtra("OutletID", _OutletID);
+				startActivity(idn);
+				finish();*/
+
+                }
+
+            }
+
+        });
+
+        if (getIntent().getIntExtra("flag1",0)==1){
+            savePreference("OutletID", "0") ;
+            outltateauto.setText("");
+        }
+    }
+
+    private void settallfalse(CheckBox[] checkBoxes, int i) {
+
+        for (int j = 0; j < checkBoxes.length; j++) {
+
+            if (j != i) {
+
+                checkBoxes[j].setChecked(false);
+            }
+        }
+
+
+    }
+
+    void clearPrefarance(){
+
+
+        Cursor c = db.rawQuery("select product_id from product");
+        c.moveToFirst();
+        if (c!=null && c.getCount()>0){
+
+            do {
+                savePreference("bonus"+c.getString(0),"0.0");
+            }while (c.moveToNext());
+
+
+        }
+
+
+
+    }
+
+    private void setLastMemoDate(String outletID) {
+
+       /* Cursor memodate = db.rawQuery("SELECT memo_date FROM memos WHERE outlet_id ='"+outletID+"' ORDER by _id DESC LIMIT 1");
+        memodate.moveToFirst();
+        if (memodate!=null & memodate.getCount()>0){
+            lastoutlatememodate.setText(memodate.getString(0));
+
+        }else {
+            lastoutlatememodate.setText("NO Memo in Last 40 days");
+        }*/
+    }
+
+    public int getPosofOutlate(String id) {
+
+        for (int i = 0; i < OutletID.size(); i++) {
+            if (OutletID.get(i).equalsIgnoreCase(id)) {
+                Log.e("match", OutletID.get(i) + " " + id + " " + i + " " + OutletID.size());
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    public boolean CheckOutletValidation() {
+    Log.e("getPreference",getPreference("OutletID"));
+        if (OutletName.size() <= 0 || TextUtils.isEmpty(outltateauto.getText().toString().trim())) {
+            Toast.makeText(getApplicationContext(), "Select outlet first!", Toast.LENGTH_LONG).show();
+            buttonLogin.setEnabled(true);
+            return false;
+        }
+
+        return true;
+
+    }
+
+    private void ThanaParse() {
+        Route_id.clear();
+        Route_name.clear();
+        Cursor c = db.rawQuery("SELECT * FROM route ORDER BY route_name ASC");
+        if (c != null) {
+            if (c.moveToFirst()) {
+                do {
+
+                    String Thana_Id = c.getString(c.getColumnIndex("route_id"));
+                    String Thana_Name = c.getString(c.getColumnIndex("route_name"));
+
+                    Route_id.add(Thana_Id);
+                    Route_name.add(Thana_Name);
+
+                } while (c.moveToNext());
+            }
+
+            ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(Create_New_Memo.this, R.layout.spinner_text, Route_name);
+            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            routeSp.setAdapter(dataAdapter);
+
+            if (!getPreference("thanaID").equalsIgnoreCase("NO PREFERENCE") && !getPreference("thanaID").equalsIgnoreCase("")) {
+                int SelectedPos = Route_id.indexOf(getPreference("thanaID"));
+                Log.e("thanaID POS:", ".........." + SelectedPos);
+                routeSp.setSelection(SelectedPos);
+            }
+
+
+        }
+
+    }
+
+    private void MarketParse(String Thana_ID) {
+        MarketID.clear();
+        MarketName.clear();
+        Cursor c = db.rawQuery("SELECT * FROM markets where route_id=" + "'" + Thana_ID + "' and is_active='1' ORDER BY market_name COLLATE NOCASE ASC");
+
+        Log.e("querymarket", "SELECT * FROM markets where route_id=" + "'" + Thana_ID + "' and is_active!='1' ORDER BY market_name COLLATE NOCASE ASC");
+        if (c != null) {
+            if (c.moveToFirst()) {
+                do {
+
+                    String Market_Id = c.getString(c.getColumnIndex("market_id"));
+                    String Market_Name = c.getString(c.getColumnIndex("market_name"));
+
+                    MarketID.add(Market_Id);
+                    MarketName.add(Market_Name);
+
+
+                } while (c.moveToNext());
+            }
+
+            marketAdapter= new ArrayAdapter<String>(Create_New_Memo.this, R.layout.spinner_text, MarketName);
+            marketAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+           // MarketSp.setAdapter(dataAdapter);
+            marketauto.setAdapter(marketAdapter);
+          //  marketauto.setThreshold(1);
+            if (MarketID.size()>0) {
+                Log.e("MarketID", getPreference("MarketID"));
+                if (!getPreference("MarketID").equalsIgnoreCase("NO PREFERENCE") && !getPreference("MarketID").equalsIgnoreCase("")) {
+                    int SelectedPos = MarketID.indexOf(getPreference("MarketID").trim());
+
+                    if (SelectedPos >= 0) {
+
+
+                        TempData.MarketID = MarketID.get(SelectedPos);
+
+                        marketauto.setListSelection(SelectedPos);
+
+                        marketauto.setText(MarketName.get(SelectedPos));
+                        _MarketID = MarketID.get(SelectedPos);
+                        Log.e("OUTlET POS:", ".........." + SelectedPos + " " + getPreference("MarketID") + " " + MarketName.size()+" "+marketauto.getListSelection());
+                        savePreference("MarketID", _MarketID);
+                    } else {
+
+                        marketauto.setText(MarketName.get(0));
+                        TempData.MarketID = MarketID.get(0);
+                        _MarketID = MarketID.get(0);
+                        savePreference("MarketID", _MarketID);
+
+
+                    }
+
+                } else {
+                    marketauto.setText(MarketName.get(0));
+                    TempData.MarketID = MarketID.get(0);
+                    _MarketID = MarketID.get(0);
+                    savePreference("MarketID", _MarketID);
+
+
+                }
+            }else
+                marketauto.setText("");
+            if (MarketID.size()>0)
+            OutletAllTableParse(TempData.MarketID, getPreference("OutletCategoryID"));
+            else {
+                OutletAllTableParse("12584654654678745", getPreference("OutletCategoryID"));
+            }
+
+        }
+
+    }
+
+    private void OutletCategoriesTableParse() {
+        OutletCategoryID.clear();
+        OutletCategoryName.clear();
+        OutletCategoryID.add("0");
+        OutletCategoryName.add("All");
+
+        Cursor c = db.rawQuery("SELECT * FROM outlet_categories ORDER BY outlet_category_name COLLATE NOCASE ASC");
+        if (c != null) {
+            if (c.moveToFirst()) {
+                do {
+
+                    String outlet_category_id = c.getString(c.getColumnIndex("outlet_category_id"));
+                    String outlet_category_name = c.getString(c.getColumnIndex("outlet_category_name"));
+
+                    OutletCategoryID.add(outlet_category_id);
+                    OutletCategoryName.add(outlet_category_name);
+
+                } while (c.moveToNext());
+            }
+
+            ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(Create_New_Memo.this, R.layout.spinner_text, OutletCategoryName);
+            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            OutletCategorySp.setAdapter(dataAdapter);
+
+            if (!getPreference("OutletCategoryID").equalsIgnoreCase("NO PREFERENCE") && !getPreference("OutletCategoryID").equalsIgnoreCase("")) {
+                int SelectedPos = OutletCategoryID.indexOf(getPreference("OutletCategoryID"));
+                Log.e("Category POS:", ".........." + SelectedPos);
+                OutletCategorySp.setSelection(SelectedPos);
+            }
+
+        }
+
+    }
+
+    private void OutletAllTableParse(String marketID, String typeID) {
+
+        OutletID.clear();
+        OutletCode.clear();
+        OutletName.clear();
+        ProjectID.clear();
+        InstituteID.clear();
+        IsWithinGroup.clear();
+        BonusPartyType.clear();
+
+        Cursor c;
+        String Query;
+        if (typeID.equalsIgnoreCase("0")) {
+            Query = "SELECT * FROM outlets  WHERE market_id='" + marketID + "' and isActivated='1' ORDER BY outlet_name COLLATE NOCASE ASC";
+            c = db.rawQuery(Query);
+        } else {
+            Query = "SELECT * FROM outlets  WHERE market_id='" + marketID + "' AND outlet_category_id='" + typeID + "' and isActivated='1' ORDER BY outlet_name COLLATE NOCASE ASC";
+            c = db.rawQuery(Query);
+        }
+        c.moveToFirst();
+        Log.e("courser count", Query + " " + c.getCount() + "");
+        Log.d("sql", Query);
+        if (c != null) {
+            if (c.moveToFirst()) {
+                do {
+
+                    String outlet_id = c.getString(c.getColumnIndex("outlet_id"));
+                    String outlet_code = c.getString(c.getColumnIndex("outlet_code"));
+                    String outlet_name = c.getString(c.getColumnIndex("outlet_name"));
+                    String institute_id = c.getString(c.getColumnIndex("ngo_institute_id"));
+                    String project_id = c.getString(c.getColumnIndex("isNgo"));
+                    String bonusPartyType = c.getString(c.getColumnIndex("bonus_party_type"));
+                    String is_within_group = c.getString(c.getColumnIndex("is_within_group"));
+
+                    BonusPartyType.add(bonusPartyType);
+                    OutletID.add(outlet_id);
+                    Log.e("outlateID", outlet_id+"");
+                    OutletCode.add(outlet_code);
+                    OutletName.add(outlet_name);
+                    ProjectID.add(project_id);
+                    InstituteID.add(institute_id);
+                    IsWithinGroup.add(is_within_group);
+
+                } while (c.moveToNext());
+            }
+
+         /*   for (int i = 0; i < OutletName.size(); i++) {
+                Log.e("OUTLET_NAME:", OutletName.get(i));
+                Log.e("OUTLET_ID:", OutletID.get(i));
+
+            }*/
+
+
+            dataAdapter = new ArrayAdapter<String>(Create_New_Memo.this, R.layout.outlet_dw, OutletName);
+            dataAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+            OutletSp.setAdapter(dataAdapter);
+            outltateauto.setAdapter(dataAdapter);
+            outltateauto.setThreshold(1);
+
+            if (!getPreference("OutletID").equalsIgnoreCase("NO PREFERENCE") && !getPreference("OutletID").equalsIgnoreCase("")) {
+                int SelectedPos = OutletID.indexOf(getPreference("OutletID").trim());
+                if (SelectedPos >= 0) {
+
+                    OutletSp.setSelection(SelectedPos);
+                    TempData.OutletID = OutletID.get(SelectedPos);
+                    TempData.OutletName = OutletName.get(SelectedPos);
+                    setLastMemoDate(TempData.OutletID);
+                    outltateauto.setListSelection(SelectedPos);
+                    outltateauto.setText(OutletName.get(SelectedPos));
+                    _OutletID = OutletID.get(SelectedPos);
+                    TempData.TargetCustomer = ProjectID.get(SelectedPos);
+                    TempData.InstituteID = InstituteID.get(SelectedPos);
+                    Log.e("OUTlET POS:", ".........." + SelectedPos + " " + getPreference("MarketID") + " " + MarketName.size()+" "+outltateauto.getListSelection());
+                    savePreference("OutletID", _OutletID);
+                } else {
+                    if (OutletName.size() > 0) {
+                        outltateauto.setText(OutletName.get(0));
+                        TempData.OutletID = OutletID.get(0);
+                        TempData.OutletName = OutletName.get(0);
+                        setLastMemoDate(TempData.OutletID);
+                        _OutletID = OutletID.get(0);
+                        TempData.TargetCustomer = ProjectID.get(0);
+                        TempData.InstituteID = InstituteID.get(0);
+                        savePreference("OutletID", _OutletID);
+                    }else {
+                        outltateauto.setText("");
+                    }
+
+                }
+            } else {
+                if (OutletName.size() > 0) {
+                    outltateauto.setText(OutletName.get(0));
+                    TempData.OutletID = OutletID.get(0);
+                    _OutletID = OutletID.get(0);
+                    TempData.OutletName = OutletName.get(0);
+                    setLastMemoDate(TempData.OutletID);
+                    TempData.TargetCustomer = ProjectID.get(0);
+                    TempData.InstituteID = InstituteID.get(0);
+                    savePreference("OutletID", _OutletID);
+                }else {
+                    outltateauto.setText("");
+                }
+
+
+            }
+
+        }
+
+        if (getIntent().getIntExtra("flag1",0)==1){
+            outltateauto.setText("");
+        }
+
+    }
+
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // TODO Auto-generated method stub
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Intent idd = new Intent(Create_New_Memo.this, Dashboard.class);
+            startActivity(idd);
+            finishAffinity();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        // TODO Auto-generated method stub
+        if (v.getId() == R.id.back) {
+
+            Intent idd = new Intent(Create_New_Memo.this, Dashboard.class);
+            startActivity(idd);
+            finish();
+        } else if (v.getId() == R.id.home) {
+            Intent intent = new Intent(Create_New_Memo.this, Dashboard.class);
+            startActivity(intent);
+            finish();
+        }
+    }
+
+
+    @Override
+    public void OnLocalDBdataRetrive(String json) {
+        Intent idn = new Intent(Create_New_Memo.this, Sales_Memo.class);
+        idn.putExtra("OutletID", _OutletID);
+        idn.putExtra("flag", 2);
+        MEMO_EDIT=false;
+        ORDER_TO_MEMO = 0;
+        TempData.editMemo = "false";
+        startActivity(idn);
+
+    }
+
+    @Override
+    public void OnLocalDBdataRetrive(ArrayList<HashMap<String, String>> arrayList) {
+
+    }
+
+    @Override
+    public void OnLocalDBdataRetrive(HashMap<String, String> hasmap) {
+
+    }
+}

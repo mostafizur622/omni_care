@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.srapp">
+    <uses-feature android:name="android.hardware.usb.host" />
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<!--
+    android:usesCleartextTraffic="true"
+-->
+
+
+    <application
+        android:allowBackup="true"
+        android:name="com.srapp.print.newprint.App"
+        android:icon="@drawable/logo_icon"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:roundIcon="@drawable/logo_icon"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:requestLegacyExternalStorage="true"
+        tools:ignore="GoogleAppIndexingWarning"
+        android:usesCleartextTraffic="true"
+
+        tools:replace="android:icon">
+
+        <activity
+            android:name=".SplashActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
+
+        <activity android:name=".Attendance_history"></activity>
+        <activity android:name=".ReportBonusPartyReport" />
+        <activity android:name=".GiftIssueActivity" />
+        <activity android:name=".Product_policy_Details" />
+        <activity android:name=".Product_Catalog" />
+        <activity android:name=".Outlet_wise_sales_report" />
+        <activity android:name=".SR_Attendance" />
+        <activity android:name=".OutletVisitReport" />
+
+        <activity
+            android:name="com.srapp.kotlin.CurrentOfferProductActivity" />
+        <activity
+            android:name="com.srapp.kotlin.OfferDetailsActivity1" />
+
+        <activity
+            android:name="com.srapp.kotlin.BonusCampaignActivity" />
+        <activity
+            android:name="com.srapp.kotlin.BonusDetailsActivity" />
+        <activity
+            android:name=".MakePDF"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".print.huawei.PrintAllMemosActivityP"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Product_Wise_Order_Summery"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Product_Wise_Bonus_Summery"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".OutofPlanVisit"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".CancelOrder"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".LastOrderDetails"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".GPS_UPdate"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".print.PrintActivity_For_Memo"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MemoReport"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UnProcessOrder"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".OrderProcess"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ViewLastRecord"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".print.PrintSelectedOrdersActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Multiple_Invoice_print"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".BonusShowListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Translucent"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".BonusPolicySet"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Translucent"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".policy_set"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Translucent"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".BonusProductListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Translucent"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".Tools"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".DeliveryReport"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MarketList"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Faq"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SrProductTarget"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MemoDetails"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MemoWebToApp"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".PriceList"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".GiftIssueList"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".print.PrintAllMemosActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ProductWiseDeliveryReport"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".BonusReport"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".NcpCollectionList"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Create_New_Memo"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".SR_NCP_Activity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".OutletView"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".SyncActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".Order_Report_Activity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".NcpCollection"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".Sales_Memo"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".SrStoreStatus"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".ProductSales"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".OutletList"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".DetailsOrderReport"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".CreateNewMarket"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".CreateOutlet"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".policy_set_for_dis_or_bonus"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+
+        <activity
+            android:name=".print.PrintActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".print.SummeryPrintActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".print.StockPrintActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".Dashboard"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Details_Delivery_Report"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Outof_Plan_Visit"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Visit_Plan_Activity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Reports_Activity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Current_Promotions"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SR_App_Inbox"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".About_App_Activity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Change_Password_Activity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Day_Close_Activity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Send_Message_Activity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Bonus_Party_Affiliation"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Gift_Issue_Edit"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Create_New_Gift_Issue"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SR_Target_Activity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SR_Account_Activity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name=".Printer_connected"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Translucent"
+            android:windowSoftInputMode="adjustPan">
+
+            <intent-filter android:priority="1000">
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
+
+        </activity>
+
+        <activity
+            android:name=".LoginActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+
+        <activity
+            android:name=".print.huawei.PrintActivityP"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+
+        <provider
+            android:name=".Util.CachedFileProvider"
+            android:authorities="com.srapp.provider"
+            android:grantUriPermissions="true" />
+
+        <meta-data
+            android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+            android:resource="@xml/device_filter" />
+
+    </application>
+
+    <uses-feature android:name="android.hardware.location.gps" />
+    <uses-feature
+        android:name="android.hardware.bluetooth"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+
+    <uses-permission
+        android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+
+</manifest>

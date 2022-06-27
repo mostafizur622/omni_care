@@ -1,0 +1,68 @@
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="0.5"
+    android:weightSum="5"
+    android:orientation="horizontal"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    //0.4
+
+    //1.6
+    <TextView
+        android:id="@+id/pname"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1.5"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textSize="14sp"
+        android:text="Product Name">
+
+    </TextView>
+    //1
+    <TextView
+        android:id="@+id/actual_qty"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight=".8"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:textSize="14sp"
+        android:text="Actual Qty.">
+
+    </TextView>
+    //1
+    <TextView
+        android:id="@+id/invoice_qty"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight=".8"
+        android:gravity="center"
+        android:textAlignment="gravity"
+        android:textSize="14sp"
+        android:text="Invoice Qty">
+
+    </TextView>
+    //1
+    <TextView
+        android:id="@+id/db_stock"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight=".8"
+        android:gravity="center"
+        android:textAlignment="gravity"
+        android:textSize="14sp"
+        android:text="DB Stock">
+
+    </TextView>
+    <TextView
+        android:id="@+id/order_qty"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1.1"
+        android:gravity="center"
+        android:textAlignment="gravity"
+        android:textSize="14sp"
+        android:text="Order Qty">
+
+    </TextView>
+</LinearLayout>

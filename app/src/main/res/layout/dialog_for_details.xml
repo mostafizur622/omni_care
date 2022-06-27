@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:cardCornerRadius="6dp"
+    android:weightSum="3"
+    app:cardElevation="6dp">
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="10dp"
+        android:gravity="right"
+            android:weightSum="50">
+        <Button
+            android:id="@+id/close"
+            android:layout_width="20dp"
+            android:background="@drawable/cross"
+            android:layout_height="20dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:text="Order Details"
+            android:gravity="center"
+            android:textSize="20dp"
+            android:layout_height="wrap_content"/>
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:orientation="horizontal"
+    android:weightSum="10"
+>
+
+    <LinearLayout
+        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:orientation="vertical"
+        android:weightSum="10"
+        android:layout_weight="6">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:text="Order Number"
+        android:layout_weight="5"/>
+
+        <TextView
+            android:id="@+id/order_num"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="5"
+            android:gravity="center"
+            android:text="0191111200835" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:orientation="vertical"
+        android:weightSum="10"
+        android:layout_weight="4">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:text="Status"
+            android:layout_weight="5"/>
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:text="Success"
+            android:layout_weight="5"/>
+
+
+
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorAccent"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="8"
+            android:layout_height="50dp">
+
+            <TextView
+            android:layout_width="0dp"
+            android:text="Product Name"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:layout_weight="3"/>
+            <TextView
+                android:layout_width="0dp"
+                android:text="Order quntity"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:layout_weight="1.8"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:text="invoice quntity"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:layout_weight="1.8"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:text="Status"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:layout_weight="1.4"/>
+
+
+
+
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorAccent"/>
+
+        <ListView
+            android:id="@+id/details"
+            android:layout_marginBottom="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            />
+
+
+    </LinearLayout>
+
+
+</androidx.cardview.widget.CardView>

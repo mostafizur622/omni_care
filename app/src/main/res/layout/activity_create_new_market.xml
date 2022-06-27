@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="4"
+    android:background="@color/new_outlet"
+    tools:context=".CreateNewMarket">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/secondary_color"
+        android:weightSum="2"
+        android:orientation="horizontal"
+        android:layout_weight="0.4">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:weightSum="1"
+            android:orientation="horizontal"
+            android:gravity="left"
+            android:layout_weight="1">
+            <ImageView
+                android:id="@+id/back"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:src="@drawable/backicon"
+                android:layout_margin="15dp"></ImageView>
+
+            <TextView
+                android:id="@+id/title_tv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.7"
+                android:gravity="center|left"
+                android:textColor="@color/white"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="12sp"
+                android:autoSizeMaxTextSize="20sp"
+                android:autoSizeStepGranularity="2sp"
+                android:text="Create Market">
+
+            </TextView>
+
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:weightSum="1"
+            android:gravity="right"
+            android:orientation="horizontal"
+            android:layout_weight="1">
+            <TextView
+                android:id="@+id/user_txt_view"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.7"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="15dp"
+                android:background="@drawable/login_id_bg_shade"
+                android:text="273638"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="12sp"
+                android:autoSizeMaxTextSize="20sp"
+                android:autoSizeStepGranularity="2sp"
+                android:textColor="@color/background_white"
+                android:textAlignment="center"
+                android:gravity="center"></TextView>
+            <ImageView
+                android:id="@+id/home"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:src="@drawable/home"
+                android:layout_margin="15dp">
+
+            </ImageView>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+    <!--<androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/secondary_color"
+        android:id="@+id/toolbar"
+        >
+
+    </androidx.appcompat.widget.Toolbar>-->
+    /*toolbar = 0.4 now main layout = 3.6*/
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3.6"
+        android:orientation="vertical">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+
+                >
+                //create new outlet
+                <LinearLayout
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginBottom="10dp"
+                    android:orientation="vertical"
+                    >
+                    <TextView
+                        android:id="@+id/market_create_lable"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:text="Create New Market"
+                        android:textStyle="bold"
+                        android:textColor="@color/background_white"
+                        android:textSize="22sp"
+                        android:gravity="center"
+                        android:layout_marginBottom="10dp"
+                        android:layout_weight="1">
+
+                    </TextView>
+
+                </LinearLayout>
+
+                // spinners
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp">
+                    //spinner 4
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:orientation="vertical"
+                        >
+                        <TextView
+                            android:id="@+id/route_name_tv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Route*:"
+                            android:textSize="15sp"
+                            android:textColor="@color/text_color_hint">
+
+                        </TextView>
+                        <Spinner
+                            android:id="@+id/route_spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/spinner2"
+                            android:theme="@style/MatchSpinnerTheme"
+                            >
+                        </Spinner>
+                        <TextView
+
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/spinner_line"
+                            android:alpha="50"></TextView>
+
+                    </LinearLayout>
+                    //spiner 1
+                    <!--<LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="18dp"
+                        android:orientation="vertical"
+                        >
+                        <TextView
+                            android:id="@+id/territory_name_tv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Teritory Name*:"
+                            android:textSize="15sp"
+                            android:textColor="@color/text_color_hint">
+
+                        </TextView>
+                        <Spinner
+                            android:id="@+id/terrritory_spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/spinner2"
+                            android:theme="@style/MatchSpinnerTheme"
+                            android:dropDownWidth="wrap_content"
+                            >
+                        </Spinner>
+                        <TextView
+
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/spinner_line"
+                            android:alpha="50"></TextView>
+
+                    </LinearLayout>-->
+                    //spiner 2
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"                        android:orientation="vertical"
+                        >
+                        <TextView
+                            android:id="@+id/thana_name_tv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Thana Name*:"
+                            android:textSize="15sp"
+                            android:textColor="@color/text_color_hint">
+
+                        </TextView>
+                        <Spinner
+                            android:id="@+id/thana_spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/spinner2"
+                            android:theme="@style/MatchSpinnerTheme"
+
+                            >
+                        </Spinner>
+                        <TextView
+
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/spinner_line"
+                            android:alpha="50"></TextView>
+
+                    </LinearLayout>
+                    //spiner 3
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"                        android:orientation="vertical"
+                        >
+                        <TextView
+                            android:id="@+id/location_name_tv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Location Type*:"
+                            android:textSize="15sp"
+                            android:textColor="@color/text_color_hint">
+
+                        </TextView>
+                        <Spinner
+                            android:id="@+id/location_type_spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/spinner2"
+                            android:theme="@style/MatchSpinnerTheme"
+                            >
+                        </Spinner>
+                        <TextView
+
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/spinner_line"
+                            android:alpha="50"></TextView>
+
+                    </LinearLayout>
+                    <!--//spinner 4
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="18dp"
+                        android:orientation="vertical"
+                        >
+                        <TextView
+                            android:id="@+id/route_name_tv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Route*:"
+                            android:textSize="15sp"
+                            android:textColor="@color/text_color_hint">
+
+                        </TextView>
+                        <Spinner
+                            android:id="@+id/route_spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/spinner2"
+                            android:theme="@style/MatchSpinnerTheme"
+                            >
+                        </Spinner>
+                        <TextView
+
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/spinner_line"
+                            android:alpha="50"></TextView>
+
+                    </LinearLayout>-->
+
+                </LinearLayout>
+
+                //white form cardview
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="30dp"
+                    >
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="18dp"
+                        android:layout_marginTop="18dp"
+                        android:weightSum="2"
+
+                        >
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="15dp"
+                            android:focusedByDefault="false"
+                            android:focusableInTouchMode="true"
+                            android:theme="@style/text_input_lebel_color"
+
+
+
+                            >
+                            <EditText
+                                android:id="@+id/market_name_tv"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Market Name*"
+                                android:singleLine="true"
+                                android:outlineAmbientShadowColor="@color/text_field_line"
+                                android:outlineSpotShadowColor="@color/text_field_line"
+                                android:alpha="40"
+                                android:textSize="18sp"
+                                >
+
+                            </EditText>
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="15dp"
+                            android:theme="@style/text_input_lebel_color"
+
+                            >
+                            <EditText
+                                android:id="@+id/address_tv"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Address"
+                                android:textSize="18sp"
+                                >
+
+                            </EditText>
+
+                        </com.google.android.material.textfield.TextInputLayout>
+                       <!-- <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="15dp"
+                            android:theme="@style/text_input_lebel_color"
+                            android:layout_height="match_parent">
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:textSize="18sp"
+                                android:hint="Mobile Number">
+
+                            </EditText>
+
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="15dp"
+                            android:theme="@style/text_input_lebel_color"
+
+                            >
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Address*"
+                                android:textSize="18sp"
+                                >
+
+                            </EditText>
+
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="15dp"
+                            android:theme="@style/text_input_lebel_color"
+
+                            >
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Address*"
+                                android:textSize="18sp"
+                                >
+
+                            </EditText>
+
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="15dp"
+                            android:theme="@style/text_input_lebel_color"
+
+                            >
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="Address*"
+                                android:textSize="18sp"
+                                >
+
+                            </EditText>
+
+                        </com.google.android.material.textfield.TextInputLayout>-->
+                        <!-- <com.google.android.material.textfield.TextInputLayout
+                             android:layout_width="match_parent"
+                             android:layout_marginLeft="15dp"
+                             android:layout_marginRight="15dp"
+                             android:theme="@style/text_input_lebel_color"
+                             android:layout_height="match_parent">
+                             <EditText
+                                 android:layout_width="match_parent"
+                                 android:layout_height="match_parent"
+                                 android:hint="text1">
+
+                             </EditText>
+
+                         </com.google.android.material.textfield.TextInputLayout>-->
+
+
+                    </LinearLayout>
+
+
+                </androidx.cardview.widget.CardView>
+                // save button
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="1"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
+                    >
+                    <Button
+                        android:id="@+id/save_btn"
+                        android:gravity="center"
+                        android:layout_gravity="center"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.7"
+                        android:layout_height="wrap_content"
+                        android:text="Save"
+                        android:textColor="@color/background_white"
+                        android:textSize="22sp"
+                        android:background="@drawable/button_shadow">
+
+                    </Button>
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>
