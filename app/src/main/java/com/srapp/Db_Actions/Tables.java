@@ -861,6 +861,7 @@ public class Tables extends Parent {
     public static final String MEMO_DETAILS_bonus_id = "bonus_id";
     public static final String MEMO_DETAILS_memo_date = "memo_date";
     public static final String MEMO_DETAILS_is_bonus = "is_bonus";
+    public static final String MEMO_DETAILS_virtual_id = "virtual_product_id";
     public static final String MEMO_DETAILS_discount_amount = "discount_amount";
     public static final String MEMO_DETAILS_discount_type = "discount_type";
     public static final String MEMO_DETAILS_policy_type = "policy_type";
@@ -889,6 +890,7 @@ public class Tables extends Parent {
             MEMO_DETAILS_is_bonus,
             MEMO_DETAILS_discount_amount,
             MEMO_DETAILS_discount_type,
+            MEMO_DETAILS_virtual_id,
             MEMO_DETAILS_policy_type,
             MEMO_DETAILS_Unit_id,
             MEMO_DETAILS_POLICY_Id,
@@ -920,6 +922,7 @@ public class Tables extends Parent {
             MEMO_DETAILS_Unit_id + "  INTEGER,   " +
             MEMO_DETAILS_POLICY_Id + "  INTEGER,   " +
             MEMO_DETAILS_PRICE_Id + "  INTEGER,   " +
+            MEMO_DETAILS_virtual_id + "  INTEGER,   " +
             MEMO_DETAILS_COMBINATION_Id + "  INTEGER,   " +
             MEMO_DETAILS_selected_set + "  INTEGER,   " +
             MEMO_DETAILS_provided_qty + "  DOUBLE,   " +
@@ -946,6 +949,7 @@ public class Tables extends Parent {
             MEMO_DETAILS_Unit_id + "  INTEGER,   " +
             MEMO_DETAILS_POLICY_Id + "  INTEGER,   " +
             MEMO_DETAILS_PRICE_Id + "  INTEGER,   " +
+            MEMO_DETAILS_virtual_id + "  INTEGER,   " +
             MEMO_DETAILS_COMBINATION_Id + "  INTEGER,   " +
             MEMO_DETAILS_selected_set + "  INTEGER,   " +
             MEMO_DETAILS_provided_qty + "  DOUBLE,   " +
@@ -1095,6 +1099,7 @@ public class Tables extends Parent {
     public static final String ORDER_DETAILS_bonus_id = "bonus_id";
     public static final String ORDER_DETAILS_order_date = "order_date";
     public static final String ORDER_DETAILS_is_bonus = "is_bonus";
+    public static final String ORDER_DETAILS_virtual_id = "virtual_product_id";
     public static final String ORDER_DETAILS_discount_amount = "discount_amount";
     public static final String ORDER_DETAILS_discount_type = "discount_type";
     public static final String ORDER_DETAILS_policy_type = "policy_type";
@@ -1125,6 +1130,7 @@ public class Tables extends Parent {
             ORDER_DETAILS_PRICE_Id,
             ORDER_DETAILS_COMBINATION_Id,
             ORDER_DETAILS_policy_type,
+            ORDER_DETAILS_virtual_id,
             ORDER_DETAILS_selected_set,
             ORDER_DETAILS_provided_qty,
             ORDER_DETAILS_created_at,
@@ -1150,6 +1156,7 @@ public class Tables extends Parent {
             MEMO_DETAILS_Unit_id + "  INTEGER,   " +
             ORDER_DETAILS_policy_ID + "  INTEGER,   " +
             MEMO_DETAILS_PRICE_Id + "  INTEGER,   " +
+            ORDER_DETAILS_virtual_id + "  INTEGER,   " +
             MEMO_DETAILS_COMBINATION_Id + "  INTEGER,   " +
             ORDER_DETAILS_selected_set + "  INTEGER,   " +
             ORDER_DETAILS_provided_qty + "  DOUBLE,   " +
@@ -1864,12 +1871,14 @@ public class Tables extends Parent {
     public static final String PRODUCT_ORDER = "product_order";
     public static final String PRODUCT_IS_INJECTABLE = "is_injectable";
     public static final String PRODUCT_IMAGE_URL = "image_url";
+    public static final String PRODUCT_IS_VIRTUAL = "is_virtual";
+    public static final String PRODUCT_PARENT_ID = "parent_id";
     public static final String PRODUCT_UPDATED_AT = "updated_at";
     public static final String PRODUCT_CREATED_AT = "created_at";
 
 
     public static final String PPRODCUT[] = {TABLE_NAME_PRODUCT,PRODUCT_P_id,
-            PRODUCT_PRODUCT_ID, PRODUCT_PRODUCT_NAME, PRODUCT_CATAGORY_ID, PRODUCT_TYPE_ID, PRODUCT_ORDER, PRODUCT_IS_INJECTABLE,PRODUCT_IMAGE_URL, PRODUCT_UPDATED_AT, PRODUCT_CREATED_AT};
+            PRODUCT_PRODUCT_ID, PRODUCT_PRODUCT_NAME, PRODUCT_CATAGORY_ID, PRODUCT_TYPE_ID, PRODUCT_ORDER,PRODUCT_PARENT_ID,PRODUCT_IS_VIRTUAL, PRODUCT_IS_INJECTABLE,PRODUCT_IMAGE_URL, PRODUCT_UPDATED_AT, PRODUCT_CREATED_AT};
 
 
     public static final String CREATE_PRODUCT_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME_PRODUCT + "("
@@ -1879,6 +1888,8 @@ public class Tables extends Parent {
             PRODUCT_CATAGORY_ID + " INTEGER," +
             PRODUCT_TYPE_ID + " INTEGER," +
             PRODUCT_ORDER + " INTEGER," +
+            PRODUCT_IS_VIRTUAL + " INTEGER," +
+            PRODUCT_PARENT_ID + " INTEGER," +
             PRODUCT_IS_INJECTABLE + " INTEGER," +
             PRODUCT_IMAGE_URL + " Text," +
             PRODUCT_CREATED_AT + " DATETIME," +

@@ -1464,6 +1464,38 @@ public class Data_Source extends Parent {
         return memodate;
     }
 
+     public String getProductID(String product_id) {
+
+        Cursor virtual_cursor = rawQuery("select is_virtual,parent_id from product where product_id="+product_id);
+        Log.e("p_id", "select is_virtual,parent_id from products where product_id="+product_id);
+        virtual_cursor.moveToFirst();
+        if (virtual_cursor!=null && virtual_cursor.getCount()>0){
+            if (virtual_cursor.getInt(0)==1){
+
+                product_id=virtual_cursor.getString(1);
+
+            }
+
+        }
+
+        return product_id;
+    }
+
+    public String getVirtualProductID(String product_id) {
+        Cursor virtual_cursor = rawQuery("select is_virtual,parent_id from product where product_id="+product_id);
+        virtual_cursor.moveToFirst();
+        if (virtual_cursor!=null && virtual_cursor.getCount()>0){
+            if (virtual_cursor.getInt(0)==0){
+
+                product_id="0";
+
+            }
+
+        }
+
+        return product_id;
+    }
+
     public void prepareDataForOrder(String _OutletID) {
 
         new prepareDataForOrder(_OutletID).execute();

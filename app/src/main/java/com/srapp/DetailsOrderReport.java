@@ -546,6 +546,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                 "selected_set,"+
                 "provided_qty,"+
                 "is_bonus "+
+                "virtual_product_id "+
                 "FROM " +
                 table_name +
                 "WHERE " +
@@ -576,7 +577,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                             continue;
                         BPSelected_set.put(policy_wise_order_details.getString(policy_wise_order_details.getColumnIndex("policy_id")),selected_set);
                         HashMap<String, String> map = new HashMap<>();
-                        map.put("product_id", policy_wise_order_details.getString(policy_wise_order_details.getColumnIndex("product_id")));
+                        map.put("product_id", swapProductID(policy_wise_order_details.getString(policy_wise_order_details.getColumnIndex("product_id")),policy_wise_order_details.getString(policy_wise_order_details.getColumnIndex("virtual_product_id"))));
                         map.put("policy_id", policy_wise_order_details.getString(policy_wise_order_details.getColumnIndex("policy_id")));
                         map.put("set", selected_set);
                         map.put("qty", policy_wise_order_details.getString(policy_wise_order_details.getColumnIndex("quantity")));
@@ -618,7 +619,16 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
         Log.e("BPSelected_set_me",new Gson().toJson(BPSelected_set));
         Log.e("BPSelected_type_me",new Gson().toJson(BPSelected_policy_type));
     }
+    public static String swapProductID(String product_id, String virtual_product_id) {
 
+        // Log.e("swapProductID",   (virtual_product_id!=null && virtual_product_id!="0")+"");
+        if (virtual_product_id!=null && !virtual_product_id.equalsIgnoreCase("0")){
+            return virtual_product_id;
+        }else {
+            return product_id;
+        }
+
+    }
     private void MakeMemo() {
 
         Cursor c = db.rawQuery("select * from order_table where order_number='" + TempData.orderNumber + "'");
@@ -733,9 +743,9 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
         Data.clear();
         String memo_id = "";
         if (!MEMO_EDIT)
-            memo_id = "SELECT " + PRODUCT_ID + ", " + PRODUCT_BOOLEAN_QUANTITY + ", " + PRODUCT_PRICE_PRICE + ",vat,discount_type,discount_amount FROM " + TABLE_NAME_ORDER_DETAILS + " WHERE " + ORDER_order_number + "='" + TempData.orderNumber + "' AND product_type='0'";
+            memo_id = "SELECT " + PRODUCT_ID + ", " + PRODUCT_BOOLEAN_QUANTITY + ", " + PRODUCT_PRICE_PRICE + ",vat,discount_type,discount_amount, virtual_product_id FROM " + TABLE_NAME_ORDER_DETAILS + " WHERE " + ORDER_order_number + "='" + TempData.orderNumber + "' AND product_type='0'";
         else
-            memo_id = "SELECT " + PRODUCT_ID + ", " + PRODUCT_BOOLEAN_QUANTITY + ", " + PRODUCT_PRICE_PRICE + ",vat,discount_type,discount_amount FROM " + TABLE_NAME_MEMO_DETAILS + " WHERE " + MEMOS_memo_number + "='" + TempData.memoNumber + "' AND product_type='0'";
+            memo_id = "SELECT " + PRODUCT_ID + ", " + PRODUCT_BOOLEAN_QUANTITY + ", " + PRODUCT_PRICE_PRICE + ",vat,discount_type,discount_amount, virtual_product_id FROM " + TABLE_NAME_MEMO_DETAILS + " WHERE " + MEMOS_memo_number + "='" + TempData.memoNumber + "' AND product_type='0'";
 
         Log.e("MemoDetails", memo_id);
 
@@ -761,7 +771,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
                     map.put("total_price", String.valueOf(tPrice));
                     map.put("vat", roundTwoDecimals(cursor.getDouble(3)) + "%");
-                    map.put(PRODUCT_ID, cursor.getString(0));
+                    map.put(PRODUCT_ID, swapProductID(cursor.getString(0),cursor.getString(6)));
                     Data.add(map);
                     subtotal = subtotal + Double.parseDouble(tPrice);
                     discount_info = discount_info + getdiscount(cursor.getDouble(1), cursor.getDouble(2), cursor.getInt(4), cursor.getDouble(5), product_name);
@@ -852,9 +862,9 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
         Data.clear();
         String memo_id = "";
         if (!MEMO_EDIT)
-            memo_id = "SELECT " + PRODUCT_ID + ", " + PRODUCT_BOOLEAN_QUANTITY + ", " + PRODUCT_PRICE_PRICE + " FROM " + TABLE_NAME_ORDER_DETAILS + " WHERE " + ORDER_order_number + "='" + TempData.orderNumber + "'";
+            memo_id = "SELECT " + PRODUCT_ID + ", " + PRODUCT_BOOLEAN_QUANTITY + ", " + PRODUCT_PRICE_PRICE + " , virtual_product_id FROM " + TABLE_NAME_ORDER_DETAILS + " WHERE " + ORDER_order_number + "='" + TempData.orderNumber + "'";
         else
-            memo_id = "SELECT " + PRODUCT_ID + ", " + PRODUCT_BOOLEAN_QUANTITY + ", " + PRODUCT_PRICE_PRICE + " FROM " + TABLE_NAME_MEMO_DETAILS + " WHERE " + MEMOS_memo_number + "='" + TempData.memoNumber + "'";
+            memo_id = "SELECT " + PRODUCT_ID + ", " + PRODUCT_BOOLEAN_QUANTITY + ", " + PRODUCT_PRICE_PRICE + " , virtual_product_id FROM " + TABLE_NAME_MEMO_DETAILS + " WHERE " + MEMOS_memo_number + "='" + TempData.memoNumber + "'";
 
         Log.e("MemoDetails", memo_id);
 
@@ -881,7 +891,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                     map.put(PRODUCT_PRICE_PRICE, roundTwoDecimals(cursor.getDouble(2)));
                     String tPrice = roundTwoDecimals(cursor.getDouble(1) * cursor.getDouble(2));
                     map.put("total_price", String.valueOf(tPrice));
-                    map.put(PRODUCT_ID, cursor.getString(0));
+                    map.put(PRODUCT_ID, swapProductID(cursor.getString(0),cursor.getString(3)));
                     Data.add(map);
 
                 } while (cursor.moveToNext());
@@ -908,9 +918,9 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
         String memoQuery = "";
         if (!MEMO_EDIT)
-            memoQuery = "SELECT " + PRODUCT_ID + ", " + PRODUCT_BOOLEAN_QUANTITY + ", " + MEMO_DETAILS_Unit_id + " FROM " + TABLE_NAME_ORDER_DETAILS + " WHERE " + ORDER_order_number + "='" + TempData.orderNumber + "' AND product_type='2'";
+            memoQuery = "SELECT " + PRODUCT_ID + ", " + PRODUCT_BOOLEAN_QUANTITY + ", " + MEMO_DETAILS_Unit_id + ", virtual_product_id FROM " + TABLE_NAME_ORDER_DETAILS + " WHERE " + ORDER_order_number + "='" + TempData.orderNumber + "' AND product_type='2'";
         else
-            memoQuery = "SELECT " + PRODUCT_ID + ", " + PRODUCT_BOOLEAN_QUANTITY + ", " + MEMO_DETAILS_Unit_id + " FROM " + TABLE_NAME_MEMO_DETAILS + " WHERE " + MEMOS_memo_number + "='" + TempData.memoNumber + "' AND product_type='2'";
+            memoQuery = "SELECT " + PRODUCT_ID + ", " + PRODUCT_BOOLEAN_QUANTITY + ", " + MEMO_DETAILS_Unit_id + " , virtual_product_id FROM " + TABLE_NAME_MEMO_DETAILS + " WHERE " + MEMOS_memo_number + "='" + TempData.memoNumber + "' AND product_type='2'";
 
         Log.e("memoQuery", memoQuery);
 
@@ -933,7 +943,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                     }
 
                     HashMap<String, String> map = new HashMap<String, String>();
-                    map.put("product_id", cursor.getString(0));
+                    map.put("product_id", swapProductID(cursor.getString(0),cursor.getString(3)));
                     map.put("product_name", product_name);
                     map.put("quantity", cursor.getString(1));
                     map.put("Unit_id", cursor.getString(2));
@@ -1339,6 +1349,8 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
             return null;
         }
     }
+
+
 
 
 }

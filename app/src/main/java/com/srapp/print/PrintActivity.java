@@ -1298,8 +1298,14 @@ public class PrintActivity<BarcodeFormat> extends ParentActivity {
                     .show();
             return;
         }
+
+
         mUsbDevice = usbConnection.getDevice();
         threadPool=ThreadPool.getInstantiation();
+
+        Log.e("device_name",mUsbDevice.getDeviceName());
+        Log.e("device_name",mUsbDevice.toString());
+
         threadPool.addSerialTask(new Runnable() {
             @Override
             public void run() {

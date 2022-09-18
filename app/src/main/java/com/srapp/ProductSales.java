@@ -709,7 +709,10 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
 
             }
         } catch (IllegalStateException e) {
-            e.printStackTrace();
+
+            Log.e("exception", e.getMessage());
+           // e.printStackTrace();
+
         }
 
         db.excQuery("delete from temp_memos");
@@ -827,7 +830,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
 
                 Log.e("orderList size", orderList.size() + "");
 
-                try {
+
                     for (int i = 0; i < orderList.size(); i++) {
                         Log.e("TAG:", "target");
                         //SO TARGETS
@@ -922,11 +925,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
                     // UpdateVan(TempData.TotalBonusProductList.get(i).get("product_id"), TempData.TotalBonusProductList.get(i).get("quantity"));
                     MemoDetailsForBonus(TempData.TotalBonusProductList.get(i).get("product_id"), TempData.TotalBonusProductList.get(i).get("quantity"), "", "");
                 }
-            }
 
-                catch (Exception e) {
-                    e.printStackTrace();
-                }
 
 
 //			     db.excQuery("UPDATE memos_draft SET isPushed ='1' WHERE outlet_id='"+getPreference("OutletID")+"'");
@@ -1214,7 +1213,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
         if (type.equalsIgnoreCase("1")) {
             HashMap<String, String> map2 = new HashMap<String, String>();
             map2.put("gift_issue_id", "" + orderNo);
-            map2.put("product_id", product_id);
+            map2.put("product_id", db.getProductID(product_id));
             map2.put("quantity", qunatity);
             db.InsertTable(map2, "gift_issue_details");
         }
@@ -1225,12 +1224,14 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
             map.put(Tables.MEMO_DETAILS_memo_number, memoNo);
             map.put(Tables.MEMO_DETAILS_order_number, orderNo);
             map.put(Tables.MEMO_DETAILS_current_inventory_id, TempData.CurrentInventoryID);
-            map.put(Tables.PRODUCT_ID, product_id);
+            map.put(Tables.PRODUCT_ID, db.getProductID(product_id));
             map.put(Tables.MEMO_DETAILS_product_type, type);
             map.put(Tables.MEMO_DETAILS_quantity, qunatity);
             map.put(Tables.MEMO_DETAILS_price, price);
             map.put(Tables.MEMO_DETAILS_memo_date, getCurrentDate());
             map.put(Tables.MEMO_DETAILS_is_bonus, "0");
+            map.put(Tables.MEMO_DETAILS_is_bonus, "0");
+            map.put(Tables.MEMO_DETAILS_virtual_id, db.getVirtualProductID(product_id));
             map.put(Tables.MEMO_DETAILS_vat, vat);
             map.put(Tables.MEMO_DETAILS_created_at, getCurrentDateTime());
             map.put(Tables.MEMO_DETAILS_POLICY_Id, discountofferPolicyid.get(product_id));
@@ -1249,13 +1250,14 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
 
             map.put(Tables.ORDER_DETAILS_order_number, orderNo);
             map.put(Tables.ORDER_DETAILS_current_inventory_id, TempData.CurrentInventoryID);
-            map.put(Tables.PRODUCT_ID, product_id);
+            map.put(Tables.PRODUCT_ID, db.getProductID(product_id));
             map.put(Tables.ORDER_DETAILS_product_type, type);
             map.put(Tables.ORDER_DETAILS_quantity, qunatity);
             map.put(Tables.ORDER_DETAILS_price, price);
             map.put(Tables.ORDER_DETAILS_order_date, OrderDate);
             map.put(ORDER_DETAILS_is_bonus, "0");
             map.put(Tables.MEMO_DETAILS_vat, vat);
+            map.put(Tables.MEMO_DETAILS_virtual_id, db.getVirtualProductID(product_id));
             map.put(Tables.ORDER_DETAILS_policy_ID, discountofferPolicyid.get(product_id));
             map.put(Tables.ORDER_DETAILS_updated_at, getCurrentDateTime());
             map.put(Tables.ORDER_DETAILS_discount_amount, discountmap.get(product_id));
@@ -1271,14 +1273,14 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
             map.put(Tables.MEMO_DETAILS_memo_number, memoNo);
             map.put(Tables.MEMO_DETAILS_order_number, orderNo);
             map.put(Tables.MEMO_DETAILS_current_inventory_id, TempData.CurrentInventoryID);
-            map.put(Tables.PRODUCT_ID, product_id);
+            map.put(Tables.PRODUCT_ID, db.getProductID(product_id));
             map.put(Tables.MEMO_DETAILS_product_type, type);
             map.put(Tables.MEMO_DETAILS_quantity, qunatity);
             map.put(Tables.MEMO_DETAILS_price, price);
             map.put(Tables.MEMO_DETAILS_vat, vat);
             map.put(Tables.MEMO_DETAILS_memo_date, TempData.MemoDate);
             map.put(Tables.MEMO_DETAILS_is_bonus, "0");
-
+            map.put(Tables.MEMO_DETAILS_virtual_id, db.getVirtualProductID(product_id));
             map.put(Tables.MEMO_DETAILS_created_at, TempData.MemoDateTime);
             map.put(Tables.MEMO_DETAILS_updated_at, getCurrentDateTime());
             map.put(Tables.MEMO_DETAILS_POLICY_Id, discountofferPolicyid.get(product_id));
@@ -1310,7 +1312,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
         if (type.equalsIgnoreCase("1")) {
             HashMap<String, String> map2 = new HashMap<String, String>();
             map2.put("gift_issue_id", "" + orderNo);
-            map2.put("product_id", product_id);
+            map2.put("product_id", db.getProductID(product_id));
             map2.put("quantity", qunatity);
             db.InsertTable(map2, "gift_issue_details");
         }
@@ -1321,12 +1323,13 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
             map.put(Tables.MEMO_DETAILS_memo_number, memoNo);
             map.put(Tables.MEMO_DETAILS_order_number, orderNo);
             map.put(Tables.MEMO_DETAILS_current_inventory_id, TempData.CurrentInventoryID);
-            map.put(Tables.PRODUCT_ID, product_id);
+            map.put(Tables.PRODUCT_ID, db.getProductID(product_id));
             map.put(Tables.MEMO_DETAILS_product_type, type);
             map.put(Tables.MEMO_DETAILS_quantity, qunatity);
             map.put(Tables.MEMO_DETAILS_price, price);
             map.put(Tables.MEMO_DETAILS_memo_date, getCurrentDate());
             map.put(Tables.MEMO_DETAILS_is_bonus, "3");
+            map.put(Tables.MEMO_DETAILS_virtual_id, db.getVirtualProductID(product_id));
             map.put(Tables.MEMO_DETAILS_policy_type, policy_type);
             map.put(Tables.MEMO_DETAILS_POLICY_Id, Policy_id);
             map.put(Tables.MEMO_DETAILS_vat, vat);
@@ -1341,7 +1344,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
 
             map.put(Tables.ORDER_DETAILS_order_number, orderNo);
             map.put(Tables.ORDER_DETAILS_current_inventory_id, TempData.CurrentInventoryID);
-            map.put(Tables.PRODUCT_ID, product_id);
+            map.put(Tables.PRODUCT_ID, db.getProductID(product_id));
             map.put(Tables.ORDER_DETAILS_product_type, type);
             map.put(Tables.ORDER_DETAILS_quantity, qunatity);
             map.put(Tables.ORDER_DETAILS_policy_ID, Policy_id);
@@ -1349,6 +1352,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
             map.put(Tables.ORDER_DETAILS_order_date, OrderDate);
             map.put(ORDER_DETAILS_is_bonus, "3");
             map.put(Tables.MEMO_DETAILS_vat, vat);
+            map.put(Tables.MEMO_DETAILS_virtual_id, db.getVirtualProductID(product_id));
             map.put(Tables.MEMO_DETAILS_Unit_id, measurement_unit_id);
             map.put(Tables.ORDER_DETAILS_updated_at, getCurrentDateTime());
             map.put(Tables.ORDER_DETAILS_selected_set, set);
@@ -1360,12 +1364,13 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
             map.put(Tables.MEMO_DETAILS_memo_number, memoNo);
             map.put(Tables.MEMO_DETAILS_order_number, orderNo);
             map.put(Tables.MEMO_DETAILS_current_inventory_id, TempData.CurrentInventoryID);
-            map.put(Tables.PRODUCT_ID, product_id);
+            map.put(Tables.PRODUCT_ID, db.getProductID(product_id));
             map.put(Tables.MEMO_DETAILS_POLICY_Id, Policy_id);
             map.put(Tables.MEMO_DETAILS_product_type, type);
             map.put(Tables.MEMO_DETAILS_quantity, qunatity);
             map.put(Tables.MEMO_DETAILS_price, price);
             map.put(Tables.MEMO_DETAILS_vat, vat);
+            map.put(Tables.MEMO_DETAILS_virtual_id, db.getVirtualProductID(product_id));
             map.put(Tables.MEMO_DETAILS_Unit_id, measurement_unit_id);
             map.put(Tables.MEMO_DETAILS_memo_date, TempData.MemoDate);
             map.put(Tables.MEMO_DETAILS_is_bonus, "3");
@@ -1392,10 +1397,11 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
             map.put(Tables.MEMO_DETAILS_memo_number, memoNo);
             map.put(Tables.MEMO_DETAILS_order_number, orderNo);
             map.put(Tables.MEMO_DETAILS_current_inventory_id, TempData.CurrentInventoryID);
-            map.put(Tables.PRODUCT_ID, product_id);
+            map.put(Tables.PRODUCT_ID, db.getProductID(product_id));
             map.put(Tables.MEMO_DETAILS_product_type, "2");
             map.put(Tables.MEMO_DETAILS_quantity, qunatity);
             map.put(Tables.MEMO_DETAILS_price, price);
+            map.put(Tables.MEMO_DETAILS_virtual_id, db.getVirtualProductID(product_id));
             map.put(Tables.MEMO_DETAILS_memo_date, getCurrentDate());
             map.put(Tables.MEMO_DETAILS_is_bonus, "1");
             map.put(Tables.MEMO_DETAILS_created_at, getCurrentDateTime());
@@ -1406,11 +1412,12 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
 
             map.put(Tables.ORDER_DETAILS_order_number, orderNo);
             map.put(Tables.ORDER_DETAILS_current_inventory_id, TempData.CurrentInventoryID);
-            map.put(Tables.PRODUCT_ID, product_id);
+            map.put(Tables.PRODUCT_ID, db.getProductID(product_id));
             map.put(Tables.ORDER_DETAILS_product_type, "2");
             map.put(Tables.ORDER_DETAILS_quantity, qunatity);
             map.put(Tables.ORDER_DETAILS_price, price);
             map.put(Tables.ORDER_DETAILS_order_date, OrderDate);
+            map.put(Tables.MEMO_DETAILS_virtual_id, db.getVirtualProductID(product_id));
             map.put(Tables.ORDER_DETAILS_policy_ID, policyMap.get(product_id));
             map.put(ORDER_DETAILS_is_bonus, "1");
             map.put(Tables.ORDER_DETAILS_updated_at, getCurrentDateTime());
@@ -1420,10 +1427,11 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
             map.put(Tables.MEMO_DETAILS_memo_number, memoNo);
             map.put(Tables.MEMO_DETAILS_order_number, orderNo);
             map.put(Tables.MEMO_DETAILS_current_inventory_id, TempData.CurrentInventoryID);
-            map.put(Tables.PRODUCT_ID, product_id);
+            map.put(Tables.PRODUCT_ID, db.getProductID(product_id));
             map.put(Tables.MEMO_DETAILS_product_type, "2");
             map.put(Tables.MEMO_DETAILS_quantity, qunatity);
             map.put(Tables.MEMO_DETAILS_price, price);
+            map.put(Tables.MEMO_DETAILS_virtual_id, db.getVirtualProductID(product_id));
             map.put(Tables.ORDER_DETAILS_policy_ID, policyMap.get(product_id));
             map.put(Tables.MEMO_DETAILS_memo_date, TempData.MemoDate);
             map.put(Tables.MEMO_DETAILS_is_bonus, "1");
