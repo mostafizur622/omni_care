@@ -393,7 +393,7 @@ public class Data_Source extends Parent {
 
                     product_list_map.put("product_category_id", CategoryID);
                     product_list_map.put("product_id", product_id);
-                    product_list_map.put("product_name", product_name);
+                    product_list_map.put("product_name", getProductName(product_id,product_name));
                     product_list_map.put("boolean", boolean12);
 
 
@@ -419,7 +419,42 @@ public class Data_Source extends Parent {
         return ItemListFromDB;
     }
 
+    public String getProductName(String product_id, String product_name) {
 
+        Cursor virtual_cursor = rawQuery("select is_virtual,parent_id from product where product_id="+product_id);
+        Log.e("virtual_cursor", "select is_virtual,parent_id from products where product_id="+product_id);
+        virtual_cursor.moveToFirst();
+        if (virtual_cursor!=null && virtual_cursor.getCount()>0){
+
+            if (virtual_cursor.getInt(0)==1){
+                Log.e("cname", "SELECT quantity-booking_quantity as quantity from stock_info where product_id="+virtual_cursor.getString(1));
+                Cursor cname = rawQuery("SELECT quantity-booking_quantity as quantity from stock_info where product_id="+virtual_cursor.getString(1));
+                cname.moveToFirst();
+
+                if (cname!=null && cname.getCount()>0) {
+                    Log.e("cname", cname.getCount()+" "+cname.getDouble(0));
+                    if (cname.getDouble(0)<=0) {
+                        Log.e("childCount", "SELECT count(p._id) from Product as p INNER JOIN stock_info as vs on p.product_id=vs.product_id WHERE vs.quantity>0 and p.parent_id=" + virtual_cursor.getString(1));
+                        Cursor childCount = rawQuery("SELECT count(p._id) from Product as p INNER JOIN stock_info as vs on p.product_id=vs.product_id WHERE vs.quantity>0 and p.parent_id=" + virtual_cursor.getString(1));
+                        childCount.moveToFirst();
+                        if (childCount.getInt(0) == 1) {
+                            Cursor pro_name = rawQuery("select product_name from product where product_id=" + virtual_cursor.getString(1));
+                            pro_name.moveToFirst();
+                            product_name = pro_name.getString(0);
+                        }
+                    }
+
+                }
+            }
+
+        }
+
+        Log.e("product_name", product_name);
+
+
+
+        return product_name;
+    }
     public void insertData(String json, int code) {
 
         new InsertData(json, code).execute();
