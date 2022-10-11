@@ -48,6 +48,7 @@ class DataRepository(val application: Application) {
                             var effective_date = response.body()?.getProductCombination()?.get(i)?.getEffectiveDate()
                             var id = response.body()?.getProductCombination()?.get(i)?.getId() // Slab Id
                             var updated_at = response.body()?.getProductCombination()?.get(i)?.getUpdatedAt()
+                            var product_price_id = response.body()?.getProductCombination()?.get(i)?.getProductPriceId()
 
                             val map2 = HashMap<String, String>()
                             map2["product_id"] = product_id!!
@@ -55,6 +56,7 @@ class DataRepository(val application: Application) {
                             map2["min_quantity"] = min_qty!!
                             map2["price"] = price!!
                             map2["effective_date"] = effective_date!!
+                            map2["product_price_id"] = product_price_id!!
                             map2["slab_id"] = id!! // No need
                             map2["updated_at"] = updated_at!!
                             db.InsertTable(map2, "product_combinations")

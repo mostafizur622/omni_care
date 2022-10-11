@@ -211,7 +211,7 @@ public class Data_Source extends Parent {
         ArrayList<String> preNameList = new ArrayList<>();
 
         //String query1 = "SELECT DISTINCT "+Tables.PRODUCT_COMBINATION_MIN_QUANTITY+" FROM "+ TABLE_NAME_PRODUCT_COMBINATION+" where  price>0 and  "+ PRODUCT_PRODUCT_ID+" = "+productId+" and effective_date <= (SELECT max(effective_date) from product_combinations where product_id='"+productId+"' AND effective_date<='"+date+"') ORDER BY "+Tables.PRODUCT_COMBINATION_MIN_QUANTITY+" ASC ";
-        Cursor dateQuery = sqLiteDatabase.rawQuery("SELECT max(effective_date) from product_combinations where product_id='" + productId + "' AND effective_date<='" + getCurrentDate() + "' and combination_id='0'", null);
+        Cursor dateQuery = sqLiteDatabase.rawQuery("SELECT max(effective_date) from product_combinations where product_id='" + productId + "' AND effective_date<='" + getCurrentDate() + "' and combination_id='0' order by product_price_id DESC", null);
         dateQuery.moveToFirst();
         Log.e("querytt", "SELECT max(effective_date) from product_combinations where product_id='" + productId + "' AND effective_date<='" + getCurrentDate() + "' and combination_id='0'" + dateQuery.getCount());
         if (dateQuery != null && dateQuery.getCount() > 0) {
@@ -232,7 +232,7 @@ public class Data_Source extends Parent {
                 preMinQty.add(min_qty);
 
                 String query2 = "SELECT " + Tables.PRODUCT_COMBINATION_PRICE + " from " + Tables.TABLE_NAME_PRODUCT_COMBINATION + " where " + PRODUCT_PRODUCT_ID + " = " + productId + " AND " + Tables.PRODUCT_COMBINATION_MIN_QUANTITY + " = " + min_qty + " AND " +
-                        "" + Tables.PRODUCT_COMBINATION_EFFECTIVE + "<=  (SELECT max(effective_date) from product_combinations where product_id='" + productId + "' AND effective_date<='" + date + "')" + " ORDER BY " + Tables.PRODUCT_COMBINATION_EFFECTIVE + " DESC LIMIT 1 ";
+                        "" + Tables.PRODUCT_COMBINATION_EFFECTIVE + "<=  (SELECT max(effective_date) from product_combinations where product_id='" + productId + "' AND effective_date<='" + date + "')" + " ORDER BY " + Tables.PRODUCT_COMBINATION_EFFECTIVE + " DESC, product_price_id DESC LIMIT 1 ";
                 Log.e("minriceslap", "getQtyAndPriceByProductId:---------->price slap--------> " + query2);
                 Cursor cursor1 = sqLiteDatabase.rawQuery(query2, null);
                 cursor1.moveToFirst();
@@ -2661,7 +2661,7 @@ public class Data_Source extends Parent {
                 "left join product_price_other_for_slabs_v2  pc_for_special on pc_for_special.product_combination_id=pc.slab_id and pc_for_special.type=1 and pc_for_special.reference_id in (" + str + ")\n" +
                 "left join product_price_other_for_slabs_v2 pc_for_outlet_category on pc_for_outlet_category.product_combination_id=pc.slab_id and pc_for_outlet_category.type=2 and pc_for_outlet_category.reference_id= '" + outletCategoryId + "' \n" + "\n" +
                 "where pc.min_quantity <=" + minQty + " and pc.product_id=" + product_id + "\n" + "\n" +
-                "order by pc.effective_date desc,pc.min_quantity desc,pc_for_special.reference_id desc,pc_for_outlet_category.reference_id desc\n" +
+                "order by pc.effective_date desc,pc.min_quantity desc,pc_for_special.reference_id desc,pc.product_price_id DESC,pc_for_outlet_category.reference_id desc\n" +
                 "limit 1";
 
         Log.e("SG_ID_QUERY:", query2);
