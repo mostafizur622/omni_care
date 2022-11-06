@@ -43,8 +43,10 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import static android.content.ContentValues.TAG;
@@ -772,19 +774,32 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
         sum = 0.0;
         vat = 0.0;
 
+        Double SP_discount = 0.0;
+        Double totalPrice = 0.0;
+        String [] sp_products = {"135","136","137","138","142","143","144","145","146"};
+        List<String> sp_product_list = Arrays.asList(sp_products);
+
         try {
             for (int i = 0; i < itemListContent.size(); i++) {
 
                 HashMap<String, String> map = itemListContent.get(i);
                 Log.e("price",map.get("general_price")+" "+map.get("quantity"));
                 sum = sum + (Double.parseDouble(map.get("general_price")) * Double.parseDouble(map.get("quantity")));
-
+                if (sp_product_list.contains(map.get("product_id"))){
+                    totalPrice+=(Double.parseDouble(map.get("general_price"))*Double.parseDouble(map.get("quantity")));
+                }
                 vatCalculation(map.get("product_id"), Double.parseDouble(map.get("quantity")), Double.parseDouble(map.get("general_price")), i);
+            }
+
+            if (totalPrice>=1000 && checkEligiblity()){
+
+                SP_discount = (totalPrice*10)/100;
+
             }
 
             txtTotal.setText(String.valueOf(roundTwoDecimals(Double.parseDouble("" + sum))));//;//String.valueOf(((ParentActivity) context).roundTwoDecimals(Double.parseDouble(""+sum))));
             vattxt.setText(roundTwoDecimal(vat));
-            getDiscount(roundTwoDecimals(Double.parseDouble("" + sum)));
+            getDiscount(SP_discount,roundTwoDecimals(Double.parseDouble("" + sum)));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -792,7 +807,19 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
         notifyDataSetChanged();
     }
+    private boolean checkEligiblity() throws ParseException {
+        Boolean isEligible = false;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date currentDate = sdf.parse("2022-11-07");
+        Date m_date = sdf.parse(memodate);
+        if (m_date.getTime()>=currentDate.getTime()){
+            isEligible = true;
+        }
 
+        Log.e("checkEligiblity", "checkEligiblity: "+isEligible );
+        return isEligible;
+
+    }
     @SuppressLint("SetTextI18n")
     public void BonusPolicy(String specialGroupIds, String cartProductIDs, Double memoTotal) {
 
@@ -2414,7 +2441,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
         c.close();
     }
 
-    private void getDiscount(String s) {
+    private void getDiscount(Double sp_discount,String s) {
         int distype = 0;
         discountp = 0.0;
         Cursor cursor = db.rawQuery("select discount_percent,discount_type from discounts where memo_value <=" + s + " and date_from <= '" + memodate + "' and date_to>='" + memodate + "' order by memo_value DESC limit 1");
@@ -2434,7 +2461,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
             discount = discountp;
         }
-        Total_Discount = Total_Discount + discount;
+        Total_Discount = Total_Discount + discount+sp_discount;
         this.discount.setText(roundTwoDecimals(Total_Discount));
 
         subt.setText(roundTwoDecimals(memoValue - Total_Discount));

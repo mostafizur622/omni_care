@@ -621,8 +621,9 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
     }
     public static String swapProductID(String product_id, String virtual_product_id) {
 
-        // Log.e("swapProductID",   (virtual_product_id!=null && virtual_product_id!="0")+"");
-        if (virtual_product_id!=null && !virtual_product_id.equalsIgnoreCase("0")){
+
+        if (virtual_product_id!=null && !virtual_product_id.equalsIgnoreCase("0") && !virtual_product_id.equalsIgnoreCase("null")){
+            Log.e("swapProductID",   product_id+"  "+virtual_product_id);
             return virtual_product_id;
         }else {
             return product_id;
@@ -846,10 +847,28 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
             discount = discountp;
         }
-        tdiscount = tdiscount + discount;
+
+        String memo_id = "";
+        if (!MEMO_EDIT)
+            memo_id = "SELECT discount_value ,gross_value FROM " + TABLE_NAME_ORDER + " WHERE " + ORDER_order_number + "= '" + TempData.orderNumber+"'" ;
+        else
+            memo_id = "SELECT discount_value ,gross_value FROM " + TABLE_NAME_MEMOS + " WHERE " + MEMOS_memo_number + "= '" + TempData.memoNumber+"'" ;
+
+
+
+        Cursor c = db.rawQuery(memo_id);
+        c.moveToFirst();
+        if (c.getCount()>0 && c!=null){
+            discountt.setText(c.getString(0));
+            sub_total.setText(c.getString(1));
+        }
+
+
+
+       /* tdiscount = tdiscount + discount;
         Log.e("discounttt", tdiscount + " ," + discount);
         discountt.setText(roundTwoDecimals(tdiscount));
-        sub_total.setText(roundTwoDecimals(memoValue - tdiscount));
+        sub_total.setText(roundTwoDecimals(memoValue - tdiscount));*/
 
 
     }
@@ -1286,6 +1305,8 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                     "         P.product_category_id,\n" +
                     "         P.product_type_id\n" +
                     "ORDER BY P.product_order ASC");
+
+
             if (c3 != null) {
                 if (c3.moveToFirst()) {
                     do {
@@ -1302,13 +1323,17 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                         int gift = getIndexGift(product_id);
                         int bonus = getIndexBonus(product_id);
                         String product_quantity = "0.00";
+                        Log.e("tquery",TempData.INVOICE_DETAILS.toString());
+                        Log.e("saleablequery",saleable+" "+product_id);
                         if (saleable >= 0) {
                             is_checked = true;
                             product_quantity = TempData.INVOICE_DETAILS.get(saleable).get("quantity");
 
+
                         } else if (gift >= 0) {
                             is_checked = true;
                             product_quantity = TempData.GiftArrayList.get(gift).get("quantity");
+                            Log.e("query",TempData.GiftArrayList.get(saleable).get("quantity"));
 
                         }/*else if (bonus>=0){
                             is_checked=true;
