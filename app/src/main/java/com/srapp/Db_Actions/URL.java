@@ -23,7 +23,7 @@ public class URL {
     public static final String OUTLET_WISE_SALES_REPORT = Domain + "dist_outlet_wise_sales_report.json";
     public static final String INCENTIVE_PARTY = Domain + "get_bonus_cards_report.json";
     public static final String GIFT_ISSUE = Domain + "giftitem_received.json";
-    public static final String VERSION = "1.2.4";
+    public static final String VERSION = "1.2.5";
     public static final String VERSION_txt = "Version(" + VERSION + ")";
     public static String release_date = "07-NOV-2022";
     public static final String OUTLET_VISIT_REPORT =Domain +"get_route_wise_outlet_visit_report.json";
