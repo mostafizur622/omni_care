@@ -810,9 +810,11 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
     private boolean checkEligiblity() throws ParseException {
         Boolean isEligible = false;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date currentDate = sdf.parse("2022-11-07");
+        Date from_date = sdf.parse("2022-11-08");
+        Date to_date = sdf.parse("2022-11-30");
         Date m_date = sdf.parse(memodate);
-        if (m_date.getTime()>=currentDate.getTime()){
+
+        if (m_date.getTime()>=from_date.getTime() && m_date.getTime()<=to_date.getTime()){
             isEligible = true;
         }
 
@@ -1159,7 +1161,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                 discount_details.setText(discount_data.substring(0, Discounttext.length() - 1));
 
             } else{
-                discount.setVisibility(View.GONE);
+               // discount.setVisibility(View.GONE);
             }
 
             discountmapview.clear();
