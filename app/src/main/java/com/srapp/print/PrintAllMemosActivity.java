@@ -819,7 +819,7 @@ public class PrintAllMemosActivity extends ParentActivity {
                     memo_no = c.getString(0);
                     String date = c.getString(1);
                     String outlet_id = c.getString(2);
-                    Double gross_value = c.getDouble(3);
+                    Double gross_value = c.getDouble(3)+c.getDouble(7);
                     Double cash_received = c.getDouble(4);
                     Double credit_amount = c.getDouble(5);
                     String market_id = c.getString(6);
