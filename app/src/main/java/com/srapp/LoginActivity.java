@@ -116,7 +116,11 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
         editPassword = (EditText) findViewById(R.id.edit_password);
 
         TextView version = findViewById(R.id.version);
-        version.setText(URL.VERSION_txt);
+        if (URL.Domain.contains("202"))
+        version.setText(URL.VERSION_txt+" Local Server");
+        else {
+            version.setText(URL.VERSION_txt);
+        }
 
         usertextinput = (TextInputLayout) findViewById(R.id.userTextinputLayout);
         passwordtextinput = (TextInputLayout) findViewById(R.id.passwordTextinputLayout);

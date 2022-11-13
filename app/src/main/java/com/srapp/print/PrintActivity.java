@@ -720,7 +720,7 @@ public class PrintActivity<BarcodeFormat> extends ParentActivity {
         //  if (TempData.INVOICE_DETAILS.size() == 1) {
 
 
-        area_office.setText("Area Office: " + getPreference("office_name") + getPreference("office_address") + ", " + getPreference("office_phone"));
+        area_office.setText("Area Office: " + getPreference("office_name") +", "+ getPreference("office_address") + ", " + getPreference("office_phone"));
 
         outlet_name_category_address.setText(TempData.OutletName + " " + "(" + getPreference("OutletCategoryName") + ") ");
 

@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
 
 import static com.srapp.Db_Actions.Tables.SR_ID;
+import static com.srapp.Db_Actions.URL.EMAIL;
 
 public class DatabaseBackManager {
 
@@ -55,7 +56,7 @@ public class DatabaseBackManager {
 
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
         emailIntent.setType("text/plain");
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"apps@arenaphonebd.net"});
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{EMAIL});
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "SMC SR APP database backup");
         emailIntent.putExtra(Intent.EXTRA_TEXT,  "SPID : "+ prefs.getString(SR_ID, "NO PREFERENCE") +"\n"+"Username : "+prefs.getString("sr_name","0"));
         emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("content://" + CachedFileProvider.AUTHORITY + "/" + Tables.DATABASE_NAME));

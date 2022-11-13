@@ -1205,7 +1205,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
                         printRecylerview.setAdapter(mAdapter);
 
                         office_copy.setText("Office Copy");
-                        area_office.setText("Area Office: " + getPreference("office_name") + getPreference("office_address") + ", " + getPreference("office_phone"));
+                        area_office.setText("Area Office: " + getPreference("office_name") +", "+ getPreference("office_address") + ", " + getPreference("office_phone"));
 
                         outlet_name_category_address.setText(TempData.OutletName + " " + "(" + getPreference("OutletCategoryName") + ") ");
 

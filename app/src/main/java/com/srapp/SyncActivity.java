@@ -205,9 +205,20 @@
                 e.printStackTrace();
             }
         } else if (i == 103) {
-            ds.updatePushStatus();
-            Flag = 1;
-            ds.getlastupdateddate();
+
+            try {
+                int status = jsonObject.getJSONObject("order").getInt("status");
+
+                if (status==1) {
+
+                    ds.updatePushStatus();
+                    Flag = 1;
+                    ds.getlastupdateddate();
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
 
         } else if (i == 110) {
