@@ -199,6 +199,7 @@
             try {
                 ds.excQuery("delete from product_history");
                 ds.excQuery("delete from fiscal_year");
+                ds.excQuery("delete  from stock_info");
                 ds.insertData(jsonObject.getJSONObject("response").toString(), 1);
                 ds.savePreference("dataforsummery", jsonObject.getJSONObject("response").toString());
             } catch (JSONException e) {

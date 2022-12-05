@@ -810,8 +810,8 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
     private boolean checkEligiblity() throws ParseException {
         Boolean isEligible = false;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date from_date = sdf.parse("2022-11-08");
-        Date to_date = sdf.parse("2022-11-30");
+        Date from_date = sdf.parse("2022-12-06");
+        Date to_date = sdf.parse("2023-01-31");
         Date m_date = sdf.parse(memodate);
 
         if (m_date.getTime()>=from_date.getTime() && m_date.getTime()<=to_date.getTime()){
