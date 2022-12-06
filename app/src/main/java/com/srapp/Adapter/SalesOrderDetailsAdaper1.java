@@ -776,6 +776,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
         Double SP_discount = 0.0;
         Double totalPrice = 0.0;
+        Double discountval = 0.0;
         String [] sp_products = {"135","136","137","138","142","143","144","145","146"};
         List<String> sp_product_list = Arrays.asList(sp_products);
 
@@ -793,7 +794,22 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
             if (totalPrice>=1000 && checkEligiblity()){
 
-                SP_discount = (totalPrice*10)/100;
+                for (int i = 0; i < itemListContent.size(); i++) {
+                    HashMap<String, String> map = itemListContent.get(i);
+                    if (sp_product_list.contains(map.get("product_id"))){
+
+                        discountval=((Double.parseDouble(priceMap.get(productIDList.get(i))))*10)/100;
+                        Log.e("spdisc", "UpdatePrice1: "+discountval );
+                        SP_discount+=discountval*Double.parseDouble(map.get("quantity"));
+                        //discount10.put(map.get("product_id"),discountval.toString());
+                        discountmap.put(map.get("product_id"),discountval.toString());
+                        discounttype.put(map.get("product_id"),"0");
+
+                        Discounttext = Discounttext + getDiscountText(map.get("product_id"), roundTwoDecimal(discountval*Double.parseDouble(map.get("quantity"))));
+                        discount_details.setText(Discounttext);
+                        discount_details.setVisibility(View.VISIBLE);
+                    }
+                }
 
             }
 
