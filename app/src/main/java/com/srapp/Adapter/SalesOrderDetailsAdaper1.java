@@ -779,6 +779,8 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
         Double discountval = 0.0;
         String [] sp_products = {"135","136","137","138","142","143","144","145","146"};
         List<String> sp_product_list = Arrays.asList(sp_products);
+        List<HashMap<String,String>> products = getSelectedProduct();
+
 
         try {
             for (int i = 0; i < itemListContent.size(); i++) {
@@ -786,19 +788,27 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                 HashMap<String, String> map = itemListContent.get(i);
                 Log.e("price",map.get("general_price")+" "+map.get("quantity"));
                 sum = sum + (Double.parseDouble(map.get("general_price")) * Double.parseDouble(map.get("quantity")));
-                if (sp_product_list.contains(map.get("product_id"))){
-                    totalPrice+=(Double.parseDouble(map.get("general_price"))*Double.parseDouble(map.get("quantity")));
+                for (int ini=0; ini<products.size() ; ini++) {
+                    if (Arrays.asList(products.get(ini).get("products").split(",")).contains(map.get("product_id"))) {
+
+                        products.get(ini).put("total_price", String.valueOf(Double.parseDouble(products.get(ini).get("total_price"))+(Double.parseDouble(priceMap.get(productIDList.get(i))) * Double.parseDouble(map.get("quantity")))));
+                    }
                 }
                 vatCalculation(map.get("product_id"), Double.parseDouble(map.get("quantity")), Double.parseDouble(map.get("general_price")), i);
             }
+            for (int t=0; t<products.size(); t++) {
+                HashMap<String,String> discountDetails = getDiscountDetails(products.get(t).get("id"),products.get(t).get("total_price"));
 
-            if (totalPrice>=1000 && checkEligiblity()){
+                if (!discountDetails.containsKey("total_price")){
+                    continue;
+                }
+                if (Double.parseDouble(products.get(t).get("total_price")) >=Double.parseDouble(discountDetails.get("total_price"))  && checkEligiblity(discountDetails.get("start_date"),discountDetails.get("end_date"))) {
 
                 for (int i = 0; i < itemListContent.size(); i++) {
                     HashMap<String, String> map = itemListContent.get(i);
-                    if (sp_product_list.contains(map.get("product_id"))){
+                    if (Arrays.asList(products.get(t).get("products").split(",")).contains(map.get("product_id"))) {
 
-                        discountval=((Double.parseDouble(priceMap.get(productIDList.get(i))))*10)/100;
+                        discountval=((Double.parseDouble(priceMap.get(productIDList.get(i))))* Double.parseDouble(discountDetails.get("percentage")))/100;
                         Log.e("spdisc", "UpdatePrice1: "+discountval );
                         SP_discount+=discountval*Double.parseDouble(map.get("quantity"));
                         //discount10.put(map.get("product_id"),discountval.toString());
@@ -811,6 +821,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                     }
                 }
 
+                }
             }
 
             txtTotal.setText(String.valueOf(roundTwoDecimals(Double.parseDouble("" + sum))));//;//String.valueOf(((ParentActivity) context).roundTwoDecimals(Double.parseDouble(""+sum))));
@@ -823,11 +834,57 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
         notifyDataSetChanged();
     }
-    private boolean checkEligiblity() throws ParseException {
+
+    private HashMap<String, String> getDiscountDetails(String id,String total_price) {
+        Cursor c = db.rawQuery("select * from discount_policy where dis_policy='"+id+"' and total_price<="+total_price+"  ORDER by total_price DESC LIMIT 1");
+        HashMap<String,String> map = new HashMap();
+        c.moveToFirst();
+        if (c.getCount()>0 && c!=null){
+            do {
+
+                map.put("start_date",c.getString(2));
+                map.put("end_date",c.getString(3));
+                map.put("total_price",c.getString(4));
+                map.put("percentage",c.getString(5));
+                map.put("dis_policy",c.getString(1));
+
+
+            }while (c.moveToNext());
+
+
+        }
+
+        Log.e("discount_policy", map.toString() );
+
+        return map;
+
+    }
+    private List<HashMap<String, String>> getSelectedProduct() {
+        Cursor c = db.rawQuery("select * from discount_policy_products");
+        ArrayList<HashMap<String, String>> list = new ArrayList();
+        c.moveToFirst();
+        if (c.getCount()>0 && c!=null){
+            do {
+                HashMap<String,String> map = new HashMap<>();
+                map.put("products",c.getString(1));
+                map.put("id",c.getString(0));
+                map.put("total_price","0");
+                list.add(map);
+            }while (c.moveToNext());
+
+
+        }
+
+        Log.e("discount_policy_products", list.toString() );
+
+        return list;
+
+    }
+    private boolean checkEligiblity(String start_date , String end_date) throws ParseException {
         Boolean isEligible = false;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date from_date = sdf.parse("2022-12-06");
-        Date to_date = sdf.parse("2023-01-31");
+        Date from_date = sdf.parse(start_date);
+        Date to_date = sdf.parse(end_date);
         Date m_date = sdf.parse(memodate);
 
         if (m_date.getTime()>=from_date.getTime() && m_date.getTime()<=to_date.getTime()){

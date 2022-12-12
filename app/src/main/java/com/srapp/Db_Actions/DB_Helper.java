@@ -261,6 +261,36 @@ public class DB_Helper extends SQLiteOpenHelper {
                 ")";
         sqLiteDatabase.execSQL(Policy_Bonus_product);
 
+
+
+        //.................................discount Policy ...........................................
+        String discount_policy  = "CREATE TABLE IF NOT EXISTS " + "discount_policy" + "("
+                + "_id" + " INTEGER PRIMARY KEY," +
+                "dis_policy" + " INT," +
+                "start_date" + " DATETIME," +
+                "end_date" + " DATETIME," +
+                "total_price" + " DOUBLE," +
+                "percentage" + " DOUBLE," +
+                "updated_at" + " DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME'))" +
+                ")";
+        sqLiteDatabase.execSQL(discount_policy);
+
+        sqLiteDatabase.execSQL("INSERT INTO discount_policy (dis_policy, start_date, end_date,percentage,total_price ) VALUES ( '1','2022-12-06','2023-01-31',10,1000 )");
+        sqLiteDatabase.execSQL("INSERT INTO discount_policy (dis_policy, start_date, end_date,percentage,total_price ) VALUES ( '2','2022-12-12','2022-12-31',12,500 )");
+        sqLiteDatabase.execSQL("INSERT INTO discount_policy (dis_policy, start_date, end_date,percentage,total_price ) VALUES ( '2','2022-12-12','2022-12-31',16,1500 )");
+
+
+        //.................................discount Policy Products...........................................
+        String discount_policy_products  = "CREATE TABLE IF NOT EXISTS " + "discount_policy_products" + "("
+                + "_id" + " INTEGER PRIMARY KEY," +
+                "product_list" + " VARCHAR," +
+                "updated_at" + " DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME'))" +
+                ")";
+        sqLiteDatabase.execSQL(discount_policy_products);
+
+        sqLiteDatabase.execSQL("INSERT INTO discount_policy_products (  product_list ) VALUES ( '135,136,137,138,142,143,144,145,146')");
+        sqLiteDatabase.execSQL("INSERT INTO discount_policy_products (  product_list ) VALUES ( '51,52,451')");
+
         sqLiteDatabase.execSQL(Tables.CREATE_BANK_BRANCH_TABLE);
         sqLiteDatabase.execSQL(CREATE_BONUS_PARTY_TABLE);
         sqLiteDatabase.execSQL(Tables.CREATE_BONUSES_TABLE);
