@@ -58,6 +58,7 @@ import static com.srapp.TempData.BPSelected_product;
 import static com.srapp.TempData.BPSelected_set;
 import static com.srapp.TempData.BPbonus_product;
 import static com.srapp.TempData.BPbonus_product_t;
+import static com.srapp.TempData.BonusShowList;
 import static com.srapp.TempData.MEMO_EDIT;
 import static com.srapp.TempData.OldBPSelected_bonus;
 import static com.srapp.TempData.OldBPSelected_option_id;
@@ -2368,6 +2369,10 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
     }
 
     private void setBPProductBonus() {
+
+        TempData.BonusShowList.clear();
+        //TempData.BonusShowList.addAll(BPbonus_product);
+
         String bonusString = "";
 
         Log.e("BPbonus_product_e", new Gson().toJson(BPSelected_product));

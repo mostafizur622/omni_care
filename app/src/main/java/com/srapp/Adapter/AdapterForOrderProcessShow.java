@@ -35,6 +35,7 @@ import java.util.HashMap;
 import static com.srapp.Db_Actions.Tables.PROCESSING_COMPELETE;
 import static com.srapp.Db_Actions.Tables.SR_ID;
 import static com.srapp.Db_Actions.URL.ORDER_DETAILS;
+import static com.srapp.TempData.PROCESSING_ON_SERVER;
 
 public class AdapterForOrderProcessShow extends BaseAdapter implements BasicFunctionListener {
 
@@ -162,6 +163,7 @@ public class AdapterForOrderProcessShow extends BaseAdapter implements BasicFunc
                         JSONArray jsonArray = new JSONArray();
                         for (int i = 0; i < list.size(); i++) {
                             jsonArray.put(list.get(i));
+                            db.updateOrderStatus(list.get(i),PROCESSING_ON_SERVER+"");
 
                         }
 
@@ -346,7 +348,7 @@ public class AdapterForOrderProcessShow extends BaseAdapter implements BasicFunc
 
                     Log.e("dialog_for_details", isInMainList(jsonArray.getJSONObject(j).getString("dist_order_no")) + " ");
                     if (jsonArray.getJSONObject(j).getString("status").equalsIgnoreCase("1")) {
-                        db.updateOrderStatus(jsonArray.getJSONObject(j).getString("dist_order_no"),PROCESSING_COMPELETE+"");
+                      //  db.updateOrderStatus(jsonArray.getJSONObject(j).getString("dist_order_no"),PROCESSING_COMPELETE+"");
                     }
                 }
                 notifyDataSetChanged();

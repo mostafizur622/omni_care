@@ -1228,6 +1228,9 @@ public class SalesOrderDetailsAdaper extends BaseAdapter {
     }
 
     private void setBPProductBonus() {
+
+        TempData.BonusShowList.clear();
+        TempData.BonusShowList.addAll(BPbonus_product);
         String bonusString = "";
         for (int i = 0; i < BPbonus_product.size(); i++) {
             bonusString = bonusString + BPbonus_product.get(i).get("item") + "(" + BPbonus_product.get(i).get("quantity") + " " + BPbonus_product.get(i).get("measurement_unit_name") + ")";

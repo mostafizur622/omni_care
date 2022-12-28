@@ -56,6 +56,7 @@ import static com.srapp.TempData.BPSelected_set;
 import static com.srapp.TempData.BonusArrayList;
 import static com.srapp.TempData.MEMO_EDIT;
 import static com.srapp.TempData.ORDER_TO_MEMO;
+import static com.srapp.TempData.PROCESSING_ON_SERVER;
 import static com.srapp.TempData.PolicySetRelation;
 import static com.srapp.TempData.policyArrayList;
 
@@ -111,7 +112,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
     AdapterForMemoDetails adapter;
     OrderDetailsModel orderDetailsModel;
     ArrayList<HashMap<String, String>> Data;
-    TextView txtGift, txtBonus, total_price, discountt, sub_total, title, vat, user_txt_view, discount_details;
+    TextView txtGift, txtBonus, total_price, discountt, sub_total, title, vat, user_txt_view, discount_details,warning;
     Data_Source db;
     Double tdiscount = 0.0;
     ImageView homeBtn, backBtn;
@@ -131,6 +132,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
         btnEdit = findViewById(R.id.btnEdit);
         discountt = findViewById(R.id.discount);
         sub_total = findViewById(R.id.sub_total);
+        warning = findViewById(R.id.warning);
         txtBonus = findViewById(R.id.txtBonus);
         discount_details = findViewById(R.id.discount_details);
         vat = findViewById(R.id.vat);
@@ -241,6 +243,9 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
         } else {
             if (TempData.ORDER_STATUE == 1 && ORDER_TO_MEMO == 0)
                 cancel.setVisibility(View.GONE);
+        }
+        if (TempData.ORDER_STATUE == PROCESSING_ON_SERVER){
+            warning.setVisibility(View.VISIBLE);
         }
 
         Log.e("ordernum", TempData.orderNumber + "no");

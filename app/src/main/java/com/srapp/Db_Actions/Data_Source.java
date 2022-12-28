@@ -90,6 +90,8 @@ import static com.srapp.Db_Actions.Tables.TABLE_NAME_PRODUCT_COMBINATION;
 import static com.srapp.Db_Actions.Tables.TABLE_NAME_PRODUCT_PRICE;
 import static com.srapp.Db_Actions.Tables.TABLE_NAME_ROOT;
 import static com.srapp.Db_Actions.Tables.TABLE_NAME_THANA;
+import static com.srapp.TempData.PROCESSING_ON_SERVER;
+import static com.srapp.TempData.orderNumber;
 
 public class Data_Source extends Parent {
 
@@ -1555,6 +1557,13 @@ public class Data_Source extends Parent {
                     if (jsonObject1.has(ORDER[i])) {
                         try {
                             Log.e(ORDER[i], jsonObject1.getString(ORDER[i]));
+                            if (ORDER[i].equalsIgnoreCase(ORDER_STATUS)){
+                                if (CheckOrderStatus(jsonObject1.getString(ORDER_order_number))==PROCESSING_ON_SERVER){
+                                    contentValues.put(ORDER[i], PROCESSING_ON_SERVER);
+                                    continue;
+                                }
+
+                            }
                             contentValues.put(ORDER[i], jsonObject1.getString(ORDER[i]));
                         } catch (JSONException ex) {
                             ex.printStackTrace();
@@ -1609,6 +1618,20 @@ public class Data_Source extends Parent {
 
 
         return null;
+    }
+
+    private int CheckOrderStatus(String string) {
+        this.open();
+        int status =0 ;
+        Cursor c = sqLiteDatabase.rawQuery("Select " + ORDER_STATUS +  " from " + TABLE_NAME_ORDER + " where  order_number='" + string + "'", null);
+
+        c.moveToFirst();
+
+        if (c != null && c.getCount() > 0) {
+            status = c.getInt(0);
+        }
+        sqLiteDatabase.close();
+        return status;
     }
 
     public ArrayList<HashMap<String, String>> updateMemoWithServer(JSONObject jsonObject) {

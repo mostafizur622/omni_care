@@ -68,6 +68,7 @@ public class TempData {
     public static int ORDER_PlanVisit;
     public static int ORDER_plan_id;
     public static int ORDER_TO_MEMO;
+    public static int PROCESSING_ON_SERVER=7;
     public static boolean MEMO_EDIT;
     public static String InvoicePayment;
     public static String InvoiceGrand;

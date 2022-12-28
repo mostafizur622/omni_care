@@ -122,6 +122,16 @@
             android:orientation="horizontal"
             android:weightSum="3">
 
+            <TextView
+                android:id="@+id/warning"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_15sdp"
+                android:text="Order Processing In Server Check\n status In Process Status..."
+                android:layout_height="wrap_content"/>
+
             <Button
                 android:id="@+id/btnEdit"
                 android:gravity="center"
@@ -175,7 +185,10 @@
 
         </LinearLayout>
         //scrollview container =2.7 rest = 0.6
-
+        <TextView
+            android:layout_width="match_parent"
+            android:text=""
+            android:layout_height="wrap_content"/>
         //white form cardview
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
