@@ -837,7 +837,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
     }
 
     private HashMap<String, String> getDiscountDetails(String id,String total_price) {
-        Cursor c = db.rawQuery("select * from discount_policy where dis_policy='"+id+"' and total_price<="+total_price+"  ORDER by total_price DESC LIMIT 1");
+        Cursor c = db.rawQuery("select * from discount_policy where dis_policy='"+id+"' and total_price<="+total_price+ " and '"+memodate+"' between start_date and end_date"+"  ORDER by total_price DESC LIMIT 1");
         HashMap<String,String> map = new HashMap();
         c.moveToFirst();
         if (c.getCount()>0 && c!=null){

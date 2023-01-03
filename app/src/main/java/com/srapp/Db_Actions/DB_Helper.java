@@ -278,6 +278,8 @@ public class DB_Helper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("INSERT INTO discount_policy (dis_policy, start_date, end_date,percentage,total_price ) VALUES ( '1','2022-12-06','2023-01-31',10,1000 )");
         sqLiteDatabase.execSQL("INSERT INTO discount_policy (dis_policy, start_date, end_date,percentage,total_price ) VALUES ( '2','2022-12-13','2022-12-31',12,500 )");
         sqLiteDatabase.execSQL("INSERT INTO discount_policy (dis_policy, start_date, end_date,percentage,total_price ) VALUES ( '2','2022-12-13','2022-12-31',16,1501 )");
+        sqLiteDatabase.execSQL("INSERT INTO discount_policy (dis_policy, start_date, end_date,percentage,total_price ) VALUES ( '2','2023-01-03','2023-02-28',8,500 )");
+        sqLiteDatabase.execSQL("INSERT INTO discount_policy (dis_policy, start_date, end_date,percentage,total_price ) VALUES ( '2','2023-01-03','2023-02-28',10,1501 )");
 
 
         //.................................discount Policy Products...........................................
