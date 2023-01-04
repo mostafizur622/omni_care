@@ -163,7 +163,7 @@ public class AdapterForOrderProcessShow extends BaseAdapter implements BasicFunc
                         JSONArray jsonArray = new JSONArray();
                         for (int i = 0; i < list.size(); i++) {
                             jsonArray.put(list.get(i));
-                            db.updateOrderStatus(list.get(i),PROCESSING_ON_SERVER+"");
+                            //db.updateOrderStatus(list.get(i),PROCESSING_ON_SERVER+"");
 
                         }
 
