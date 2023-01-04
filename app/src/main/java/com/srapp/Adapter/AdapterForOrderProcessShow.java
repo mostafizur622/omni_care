@@ -348,7 +348,7 @@ public class AdapterForOrderProcessShow extends BaseAdapter implements BasicFunc
 
                     Log.e("dialog_for_details", isInMainList(jsonArray.getJSONObject(j).getString("dist_order_no")) + " ");
                     if (jsonArray.getJSONObject(j).getString("status").equalsIgnoreCase("1")) {
-                      //  db.updateOrderStatus(jsonArray.getJSONObject(j).getString("dist_order_no"),PROCESSING_COMPELETE+"");
+                        db.updateOrderStatus(jsonArray.getJSONObject(j).getString("dist_order_no"),PROCESSING_COMPELETE+"");
                     }
                 }
                 notifyDataSetChanged();
