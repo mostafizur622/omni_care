@@ -157,9 +157,9 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
             public void onClick(View v) {
 
                 login_button.setEnabled(false);
-                /*startActivity(new Intent(LoginActivity.this, Dashboard.class));
-                finish();*/
-                JSONObject jsonObject = new JSONObject();
+                startActivity(new Intent(LoginActivity.this, Dashboard.class));
+                finish();
+               /* JSONObject jsonObject = new JSONObject();
                 try {
                     Log.e("permission", checkForPermission() + "");
                     if (checkForPermission()) {
@@ -177,7 +177,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Log.e("ServiceHandlerOutlets", e.getMessage());
-                }
+                }*/
             }
 
         });

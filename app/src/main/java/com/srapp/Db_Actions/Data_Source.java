@@ -2377,6 +2377,9 @@ public class Data_Source extends Parent {
                         map1.put("min_memo_val", policy_product_option.getJSONObject(t).getString("min_memo_value")); //23 April2021 Added
                         map1.put("formula", policy_product_option.getJSONObject(t).getString("bonus_formula_text_with_product_id"));//23 April2021 Added
                         map1.put("formula_text", policy_product_option.getJSONObject(t).getString("bonus_formula_text"));//23 Jan 2021 Added
+                        map1.put("qty_value_flag", policy_product_option.getJSONObject(t).getString("qty_value_flag"));//23 Jan 2021 Added
+                        map1.put("deduct_from_value", policy_product_option.getJSONObject(t).getString("deduct_from_value"));//23 Jan 2021 Added
+                        map1.put("min_value", policy_product_option.getJSONObject(t).getString("min_value"));//23 Jan 2021 Added
 
                         InsertTable(map1, "policy_product_Option");
 
@@ -2390,6 +2393,9 @@ public class Data_Source extends Parent {
                         policy_option_inclusion = policy_product_option.getJSONObject(t).
                                 getJSONArray("DiscountBonusPolicyOptionInclusionProduct");
 
+                        JSONArray policy_deafult_product = policy_product_option.getJSONObject(t).
+                                getJSONArray("DiscountBonusPolicyDefaultBonusProductSelection");
+
 
                         for (int b = 0; b < policy_option_price_slap.length(); b++) {
                             HashMap<String, String> map2 = new HashMap<>();
@@ -2399,6 +2405,17 @@ public class Data_Source extends Parent {
                             InsertTable(map2, "policy_option_price_slab");
 
                         }
+
+                         for (int b = 0; b < policy_deafult_product.length(); b++) {
+                            HashMap<String, String> map2 = new HashMap<>();
+                            map2.put("policy_id", policy_deafult_product.getJSONObject(b).getString("discount_bonus_policy_id"));// group_wise_discount_bonus_policy_option_id
+                            map2.put("discount_bonus_policy_option_id", policy_deafult_product.getJSONObject(b).getString("discount_bonus_policy_option_id"));
+                            map2.put("product_id", policy_deafult_product.getJSONObject(b).getString("product_id")); //slab_id
+                            InsertTable(map2, "policy_deafult_product");
+
+                        }
+
+
 
                         for (int tt = 0; tt < policy_bonus_product.length(); tt++) {
                             HashMap<String, String> map2 = new HashMap<>();
@@ -2862,7 +2879,7 @@ public class Data_Source extends Parent {
                 "    pt.start_date,\n" +
                 "    pt.end_date";
 
-        Log.e("POLICY_ID_QUERY_:", excluding_outlet_query);
+        Log.e("POLICY_ID_QUERY_1:", excluding_outlet_query);
 
         Cursor cursorEx = sqLiteDatabase.rawQuery(excluding_outlet_query, null);
         if (cursorEx.moveToFirst()) {
@@ -2908,7 +2925,7 @@ public class Data_Source extends Parent {
                 "pt.start_date,\n" +
                 "pt.end_date";
 
-        Log.e("POLICY_ID_QUERY:", query2);
+        Log.e("POLICY_ID_QUERY2:", query2);
         Cursor cursor = sqLiteDatabase.rawQuery(query2, null);
 
         // looping through all rows and adding to list
@@ -2963,7 +2980,7 @@ public class Data_Source extends Parent {
         return policyProductsArrayList;
     }
 
-    public ArrayList<PolicyWiseSlab> getPolicy_Wise_Slab_List(String policyId, String minQty) {
+    public ArrayList<PolicyWiseSlab> getPolicy_Wise_Slab_List(String policyId, String minQty,String minvalue) {
 
         ArrayList<PolicyWiseSlab> policyWiseSlabsArrayList = new ArrayList<PolicyWiseSlab>();
         String query2 = "select \n" +
@@ -2974,11 +2991,15 @@ public class Data_Source extends Parent {
                 "discount_amount,\n" +
                 "discount_type,\n" +
                 "min_memo_val,\n" +
-                "formula\n" +
+                "formula,\n" +
+                "min_value,\n" +
+                "deduct_from_value,\n" +
+                "qty_value_flag\n" +
                 "from policy_product_Option\n" +
                 "where \n" +
                 "policy_id=" + policyId + "\n" + "\n" +
-                "and min_qty <=" + minQty + "\n" + "\n" +
+                "and (min_qty <=" + minQty + "\n" + "\n" +
+                " or min_value <=" + minvalue + ")\n" + "\n" +
                 "order by min_qty desc";
 
         Log.e("POLICY_SLAB_QUERY:", query2);
@@ -2996,6 +3017,9 @@ public class Data_Source extends Parent {
                 policyWiseSlab.setDiscount_type(cursor.getString(5));
                 policyWiseSlab.setMin_memo_val(cursor.getString(6));
                 policyWiseSlab.setFormula(cursor.getString(7));
+                policyWiseSlab.setMin_value(cursor.getString(8));
+                policyWiseSlab.setDeduct_from_value(cursor.getString(9));
+                policyWiseSlab.setQty_value_flag(cursor.getString(10));
 
                 Log.e("root_product_slab_cur", policyWiseSlab.getPolicy_id());
 
@@ -4184,6 +4208,7 @@ public class Data_Source extends Parent {
                     sqLiteDatabase.execSQL("delete from policy_product_Option");
                     sqLiteDatabase.execSQL("delete from policy_option_price_slab");
                     sqLiteDatabase.execSQL("delete from policy_bonus_product");
+                    sqLiteDatabase.execSQL("delete from policy_deafult_product");
                     sqLiteDatabase.execSQL("delete from DiscountBonusPolicyToSpecialGroupSo");
                     sqLiteDatabase.execSQL("delete from DiscountBonusPolicyOptionExclusionProduct");
                     sqLiteDatabase.execSQL("delete from DiscountBonusPolicyOptionInclusionProduct");

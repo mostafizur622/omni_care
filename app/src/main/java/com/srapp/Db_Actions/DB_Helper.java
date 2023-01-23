@@ -212,6 +212,9 @@ public class DB_Helper extends SQLiteOpenHelper {
                 "min_memo_val" + " VARCHAR," +
                 "formula" + " VARCHAR," +
                 "formula_text" + " VARCHAR," +
+                "qty_value_flag" + " INTEGER," +
+                "deduct_from_value" + " INTEGER," +
+                "min_value" + " DOUBLE," +
                 "updated_at" + " DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME'))" +
                 ")";
         sqLiteDatabase.execSQL(policy_product_Option);
@@ -225,6 +228,16 @@ public class DB_Helper extends SQLiteOpenHelper {
                 "updated_at" + " DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME'))" +
                 ")";
         sqLiteDatabase.execSQL(policy_product_Option_temp);
+
+        //................................. default Bonus product ...........................................
+        String policy_deafult_product = "CREATE TABLE IF NOT EXISTS " + "policy_deafult_product" + "("
+                + "_id" + " INTEGER PRIMARY KEY," +
+                "policy_id" + " VARCHAR," +
+                "product_id" + " VARCHAR," +
+                "discount_bonus_policy_option_id" + " VARCHAR," +
+                "updated_at" + " DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME'))" +
+                ")";
+        sqLiteDatabase.execSQL(policy_deafult_product);
 
         //.................................policy_option_price_slab ...........................................
         String Policy_option_price_slab  = "CREATE TABLE IF NOT EXISTS " + "policy_option_price_slab" + "("

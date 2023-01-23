@@ -751,9 +751,9 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
             e.printStackTrace();
         }
 
-
+        Log.e("priceMap1", priceMap.toString());
         BonusPolicy(specialGroupIds, cartProductIDs, sum);
-        Log.e("priceMap", priceMap.toString());
+        Log.e("priceMap", priceMap.toString()+" map4");
         for (int i = 0; i < itemListContent.size(); i++) {
 
             if (getPreference("up" + itemListContent.get(i).get("product_id")).equalsIgnoreCase("0")) {
@@ -962,7 +962,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
         Log.i(TAG, "policyProductArrayList: " + new Gson().toJson(policyProductMap));
 
         //-------- making policy wise product list--- end------------------------------------------------------------------------------
-
+        Log.e("priceMap", priceMap.toString()+" map4");
         for (int i = 0; i < policyIdsArrayList.size(); i++) {
             String policyProductsId = policyProductMap.get(policyIdsArrayList.get(i).getPolicy_id());
             if (policyProductsId == null) {
@@ -973,16 +973,19 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
             String[] policyProductsIdArray = policyProductsId.split(",");
             Log.i(TAG, "policyProductsIdArray: " + new Gson().toJson(policyProductsIdArray));
             CartProductQtysum = 0.0;
+            Double cart_policy_value = 0.0;
             for (int ar = 0; ar < policyProductsIdArray.length; ar++) {
                 Integer product_id = Integer.valueOf(policyProductsIdArray[ar]);
                 String quentity = getPreference(String.valueOf(product_id));
-                Log.e("quentiry_product_id", quentity + "---" + product_id);
+                Log.e("quentiry_product_id", quentity + "---" + product_id+"   "+priceMap.get(product_id+""));
                 CartProductQtysum += ParseDouble(quentity);
+                cart_policy_value += (Double.parseDouble(quentity)*Double.parseDouble(priceMap.get(product_id+"")));
+
             }
 
             Log.e("product_id_quentity", String.valueOf(CartProductQtysum));
 
-            policyWiseSlabArrayList = db.getPolicy_Wise_Slab_List(policyIdsArrayList.get(i).getPolicy_id(), String.valueOf(CartProductQtysum));
+            policyWiseSlabArrayList = db.getPolicy_Wise_Slab_List(policyIdsArrayList.get(i).getPolicy_id(), String.valueOf(CartProductQtysum),cart_policy_value+"");
             Log.i(TAG, "policyWiseSlabArrayList: " + new Gson().toJson(policyWiseSlabArrayList));
 
               /*
@@ -995,6 +998,8 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
             for (int po = 0; po < policyWiseSlabArrayList.size(); po++) {
                 String minMemoVal = policyWiseSlabArrayList.get(po).getMin_memo_val();
+                String qty_value_flag = policyWiseSlabArrayList.get(po).getQty_value_flag();
+                String min_value = policyWiseSlabArrayList.get(po).getMin_value();
                 Log.e("minMemoVal", String.valueOf(minMemoVal));
                 Log.e("minMemoVal_", String.valueOf(memoTotal));
 
@@ -1003,6 +1008,15 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
                     continue;
                 }
+                if (!qty_value_flag.equals("1") && !min_value.equals("0") &&  Double.valueOf(policyWiseSlabArrayList.get(po).getMin_qty()) > CartProductQtysum &&  Double.valueOf(policyWiseSlabArrayList.get(po).getMin_value()) > cart_policy_value ) {
+                    Log.e("minMemoVal__", String.valueOf(memoTotal));
+
+                    continue;
+                }
+
+
+
+
 
                 exclusionArrayList = db.getExclusion_Product_List(policyWiseSlabArrayList.get(po).getOption_id());
                 int is_excluded = 0;
@@ -1097,7 +1111,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                 OldBPSelected_set.remove(policyIdsArrayList.get(i).getPolicy_id());
                 OldBPSelected_policy_type.remove(policyIdsArrayList.get(i).getPolicy_id());
             }
-            BPSelected_option_id.put(policyIdsArrayList.get(i).getPolicy_id(), policyWiseSlabArrayList.get(effective_options_slab_index).getOption_id());
+            BPSelected_option_id.put(policyIdsArrayList.get(i).getPolicy_id(),  policyWiseSlabArrayList.get(effective_options_slab_index).getOption_id());
 
             if (policy_type == 0 || policy_type == 2) {
 
@@ -1110,7 +1124,8 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                             String.valueOf(product_id),
                             policyWiseSlabArrayList.get(effective_options_slab_index).getPolicy_id(),
                             "0",
-                            policyWiseSlabArrayList.get(effective_options_slab_index).getPolicy_type()
+                            policyWiseSlabArrayList.get(effective_options_slab_index).getPolicy_type(),
+                            policyWiseSlabArrayList.get(effective_options_slab_index).getDeduct_from_value()
                     );
                 }
 
@@ -1177,7 +1192,8 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                                 String.valueOf(product_id),
                                 policyWiseSlabArrayList.get(effective_options_slab_index).getPolicy_id(),
                                 "0",
-                                policyWiseSlabArrayList.get(effective_options_slab_index).getPolicy_type()
+                                policyWiseSlabArrayList.get(effective_options_slab_index).getPolicy_type(),
+                                policyWiseSlabArrayList.get(effective_options_slab_index).getDeduct_from_value()
                         );
                     }
                 } else {
@@ -1307,7 +1323,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
             bonus_qty = String.valueOf(((Double.parseDouble(bonus_qty) * Double.parseDouble(Quantity)) / Double.parseDouble(minQty))); // Bonus Policy Change nasir vai for Joya 8 s belt
 
             bonus_qty = String.valueOf(Math.floor(Float.parseFloat(bonus_qty)));
-            Log.e("bonus_qty_ob", bonus_qty);
+            Log.e("bonus_qty_ob", bonus_qty+"           "+bonus_product_id);
             String mesurement_unit_id = policyBonusProductArrayList.get(vs).getUnit_id();
 
             double stockQty = 0;
@@ -1336,6 +1352,8 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                             )
             )
             ) {
+
+                Log.e("logggggif", bonus_product_id);
                 if (
                         OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id) != null
                                 && OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty") != null
@@ -1348,7 +1366,8 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                     selected = "false";
                 }
             } else {
-                    if(provide_qty != Double.valueOf(bonus_qty)) {
+                Log.e("logggggelse", bonus_product_id);
+                    if(provide_qty != Double.valueOf(bonus_qty) && checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), bonus_product_id)) {
                         provide_qty+=Double.valueOf(bonus_qty);
                         bonus_value = Double.valueOf(bonus_qty);
                         selected = "true";
@@ -1585,7 +1604,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                                 }
                             } else {
 
-                                if(provide_qty != Double.valueOf(bonus_qty)) {
+                                if(provide_qty != Double.valueOf(bonus_qty) && checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), policyBonusProductArrList.get(0).getBonus_product_id())) {
                                     provide_qty+=Double.valueOf(bonus_qty);
                                     bonus_value = Double.valueOf(bonus_qty);
                                     selected = "true";
@@ -1808,7 +1827,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                                 }
                             } else {
 
-                                if(provide_qty != Double.valueOf(bonus_qty)) {
+                                if(provide_qty != Double.valueOf(bonus_qty) && checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), policyBonusProductArrList.get(0).getBonus_product_id())) {
                                     provide_qty+=Double.valueOf(bonus_qty);
                                     bonus_value = Double.valueOf(bonus_qty);
                                     selected = "true";
@@ -1926,7 +1945,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                         }
                     } else {
 
-                        if(provide_qty != Double.valueOf(bonus_qty)) {
+                        if(provide_qty != Double.valueOf(bonus_qty) && checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), policyBonusProductArrList.get(0).getBonus_product_id())) {
                             provide_qty+=Double.valueOf(bonus_qty);
                             bonus_value = Double.valueOf(bonus_qty);
                             selected = "true";
@@ -2034,7 +2053,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                             selected = "false";
                         }
                     } else {
-                        if(provide_qty != Double.valueOf(bonus_qty)) {
+                        if(provide_qty != Double.valueOf(bonus_qty) && checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), policyBonusProductArrList.get(0).getBonus_product_id())) {
                             provide_qty+=Double.valueOf(bonus_qty);
                             bonus_value = Double.valueOf(bonus_qty);
                             selected = "true";
@@ -2083,6 +2102,20 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
         }
 
         BPBonusProductView.put(policyId, bonus_list_view);
+    }
+
+    private boolean checkDefaultProduct(String policy_id,String product_id) {
+
+       Cursor c = db.rawQuery("select * from policy_deafult_product where policy_id ="+policy_id+" and product_id="+product_id+"");
+        Log.e("dproduct55555","select * from policy_deafult_product where policy_id ="+policy_id+" and product_id="+product_id+"");
+       c.moveToFirst();
+       if (c.getCount()>0 && c!=null){
+           return true;
+       }else {
+
+           return false;
+       }
+
     }
 
     public ArrayList<HashMap<String, String>> parseFormula(String str, String policy_id) {
@@ -2154,38 +2187,44 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
     }
 
 
-    private void setOnlydiscount(String option_id, String discount_type, String discount_amount, String option_product_id, String policy_id, String recall_Qty,String policy_type) {
+    private void setOnlydiscount(String option_id, String discount_type, String discount_amount, String option_product_id, String policy_id, String recall_Qty,String policy_type,String deduct_from_value) {
         Log.e("dis_count_type", discount_type);
 
         try {
             //discount_type 0 % and 1 amount
-            Cursor cursor = db.rawQuery("select pc.price, pc.slab_id from product_combinations as pc inner join policy_option_price_slab as pops on pops.slab_id = pc.slab_id where pops.policy_product_option_id='" + option_id + "' and pops.option_product_id='" + option_product_id + "' and pc.product_id = '" + option_product_id + "'", "Bonus_product_Policy6");
-            Log.d("discount", DatabaseUtils.dumpCursorToString(cursor) + " : " + discount_amount);
+            Double price_ad=0.0,price=0.0, discount = 0.0;
 
-            cursor.moveToFirst();
+            if (deduct_from_value=="0") {
+                Cursor cursor = db.rawQuery("select pc.price, pc.slab_id from product_combinations as pc inner join policy_option_price_slab as pops on pops.slab_id = pc.slab_id where pops.policy_product_option_id='" + option_id + "' and pops.option_product_id='" + option_product_id + "' and pc.product_id = '" + option_product_id + "'", "Bonus_product_Policy6");
+                Log.d("discount", DatabaseUtils.dumpCursorToString(cursor) + " : " + discount_amount);
 
-            if (cursor != null && cursor.getCount() > 0) {
+                cursor.moveToFirst();
 
-                Double price, discount = 0.0;
+                if (cursor != null && cursor.getCount() > 0) {
+                    price_idMap.put(option_product_id, cursor.getString(1) + "");
+                    price = cursor.getDouble(0);
+                }
+                cursor.close();
+            }
+
+            price =  Double.parseDouble(priceMap.get(option_product_id));
 
                 Log.e("discount_type", discount_type);
                 discounttype.put(option_product_id, discount_type);
                 if (Integer.parseInt(discount_type) == 0) {
-
-                    discount = (Double.parseDouble(cursor.getString(0)) / 100.00) * Double.parseDouble(discount_amount);
-                    price = Double.parseDouble(cursor.getString(0)) - discount;
+                    discount = (price / 100.00) * Double.parseDouble(discount_amount);
                 } else {
                     discount = Double.parseDouble(discount_amount);
-                    price = Double.parseDouble(cursor.getString(0)) - discount;
                 }
+                     price_ad = price - discount;
 
-                Log.e("discountmap", discount + "temp+ price =" + cursor.getString(0) + " discount_amount" + discount_amount);
+                Log.e("discountmap", discount + "temp+ price =" + price + " discount_amount" + discount_amount);
                 savePreference("up" + option_product_id, "0");
-                priceMap.put(option_product_id, cursor.getString(0) + ""); //51482
+                priceMap.put(option_product_id, price + ""); //51482
                 discountmap.put(option_product_id, roundTwoDecimal(discount) + "");
                 discountmapview.put(option_product_id, roundTwoDecimal(discount) + "");
                 vatMap.put(option_product_id, String.valueOf(CheckVat(option_product_id)));
-                price_idMap.put(option_product_id, cursor.getString(1) + ""); //51482
+                  ; //51482
                 discountoffer.put(option_product_id, policy_type);
                 discountofferPolicyid.put(option_product_id, policy_id);
 
@@ -2193,8 +2232,8 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
               /*  if(Double.parseDouble(recall_Qty)>0)
                 setPolicyType(Double.parseDouble(recall_Qty),policy_id);*/
 
-            }
-            cursor.close();
+
+
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }

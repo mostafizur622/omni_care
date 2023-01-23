@@ -10,6 +10,10 @@ public class PolicyWiseSlab {
     private String discount_type;
     private String min_memo_val;
     private String formula;
+    private String qty_value_flag;
+    private String deduct_from_value;
+    private String min_value;
+
 
     public String getPolicy_id() {
         return policy_id;
@@ -75,4 +79,27 @@ public class PolicyWiseSlab {
         this.formula = formula;
     }
 
+    public String getQty_value_flag() {
+        return qty_value_flag;
+    }
+
+    public void setQty_value_flag(String qty_value_flag) {
+        this.qty_value_flag = qty_value_flag;
+    }
+
+    public String getDeduct_from_value() {
+        return deduct_from_value;
+    }
+
+    public void setDeduct_from_value(String deduct_from_value) {
+        this.deduct_from_value = deduct_from_value;
+    }
+
+    public String getMin_value() {
+        return min_value;
+    }
+
+    public void setMin_value(String min_value) {
+        this.min_value = min_value;
+    }
 }
