@@ -1111,7 +1111,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                 OldBPSelected_set.remove(policyIdsArrayList.get(i).getPolicy_id());
                 OldBPSelected_policy_type.remove(policyIdsArrayList.get(i).getPolicy_id());
             }
-            BPSelected_option_id.put(policyIdsArrayList.get(i).getPolicy_id(),  policyWiseSlabArrayList.get(effective_options_slab_index).getOption_id());
+            BPSelected_option_id.put(policyIdsArrayList.get(i).getPolicy_id(), policyWiseSlabArrayList.get(effective_options_slab_index).getOption_id());
 
             if (policy_type == 0 || policy_type == 2) {
 
