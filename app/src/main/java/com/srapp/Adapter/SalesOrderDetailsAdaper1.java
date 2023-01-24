@@ -979,7 +979,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                 String quentity = getPreference(String.valueOf(product_id));
                 Log.e("quentiry_product_id", quentity + "---" + product_id+"   "+priceMap.get(product_id+""));
                 CartProductQtysum += ParseDouble(quentity);
-                cart_policy_value += (Double.parseDouble(quentity)*Double.parseDouble(priceMap.get(product_id+"")));
+                    cart_policy_value += (Double.parseDouble(quentity)*Double.parseDouble(priceMap.get(product_id+"")));
 
             }
 
@@ -1114,19 +1114,46 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
             BPSelected_option_id.put(policyIdsArrayList.get(i).getPolicy_id(), policyWiseSlabArrayList.get(effective_options_slab_index).getOption_id());
 
             if (policy_type == 0 || policy_type == 2) {
-
+                Double price_ad=0.0,price=0.0, discount = 0.0;
+                Integer  deduct_from_value =Integer.parseInt(policyWiseSlabArrayList.get(effective_options_slab_index).getDeduct_from_value());
+                String  discount_type =policyWiseSlabArrayList.get(effective_options_slab_index).getDiscount_type();
+                String  option_product_id =policyWiseSlabArrayList.get(effective_options_slab_index).getOption_id();
+                String  policy_id = policyWiseSlabArrayList.get(effective_options_slab_index).getPolicy_id();
+                Double  discount_amount = Double.parseDouble(policyWiseSlabArrayList.get(effective_options_slab_index).getDiscount_amt());
+                String  Policy_type = policyWiseSlabArrayList.get(effective_options_slab_index).getPolicy_type();
+                if (deduct_from_value==0 || Integer.parseInt(discount_type) == 0) {
                 for (int ar = 0; ar < policyProductsIdArray.length; ar++) {
                     Integer product_id = Integer.valueOf(policyProductsIdArray[ar]);
 
-                    setOnlydiscount(policyWiseSlabArrayList.get(effective_options_slab_index).getOption_id(),
-                            policyWiseSlabArrayList.get(effective_options_slab_index).getDiscount_type(),
-                            policyWiseSlabArrayList.get(effective_options_slab_index).getDiscount_amt(),
-                            String.valueOf(product_id),
-                            policyWiseSlabArrayList.get(effective_options_slab_index).getPolicy_id(),
-                            "0",
-                            policyWiseSlabArrayList.get(effective_options_slab_index).getPolicy_type(),
-                            policyWiseSlabArrayList.get(effective_options_slab_index).getDeduct_from_value()
-                    );
+
+
+                        setOnlydiscount(option_product_id,
+                                discount_type,
+                                discount_amount,
+                                String.valueOf(product_id),
+                                policy_id,
+                                "0",
+                                policyWiseSlabArrayList.get(effective_options_slab_index).getPolicy_type(),
+                                policyWiseSlabArrayList.get(effective_options_slab_index).getDeduct_from_value()
+                        );
+
+                    }
+                }else {
+
+                     discount = discount_amount / CartProductQtysum;
+
+
+                    for (int ar = 0; ar < policyProductsIdArray.length; ar++) {
+                        Integer product_id = Integer.valueOf(policyProductsIdArray[ar]);
+                        Log.e("discountmap", discount + "temp+ price =" + price + " discount_amount" + discount_amount);
+                        savePreference("up" + option_product_id, "0");//51482
+                        discountmap.put(String.valueOf(product_id), roundTwoDecimal(discount) + "");
+                        discountmapview.put(String.valueOf(product_id), roundTwoDecimal(discount) + "");
+                        vatMap.put(String.valueOf(product_id), String.valueOf(CheckVat(String.valueOf(product_id))));
+                        ; //51482
+                        discountoffer.put(String.valueOf(product_id), policy_type+"");
+                        discountofferPolicyid.put(String.valueOf(product_id), policy_id);
+                    }
                 }
 
             }
@@ -1184,17 +1211,46 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                 policyArrayList.add(policyMap);
                 Log.e("PolicyArrayList_3", new Gson().toJson(policyArrayList));
                 if (selected_policy_type.equals("1")) {
-                    for (int ar = 0; ar < policyProductsIdArray.length; ar++) {
-                        Integer product_id = Integer.valueOf(policyProductsIdArray[ar]);
-                        setOnlydiscount(policyWiseSlabArrayList.get(effective_options_slab_index).getOption_id(),
-                                policyWiseSlabArrayList.get(effective_options_slab_index).getDiscount_type(),
-                                policyWiseSlabArrayList.get(effective_options_slab_index).getDiscount_amt(),
-                                String.valueOf(product_id),
-                                policyWiseSlabArrayList.get(effective_options_slab_index).getPolicy_id(),
-                                "0",
-                                policyWiseSlabArrayList.get(effective_options_slab_index).getPolicy_type(),
-                                policyWiseSlabArrayList.get(effective_options_slab_index).getDeduct_from_value()
-                        );
+                    Double price_ad=0.0,price=0.0, discount = 0.0;
+                    Integer  deduct_from_value =Integer.parseInt(policyWiseSlabArrayList.get(effective_options_slab_index).getDeduct_from_value());
+                    String  discount_type =policyWiseSlabArrayList.get(effective_options_slab_index).getDiscount_type();
+                    String  option_product_id =policyWiseSlabArrayList.get(effective_options_slab_index).getOption_id();
+                    String  policy_id = policyWiseSlabArrayList.get(effective_options_slab_index).getPolicy_id();
+                    Double  discount_amount = Double.parseDouble(policyWiseSlabArrayList.get(effective_options_slab_index).getDiscount_amt());
+                    String  Policy_type = policyWiseSlabArrayList.get(effective_options_slab_index).getPolicy_type();
+                    if (deduct_from_value==0 || Integer.parseInt(discount_type) == 0) {
+                        for (int ar = 0; ar < policyProductsIdArray.length; ar++) {
+                            Integer product_id = Integer.valueOf(policyProductsIdArray[ar]);
+
+
+
+                            setOnlydiscount(option_product_id,
+                                    discount_type,
+                                    discount_amount,
+                                    String.valueOf(product_id),
+                                    policy_id,
+                                    "0",
+                                    policyWiseSlabArrayList.get(effective_options_slab_index).getPolicy_type(),
+                                    policyWiseSlabArrayList.get(effective_options_slab_index).getDeduct_from_value()
+                            );
+
+                        }
+                    }else {
+
+                        discount = discount_amount / CartProductQtysum;
+
+
+                        for (int ar = 0; ar < policyProductsIdArray.length; ar++) {
+                            Integer product_id = Integer.valueOf(policyProductsIdArray[ar]);
+                            Log.e("discountmap", discount + "temp+ price =" + price + " discount_amount" + discount_amount);
+                            savePreference("up" + option_product_id, "0");//51482
+                            discountmap.put(String.valueOf(product_id), roundTwoDecimal(discount) + "");
+                            discountmapview.put(String.valueOf(product_id), roundTwoDecimal(discount) + "");
+                            vatMap.put(String.valueOf(product_id), String.valueOf(CheckVat(String.valueOf(product_id))));
+                            ; //51482
+                            discountoffer.put(String.valueOf(product_id), policy_type+"");
+                            discountofferPolicyid.put(String.valueOf(product_id), policy_id);
+                        }
                     }
                 } else {
                     if (policyWiseSlabArrayList.get(effective_options_slab_index).getFormula().equals("")) {
@@ -1360,6 +1416,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                                 && Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty")) > 0.0
                 ) {
                     bonus_value = Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty"));
+                    if (checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), bonus_product_id))
                     selected = "true";
                 } else {
                     bonus_value = 0.0;
@@ -1487,6 +1544,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                                                 && Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty")) > 0.0
                                 ) {
                                     bonus_value = Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty"));
+
                                     selected = "true";
                                 } else {
                                     bonus_value = 0.0;
@@ -1597,6 +1655,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                                                 && Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty")) > 0.0
                                 ) {
                                     bonus_value = Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty"));
+                                    if (checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), bonus_product_id))
                                     selected = "true";
                                 } else {
                                     bonus_value = 0.0;
@@ -1653,7 +1712,8 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                     policyArrayList.add(policyMap);
                 }
 
-            } else if (PolicySetRelation.get(policyId).equals("OR")) {
+            }
+            else if (PolicySetRelation.get(policyId).equals("OR")) {
                 String selected_set = "1";
                 Log.e("selected_set", selected_set);
                 Log.e("selected_set_map_old", new Gson().toJson(OldBPSelected_set));
@@ -1820,6 +1880,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                                                 && Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty")) > 0.0
                                 ) {
                                     bonus_value = Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty"));
+                                    if (checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), bonus_product_id))
                                     selected = "true";
                                 } else {
                                     bonus_value = 0.0;
@@ -1938,6 +1999,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                                         && Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty")) > 0.0
                         ) {
                             bonus_value = Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty"));
+                            if (checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), bonus_product_id))
                             selected = "true";
                         } else {
                             bonus_value = 0.0;
@@ -2047,6 +2109,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                                         && Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty")) > 0.0
                         ) {
                             bonus_value = Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty"));
+                            if (checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), bonus_product_id))
                             selected = "true";
                         } else {
                             bonus_value = 0.0;
@@ -2106,8 +2169,8 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
     private boolean checkDefaultProduct(String policy_id,String product_id) {
 
-       Cursor c = db.rawQuery("select * from policy_deafult_product where policy_id ="+policy_id+" and product_id="+product_id+"");
-        Log.e("dproduct55555","select * from policy_deafult_product where policy_id ="+policy_id+" and product_id="+product_id+"");
+       Cursor c = db.rawQuery("select * from policy_default_product where policy_id ="+policy_id+" and product_id="+product_id+"");
+        Log.e("dproduct55555","select * from policy_default_product where policy_id ="+policy_id+" and product_id="+product_id+"");
        c.moveToFirst();
        if (c.getCount()>0 && c!=null){
            return true;
@@ -2187,7 +2250,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
     }
 
 
-    private void setOnlydiscount(String option_id, String discount_type, String discount_amount, String option_product_id, String policy_id, String recall_Qty,String policy_type,String deduct_from_value) {
+    private void setOnlydiscount(String option_id, String discount_type, double discount_amount, String option_product_id, String policy_id, String recall_Qty,String policy_type,String deduct_from_value) {
         Log.e("dis_count_type", discount_type);
 
         try {
@@ -2205,16 +2268,18 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                     price = cursor.getDouble(0);
                 }
                 cursor.close();
+            }else {
+                price =  Double.parseDouble(priceMap.get(option_product_id));
             }
 
-            price =  Double.parseDouble(priceMap.get(option_product_id));
+
 
                 Log.e("discount_type", discount_type);
                 discounttype.put(option_product_id, discount_type);
                 if (Integer.parseInt(discount_type) == 0) {
-                    discount = (price / 100.00) * Double.parseDouble(discount_amount);
+                    discount = (price / 100.00) * discount_amount;
                 } else {
-                    discount = Double.parseDouble(discount_amount);
+                    discount = discount_amount;
                 }
                      price_ad = price - discount;
 
