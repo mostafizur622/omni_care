@@ -230,14 +230,14 @@ public class DB_Helper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(policy_product_Option_temp);
 
         //................................. default Bonus product ...........................................
-        String policy_deafult_product = "CREATE TABLE IF NOT EXISTS " + "policy_deafult_product" + "("
+        String policy_default_product = "CREATE TABLE IF NOT EXISTS " + "policy_default_product" + "("
                 + "_id" + " INTEGER PRIMARY KEY," +
                 "policy_id" + " VARCHAR," +
                 "product_id" + " VARCHAR," +
                 "discount_bonus_policy_option_id" + " VARCHAR," +
                 "updated_at" + " DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME'))" +
                 ")";
-        sqLiteDatabase.execSQL(policy_deafult_product);
+        sqLiteDatabase.execSQL(policy_default_product);
 
         //.................................policy_option_price_slab ...........................................
         String Policy_option_price_slab  = "CREATE TABLE IF NOT EXISTS " + "policy_option_price_slab" + "("

@@ -2411,7 +2411,7 @@ public class Data_Source extends Parent {
                             map2.put("policy_id", policy_deafult_product.getJSONObject(b).getString("discount_bonus_policy_id"));// group_wise_discount_bonus_policy_option_id
                             map2.put("discount_bonus_policy_option_id", policy_deafult_product.getJSONObject(b).getString("discount_bonus_policy_option_id"));
                             map2.put("product_id", policy_deafult_product.getJSONObject(b).getString("product_id")); //slab_id
-                            InsertTable(map2, "policy_deafult_product");
+                            InsertTable(map2, "policy_default_product");
 
                         }
 
@@ -2998,7 +2998,7 @@ public class Data_Source extends Parent {
                 "from policy_product_Option\n" +
                 "where \n" +
                 "policy_id=" + policyId + "\n" + "\n" +
-                "and (min_qty <=" + minQty + "\n" + "\n" +
+                "and (min_qty!=0 and min_qty <=" + minQty + "\n" + "\n" +
                 " or min_value <=" + minvalue + ")\n" + "\n" +
                 "order by min_qty desc";
 
@@ -4208,7 +4208,7 @@ public class Data_Source extends Parent {
                     sqLiteDatabase.execSQL("delete from policy_product_Option");
                     sqLiteDatabase.execSQL("delete from policy_option_price_slab");
                     sqLiteDatabase.execSQL("delete from policy_bonus_product");
-                    sqLiteDatabase.execSQL("delete from policy_deafult_product");
+                    sqLiteDatabase.execSQL("delete from policy_default_product");
                     sqLiteDatabase.execSQL("delete from DiscountBonusPolicyToSpecialGroupSo");
                     sqLiteDatabase.execSQL("delete from DiscountBonusPolicyOptionExclusionProduct");
                     sqLiteDatabase.execSQL("delete from DiscountBonusPolicyOptionInclusionProduct");
