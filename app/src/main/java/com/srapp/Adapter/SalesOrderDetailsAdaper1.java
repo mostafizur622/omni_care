@@ -2272,8 +2272,6 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                 price =  Double.parseDouble(priceMap.get(option_product_id));
             }
 
-
-
                 Log.e("discount_type", discount_type);
                 discounttype.put(option_product_id, discount_type);
                 if (Integer.parseInt(discount_type) == 0) {
