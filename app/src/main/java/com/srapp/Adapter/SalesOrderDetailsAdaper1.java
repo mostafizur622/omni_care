@@ -905,6 +905,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
         OldBPSelected_option_id.clear();
 
         OldBPSelected_bonus.putAll(BPSelected_bonus);
+        Log.e("OldBPSelected_bonus",OldBPSelected_bonus.toString());
         OldBPSelected_set.putAll(BPSelected_set);
         OldBPSelected_policy_type.putAll(BPSelected_policy_type);
         OldBPSelected_option_id.putAll(BPSelected_option_id);
@@ -1379,7 +1380,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
             bonus_qty = String.valueOf(((Double.parseDouble(bonus_qty) * Double.parseDouble(Quantity)) / Double.parseDouble(minQty))); // Bonus Policy Change nasir vai for Joya 8 s belt
 
             bonus_qty = String.valueOf(Math.floor(Float.parseFloat(bonus_qty)));
-            Log.e("bonus_qty_ob", bonus_qty+"           "+bonus_product_id);
+            Log.e("bonus_qty_ob", bonus_qty+"           "+bonus_product_id + "     "+Quantity+"     "+minQty+"     "+ OldBPSelected_bonus.get(policyId));
             String mesurement_unit_id = policyBonusProductArrayList.get(vs).getUnit_id();
 
             double stockQty = 0;
@@ -1409,21 +1410,21 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
             )
             ) {
 
-                Log.e("logggggif", bonus_product_id);
+                Log.e("logggggif", bonus_product_id+"  "+provide_qty+"  "+bonus_qty);
                 if (
                         OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id) != null
                                 && OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty") != null
                                 && Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty")) > 0.0
                 ) {
                     bonus_value = Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty"));
-                    if (checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), bonus_product_id))
+                    //if (checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), bonus_product_id))
                     selected = "true";
                 } else {
                     bonus_value = 0.0;
                     selected = "false";
                 }
             } else {
-                Log.e("logggggelse", bonus_product_id);
+                Log.e("logggggelse", bonus_product_id+"  "+provide_qty+"  "+bonus_qty);
                     if(provide_qty != Double.valueOf(bonus_qty) && checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), bonus_product_id)) {
                         provide_qty+=Double.valueOf(bonus_qty);
                         bonus_value = Double.valueOf(bonus_qty);
@@ -1655,7 +1656,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                                                 && Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty")) > 0.0
                                 ) {
                                     bonus_value = Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty"));
-                                    if (checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), bonus_product_id))
+                                    //if (checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), bonus_product_id))
                                     selected = "true";
                                 } else {
                                     bonus_value = 0.0;
@@ -1880,7 +1881,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                                                 && Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty")) > 0.0
                                 ) {
                                     bonus_value = Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty"));
-                                    if (checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), bonus_product_id))
+                                    //if (checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), bonus_product_id))
                                     selected = "true";
                                 } else {
                                     bonus_value = 0.0;
@@ -1941,10 +1942,10 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
             if (formulaArrayMap.get(0).get("relation").equals("AND")) {
                 String[] elementSplit = formulaArrayMap.get(0).get("element").split(",");
-                double provide_qty = 0.0;
+
 
                 for (int es = 0; es < elementSplit.length; es++) {
-
+                    double provide_qty = 0.0;
                     ArrayList<PolicyBonusProduct> policyBonusProductArrList = db.getBonusProductList(option_id, elementSplit[es]);
 
                     String bonus_qty = policyBonusProductArrList.get(0).getBonus_qty();
@@ -1972,7 +1973,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                     Double bonus_value = 0.00;
                     String selected = "false";
 
-
+                    Log.e("before_if",bonus_qty);
                     if (
                             OldBPSelected_bonus.get(policyId) != null
                                     && OldBPSelected_bonus.get(policyId).get(set) != null
@@ -1993,28 +1994,32 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                             )
 
                     ) {
+
                         if (
                                 OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id) != null
                                         && OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty") != null
                                         && Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty")) > 0.0
                         ) {
                             bonus_value = Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty"));
-                            if (checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), bonus_product_id))
+                            //if (checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), bonus_product_id))
                             selected = "true";
                         } else {
                             bonus_value = 0.0;
                             selected = "false";
                         }
+                        Log.e("bonus_valueif", bonus_value + "   Q " +Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty")));
                     } else {
 
-                        if(provide_qty != Double.valueOf(bonus_qty) && checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), policyBonusProductArrList.get(0).getBonus_product_id())) {
+                        if(provide_qty != Double.valueOf(bonus_qty)) {
                             provide_qty+=Double.valueOf(bonus_qty);
                             bonus_value = Double.valueOf(bonus_qty);
                             selected = "true";
                         }
+
+                        Log.e("bonus_valueelse", provide_qty+"  "+bonus_value + "  "+bonus_qty);
                     }
 
-                    Log.e("bonus_value", bonus_value + "");
+
                     HashMap<String, String> map = new HashMap<>();
 
                     map.put("product_id", policyBonusProductArrList.get(0).getBonus_product_id());
@@ -2109,7 +2114,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                                         && Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty")) > 0.0
                         ) {
                             bonus_value = Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty"));
-                            if (checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), bonus_product_id))
+                            //if (checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), bonus_product_id))
                             selected = "true";
                         } else {
                             bonus_value = 0.0;

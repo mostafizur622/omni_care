@@ -414,6 +414,7 @@ public class Data_Source extends Parent {
 
                 } while (c.moveToNext());
             }
+            c.close();
 
 
         }
@@ -447,8 +448,9 @@ public class Data_Source extends Parent {
                     }
 
                 }
+                cname.close();
             }
-
+            virtual_cursor.close();
         }
 
         Log.e("product_name", product_name);

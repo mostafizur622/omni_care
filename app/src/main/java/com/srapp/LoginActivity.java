@@ -156,7 +156,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
             @Override
             public void onClick(View v) {
 
-               /* login_button.setEnabled(false);
+                /*login_button.setEnabled(false);
                 startActivity(new Intent(LoginActivity.this, Dashboard.class));
                 finish();*/
                 JSONObject jsonObject = new JSONObject();

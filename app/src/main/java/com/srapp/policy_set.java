@@ -138,6 +138,7 @@ public class policy_set extends Parent {
         BPBonusProductView_policy_id = BPBonusProductView.get(policy_id);
 
             Log.e("SetRelation", PolicySetRelation.get(policy_id) + "---");
+            Log.e("SetRelation", BPBonusProductView.get(policy_id) + "---");
 
             if (PolicySetRelation.get(policy_id) == null || PolicySetRelation.get(policy_id).equals("") || PolicySetRelation.get(policy_id).equals("AND")) {
                 ArrayList<HashMap<String, String>> set1 = new ArrayList<HashMap<String, String>>();
