@@ -259,18 +259,32 @@ public class policy_set_for_dis_or_bonus extends Parent {
 
                 Log.e(TAG, "Set1: " + new Gson().toJson(set1));
                 Log.e(TAG, "Set2: " + new Gson().toJson(set2));
-                if(set1.size()>0 && !set1.get(0).get("relation").equals("AND")) {
+                if(set1.size()>0 && set1.get(0).get("relation").equals("OR")) {
+
                     adapterForBonusPolicyProductSelection = new AdapterForBonusPolicyProductSelection(this, set1, Double.parseDouble(set1.get(0).get("provided_qty")));
                     listView.setAdapter(adapterForBonusPolicyProductSelection);
                 }
-                else
+                else if(set2.size()>0 && set2.get(0).get("relation").equals("OR"))
                 {
-                    listView.setVisibility(View.GONE);
-                    devider.setVisibility(View.GONE);
-                }
-                if(set2.size()>0 && !set2.get(0).get("relation").equals("AND"))
-                {
+                    Log.e("Debug_T8", "Set1: " + new Gson().toJson(set2));
                     adapterForBonusPolicyProductSelection1 = new AdapterForBonusPolicyProductSelection1(this, set2, Double.parseDouble(set2.get(0).get("provided_qty")));
+                    ListViewSetRelation.setAdapter(adapterForBonusPolicyProductSelection1);
+                }
+                else if(set1.size()>0 && set1.get(0).get("relation").equals("AND")) {
+                    Double eligeble_qty=0.0;
+                    for (int t=0; t<set1.size();t++){
+                        eligeble_qty+=Double.parseDouble(set1.get(t).get("provided_qty"));
+                    }
+                    adapterForBonusPolicyProductSelection = new AdapterForBonusPolicyProductSelection(this, set1, eligeble_qty);
+                    listView.setAdapter(adapterForBonusPolicyProductSelection);
+                }
+                else if(set2.size()>0 && set2.get(0).get("relation").equals("AND"))
+                { Double eligeble_qty=0.0;
+                    for (int t=0; t<set2.size();t++){
+                        eligeble_qty+=Double.parseDouble(set2.get(t).get("provided_qty"));
+                    }
+                    Log.e("Debug_T8", "Set1: " + new Gson().toJson(set2));
+                    adapterForBonusPolicyProductSelection1 = new AdapterForBonusPolicyProductSelection1(this, set2, eligeble_qty);
                     ListViewSetRelation.setAdapter(adapterForBonusPolicyProductSelection1);
                 }
                 else

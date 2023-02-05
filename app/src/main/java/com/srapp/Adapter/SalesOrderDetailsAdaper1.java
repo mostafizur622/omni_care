@@ -980,6 +980,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                 String quentity = getPreference(String.valueOf(product_id));
                 Log.e("quentiry_product_id", quentity + "---" + product_id+"   "+priceMap.get(product_id+""));
                 CartProductQtysum += ParseDouble(quentity);
+                if (priceMap.get(product_id)!=null)
                     cart_policy_value += (Double.parseDouble(quentity)*Double.parseDouble(priceMap.get(product_id+"")));
 
             }
@@ -1817,7 +1818,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                             map1.put("editable", selected);
                             map1.put("policy_id", policyBonusProductArrList.get(0).getPolicy_id());
                             map1.put("measurement_unit_id", mesurement_unit_id);
-                            map1.put("relation", "AND");
+                            map1.put("relation", "OR");
                             bonus_list_view.add(map1);
                             Log.e("stockQty", stockQty + "");
 
@@ -2274,6 +2275,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                 }
                 cursor.close();
             }else {
+                if (priceMap.get(option_product_id)!=null)
                 price =  Double.parseDouble(priceMap.get(option_product_id));
             }
 
