@@ -275,6 +275,8 @@ public class policy_set_for_dis_or_bonus extends Parent {
                     for (int t=0; t<set1.size();t++){
                         eligeble_qty+=Double.parseDouble(set1.get(t).get("provided_qty"));
                     }
+
+                    Log.e("Debug_T9",eligeble_qty+"");
                     adapterForBonusPolicyProductSelection = new AdapterForBonusPolicyProductSelection(this, set1, eligeble_qty);
                     listView.setAdapter(adapterForBonusPolicyProductSelection);
                 }

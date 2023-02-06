@@ -169,6 +169,7 @@ public class policy_set extends Parent {
                     for (int t=0; t<set1.size();t++){
                         eligeble_qty+=Double.parseDouble(set1.get(t).get("provided_qty"));
                     }
+                    Log.e("Debug_T9", "Set1: " + new Gson().toJson(set1)+"   "+eligeble_qty);
                     adapterForBonusPolicyProductSelection = new AdapterForBonusPolicyProductSelection(this, set1, eligeble_qty);
                     listView.setAdapter(adapterForBonusPolicyProductSelection);
                 }
@@ -190,7 +191,7 @@ public class policy_set extends Parent {
             }
 
             else {
-
+                Log.e("Debug_T10", "Set1: " + new Gson().toJson(BPBonusProductView_policy_id));
                 set1.setVisibility(View.VISIBLE);
                 set2.setVisibility(View.VISIBLE);
                 if (BPSelected_set.get(policy_id).equals("1")) {
