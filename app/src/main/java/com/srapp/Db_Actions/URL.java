@@ -4,6 +4,7 @@ public class URL {
 
 
   public static final String Domain = "http://202.126.123.157/smc_test/api_data_dist124Retrives/"; //2 may 2021
+ // public static final String Domain = "http://202.126.123.157/smc_only_dms/api_data_dist124Retrives/"; //2 may 2021
   //public static final String Domain = "http://192.168.10.82:90/smc-e-sales/api_data_dist124Retrives/"; //2 may 2021
 
    // public static final String Domain = "http://182.160.103.236:8079/api_data_dist124Retrives/"; //after_marge dec 6 2021
