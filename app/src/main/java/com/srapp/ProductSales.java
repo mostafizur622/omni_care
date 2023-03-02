@@ -1121,6 +1121,9 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
                 map1.put(Tables.ORDER_discount_Percentage, "0");
             }
 
+
+
+
             map1.put(Tables.ORDER_discount_amount, discount.getText().toString().trim());
             map1.put(Tables.ORDER_gross_value, TotalPrice.getText().toString());
             map1.put(Tables.ORDER_is_active, "1");
@@ -1161,7 +1164,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
             map1.put(Tables.MEMOS_is_active, "1");
             map1.put(MEMOS_latitude, lat);
             map1.put(Tables.MEMOS_longitude, lng);
-            map1.put(Tables.MEMOS_total_discount, discount.getText().toString());
+            map1.put(Tables.MEMOS_total_discount, discount.getText().toString().trim());
             map1.put(Tables.MEMOS_discount_amount, discount.getText().toString().trim());
             if (TempData.DISTYPE == 1) {
                 map1.put(Tables.MEMOS_discount_Percentage, TempData.DISCOUNTP + "");

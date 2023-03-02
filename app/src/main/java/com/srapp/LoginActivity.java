@@ -159,6 +159,8 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                 /*login_button.setEnabled(false);
                 startActivity(new Intent(LoginActivity.this, Dashboard.class));
                 finish();*/
+
+                if (basicFunction.getPreference("sales_person_id").equalsIgnoreCase("null") || basicFunction.isInternetOn()){
                 JSONObject jsonObject = new JSONObject();
                 try {
                     Log.e("permission", checkForPermission() + "");
@@ -177,6 +179,10 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Log.e("ServiceHandlerOutlets", e.getMessage());
+                }
+             }else {
+                    startActivity(new Intent(LoginActivity.this, Dashboard.class));
+                    finish();
                 }
             }
 
