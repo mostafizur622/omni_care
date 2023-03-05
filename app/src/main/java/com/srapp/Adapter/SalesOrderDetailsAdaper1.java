@@ -1360,7 +1360,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                 policyArrayList.add(policyMap);
             }
         }
-
+        Log.i("T_01", "policyBonusProductArrayList: "+policyType + new Gson().toJson(policyArrayList)+" "+policyBonusProductArrayList.size());
         double provide_qty = 0.0;
 
         ArrayList<HashMap<String, String>> bonus_list_view = new ArrayList<HashMap<String, String>>();

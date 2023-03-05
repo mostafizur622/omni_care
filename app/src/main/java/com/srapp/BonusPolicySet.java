@@ -39,6 +39,7 @@ public class BonusPolicySet extends Parent {
             finishAndRemoveTask(); // Before- finish();
         });
 
+        Log.e("befoeremove1", policyArrayList.size()+" ");
         dataAdapter = new AdapterForBonusPolicySet(BonusPolicySet.this, policyArrayList);
         ListView listView = (ListView) findViewById(R.id.ProductListView);
         listView.setAdapter(dataAdapter);
