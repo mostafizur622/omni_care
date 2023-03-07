@@ -980,14 +980,14 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
             for (int ar = 0; ar < policyProductsIdArray.length; ar++) {
                 Integer product_id = Integer.valueOf(policyProductsIdArray[ar]);
                 String quentity = getPreference(String.valueOf(product_id));
-                Log.e("quentiry_product_id", quentity + "---" + product_id + "   " + priceMap.get(product_id + ""));
+                Log.e("quentiry_product_id", quentity + "---" + product_id + "   " + priceMap.get(product_id + "") +(priceMap.get(product_id) != null));
                 CartProductQtysum += ParseDouble(quentity);
-                if (priceMap.get(product_id) != null)
+                if (priceMap.get(product_id+"") != null)
                     cart_policy_value += (Double.parseDouble(quentity) * Double.parseDouble(priceMap.get(product_id + "")));
-
+                Log.e("product_id_quentity2",cart_policy_value+"");
             }
 
-            Log.e("product_id_quentity", String.valueOf(CartProductQtysum));
+            Log.e("product_id_quentity", String.valueOf(CartProductQtysum)+" "+cart_policy_value);
 
             policyWiseSlabArrayList = db.getPolicy_Wise_Slab_List(policyIdsArrayList.get(i).getPolicy_id(), String.valueOf(CartProductQtysum), cart_policy_value + "");
             Log.i(TAG, "policyWiseSlabArrayList: " + new Gson().toJson(policyWiseSlabArrayList));
@@ -1012,8 +1012,14 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
                     continue;
                 }
-                if (!qty_value_flag.equals("1") && !min_value.equals("0") && Double.valueOf(policyWiseSlabArrayList.get(po).getMin_qty()) > CartProductQtysum && Double.valueOf(policyWiseSlabArrayList.get(po).getMin_value()) > cart_policy_value) {
-                    Log.e("minMemoVal__", String.valueOf(memoTotal));
+
+                Log.e("policyWiseSlabArrayListT1", new Gson().toJson(policyWiseSlabArrayList.get(po)));
+
+
+
+                Log.e("T_02","qty_value_flag= "+qty_value_flag+  "\nmin_value="+min_value  + "\ngetMin_qty="+policyWiseSlabArrayList.get(po).getMin_qty()+"\nCartProductQtysum="+CartProductQtysum+"\ngetMin_value="+policyWiseSlabArrayList.get(po).getMin_value()+"\ncart_policy_value"+cart_policy_value);
+                if (!qty_value_flag.equals("1") &&   (Double.valueOf(policyWiseSlabArrayList.get(po).getMin_qty()) > CartProductQtysum || Double.valueOf(policyWiseSlabArrayList.get(po).getMin_value()) > cart_policy_value)) {
+                    Log.e("policyWiseSlabArrayListT1", new Gson().toJson(policyWiseSlabArrayList.get(po)));
 
                     continue;
                 }
@@ -1350,7 +1356,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
         policyBonusProductArrList = policyBonusProductArrayList;
         Log.i(TAG, "policyBonusProductArrayList: " + new Gson().toJson(policyBonusProductArrayList));
 
-        if (policyBonusProductArrayList.size() >= 2) {
+
             HashMap<String, String> policyMap = new HashMap<String, String>();
             policyMap.put("policy_type", policyType);
             policyMap.put("option_id", optionId);
@@ -1359,7 +1365,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
             if (!policyType.equals("3")) {
                 policyArrayList.add(policyMap);
             }
-        }
+
         Log.i("T_01", "policyBonusProductArrayList: "+policyType + new Gson().toJson(policyArrayList)+" "+policyBonusProductArrayList.size());
         double provide_qty = 0.0;
 
@@ -1937,7 +1943,8 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
             }
 
-        } else {
+        }
+        else {
             String set = "1";
             HashMap<String, HashMap<String, HashMap<String, String>>> set_map = new HashMap<>();
             HashMap<String, HashMap<String, String>> product_map = new HashMap<>();
@@ -2012,7 +2019,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                         Log.e("bonus_valueif", bonus_value + "   Q " + Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty")));
                     } else {
 
-                        if (provide_qty != Double.valueOf(bonus_qty)) {
+                        if (provide_qty != Double.valueOf(bonus_qty) && checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), policyBonusProductArrList.get(0).getBonus_product_id())) {
                             provide_qty += Double.valueOf(bonus_qty);
                             bonus_value = Double.valueOf(bonus_qty);
                             selected = "true";
@@ -2051,6 +2058,17 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                     map1.put("relation", "AND");
                     bonus_list_view.add(map1);
                     Log.e("Debug_T6", "Set1: " + new Gson().toJson(map1));
+
+
+                    HashMap<String, String> policyMap = new HashMap<String, String>();
+                    policyMap.put("policy_type", policyType);
+                    policyMap.put("option_id", option_id);
+                    policyMap.put("policy_id", policyId);
+                    policyMap.put("policy_name", policyName);
+                    if (!policyType.equals("3")) {
+                        policyArrayList.add(policyMap);
+                    }
+
                 }
             } else if (formulaArrayMap.get(0).get("relation").equals("OR")) {
                 double provide_qty = 0.0;

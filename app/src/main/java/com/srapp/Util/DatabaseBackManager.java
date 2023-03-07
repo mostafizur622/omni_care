@@ -58,7 +58,11 @@ public class DatabaseBackManager {
         emailIntent.setType("text/plain");
         emailIntent.putExtra(Intent.EXTRA_EMAIL, EMAIL);
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "SMC SR APP database backup");
-        emailIntent.putExtra(Intent.EXTRA_TEXT,  "SPID : "+ prefs.getString(SR_ID, "NO PREFERENCE") +"\n"+"Username : "+prefs.getString("sr_name","0"));
+        emailIntent.putExtra(Intent.EXTRA_TEXT,  "SPID : "+ prefs.getString(SR_ID, "NO PREFERENCE")
+                +"\n"+"Name : "+prefs.getString("sr_name","0")
+                +"\n"+"Username : "+prefs.getString("sr_uname","0")
+                +"\n"+"password : "+prefs.getString("password","0")
+        );
         emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("content://" + CachedFileProvider.AUTHORITY + "/" + Tables.DATABASE_NAME));
         emailIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         context.startActivity(Intent.createChooser(emailIntent, "Pick an Email provider"));

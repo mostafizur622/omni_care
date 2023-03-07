@@ -2315,6 +2315,7 @@ public class Data_Source extends Parent {
                         map.put("start_date", policy_table.getString("start_date"));
                         map.put("policy_name", policy_table.getString("name"));
                         map.put("end_date", policy_table.getString("end_date"));
+                        map.put("updated_at", policy_table.getString("updated_at"));
                         InsertTable(map, "Policy_Table");
                     } catch (Exception e) {
                         Log.e("policy_tablex1", e.getMessage());
@@ -3628,6 +3629,15 @@ public class Data_Source extends Parent {
                 finaljsonObject.put("order_list", jsonArray);
                 finaljsonObject.put("mac", basicFunction.getPreference("mac"));
                 finaljsonObject.put(Tables.SR_ID, basicFunction.getPreference(Tables.SR_ID));
+                /*finaljsonObject.put("office_id", basicFunction.getPreference("office_id"));
+                finaljsonObject.put("distributor_id", basicFunction.getPreference("db_id"));
+                finaljsonObject.put("store_id", basicFunction.getPreference("store_id"));
+                finaljsonObject.put("sales_representative_id", basicFunction.getPreference("sr_id"));
+                finaljsonObject.put("sales_representative_code", basicFunction.getPreference("sr_code"));
+                finaljsonObject.put("territory_id", basicFunction.getPreference("territory_id"));
+                finaljsonObject.put("tso_id", basicFunction.getPreference("tso_id"));
+                finaljsonObject.put("ae_id", basicFunction.getPreference("ae_id"));*/
+
 
 
                 progressDialog.dismiss();

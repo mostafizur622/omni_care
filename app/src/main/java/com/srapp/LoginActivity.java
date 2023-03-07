@@ -181,8 +181,12 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                     Log.e("ServiceHandlerOutlets", e.getMessage());
                 }
              }else {
-                    startActivity(new Intent(LoginActivity.this, Dashboard.class));
-                    finish();
+                    if (basicFunction.getPreference("password").equalsIgnoreCase(editPassword.getText().toString())) {
+                        startActivity(new Intent(LoginActivity.this, Dashboard.class));
+                        finish();
+                    }else {
+                        Toast.makeText(LoginActivity.this, "Wrong Username Or Password", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
 
@@ -258,6 +262,14 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                         basicFunction.savePreference("db_name",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("db_name"));
                         basicFunction.savePreference("db_address",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("db_address"));
                         basicFunction.savePreference("db_mobile",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("db_mobile"));
+
+
+                        /*basicFunction.savePreference("store_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("store_id"));
+                        basicFunction.savePreference("ae_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("ae_id"));
+                        basicFunction.savePreference("tso_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("tso_id"));
+                        basicFunction.savePreference("db_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("db_id"));
+                        basicFunction.savePreference("sr_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("sr_id"));
+                        basicFunction.savePreference("sr_code",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("sr_code"));*/
 
                         Log.e("office_name",getPreference("office_name"));
                         ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);

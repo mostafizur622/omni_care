@@ -603,30 +603,7 @@
                                 </ScrollView>
                             </LinearLayout>
 
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:background="@drawable/top_corner_bg"
-                                android:orientation="horizontal"
-                                android:weightSum="2">
 
-
-                                <Button
-                                    android:id="@+id/SaveButton"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_margin="5dp"
-
-                                    android:background="@drawable/button_shadow"
-                                    android:gravity="center"
-                                    android:text="Save"
-                                    android:textAllCaps="false"
-                                    android:textColor="@color/white"
-                                    android:textSize="18dp">
-
-                                </Button>
-
-                            </LinearLayout>
 
 
 
@@ -640,6 +617,8 @@
 
                 </LinearLayout>
 
+
+
             </ScrollView>
 
 
@@ -647,7 +626,34 @@
         </LinearLayout>
     </LinearLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/top_corner_bg"
+        android:orientation="horizontal"
+        android:weightSum="2">
 
+
+        <Button
+            android:id="@+id/SaveButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/button_shadow"
+            android:gravity="center"
+            android:text="Save"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="18dp">
+
+        </Button>
+
+    </RelativeLayout>
 
 
 </LinearLayout>
