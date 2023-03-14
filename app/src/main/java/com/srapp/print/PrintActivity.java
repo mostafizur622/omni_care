@@ -713,7 +713,9 @@ public class PrintActivity<BarcodeFormat> extends ParentActivity {
             }
         }
 
+        if (date.length()>3)
         date = date.substring(0, date.length() - 3);
+
 
         String total = String.valueOf(roundTwoDecimals(Double.parseDouble(TempData.InvoiceTotal)));
 

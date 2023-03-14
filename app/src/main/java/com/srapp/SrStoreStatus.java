@@ -127,9 +127,10 @@ public class SrStoreStatus extends ParentActivity implements BasicFunctionListen
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 TextView textView = (TextView)parent.getChildAt(0);
-                textView.setTextColor(getResources().getColor(R.color.background_card));
-                textView.setPadding(0,0,0,0);
-
+                if (textView!=null) {
+                    textView.setTextColor(getResources().getColor(R.color.background_card));
+                    textView.setPadding(0, 0, 0, 0);
+                }
                 typeId = productTypeList.get(Tables.PRODUCT_TYPE_ID).get(position);
                 Log.e("type & cat--->", "onTypeSelect: "+typeId+"  "+categoryId );
                 if (typeId != null) {

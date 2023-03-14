@@ -22,7 +22,7 @@ public class AppManager {
 	public static void setCloseKeyBoard(Context context,EditText QuantityEd) {
 		InputMethodManager imm = (InputMethodManager) context
 				.getSystemService(Context.INPUT_METHOD_SERVICE);
-		if(imm != null){
+		if(imm != null && QuantityEd!=null){
 	        imm.hideSoftInputFromWindow(QuantityEd.getWindowToken(), 0);
 	    }
 	}

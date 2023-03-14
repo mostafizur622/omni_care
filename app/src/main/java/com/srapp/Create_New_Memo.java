@@ -556,6 +556,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
                         TempData.tempThana = routeSp.getSelectedItem().toString();
                         savePreference("Thana", routeSp.getSelectedItem().toString());
                         TempData.tempThana = routeSp.getSelectedItem().toString();
+                        if (autoPos<BonusPartyType.size())
                         savePreference("BonusPartyType", BonusPartyType.get(autoPos));
                         TempData.editMemo = "false";
                         db.prepareDataForOrder(_OutletID);

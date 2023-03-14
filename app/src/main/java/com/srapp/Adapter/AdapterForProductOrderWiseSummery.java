@@ -61,6 +61,7 @@ import static com.srapp.Db_Actions.Tables.PRODUCT_PRODUCT_NAME;
             TextView tqtytxt = context.findViewById(R.id.tqty);
             TextView tbqtyet = context.findViewById(R.id.tbqty);
             HashMap<String, String> mapContent = new HashMap<String, String>();
+
             mapContent = BonusItemList.get(position);
             View view2 = LayoutInflater.from(parent.getContext()).inflate(R.layout.product_wise_order_summery, null);
             TextView product_name = (TextView)view2.findViewById(R.id.product_name);

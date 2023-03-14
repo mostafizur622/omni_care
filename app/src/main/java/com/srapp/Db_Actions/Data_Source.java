@@ -2,6 +2,7 @@ package com.srapp.Db_Actions;
 
 import static android.content.ContentValues.TAG;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -279,7 +280,7 @@ public class Data_Source extends Parent {
 
         Log.e("test---->", "getQtyAndPriceByProductId:--------> " + qtyAndPriceHashMap);
 
-
+        this.close();
         return qtyAndPriceHashMap;
 
 
@@ -1880,8 +1881,9 @@ public class Data_Source extends Parent {
 
             update = true;
         }
-
+        c.close();
         Log.e("updateOrInsert", update + "");
+        close();
         return update;
 
     }
@@ -3303,9 +3305,12 @@ public class Data_Source extends Parent {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = new ProgressDialog(context);
-            progressDialog.setMessage("Getting Ready Invoices ...");
-            progressDialog.show();
+            Activity activity = (Activity)context;
+            if (activity.isFinishing()) {
+                progressDialog = new ProgressDialog(context);
+                progressDialog.setMessage("Getting Ready Invoices ...");
+                progressDialog.show();
+            }
         }
 
         @Override
@@ -3371,12 +3376,11 @@ public class Data_Source extends Parent {
 
         @Override
         protected String doInBackground(String... strings) {
-
+            open();
             for (int i = 0; i < Tables.All_TABLE_NAME.length; i++) {
 
                 JSONObject jsonObject1 = new JSONObject();
 
-                open();
 
                 Cursor c = sqLiteDatabase.rawQuery("select " + Tables.MESSAGE_UPDATED_AT + " from " + Tables.All_TABLE_NAME[i] + " order by _id desc limit 1", null);
                 c.moveToFirst();
@@ -3411,6 +3415,8 @@ public class Data_Source extends Parent {
                 }
 
 
+
+
                /* for (int j = 0; j < TABLE_NAME_ALL_DATA.length; j++) {
 
                     if (TABLE_NAME_ALL_DATA[j].equalsIgnoreCase(Tables.All_TABLE_NAME[i])) {
@@ -3433,7 +3439,7 @@ public class Data_Source extends Parent {
                     e.printStackTrace();
                 }
             }
-
+            close();
             try {
 
                 jsonObject.put("sales_person_id", basicFunction.getPreference(SR_ID));
@@ -3891,6 +3897,7 @@ public class Data_Source extends Parent {
                 finaljsonObject.put(Tables.SR_ID, basicFunction.getPreference(Tables.SR_ID));
                 finaljsonObject = getGiftIssue(finaljsonObject, Order_NUMBER);
                 Log.e("MemoJson",finaljsonObject.toString());
+                if (progressDialog!=null)
                 progressDialog.dismiss();
                 dbListener.OnLocalDBdataRetrive(finaljsonObject.toString());
 

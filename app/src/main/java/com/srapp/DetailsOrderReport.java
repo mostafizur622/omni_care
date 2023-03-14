@@ -666,9 +666,9 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
         }
 
         Cursor c1 = db.rawQuery("select * from order_details where order_number='" + TempData.orderNumber + "'");
-        Log.e("C1Cursor",DatabaseUtils.dumpCursorToString(c1));
+
         c1.moveToFirst();
-        if (c1 != null && c.getCount() > 0) {
+        if (c1 != null && c1.getCount() > 0) {
             do {
                 HashMap<String, String> map1 = new HashMap<>();
                 for (int i = 4; i < MEMO_DETAILS.length - 2; i++) {
