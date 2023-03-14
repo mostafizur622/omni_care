@@ -1,6 +1,7 @@
 package com.srapp;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -40,7 +41,13 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import static com.srapp.Db_Actions.Tables.SR_ID;
-import static com.srapp.Db_Actions.URL.ORDERS_FOR_UNPROCESS;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class Multiple_Invoice_print extends AppCompatActivity implements BasicFunctionListener {
     Spinner route, MarketSp, OutletSp;
@@ -136,8 +143,19 @@ public class Multiple_Invoice_print extends AppCompatActivity implements BasicFu
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                JSONObject jsonObject = new JSONObject();
+                try {
 
-                Getdata();
+                jsonObject.put(SR_ID, bf.getPreference(SR_ID));
+                jsonObject.put("market_id", bf.getPreference("pMarketID"));
+                jsonObject.put("route_id", bf.getPreference("prouteId"));
+                jsonObject.put("outlet_id", bf.getPreference("pOutletID"));
+                jsonObject.put("mac", bf.getPreference("mac"));
+                                   jsonObject.put("order_date", bf.getPreference("pDate"));
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+                Getdata(jsonObject);
             }
         });
 
@@ -161,7 +179,8 @@ public class Multiple_Invoice_print extends AppCompatActivity implements BasicFu
                     jsonObject.put("outlet", "0");
                     jsonObject.put("mac", bf.getPreference("mac"));
                     jsonObject.put("order_date", "0");
-                    bf.getResponceData(ORDERS_FOR_UNPROCESS, jsonObject.toString(), 100);
+                   // bf.getResponceData(ORDERS_FOR_UNPROCESS, jsonObject.toString(), 100);
+                    Getdata(jsonObject);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -245,7 +264,8 @@ public class Multiple_Invoice_print extends AppCompatActivity implements BasicFu
             jsonObject.put("outlet", "0");
             jsonObject.put("mac", bf.getPreference("mac"));
             jsonObject.put("order_date", "0");
-            bf.getResponceData(ORDERS_FOR_UNPROCESS, jsonObject.toString(), 100);
+            //bf.getResponceData(ORDERS_FOR_UNPROCESS, jsonObject.toString(), 100);
+            Getdata(jsonObject);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -253,20 +273,52 @@ public class Multiple_Invoice_print extends AppCompatActivity implements BasicFu
 
     }
 
-    void Getdata() {
+    void Getdata(JSONObject jsonObject) {
 
-        try {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put(SR_ID, bf.getPreference(SR_ID));
-            jsonObject.put("market_id", bf.getPreference("pMarketID"));
-            jsonObject.put("route_id", bf.getPreference("prouteId"));
-            jsonObject.put("outlet_id", bf.getPreference("pOutletID"));
-            jsonObject.put("mac", bf.getPreference("mac"));
-            jsonObject.put("order_date", bf.getPreference("pDate"));
-            bf.getResponceData(ORDERS_FOR_UNPROCESS, jsonObject.toString(), 100);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+
+
+
+            //bf.getResponceData(ORDERS_FOR_UNPROCESS, jsonObject.toString(), 100);
+
+            ProgressDialog dailog = CheckConnection(Multiple_Invoice_print.this,"Checking...");
+            if (dailog==null)
+                return;
+            getJAPi().ORDERS_FOR_UNPROCESS(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body());
+                        dailog.dismiss();
+                        arrayList.clear();
+                            JSONArray jsonArray = jsonObject.getJSONArray("orders");
+                            for (int j = 0; j < jsonArray.length(); j++) {
+                                HashMap<String, String> map = new HashMap<>();
+
+                                map.put("order_number", jsonArray.getJSONObject(j).getString("order_number"));
+                                map.put("outlet_name", jsonArray.getJSONObject(j).getString("outlet_name"));
+                                map.put("gross_value", jsonArray.getJSONObject(j).getString("gross_value"));
+                                map.put("order_date", jsonArray.getJSONObject(j).getString("order_date"));
+                                //map.put("status","2");
+
+                                //    arrayList.sort(Comparator.comparing(m -> map.get("order_date"), Comparator.nullsLast(Comparator.naturalOrder())));
+
+
+                                arrayList.add(map);
+                            }
+
+                            adapter = new AdapterForMultiOrderPrint(Multiple_Invoice_print.this, arrayList);
+                            order_list.setAdapter(adapter);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+
+                }
+            });
+
 
     }
 
@@ -430,29 +482,8 @@ public class Multiple_Invoice_print extends AppCompatActivity implements BasicFu
 
     @Override
     public void OnServerResponce(JSONObject jsonObject, int i) {
-        arrayList.clear();
-        try {
-            JSONArray jsonArray = jsonObject.getJSONArray("orders");
-            for (int j = 0; j < jsonArray.length(); j++) {
-                HashMap<String, String> map = new HashMap<>();
-
-                map.put("order_number", jsonArray.getJSONObject(j).getString("order_number"));
-                map.put("outlet_name", jsonArray.getJSONObject(j).getString("outlet_name"));
-                map.put("gross_value", jsonArray.getJSONObject(j).getString("gross_value"));
-                map.put("order_date", jsonArray.getJSONObject(j).getString("order_date"));
-                //map.put("status","2");
-
-                //    arrayList.sort(Comparator.comparing(m -> map.get("order_date"), Comparator.nullsLast(Comparator.naturalOrder())));
 
 
-                arrayList.add(map);
-            }
-
-            adapter = new AdapterForMultiOrderPrint(this, arrayList);
-            order_list.setAdapter(adapter);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

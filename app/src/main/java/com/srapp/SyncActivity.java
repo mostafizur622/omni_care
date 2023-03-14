@@ -2,9 +2,13 @@
 
  import static com.srapp.Db_Actions.Tables.Allfild;
  import static com.srapp.Db_Actions.Tables.SR_ID;
+ import static com.srapp.Db_Actions.URL.CheckConnection;
+ import static com.srapp.Db_Actions.URL.convertTORequestdata;
+ import static com.srapp.Db_Actions.URL.getJAPi;
 
  import android.app.AlertDialog;
  import android.app.PendingIntent;
+ import android.app.ProgressDialog;
  import android.content.BroadcastReceiver;
  import android.content.Context;
  import android.content.Intent;
@@ -46,6 +50,10 @@
  import java.util.ArrayList;
  import java.util.HashMap;
  import java.util.Iterator;
+
+ import retrofit2.Call;
+ import retrofit2.Callback;
+ import retrofit2.Response;
 
 
  public class SyncActivity extends Parent implements DBListener, BasicFunctionListener {
@@ -113,14 +121,43 @@
                 if (isInternetOn()){
                     try {
 
-                        String url = URL.UpdatePushTime;
+                     //   String url = URL.UpdatePushTime;
 
                         JSONObject obJson = new JSONObject();
                         obJson.put(SR_ID, getPreference(SR_ID));
                         obJson.put("version", URL.VERSION);
                         obJson.put("mac", bf.getPreference("mac"));
                         Log.e("++", "Update Time json:" + obJson.toString());
-                        bf.getResponceData(url, obJson.toString(), 1412);
+
+
+                        ProgressDialog dailog = CheckConnection(SyncActivity.this,"Checking...");
+                        if (dailog==null)
+                            return;
+                        getJAPi().UpdatePushTime(convertTORequestdata(obJson)).enqueue(new Callback<String>() {
+                            @Override
+                            public void onResponse(Call<String> call, Response<String> response) {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response.body());
+                                    dailog.dismiss();
+                                    try {
+                                        generatemarketJson();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                } catch (JSONException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<String> call, Throwable t) {
+
+                            }
+                        });
+
+
+                        //bf.getResponceData(url, obJson.toString(), 1412);
 
                     } catch (Exception e) {
                         Log.e("exception", e.getMessage());
@@ -161,9 +198,67 @@
                 jsonObject.put("mac", bf.getPreference("mac"));
 
                 if (Flag == 1) {
-                    bf.getResponceData(URL.PULL, jsonObject.toString(), 102);
+                   // bf.getResponceData(URL.PULL, jsonObject.toString(), 102);
+
+                    ProgressDialog dailog = CheckConnection(SyncActivity.this,"Checking...");
+                    if (dailog==null)
+                        return;
+                    getJAPi().PULL(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                        @Override
+                        public void onResponse(Call<String> call, Response<String> response) {
+                            try {
+                                JSONObject jsonObject = new JSONObject(response.body());
+                                dailog.dismiss();
+                                try {
+                                    ds.excQuery("delete from product_history");
+                                    ds.excQuery("delete from fiscal_year");
+                                    ds.excQuery("delete  from stock_info");
+                                    ds.insertData(jsonObject.getJSONObject("response").toString(), 1);
+                                    ds.savePreference("dataforsummery", jsonObject.getJSONObject("response").toString());
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+
+
+                            } catch (JSONException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<String> call, Throwable t) {
+
+                        }
+                    });
                 } else if (Flag == 2) {
-                    bf.getResponceData(URL.ORDERPUSH, jsonObject.toString(), 103);
+                   // bf.getResponceData(URL.ORDERPUSH, jsonObject.toString(), 103);
+                    ProgressDialog dailog = CheckConnection(SyncActivity.this,"Order Sync...");
+                    if (dailog==null)
+                        return;
+                    getJAPi().ORDERPUSH(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                        @Override
+                        public void onResponse(Call<String> call, Response<String> response) {
+                            try {
+                                int status = jsonObject.getJSONObject("order").getInt("status");
+
+                                if (status==1) {
+
+                                    ds.updatePushStatus();
+                                    Flag = 1;
+                                    ds.getlastupdateddate();
+                                }
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<String> call, Throwable t) {
+
+                        }
+                    });
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -196,30 +291,10 @@
         }
 
         if (i == 102) {
-            try {
-                ds.excQuery("delete from product_history");
-                ds.excQuery("delete from fiscal_year");
-                ds.excQuery("delete  from stock_info");
-                ds.insertData(jsonObject.getJSONObject("response").toString(), 1);
-                ds.savePreference("dataforsummery", jsonObject.getJSONObject("response").toString());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+
         } else if (i == 103) {
 
-            try {
-                int status = jsonObject.getJSONObject("order").getInt("status");
 
-                if (status==1) {
-
-                    ds.updatePushStatus();
-                    Flag = 1;
-                    ds.getlastupdateddate();
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
 
 
         } else if (i == 110) {
@@ -236,11 +311,7 @@
 
         } else if (i == 1412) {
 
-            try {
-                generatemarketJson();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+
 
 
             /*Flag = 2;

@@ -3,6 +3,7 @@ package com.srapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.UrlQuerySanitizer;
@@ -39,6 +40,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import static com.srapp.Db_Actions.Tables.SR_ID;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class GiftIssueActivity extends ParentActivity implements View.OnClickListener, BasicFunctionListener {
 
@@ -117,7 +124,53 @@ public class GiftIssueActivity extends ParentActivity implements View.OnClickLis
                 e.printStackTrace();
             }
 
-            basicFunction.getResponceData(URL.GIFT_ITEM_Details,jsonObject.toString(),111);
+          //  basicFunction.getResponceData(URL.GIFT_ITEM_Details,jsonObject.toString(),111);
+
+            ProgressDialog dailog = URL.CheckConnection(GiftIssueActivity.this,"Checking...");
+            if (dailog==null)
+                return;
+            getJAPi().GIFT_ITEM_Details(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body());
+                        dailog.dismiss();
+
+                            JSONArray jsonArray = jsonObject.getJSONObject("details").getJSONArray("gift_issue_details");
+                            for(int i = 0 ; i<jsonArray.length() ; i++){
+
+                                setgift_issue(jsonArray.getJSONObject(i));
+                            }
+
+                            setoutletSetAddress(jsonObject.getJSONObject("details").getJSONObject("gift_issue").getString("outlet_id"));
+
+                            remarks.setText(jsonObject.getJSONObject("details").getJSONObject("gift_issue").getString("remarks"));
+
+
+                        if (state==0) {
+                            for (int i = 0; i < itemListContent.size(); i++) {
+                                if (itemListContent.get(i).get("quantity").equalsIgnoreCase("")) {
+                                    itemListContent.remove(i);
+                                }
+                            }
+                        }
+
+
+
+                        Adapter = new GiftIssueAdaper(GiftIssueActivity.this, getPreference("SO"), getPreference("FiscalYearID"),state);
+                        ListView listView = (ListView) findViewById(R.id.list);
+                        listView.setAdapter(Adapter);
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+
+                }
+            });
 
         }
 
@@ -421,33 +474,7 @@ public class GiftIssueActivity extends ParentActivity implements View.OnClickLis
     @Override
     public void OnServerResponce(JSONObject jsonObject, int RequestCode) {
 
-        try {
-            JSONArray jsonArray = jsonObject.getJSONObject("details").getJSONArray("gift_issue_details");
-            for(int i = 0 ; i<jsonArray.length() ; i++){
 
-                setgift_issue(jsonArray.getJSONObject(i));
-            }
-
-            setoutletSetAddress(jsonObject.getJSONObject("details").getJSONObject("gift_issue").getString("outlet_id"));
-
-            remarks.setText(jsonObject.getJSONObject("details").getJSONObject("gift_issue").getString("remarks"));
-
-        } catch (JSONException e) {
-
-        }
-        if (state==0) {
-            for (int i = 0; i < itemListContent.size(); i++) {
-                if (itemListContent.get(i).get("quantity").equalsIgnoreCase("")) {
-                    itemListContent.remove(i);
-                }
-            }
-        }
-
-
-
-        Adapter = new GiftIssueAdaper(this, getPreference("SO"), getPreference("FiscalYearID"),state);
-        ListView listView = (ListView) findViewById(R.id.list);
-        listView.setAdapter(Adapter);
 
 
 

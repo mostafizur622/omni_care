@@ -1,6 +1,7 @@
 package com.srapp.Adapter;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -28,6 +29,7 @@ import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.URL;
 import com.srapp.GiftIssueList;
 import com.srapp.R;
+import com.srapp.SyncActivity;
 import com.srapp.TempData;
 import com.srapp.Util.AppManager;
 import com.srapp.Util.ParentActivity;
@@ -45,7 +47,14 @@ import java.util.Calendar;
 import java.util.HashMap;
 
 import static com.srapp.Db_Actions.Tables.SR_ID;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
 import static com.srapp.GiftIssueActivity.itemListContent;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class GiftIssueAdaper extends BaseAdapter implements BasicFunctionListener {
 
@@ -279,7 +288,49 @@ public class GiftIssueAdaper extends BaseAdapter implements BasicFunctionListene
 							finalJsonobj.put("mac",bf.getPreference("mac"));
 
 
-                            bf.getResponceData(URL.GIFT_ISSUE,finalJsonobj.toString(),11);
+                           // bf.getResponceData(URL.GIFT_ISSUE,finalJsonobj.toString(),11);
+
+							ProgressDialog dailog = CheckConnection(context,"Gift Issue...");
+							if (dailog==null)
+								return;
+							getJAPi().SET_ATTENDANCE_STATUS(convertTORequestdata(finalJsonobj)).enqueue(new Callback<String>() {
+								@Override
+								public void onResponse(Call<String> call, Response<String> response) {
+									try {
+										JSONObject jsonObject = new JSONObject(response.body());
+										dailog.dismiss();
+
+										String msg = " ";
+										int status= 0 ;
+										try {
+
+											status = jsonObject.getJSONObject("giftitem_received").getInt("status");
+											if (status==1)
+												msg = jsonObject.getJSONObject("giftitem_received").getString("message");
+											else {
+												msg = jsonObject.getJSONObject("giftitem_received").getJSONArray("replaced_relation").getJSONObject(0).getString("messege");
+											}
+										} catch (JSONException e) {
+											e.printStackTrace();
+										}
+
+
+										Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+										if (status!=2) {
+											Intent idn = new Intent(context, GiftIssueList.class);
+											((Activity) context).finish();
+											context.startActivity(idn);
+										}
+									} catch (JSONException e) {
+										throw new RuntimeException(e);
+									}
+								}
+
+								@Override
+								public void onFailure(Call<String> call, Throwable t) {
+
+								}
+							});
 
 							/*TempData.OutletID = "";
 
@@ -437,27 +488,7 @@ public class GiftIssueAdaper extends BaseAdapter implements BasicFunctionListene
 
     @Override
     public void OnServerResponce(JSONObject jsonObject, int RequestCode) {
-	    String msg = " ";
-	    int status= 0 ;
-        try {
 
-            status = jsonObject.getJSONObject("giftitem_received").getInt("status");
-            if (status==1)
-                msg = jsonObject.getJSONObject("giftitem_received").getString("message");
-            else {
-                msg = jsonObject.getJSONObject("giftitem_received").getJSONArray("replaced_relation").getJSONObject(0).getString("messege");
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
-        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
-        if (status!=2) {
-            Intent idn = new Intent(context, GiftIssueList.class);
-            ((Activity) context).finish();
-            context.startActivity(idn);
-        }
 
     }
 

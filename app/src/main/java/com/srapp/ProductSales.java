@@ -2,6 +2,7 @@ package com.srapp;
 
 import android.Manifest;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -70,6 +71,9 @@ import static com.srapp.Db_Actions.Tables.TABLE_NAME_MEMOS;
 import static com.srapp.Db_Actions.Tables.TABLE_NAME_MEMO_DETAILS;
 import static com.srapp.Db_Actions.Tables.TABLE_NAME_ORDER;
 import static com.srapp.Db_Actions.Tables.TABLE_NAME_ORDER_DETAILS;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
 import static com.srapp.TempData.BPSelected_bonus;
 import static com.srapp.TempData.BPSelected_product;
 import static com.srapp.TempData.MEMO_EDIT;
@@ -83,6 +87,10 @@ import static com.srapp.TempData.discounttype;
 import static com.srapp.TempData.editMemo;
 import static com.srapp.TempData.policyMap;
 import static com.srapp.TempData.price_idMap;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ProductSales extends Parent implements BasicFunctionListener, DBListener {
 
@@ -580,9 +588,112 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
         runOnUiThread(new Runnable() {
             public void run() {
                 if (urlcall == 102) {
-                    bf.getResponceData(URL.CREATE_MEMO, json, 102);
-                } else
-                    bf.getResponceData(URL.ORDERPUSH, json, 101);
+                   // bf.getResponceData(URL.CREATE_MEMO, json, 102);
+
+                    ProgressDialog dailog = CheckConnection(ProductSales.this,"Creating Memo...");
+                    if (dailog==null)
+                        return;
+                    try {
+                        getJAPi().CREATE_MEMO(convertTORequestdata(new JSONObject(json))).enqueue(new Callback<String>() {
+                            @Override
+                            public void onResponse(Call<String> call, Response<String> response) {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response.body());
+                                    dailog.dismiss();
+                                    if (jsonObject.has("NAME"))
+                                        if (jsonObject.getString("NAME").equalsIgnoreCase("TANVIR")) {
+                                            db.excQuery("delete from temp_memos");
+                                            db.excQuery("delete from temp_memo_details");
+                                            db.excQuery("update ORDER_table set is_complete='1' , status = '2' WHERE order_number = '" + orderNo + "'");
+                                            Toast.makeText(ProductSales.this, "Memo Create Successfully ", Toast.LENGTH_LONG).show();
+                                            SaveBtn.setEnabled(true);
+                                            // return;
+                                        }
+                                    if (MEMO_EDIT) {
+                                        startActivity(new Intent(ProductSales.this, MemoReport.class));
+                                        finish();
+                                        Log.e("memoredirect", "MemoReport");
+                                    } else if (ORDER_TO_MEMO == 1) {
+
+                                        startActivity(new Intent(ProductSales.this, DeliveryReport.class));
+                                        finish();
+                                        Log.e("memoredirect", "Order_Report_Activity");
+                                    }
+
+                                    if (jsonObject.getJSONObject("memo").getString("status").equalsIgnoreCase("1")) {
+                                        db.excQuery("update ORDER_table set is_complete='1' , status = '2' WHERE order_number = '" + orderNo + "'");
+                                        saveMemos();
+                                    } else {
+
+                                        db.excQuery("delete from temp_memos");
+                                        db.excQuery("delete from temp_memo_details");
+                                        Toast.makeText(ProductSales.this, jsonObject.getJSONObject("memo").getString("message"), Toast.LENGTH_LONG).show();
+                                        SaveBtn.setEnabled(true);
+
+                                    }
+
+
+                                    Log.e("json", jsonObject.toString());
+                                    if (MEMO_EDIT) {
+                                        Toast.makeText(ProductSales.this, jsonObject.getJSONObject("memo").getString("message"), Toast.LENGTH_LONG).show();
+                                        startActivity(new Intent(ProductSales.this, MemoReport.class));
+                                        finish();
+                                        Log.e("memoredirect", "MemoReport");
+                                    } else if (ORDER_TO_MEMO == 1) {
+                                        Toast.makeText(ProductSales.this, jsonObject.getJSONObject("memo").getString("message"), Toast.LENGTH_LONG).show();
+                                        startActivity(new Intent(ProductSales.this, DeliveryReport.class));
+                                        finish();
+                                        Log.e("memoredirect", "Order_Report_Activity");
+                                    }
+
+
+                                } catch (JSONException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<String> call, Throwable t) {
+
+                            }
+                        });
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                } else{
+                   // bf.getResponceData(URL.ORDERPUSH, json, 101);
+
+                    ProgressDialog dailog = CheckConnection(ProductSales.this,"Updating Memo...");
+                    if (dailog==null)
+                        return;
+                    try {
+                        getJAPi().ORDERPUSH(convertTORequestdata(new JSONObject(json))).enqueue(new Callback<String>() {
+                            @Override
+                            public void onResponse(Call<String> call, Response<String> response) {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response.body());
+                                    dailog.dismiss();
+                                    Toast.makeText(ProductSales.this, jsonObject.getJSONObject("order").getString("message"), Toast.LENGTH_LONG).show();
+                                    startActivity(new Intent(ProductSales.this, Order_Report_Activity.class));
+                                    Log.e("memoredirect", "DeliveryReport");
+                                    finishAffinity();
+
+                                } catch (JSONException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<String> call, Throwable t) {
+
+                            }
+                        });
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
             }
         });
 
@@ -602,68 +713,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
     @Override
     public void OnServerResponce(JSONObject jsonObject, int i) {
 
-        Log.e("jsonObjectnull", jsonObject.toString());
-        try {
-            if (i == 102) {
 
-                if (jsonObject.has("NAME"))
-                    if (jsonObject.getString("NAME").equalsIgnoreCase("TANVIR")) {
-                        db.excQuery("delete from temp_memos");
-                        db.excQuery("delete from temp_memo_details");
-                        db.excQuery("update ORDER_table set is_complete='1' , status = '2' WHERE order_number = '" + orderNo + "'");
-                        Toast.makeText(this, "Memo Create Successfully ", Toast.LENGTH_LONG).show();
-                        SaveBtn.setEnabled(true);
-                        // return;
-                    }
-                if (MEMO_EDIT) {
-                    startActivity(new Intent(ProductSales.this, MemoReport.class));
-                    finish();
-                    Log.e("memoredirect", "MemoReport");
-                } else if (ORDER_TO_MEMO == 1) {
-
-                    startActivity(new Intent(ProductSales.this, DeliveryReport.class));
-                    finish();
-                    Log.e("memoredirect", "Order_Report_Activity");
-                }
-
-                if (jsonObject.getJSONObject("memo").getString("status").equalsIgnoreCase("1")) {
-                    db.excQuery("update ORDER_table set is_complete='1' , status = '2' WHERE order_number = '" + orderNo + "'");
-                    saveMemos();
-                } else {
-
-                    db.excQuery("delete from temp_memos");
-                    db.excQuery("delete from temp_memo_details");
-                    Toast.makeText(this, jsonObject.getJSONObject("memo").getString("message"), Toast.LENGTH_LONG).show();
-                    SaveBtn.setEnabled(true);
-
-                }
-
-
-                Log.e("json", jsonObject.toString());
-                if (MEMO_EDIT) {
-                    Toast.makeText(this, jsonObject.getJSONObject("memo").getString("message"), Toast.LENGTH_LONG).show();
-                    startActivity(new Intent(ProductSales.this, MemoReport.class));
-                    finish();
-                    Log.e("memoredirect", "MemoReport");
-                } else if (ORDER_TO_MEMO == 1) {
-                    Toast.makeText(this, jsonObject.getJSONObject("memo").getString("message"), Toast.LENGTH_LONG).show();
-                    startActivity(new Intent(ProductSales.this, DeliveryReport.class));
-                    finish();
-                    Log.e("memoredirect", "Order_Report_Activity");
-                }
-
-
-            } else if (i == 101) {
-                Toast.makeText(this, jsonObject.getJSONObject("order").getString("message"), Toast.LENGTH_LONG).show();
-                startActivity(new Intent(ProductSales.this, Order_Report_Activity.class));
-                Log.e("memoredirect", "DeliveryReport");
-                finishAffinity();
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e("jsex", e.getMessage());
-        }
     }
 
     private void saveMemos() {

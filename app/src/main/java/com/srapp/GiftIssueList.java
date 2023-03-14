@@ -3,6 +3,7 @@ package com.srapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -35,6 +36,13 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import static com.srapp.Db_Actions.Tables.SR_ID;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class GiftIssueList extends AppCompatActivity implements BasicFunctionListener {
 
@@ -277,7 +285,53 @@ public class GiftIssueList extends AppCompatActivity implements BasicFunctionLis
             }
 
             if (apicall) {
-                bf.getResponceData(URL.GIFT_ITEM_LIST, jsonObject.toString(), 101);
+               // bf.getResponceData(URL.GIFT_ITEM_LIST, jsonObject.toString(), 101);
+
+                ProgressDialog dailog = CheckConnection(GiftIssueList.this,"Gift Issue List...");
+                if (dailog==null)
+                    return;
+                getJAPi().GIFT_ITEM_LIST(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response.body());
+                            dailog.dismiss();
+                            apicall=true;
+                            onstart=true;
+                            ArrayList<HashMap<String,String>> list = new ArrayList<>();
+                            try {
+                                JSONArray jsonArray = jsonObject.getJSONArray("giftitem_list");
+                                for (int i=0 ; i<jsonArray.length() ; i++){
+                                    HashMap<String,String> map = new HashMap<>();
+                                    map.put("date",jsonArray.getJSONObject(i).getString("date"));
+                                    map.put("outlet",jsonArray.getJSONObject(i).getString("outlet"));
+                                    map.put("id",jsonArray.getJSONObject(i).getString("id"));
+                                    map.put("is_editable",jsonArray.getJSONObject(i).getString("is_editable"));
+
+                                    list.add(map);
+
+
+                                }
+
+
+                                AdapterForGiftIssueList adapter = new AdapterForGiftIssueList(GiftIssueList.this,list);
+                                list_view.setAdapter(adapter);
+
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+
+                    }
+                });
                 apicall=false;
             }
         } else {
@@ -299,32 +353,7 @@ public class GiftIssueList extends AppCompatActivity implements BasicFunctionLis
 
     @Override
     public void OnServerResponce(JSONObject jsonObject, int RequestCode) {
-        apicall=true;
-        onstart=true;
-        Log.e("Log123",RequestCode+"");
-            ArrayList<HashMap<String,String>> list = new ArrayList<>();
-        try {
-            JSONArray jsonArray = jsonObject.getJSONArray("giftitem_list");
-            for (int i=0 ; i<jsonArray.length() ; i++){
-                HashMap<String,String> map = new HashMap<>();
-                map.put("date",jsonArray.getJSONObject(i).getString("date"));
-                map.put("outlet",jsonArray.getJSONObject(i).getString("outlet"));
-                map.put("id",jsonArray.getJSONObject(i).getString("id"));
-                map.put("is_editable",jsonArray.getJSONObject(i).getString("is_editable"));
 
-                list.add(map);
-
-
-            }
-
-
-            AdapterForGiftIssueList adapter = new AdapterForGiftIssueList(this,list);
-            list_view.setAdapter(adapter);
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
     }
 

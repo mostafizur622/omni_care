@@ -48,6 +48,9 @@ import static com.srapp.Db_Actions.Tables.TABLE_NAME_ORDER;
 import static com.srapp.Db_Actions.Tables.TABLE_NAME_ORDER_DETAILS;
 import static com.srapp.Db_Actions.Tables.TABLE_NAME_PRODUCT;
 import static com.srapp.Db_Actions.Tables.TABLE_NAME_PRODUCT_BOOLEAN;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
 import static com.srapp.TempData.BPSelected_bonus;
 import static com.srapp.TempData.BPSelected_option_id;
 import static com.srapp.TempData.BPSelected_policy_type;
@@ -101,6 +104,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class DetailsOrderReport extends Parent implements BasicFunctionListener, DBListener {
@@ -1069,7 +1076,71 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
         runOnUiThread(new Runnable() {
             public void run() {
-                bf.getResponceData(URL.CREATE_MEMO, json, 102);
+              //  bf.getResponceData(URL.CREATE_MEMO, json, 102);
+
+                ProgressDialog dailog = CheckConnection(DetailsOrderReport.this,"Checking...");
+                if (dailog==null)
+                    return;
+                try {
+                    getJAPi().CREATE_MEMO(convertTORequestdata(new JSONObject(json))).enqueue(new Callback<String>() {
+                        @Override
+                        public void onResponse(Call<String> call, Response<String> response) {
+                            try {
+                                JSONObject jsonObject = new JSONObject(response.body());
+                                dailog.dismiss();
+
+
+                                try {
+
+                                    if (jsonObject.has("NAME"))
+                                        if (jsonObject.getString("NAME").equalsIgnoreCase("TANVIR")) {
+                                            db.excQuery("delete from memos where memo_number='" + memoNo + "'");
+                                            db.excQuery("delete from memos where memo_number='" + memoNo + "'");
+                                            db.excQuery("update ORDER_table set is_complete='1' , status = '2' WHERE order_number = '" + TempData.orderNumber + "'");
+                                            Toast.makeText(DetailsOrderReport.this, "Memo Create Failed For  Internet Problem", Toast.LENGTH_LONG).show();
+                                            ORDER_TO_MEMO = 0;
+                                            MEMO_EDIT = true;
+                                            Back = 1;
+                                            return;
+                                        }
+
+                                    if (jsonObject.getJSONObject("memo").getString("status").equalsIgnoreCase("1")) {
+                                        db.excQuery("update ORDER_table set is_complete='1' , status = '2' WHERE order_number = '" + TempData.orderNumber + "'");
+                                        Toast.makeText(DetailsOrderReport.this, jsonObject.getJSONObject("memo").getString("message"), Toast.LENGTH_LONG).show();
+                                        cancel.setVisibility(View.GONE);
+                                        ORDER_TO_MEMO = 0;
+                                        MEMO_EDIT = true;
+                                        Back = 1;
+
+
+                                    } else {
+
+                                        db.excQuery("delete from memos  WHERE memo_number = '" + memoNo + "'");
+                                        db.excQuery("delete from memo_details  WHERE memo_number = '" + memoNo + "'");
+                                        Toast.makeText(DetailsOrderReport.this, jsonObject.getJSONObject("memo").getString("message"), Toast.LENGTH_LONG).show();
+
+
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+
+                                Log.e("json", jsonObject.toString());
+
+                            } catch (JSONException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<String> call, Throwable t) {
+
+                        }
+                    });
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
 
             }
         });
@@ -1191,47 +1262,6 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
             db.excQuery("delete from " + TABLE_NAME_ORDER + " where " + ORDER_order_number + " ='" + TempData.orderNumber + "'");
             db.excQuery("delete from " + TABLE_NAME_ORDER_DETAILS + " where " + ORDER_order_number + " ='" + TempData.orderNumber + "'");
             finish();
-        } else if (i == 102) {
-
-
-            try {
-
-                if (jsonObject.has("NAME"))
-                    if (jsonObject.getString("NAME").equalsIgnoreCase("TANVIR")) {
-                        db.excQuery("delete from memos where memo_number='" + memoNo + "'");
-                        db.excQuery("delete from memos where memo_number='" + memoNo + "'");
-                        db.excQuery("update ORDER_table set is_complete='1' , status = '2' WHERE order_number = '" + TempData.orderNumber + "'");
-                        Toast.makeText(this, "Memo Create Failed For  Internet Problem", Toast.LENGTH_LONG).show();
-                        ORDER_TO_MEMO = 0;
-                        MEMO_EDIT = true;
-                        Back = 1;
-                        return;
-                    }
-
-                if (jsonObject.getJSONObject("memo").getString("status").equalsIgnoreCase("1")) {
-                    db.excQuery("update ORDER_table set is_complete='1' , status = '2' WHERE order_number = '" + TempData.orderNumber + "'");
-                    Toast.makeText(this, jsonObject.getJSONObject("memo").getString("message"), Toast.LENGTH_LONG).show();
-                    cancel.setVisibility(View.GONE);
-                    ORDER_TO_MEMO = 0;
-                    MEMO_EDIT = true;
-                    Back = 1;
-
-
-                } else {
-
-                    db.excQuery("delete from memos  WHERE memo_number = '" + memoNo + "'");
-                    db.excQuery("delete from memo_details  WHERE memo_number = '" + memoNo + "'");
-                    Toast.makeText(this, jsonObject.getJSONObject("memo").getString("message"), Toast.LENGTH_LONG).show();
-
-
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-
-            Log.e("json", jsonObject.toString());
-
         }
 
         if (ORDER_TO_MEMO == 1) {

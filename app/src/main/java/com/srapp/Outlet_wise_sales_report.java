@@ -3,6 +3,7 @@ package com.srapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -39,8 +40,14 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import static com.srapp.Db_Actions.Tables.SR_ID;
-import static com.srapp.Db_Actions.URL.ORDERS_FOR_UNPROCESS;
-import static com.srapp.Db_Actions.URL.OUTLET_WISE_SALES_REPORT;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 
 public class Outlet_wise_sales_report extends Parent implements BasicFunctionListener {
     Spinner route, MarketSp, OutletSp;
@@ -269,7 +276,66 @@ public class Outlet_wise_sales_report extends Parent implements BasicFunctionLis
             jsonObject.put("end_date", bf.getPreference("end_date"));
             jsonObject.put("outlet_id", bf.getPreference("pOutletID"));
             jsonObject.put("mac", bf.getPreference("mac"));
-            bf.getResponceData(OUTLET_WISE_SALES_REPORT, jsonObject.toString(), 100);
+         //   bf.getResponceData(OUTLET_WISE_SALES_REPORT, jsonObject.toString(), 100);
+
+            ProgressDialog dailog = CheckConnection(Outlet_wise_sales_report.this,"Checking...");
+            if (dailog==null)
+                return;
+            getJAPi().OUTLET_WISE_SALES_REPORT(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body());
+                        dailog.dismiss();
+
+
+
+                            ArrayList<HashMap<String, String>> list = new ArrayList<>();
+                            ArrayList< ArrayList<HashMap<String, String>>> details = new ArrayList<>();
+                            JSONArray jsonArray = jsonObject.getJSONArray("res");
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                HashMap<String, String> map = new HashMap<>();
+                                map.put("memo_no", jsonArray.getJSONObject(i).getString("memo_no"));
+                                map.put("memo_date", jsonArray.getJSONObject(i).getString("memo_date"));
+                                ArrayList<HashMap<String, String>> sublish = new ArrayList<>();
+
+                                JSONArray jsonArray1 = jsonArray.getJSONObject(i).getJSONArray("details");
+                                Double Total = 0.00;
+                                for (int j = 0; j < jsonArray1.length(); j++) {
+                                    HashMap<String, String> map1 = new HashMap<>();
+                                    map1.put("product_name", jsonArray1.getJSONObject(j).getString("product_name"));
+                                    map1.put("sales_qty", jsonArray1.getJSONObject(j).getString("sales_qty"));
+                                    map1.put("bonus_qty", jsonArray1.getJSONObject(j).getString("bonus_qty"));
+                                    map1.put("value", jsonArray1.getJSONObject(j).getString("total_value"));
+                                    Total = Total+Double.parseDouble(jsonArray1.getJSONObject(j).getString("total_value"));
+                                    sublish.add(map1);
+
+                                }
+                                map.put("total", Total+"");
+                                list.add(map);
+                                details.add(sublish);
+                            }
+
+
+                            AdapterForOutletWiseSalesReport adapterForOutletWiseSalesReport = new AdapterForOutletWiseSalesReport(Outlet_wise_sales_report.this,list,details);
+                            order_list.setAdapter(adapterForOutletWiseSalesReport);
+
+
+
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+
+                }
+            });
+
+
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

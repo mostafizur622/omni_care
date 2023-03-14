@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -44,6 +45,13 @@ import java.util.Locale;
 
 import static com.srapp.Db_Actions.Tables.MARKET_ID;
 import static com.srapp.Db_Actions.Tables.SR_ID;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ReportBonusPartyReport extends ParentActivity implements View.OnClickListener, BasicFunctionListener {
 
@@ -226,7 +234,47 @@ public class ReportBonusPartyReport extends ParentActivity implements View.OnCli
             jsonObject.put("bonus_type_id",BonusID.get(BonusSp.getSelectedItemPosition()));
             jsonObject.put("mac",bf.getPreference("mac"));
 
-            bf.getResponceData(URL.INCENTIVE_PARTY,jsonObject.toString(),111);
+         //   bf.getResponceData(URL.INCENTIVE_PARTY,jsonObject.toString(),111);
+
+            ProgressDialog dailog = CheckConnection(ReportBonusPartyReport.this,"Checking...");
+            if (dailog==null)
+                return;
+            getJAPi().INCENTIVE_PARTY(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body());
+                        dailog.dismiss();
+                        itemListDB.clear();
+
+                            JSONArray jsonArray = jsonObject.getJSONObject("report").getJSONArray("report_data");
+                            for(int i = 0 ; i<jsonArray.length() ; i++){
+
+                                HashMap<String,String> map=new HashMap<String,String>();
+                                map.put("outlet_name", jsonArray.getJSONObject(i).getString("outlet_name"));
+                                map.put("product_name", jsonArray.getJSONObject(i).getString("product_name"));
+                                map.put("target", jsonArray.getJSONObject(i).getString("target"));
+                                map.put("achieve", jsonArray.getJSONObject(i).getString("achievement"));
+                                map.put("stamp", jsonArray.getJSONObject(i).getString("stamp"));
+
+                                itemListDB.add(map);
+                            }
+
+                            AdapterForBonusPartyReport adpater=new AdapterForBonusPartyReport(getApplicationContext(), itemListDB);
+                            listViewMiniStore.setAdapter(adpater);
+
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+
+                }
+            });
+
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -476,26 +524,6 @@ public class ReportBonusPartyReport extends ParentActivity implements View.OnCli
 
     @Override
     public void OnServerResponce(JSONObject jsonObject, int RequestCode) {
-        itemListDB.clear();
-        try {
-            JSONArray jsonArray = jsonObject.getJSONObject("report").getJSONArray("report_data");
-            for(int i = 0 ; i<jsonArray.length() ; i++){
-
-                HashMap<String,String> map=new HashMap<String,String>();
-                map.put("outlet_name", jsonArray.getJSONObject(i).getString("outlet_name"));
-                map.put("product_name", jsonArray.getJSONObject(i).getString("product_name"));
-                map.put("target", jsonArray.getJSONObject(i).getString("target"));
-                map.put("achieve", jsonArray.getJSONObject(i).getString("achievement"));
-                map.put("stamp", jsonArray.getJSONObject(i).getString("stamp"));
-
-                itemListDB.add(map);
-            }
-
-            AdapterForBonusPartyReport adpater=new AdapterForBonusPartyReport(getApplicationContext(), itemListDB);
-            listViewMiniStore.setAdapter(adpater);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
 
     }

@@ -1,5 +1,10 @@
 package com.srapp;
 
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -36,6 +41,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class PriceList extends AppCompatActivity implements BasicFunctionListener, DBListener {
     ImageView img;
@@ -122,7 +131,43 @@ public class PriceList extends AppCompatActivity implements BasicFunctionListene
                 jsonObject.put("Territory_Id",basicFunction.getPreference("territory_id"));
                 jsonObject.put("so_id",basicFunction.getPreference("sales_person_id"));
                 jsonObject.put("mac",basicFunction.getPreference("mac"));
-                basicFunction.getResponceData(URL.Bonus_Policy, jsonObject.toString(), 103);
+                //basicFunction.getResponceData(URL.Bonus_Policy, jsonObject.toString(), 103);
+
+                ProgressDialog dailog = CheckConnection(PriceList.this,"Checking...");
+                if (dailog==null)
+                    return;
+                getJAPi().Bonus_Policy(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response.body());
+                            dailog.dismiss();
+                            ds.excQuery("delete from Policy_Table");
+                            ds.excQuery("delete from Bonus_Eligible_Group");
+                            ds.excQuery("delete from Bonus_Eligible_Outlet_Categories");
+                            ds.excQuery("delete from policy_root_product");
+                            ds.excQuery("delete from policy_product_Option");
+                            ds.excQuery("delete from policy_option_price_slab");
+                            ds.excQuery("delete from policy_bonus_product");
+                            ds.excQuery("delete from product_price_other_for_slabs_v2");
+                            ds.excQuery("delete from special_group");
+                            ds.excQuery("delete from special_group_details");
+                            ds.excQuery("delete from product_combination_list");
+                            ds.excQuery("delete from Product_combination_list_details_v2");
+                            ds.excQuery("delete from product_combinations");
+
+                            ds.insertData(jsonObject,2);
+
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+
+                    }
+                });
                 //primaryData.put("page",initialPageIndex);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -174,21 +219,7 @@ public class PriceList extends AppCompatActivity implements BasicFunctionListene
             }
         }else if(i==103){
 
-            ds.excQuery("delete from Policy_Table");
-            ds.excQuery("delete from Bonus_Eligible_Group");
-            ds.excQuery("delete from Bonus_Eligible_Outlet_Categories");
-            ds.excQuery("delete from policy_root_product");
-            ds.excQuery("delete from policy_product_Option");
-            ds.excQuery("delete from policy_option_price_slab");
-            ds.excQuery("delete from policy_bonus_product");
-            ds.excQuery("delete from product_price_other_for_slabs_v2");
-            ds.excQuery("delete from special_group");
-            ds.excQuery("delete from special_group_details");
-            ds.excQuery("delete from product_combination_list");
-            ds.excQuery("delete from Product_combination_list_details_v2");
-            ds.excQuery("delete from product_combinations");
 
-            ds.insertData(jsonObject,2);
 
         }
     }

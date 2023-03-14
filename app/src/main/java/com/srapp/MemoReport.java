@@ -2,7 +2,8 @@
 package com.srapp;
 
 import android.app.DatePickerDialog;
-        import android.content.Intent;
+import android.app.ProgressDialog;
+import android.content.Intent;
         import android.content.SharedPreferences;
         import android.database.Cursor;
         import android.os.Bundle;
@@ -47,6 +48,13 @@ import android.app.DatePickerDialog;
         import static com.srapp.Db_Actions.Tables.OUTLETS_CATAGORY_ID;
         import static com.srapp.Db_Actions.Tables.OUTLET_CATAGORY;
         import static com.srapp.Db_Actions.Tables.SR_ID;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MemoReport extends AppCompatActivity implements View.OnClickListener, BasicFunctionListener {
     private DatePickerDialog fromDatePickerDialog;
@@ -278,7 +286,41 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
             }
 
 
-            bf.getResponceData(URL.GET_LAST_MEMO, jsonObject.toString(), 101);
+            //bf.getResponceData(URL.GET_LAST_MEMO, jsonObject.toString(), 101);
+            ProgressDialog dailog = CheckConnection(MemoReport.this,"Checking...");
+            if (dailog==null)
+                return;
+            getJAPi().GET_LAST_MEMO(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body());
+                        dailog.dismiss();
+                        onstart=true;
+                        TextView txtTotalAmount = findViewById(R.id.TotalAmount);
+                        TextView TotalEC= findViewById(R.id.TotalEC);
+                        txtTotalAmount.setText("0.0");
+                        TotalEC.setText("0.0");
+                        Log.e("MemoJsonResponse",jsonObject.toString());
+                        db.updateMemoWithServer(jsonObject);
+       /* if (i!=11)
+        bf.getResponceData(URL.Log,jsonObject.toString(),11);*/
+
+                        list = db.getMemos(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlate_id"), bf.getPreference("outlet_category_id_mreport"));
+                        AdapterForMemoReport adapter = new AdapterForMemoReport(MemoReport.this, list);
+                        listview.setAdapter(adapter);
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+
+                }
+            });
+
         }else {
             TextView txtTotalAmount = findViewById(R.id.TotalAmount);
             TextView TotalEC= findViewById(R.id.TotalEC);
@@ -296,19 +338,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
 
     @Override
     public void OnServerResponce(final JSONObject jsonObject, int i) {
-        onstart=true;
-        TextView txtTotalAmount = findViewById(R.id.TotalAmount);
-        TextView TotalEC= findViewById(R.id.TotalEC);
-        txtTotalAmount.setText("0.0");
-        TotalEC.setText("0.0");
-        Log.e("MemoJsonResponse",jsonObject.toString());
-        db.updateMemoWithServer(jsonObject);
-       /* if (i!=11)
-        bf.getResponceData(URL.Log,jsonObject.toString(),11);*/
 
-        list = db.getMemos(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlate_id"), bf.getPreference("outlet_category_id_mreport"));
-        AdapterForMemoReport adapter = new AdapterForMemoReport(this, list);
-        listview.setAdapter(adapter);
     }
 
     @Override

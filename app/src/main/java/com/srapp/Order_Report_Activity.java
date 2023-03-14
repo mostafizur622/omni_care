@@ -2,6 +2,7 @@ package com.srapp;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -55,6 +56,12 @@ import static com.srapp.Db_Actions.Tables.OUTLETS;
 import static com.srapp.Db_Actions.Tables.OUTLETS_CATAGORY_ID;
 import static com.srapp.Db_Actions.Tables.OUTLET_CATAGORY;
 import static com.srapp.Db_Actions.Tables.SR_ID;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class Order_Report_Activity extends AppCompatActivity implements View.OnClickListener, BasicFunctionListener {
     private DatePickerDialog fromDatePickerDialog;
@@ -312,7 +319,39 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
             }
 
 
-            bf.getResponceData(URL.GET_LAST_RECORD, jsonObject.toString(), 101);
+           // bf.getResponceData(URL.GET_LAST_RECORD, jsonObject.toString(), 101);
+
+            ProgressDialog dailog = URL.CheckConnection(Order_Report_Activity.this,"Checking...");
+            if (dailog==null)
+                return;
+            getJAPi().GET_LAST_RECORD(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body());
+                        dailog.dismiss();
+                        onstart=true;
+                        TextView txtTotalAmount = findViewById(R.id.TotalAmount);
+                        TextView TotalEC= findViewById(R.id.TotalEC);
+                        txtTotalAmount.setText("0.0");
+                        TotalEC.setText("0.0");
+
+                        db.updateWithServer(jsonObject);
+
+                        list = db.getNotPushedOrder(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id"),bf.getPreference("outlet_category_id_report"));
+                        AdapterForSalesReport adapter = new AdapterForSalesReport(Order_Report_Activity.this, list);
+                        listview.setAdapter(adapter);
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+
+                }
+            });
         }else {
 
             TextView txtTotalAmount = findViewById(R.id.TotalAmount);
@@ -329,17 +368,7 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
 
     @Override
     public void OnServerResponce(JSONObject jsonObject, int i) {
-        onstart=true;
-        TextView txtTotalAmount = findViewById(R.id.TotalAmount);
-        TextView TotalEC= findViewById(R.id.TotalEC);
-        txtTotalAmount.setText("0.0");
-        TotalEC.setText("0.0");
 
-        db.updateWithServer(jsonObject);
-
-        list = db.getNotPushedOrder(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id"),bf.getPreference("outlet_category_id_report"));
-        AdapterForSalesReport adapter = new AdapterForSalesReport(this, list);
-        listview.setAdapter(adapter);
     }
 
     @Override

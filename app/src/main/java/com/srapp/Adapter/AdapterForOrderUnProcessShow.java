@@ -2,6 +2,7 @@ package com.srapp.Adapter;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
@@ -21,6 +22,7 @@ import com.srapp.Dashboard;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.URL;
 import com.srapp.R;
+import com.srapp.SyncActivity;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
@@ -33,7 +35,14 @@ import java.util.HashMap;
 
 import static com.srapp.Db_Actions.Tables.PROCESSING_PENDING;
 import static com.srapp.Db_Actions.Tables.SR_ID;
+import static com.srapp.Db_Actions.URL.CheckConnection;
 import static com.srapp.Db_Actions.URL.ORDER_DETAILS;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AdapterForOrderUnProcessShow extends BaseAdapter implements BasicFunctionListener {
 
@@ -156,7 +165,29 @@ public class AdapterForOrderUnProcessShow extends BaseAdapter implements BasicFu
                             jsonObject.put("order_numbers", jsonArray);
                             jsonObject.put("mac", bf.getPreference("mac"));
                             jsonObject.put(SR_ID, bf.getPreference(SR_ID));
-                            bf.getResponceData(URL.UNPROCESS_ORDER_LIST, jsonObject.toString(), 1001);
+                            //bf.getResponceData(URL.UNPROCESS_ORDER_LIST, jsonObject.toString(), 1001);
+
+                            ProgressDialog dailog = CheckConnection(context,"Checking...");
+                            if (dailog==null)
+                                return;
+                            getJAPi().UNPROCESS_ORDER_LIST(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                                @Override
+                                public void onResponse(Call<String> call, Response<String> response) {
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(response.body());
+                                        dailog.dismiss();
+
+
+                                    } catch (JSONException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<String> call, Throwable t) {
+
+                                }
+                            });
 
                         } catch (JSONException e) {
                             e.printStackTrace();

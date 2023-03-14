@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -36,6 +37,13 @@ import org.json.JSONObject;
 import static com.srapp.Db_Actions.Tables.OUTLETS_LATITUDE;
 import static com.srapp.Db_Actions.Tables.OUTLETS_LONGITUTE;
 import static com.srapp.Db_Actions.Tables.OUTLET_ID;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class GPS_UPdate extends Parent implements BasicFunctionListener {
 
@@ -135,7 +143,29 @@ public class GPS_UPdate extends Parent implements BasicFunctionListener {
             jsonObject.put(OUTLETS_LONGITUTE,longitude);
             jsonObject.put("mac",bF.getPreference("mac"));
             jsonObject.put("sales_person_id",bF.getPreference("sales_person_id"));
-            bF.getResponceData(URL.GPS_UPDATE,jsonObject.toString(),100);
+           // bF.getResponceData(URL.GPS_UPDATE,jsonObject.toString(),100);
+
+            ProgressDialog dailog = CheckConnection(GPS_UPdate.this,"Checking...");
+            if (dailog==null)
+                return;
+            getJAPi().GPS_UPDATE(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body());
+                        dailog.dismiss();
+                        db.excQuery("update outlets set "+OUTLETS_LATITUDE+"='"+lattitude+"' , "+OUTLETS_LONGITUTE+"='"+longitude+"' where outlet_id='"+bF.getPreference("OutletID")+"'");
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+
+                }
+            });
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -251,7 +281,7 @@ public class GPS_UPdate extends Parent implements BasicFunctionListener {
     @Override
     public void OnServerResponce(JSONObject jsonObject, int i) {
 
-        db.excQuery("update outlets set "+OUTLETS_LATITUDE+"='"+lattitude+"' , "+OUTLETS_LONGITUTE+"='"+longitude+"' where outlet_id='"+bF.getPreference("OutletID")+"'");
+
 
     }
 

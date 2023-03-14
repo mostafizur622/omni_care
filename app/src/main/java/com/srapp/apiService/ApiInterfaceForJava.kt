@@ -2,242 +2,219 @@ package com.srapp.apiService
 
 import com.google.gson.JsonObject
 import com.srapp.kotlin.*
+import okhttp3.RequestBody
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.Headers
 import retrofit2.http.POST
 
-interface ApiInterface {
-
-    @Headers("Content-Type: application/json")
-    @POST("get_product_combination_v2.json")
-    fun getProductCombinationV2Data(@Body jsonObject: JsonObject): Call<ProductCombinationV2>
-
-    @Headers("Content-Type: application/json")
-    @POST("get_special_group.json")
-    fun getSpecialGroupData(@Body jsonObject: JsonObject): Call<SpecialGroupData>
-
-    @Headers("Content-Type: application/json")
-    @POST("get_product_price_v2.json")
-    fun getPriceV2Data(@Body jsonObject: JsonObject): Call<ProductPriceV2>
-
-    @Headers("Content-Type: application/json")
-    @POST("get_combination_list.json")
-    fun getProductCombinationListData(@Body jsonObject: JsonObject): Call<ProductCombinationsList>
-
-    @Headers("Content-Type: application/json")
-    @POST("get_bonus_campaign_list.json")
-    fun getBonusCampaignData(@Body jsonObject: JsonObject?): Call<BonusCampaign?>
-
-
-
-
+interface ApiInterfaceForJava {
 
 
     @Headers("Content-Type: application/json")
     @POST("get_sr_check_in_out.json")
-    fun GET_ATTENDANCE_STATUS(@Body JSONObject: JSONObject?): Call<String>
+    fun GET_ATTENDANCE_STATUS(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("set_sr_check_in_out.json")
-    fun SET_ATTENDANCE_STATUS(@Body JSONObject: JSONObject?): Call<String>
+    fun SET_ATTENDANCE_STATUS(@Body JSONObject: RequestBody): Call<String>
 
 
     @Headers("Content-Type: application/json")
     @POST("update_data_push_time.json")
-    fun UpdatePushTime(@Body JSONObject: JSONObject?): Call<String>
+    fun UpdatePushTime(@Body JSONObject: RequestBody): Call<String>
 
 
     @Headers( "Content-Type: application/json; charset=utf-8")
     @POST("dist_user_login.json")
-    fun Login(@Body JSONObject: JSONObject?): Call<String>
+    fun Login(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("create_outlet.json")
-    fun Push(@Body JSONObject: JSONObject?): Call<String>
+    fun Push(@Body JSONObject: RequestBody): Call<String>
     @Headers("Content-Type: application/json")
     @POST("dist_data_pull.json")
-    fun PULL(@Body JSONObject: JSONObject?): Call<String>
+    fun PULL(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_update_outlet.json")
-    fun GPS_UPDATE(@Body JSONObject: JSONObject?): Call<String>
+    fun GPS_UPDATE(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_create_memo.json")
-    fun CREATE_MEMO(@Body JSONObject: JSONObject?): Call<String>
+    fun CREATE_MEMO(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_create_order    .json")
-    fun ORDERPUSH(@Body JSONObject: JSONObject?): Call<String>
+    fun ORDERPUSH(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_order_ready_for_process_list.json")
-    fun ORDERS_FOR_PROCESS(@Body JSONObject: JSONObject?): Call<String>
+    fun ORDERS_FOR_PROCESS(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_process_order_list.json")
-    fun ORDERS_FOR_UNPROCESS(@Body JSONObject: JSONObject?): Call<String>
+    fun ORDERS_FOR_UNPROCESS(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_outlet_wise_sales_report.json")
-    fun OUTLET_WISE_SALES_REPORT(@Body JSONObject: JSONObject?): Call<String>
+    fun OUTLET_WISE_SALES_REPORT(@Body JSONObject: RequestBody): Call<String>
 
 
     @Headers("Content-Type: application/json")
     @POST("get_bonus_cards_report.json")
-    fun INCENTIVE_PARTY(@Body JSONObject: JSONObject?): Call<String>
+    fun INCENTIVE_PARTY(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("giftitem_received.json")
-    fun GIFT_ISSUE(@Body JSONObject: JSONObject?): Call<String>
+    fun GIFT_ISSUE(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("get_route_wise_outlet_visit_report.json")
-    fun OUTLET_VISIT_REPORT(@Body JSONObject: JSONObject?): Call<String>
+    fun OUTLET_VISIT_REPORT(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("get_policy_list_v2.json")
-    fun Bonus_Policy(@Body JSONObject: JSONObject?): Call<String>
+    fun Bonus_Policy(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("get_outlet_group.json")
-    fun Bonus_Policy_Outlet(@Body JSONObject: JSONObject?): Call<String>
+    fun Bonus_Policy_Outlet(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("get_product_units.json")
-    fun Measurement_Unit__Details_Table(@Body JSONObject: JSONObject?): Call<String>
+    fun Measurement_Unit__Details_Table(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_last_orders.json")
-    fun GET_LAST_RECORD(@Body JSONObject: JSONObject?): Call<String>
+    fun GET_LAST_RECORD(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_last_memos.json")
-    fun GET_LAST_MEMO(@Body JSONObject: JSONObject?): Call<String>
+    fun GET_LAST_MEMO(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("get_gift_item_list.json")
-    fun GIFT_ITEM_LIST(@Body JSONObject: JSONObject?): Call<String>
+    fun GIFT_ITEM_LIST(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("get_gift_item_details.json")
-    fun GIFT_ITEM_Details(@Body JSONObject: JSONObject?): Call<String>
+    fun GIFT_ITEM_Details(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_order_details.json")
-    fun GET_ORDER_DETAILS(@Body JSONObject: JSONObject?): Call<String>
+    fun GET_ORDER_DETAILS(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_order_delivery_schedule.json")
-    fun PROCESS_ORDER_LIST(@Body JSONObject: JSONObject?): Call<String>
+    fun PROCESS_ORDER_LIST(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_order_delivery_unprocess.json")
-    fun UNPROCESS_ORDER_LIST(@Body JSONObject: JSONObject?): Call<String>
+    fun UNPROCESS_ORDER_LIST(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_memo_create_pdf.json")
-    fun MAKE_PFD(@Body JSONObject: JSONObject?): Call<String>
+    fun MAKE_PFD(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_schedule_order_details.json")
-    fun ORDER_DETAILS(@Body JSONObject: JSONObject?): Call<String>
+    fun ORDER_DETAILS(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_outlet_details.json")
-    fun OutletDetails(@Body JSONObject: JSONObject?): Call<String>
+    fun OutletDetails(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_create_outlet.json")
-    fun CreateOutlet(@Body JSONObject: JSONObject?): Call<String>
+    fun CreateOutlet(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_outlet_list.json")
-    fun OutletList(@Body JSONObject: JSONObject?): Call<String>
+    fun OutletList(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_market_details.json")
-    fun MarketDetails(@Body JSONObject: JSONObject?): Call<String>
+    fun MarketDetails(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_create_market.json")
-    fun CreateMarket(@Body JSONObject: JSONObject?): Call<String>
+    fun CreateMarket(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_market_list.json")
-    fun MarketList(@Body JSONObject: JSONObject?): Call<String>
+    fun MarketList(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_visit_plan_list.json")
-    fun VisitPlan(@Body JSONObject: JSONObject?): Call<String>
+    fun VisitPlan(@Body JSONObject: RequestBody): Call<String>
 
 
     @Headers("Content-Type: application/json")
     @POST("dist_order_cancel.json")
-    fun CANCEL_ORDER(@Body JSONObject: JSONObject?): Call<String>
+    fun CANCEL_ORDER(@Body JSONObject: RequestBody): Call<String>
 
 
     @Headers("Content-Type: application/json")
     @POST("dist_order_cancel_list.json")
-    fun CANCEL_ORDER_LIST(@Body JSONObject: JSONObject?): Call<String>
+    fun CANCEL_ORDER_LIST(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_process_order_list_for_delivery.json")
-    fun PROCESS_ORDER_LIST_FOR_MEMO(@Body JSONObject: JSONObject?): Call<String>
+    fun PROCESS_ORDER_LIST_FOR_MEMO(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_change_password.json")
-    fun CHANGE_PASSWORD(@Body JSONObject: JSONObject?): Call<String>
+    fun CHANGE_PASSWORD(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_price_list.json")
-    fun PriceList(@Body JSONObject: JSONObject?): Call<String>
+    fun PriceList(@Body JSONObject: RequestBody): Call<String>
 
 
     @Headers("Content-Type: application/json")
     @POST("dist_bonus_party_affiliation.json")
-    fun BonusParty(@Body JSONObject: JSONObject?): Call<String>
+    fun BonusParty(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_product_order_bonus_report.json")
-    fun PRODUCT_WISE_BONUS(@Body JSONObject: JSONObject?): Call<String>
+    fun PRODUCT_WISE_BONUS(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_product_bonus_report.json")
-    fun PRODUCT_WISE_BONUS_SUMMERY(@Body JSONObject: JSONObject?): Call<String>
+    fun PRODUCT_WISE_BONUS_SUMMERY(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_visit_plan_list.json")
-    fun Stock(@Body JSONObject: JSONObject?): Call<String>
+    fun Stock(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_product_order_report.json")
-    fun PRODUCT_WISE_SALES(@Body JSONObject: JSONObject?): Call<String>
+    fun PRODUCT_WISE_SALES(@Body JSONObject: RequestBody): Call<String>
 
 
     @Headers("Content-Type: application/json")
     @POST("sr_login_report.json")
-    fun ATTENDANCE_HISTORY(@Body JSONObject: JSONObject?): Call<String>
+    fun ATTENDANCE_HISTORY(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_product_processed_order_report.json")
-    fun PRODUCT_WISE_SALES_SUMMERY_Invoece(@Body JSONObject: JSONObject?): Call<String>
+    fun PRODUCT_WISE_SALES_SUMMERY_Invoece(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_product_sales_report.json")
-    fun PRODUCT_WISE_SALES_SUMMERY_DELIVERy(@Body JSONObject: JSONObject?): Call<String>
+    fun PRODUCT_WISE_SALES_SUMMERY_DELIVERy(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_sales_targets.json")
-    fun ProductTarget(@Body JSONObject: JSONObject?): Call<String>
+    fun ProductTarget(@Body JSONObject: RequestBody): Call<String>
     @Headers("Content-Type: application/json")
     @POST("dist_last_memo_details.json")
-    fun LAST_MEMO(@Body JSONObject: JSONObject?): Call<String>
+    fun LAST_MEMO(@Body JSONObject: RequestBody): Call<String>
     @Headers("Content-Type: application/json")
     @POST("dist_create_out_of_plan_visit.json")
-    fun OUT_OF_PLAN_VISIT(@Body JSONObject: JSONObject?): Call<String>
+    fun OUT_OF_PLAN_VISIT(@Body JSONObject: RequestBody): Call<String>
 
 
 

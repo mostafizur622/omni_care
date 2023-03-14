@@ -3,6 +3,7 @@ package com.srapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -30,7 +31,13 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import static com.srapp.Db_Actions.Tables.SR_ID;
-import static com.srapp.Db_Actions.URL.ORDERS_FOR_PROCESS;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CancelOrder extends Parent implements BasicFunctionListener {
 
@@ -97,16 +104,7 @@ public class CancelOrder extends Parent implements BasicFunctionListener {
             }
         });
 
-        JSONObject jsonObject = new JSONObject();
-
-        try {
-            jsonObject.put(SR_ID,bf.getPreference(SR_ID));
-            jsonObject.put("mac",bf.getPreference("mac"));
-            //  jsonObject.put("order_date","all");
-            bf.getResponceData(ORDERS_FOR_PROCESS,jsonObject.toString(),100);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        getdata(new JSONObject());
 
         clear.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,7 +114,8 @@ public class CancelOrder extends Parent implements BasicFunctionListener {
                     jsonObject.put(SR_ID,bf.getPreference(SR_ID));
                     jsonObject.put("mac",bf.getPreference("mac"));
                     //  jsonObject.put("order_date","all");
-                    bf.getResponceData(ORDERS_FOR_PROCESS,jsonObject.toString(),100);
+                    //bf.getResponceData(ORDERS_FOR_PROCESS,jsonObject.toString(),100);
+                    getdata(jsonObject);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -137,7 +136,8 @@ public class CancelOrder extends Parent implements BasicFunctionListener {
                     jsonObject.put(SR_ID,bf.getPreference(SR_ID));
                     jsonObject.put("mac",bf.getPreference("mac"));
                     jsonObject.put("order_date",bf.getPreference("Date"));
-                    bf.getResponceData(ORDERS_FOR_PROCESS,jsonObject.toString(),100);
+                    //bf.getResponceData(ORDERS_FOR_PROCESS,jsonObject.toString(),100);
+                    getdata(jsonObject);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -148,35 +148,71 @@ public class CancelOrder extends Parent implements BasicFunctionListener {
 
     }
 
+    private void getdata( JSONObject jsonObject) {
 
-    @Override
-    public void OnServerResponce(JSONObject jsonObject, int i) {
-        arrayList.clear();
-        android.util.Log.e("json",jsonObject.toString());
 
 
         try {
-            JSONArray jsonArray = jsonObject.getJSONArray("orders");
-            for (int j = 0 ; j<jsonArray.length(); j++){
-                HashMap<String,String> map = new HashMap<>();
-
-                map.put("order_number",jsonArray.getJSONObject(j).getString("order_number"));
-                map.put("outlet_name",jsonArray.getJSONObject(j).getString("outlet_name"));
-                map.put("gross_value",jsonArray.getJSONObject(j).getString("gross_value"));
-                map.put("order_date",jsonArray.getJSONObject(j).getString("order_date"));
-                map.put("status","2");
-
-                arrayList.add(map);
-            }
-
-            adapter = new AdapterForOrderProcessShow(this,arrayList,1);
-            order_list.setAdapter(adapter);
+            jsonObject.put(SR_ID,bf.getPreference(SR_ID));
+            jsonObject.put("mac",bf.getPreference("mac"));
+            //  jsonObject.put("order_date","all");
+            // bf.getResponceData(ORDERS_FOR_PROCESS,jsonObject.toString(),100);
+            ProgressDialog dailog = CheckConnection(CancelOrder.this,"Getting Order List...");
+            if (dailog==null)
+                return;
+            getJAPi().ORDERS_FOR_PROCESS(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body());
+                        dailog.dismiss();
 
 
+                        arrayList.clear();
+                        android.util.Log.e("json",jsonObject.toString());
 
+                        JSONArray jsonArray = jsonObject.getJSONArray("orders");
+                        for (int j = 0 ; j<jsonArray.length(); j++){
+                            HashMap<String,String> map = new HashMap<>();
+
+                            map.put("order_number",jsonArray.getJSONObject(j).getString("order_number"));
+                            map.put("outlet_name",jsonArray.getJSONObject(j).getString("outlet_name"));
+                            map.put("gross_value",jsonArray.getJSONObject(j).getString("gross_value"));
+                            map.put("order_date",jsonArray.getJSONObject(j).getString("order_date"));
+                            map.put("status","2");
+
+                            arrayList.add(map);
+                        }
+
+                        adapter = new AdapterForOrderProcessShow(CancelOrder.this,arrayList,1);
+                        order_list.setAdapter(adapter);
+
+
+
+
+
+
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+
+                }
+            });
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+
+    @Override
+    public void OnServerResponce(JSONObject jsonObject, int i) {
+
+
 
 
     }

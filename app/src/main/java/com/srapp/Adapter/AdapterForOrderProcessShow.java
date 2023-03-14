@@ -2,6 +2,7 @@ package com.srapp.Adapter;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
@@ -22,6 +23,7 @@ import com.srapp.Dashboard;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.URL;
 import com.srapp.R;
+import com.srapp.SyncActivity;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
@@ -34,8 +36,17 @@ import java.util.HashMap;
 
 import static com.srapp.Db_Actions.Tables.PROCESSING_COMPELETE;
 import static com.srapp.Db_Actions.Tables.SR_ID;
+import static com.srapp.Db_Actions.URL.CheckConnection;
 import static com.srapp.Db_Actions.URL.ORDER_DETAILS;
 import static com.srapp.TempData.PROCESSING_ON_SERVER;
+
+import static com.srapp.Db_Actions.Tables.SR_ID;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AdapterForOrderProcessShow extends BaseAdapter implements BasicFunctionListener {
 
@@ -173,7 +184,39 @@ public class AdapterForOrderProcessShow extends BaseAdapter implements BasicFunc
                             jsonObject.put("order_numbers", jsonArray);
                             jsonObject.put("mac", bf.getPreference("mac"));
                             jsonObject.put(SR_ID, bf.getPreference(SR_ID));
-                            bf.getResponceData(URL.PROCESS_ORDER_LIST, jsonObject.toString(), 1001);
+                          //  bf.getResponceData(URL.PROCESS_ORDER_LIST, jsonObject.toString(), 1001);
+
+                            ProgressDialog dailog = CheckConnection(context,"Checking...");
+                            if (dailog==null)
+                                return;
+                            getJAPi().PROCESS_ORDER_LIST(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                                @Override
+                                public void onResponse(Call<String> call, Response<String> response) {
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(response.body());
+                                        dailog.dismiss();
+                                        JSONArray jsonArray = jsonObject.getJSONArray("schedule");
+                                        for (int j = 0; j < jsonArray.length(); j++) {
+                                            if (isInMainList(jsonArray.getJSONObject(j).getString("dist_order_no")) >= 0)
+                                                maplist.get(isInMainList(jsonArray.getJSONObject(j).getString("dist_order_no"))).put("status", jsonArray.getJSONObject(j).getString("status"));
+
+                                            Log.e("dialog_for_details", isInMainList(jsonArray.getJSONObject(j).getString("dist_order_no")) + " ");
+                                            if (jsonArray.getJSONObject(j).getString("status").equalsIgnoreCase("1")) {
+                                                db.updateOrderStatus(jsonArray.getJSONObject(j).getString("dist_order_no"),PROCESSING_COMPELETE+"");
+                                            }
+                                        }
+                                        notifyDataSetChanged();
+
+                                    } catch (JSONException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<String> call, Throwable t) {
+
+                                }
+                            });
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -341,17 +384,7 @@ public class AdapterForOrderProcessShow extends BaseAdapter implements BasicFunc
         try {
         if (i==1001) {
 
-                JSONArray jsonArray = jsonObject.getJSONArray("schedule");
-                for (int j = 0; j < jsonArray.length(); j++) {
-                    if (isInMainList(jsonArray.getJSONObject(j).getString("dist_order_no")) >= 0)
-                        maplist.get(isInMainList(jsonArray.getJSONObject(j).getString("dist_order_no"))).put("status", jsonArray.getJSONObject(j).getString("status"));
 
-                    Log.e("dialog_for_details", isInMainList(jsonArray.getJSONObject(j).getString("dist_order_no")) + " ");
-                    if (jsonArray.getJSONObject(j).getString("status").equalsIgnoreCase("1")) {
-                        db.updateOrderStatus(jsonArray.getJSONObject(j).getString("dist_order_no"),PROCESSING_COMPELETE+"");
-                    }
-                }
-                notifyDataSetChanged();
 
 
         }else if(i==1005){

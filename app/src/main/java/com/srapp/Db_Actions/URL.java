@@ -1,5 +1,19 @@
 package com.srapp.Db_Actions;
 
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.widget.Toast;
+
+import com.srapp.LoginActivity;
+import com.srapp.Util.JAPIClient;
+import com.srapp.apiService.ApiInterfaceForJava;
+
+import org.json.JSONObject;
+
+import okhttp3.RequestBody;
+
 public class URL {
 
 
@@ -8,8 +22,8 @@ public class URL {
   //public static final String Domain = "http://192.168.10.82:90/smc-e-sales/api_data_dist124Retrives/"; //2 may 2021
 
   //  public static final String Domain = "http://182.160.103.236:8079/api_data_dist124Retrives/"; //after_marge dec 6 2021
-    public static final String Domain = "http://182.160.103.236:8079/api_data_dist133Retrives/"; //after_marge dec 6 2021
-   // public static final String Domain = "http://202.126.123.157/smc_test/api_data_dist134_retrives/"; //after_marge dec 6 2021
+    //public static final String Domain = "http://182.160.103.236:8079/api_data_dist133Retrives/"; //after_marge dec 6 2021
+   public static final String Domain = "http://202.126.123.157/smc_test/api_data_dist124_retrives/"; //after_marge dec 6 2021
    //public static final String Domain = "http://52.148.73.105/api_data_dist123Retrives/"; //after_marge dec 6 2021
    //public static final String Domain = "http://202.126.123.157/smc_test_mk/api_data_dist122Retrives/"; //after_marge dec 6 2021nnnnnnnnn
 
@@ -17,9 +31,9 @@ public class URL {
     public static final String GET_ATTENDANCE_STATUS = Domain + "get_sr_check_in_out.json";
     public static final String SET_ATTENDANCE_STATUS = Domain + "set_sr_check_in_out.json";
     public static String UpdatePushTime = Domain + "update_data_push_time.json";
-    public static final String Login = Domain + "dist_user_login.json";
+    public static final String Login = Domain + "dist_user_login.json"; //
     public static final String Push = Domain + "create_outlet.json";
-    public static final String PULL = Domain + "dist_data_pull.json";
+    public static final String PULL = Domain + "dist_data_pull.json"; //
     public static final String Log = "http://192.168.0.183/pushdata.php";
     public static final String GPS_UPDATE = Domain + "dist_update_outlet.json";
     public static final String CREATE_MEMO = Domain + "dist_create_memo.json";
@@ -29,14 +43,14 @@ public class URL {
     public static final String OUTLET_WISE_SALES_REPORT = Domain + "dist_outlet_wise_sales_report.json";
     public static final String INCENTIVE_PARTY = Domain + "get_bonus_cards_report.json";
     public static final String GIFT_ISSUE = Domain + "giftitem_received.json";
-    public static final String VERSION = "1.3.4";
+    public static final String VERSION = "1.3.3";
     public static final String [] EMAIL = {"tanvir.ahmed@arenaphonebd.net","abu.naser@arenaphonebd.net"};
     public static final String VERSION_txt = "Version(" + VERSION + ")";
     public static String release_date = "03-JAN-2023";
     public static final String OUTLET_VISIT_REPORT =Domain +"get_route_wise_outlet_visit_report.json";
-    public static final String Bonus_Policy = Domain + "get_policy_list_v2.json";
-    public static final String Bonus_Policy_Outlet = Domain + "get_outlet_group.json";
-    public static final String Measurement_Unit__Details_Table = Domain +"get_product_units.json";
+    public static final String Bonus_Policy = Domain + "get_policy_list_v2.json"; //
+    public static final String Bonus_Policy_Outlet = Domain + "get_outlet_group.json"; //
+    public static final String Measurement_Unit__Details_Table = Domain +"get_product_units.json"; //
     public static final String GET_LAST_RECORD = Domain + "dist_last_orders.json";
     public static final String GET_LAST_MEMO = Domain + "dist_last_memos.json";
     public static final String GIFT_ITEM_LIST = Domain + "get_gift_item_list.json";
@@ -70,5 +84,43 @@ public class URL {
     public static final String ProductTarget = Domain + "dist_sales_targets.json";
     public static final String LAST_MEMO = Domain + "dist_last_memo_details.json";
     public static final String OUT_OF_PLAN_VISIT = Domain + "dist_create_out_of_plan_visit.json";
+
+ public static ApiInterfaceForJava getJAPi() {
+  return JAPIClient.getClient().create(ApiInterfaceForJava.class);
+ }
+
+
+ public static RequestBody convertTORequestdata(JSONObject jsonObject){
+
+  return   RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"),(jsonObject).toString());
+ }
+
+ public static  boolean isInternetOn(Context context) {
+  ConnectivityManager connec =  (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+  if ((connec.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED) ||
+          (connec.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTING) ||
+          (connec.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTING) ||
+          (connec.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED)) {
+
+   return true;
+  } else if ( connec.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED ||  connec.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED  ) {
+
+   return false;
+  }
+  return false;
+ }
+ public static ProgressDialog CheckConnection(Context context,String message){
+  if (!isInternetOn(context)){
+   Toast.makeText(context , "No Internet Connection", Toast.LENGTH_LONG).show();
+   return null;
+  }else {
+   ProgressDialog progressDialog = new ProgressDialog(context);
+   progressDialog.setMessage(message);
+   progressDialog.setCancelable(false);
+   progressDialog.show();
+   return progressDialog;
+  }
+
+ }
 
 }

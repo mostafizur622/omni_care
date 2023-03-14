@@ -3,6 +3,7 @@ package com.srapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -35,6 +36,13 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import static com.srapp.Db_Actions.Tables.SR_ID;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class OutletVisitReport extends AppCompatActivity implements BasicFunctionListener {
     private DatePickerDialog fromDatePickerDialog;
@@ -164,7 +172,47 @@ public class OutletVisitReport extends AppCompatActivity implements BasicFunctio
 
 
 
-            bf.getResponceData(URL.OUTLET_VISIT_REPORT, jsonObject.toString(), 101);
+            //bf.getResponceData(URL.OUTLET_VISIT_REPORT, jsonObject.toString(), 101);
+
+            ProgressDialog dailog = CheckConnection(OutletVisitReport.this,"Checking...");
+            if (dailog==null)
+                return;
+            getJAPi().OUTLET_VISIT_REPORT(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body());
+                        dailog.dismiss();
+                        list.clear();
+                        onstart=true;
+                        JSONArray jsonArray = jsonObject.getJSONArray("report_data");
+                        for (int j = 0 ; j<jsonArray.length(); j++ ){
+
+                            HashMap<String, String> map = new HashMap<>();
+                            map.put("route", jsonArray.getJSONObject(j).getString("route"));
+                            map.put("total_outlet", jsonArray.getJSONObject(j).getString("total_outlet"));
+                            map.put("total_visited", jsonArray.getJSONObject(j).getString("total_visited"));
+                            map.put("total_ec", jsonArray.getJSONObject(j).getString("total_ec"));
+                            list.add(map);
+
+
+                        }
+
+                        AdapterForOutletVisitReport adapterForOrderSummery = new AdapterForOutletVisitReport(OutletVisitReport.this,list);
+                        listview.setAdapter(adapterForOrderSummery);
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+
+                }
+            });
+
+
         } else {
             Toast.makeText(this, "NO Internet Connection", Toast.LENGTH_LONG).show();
         }
@@ -173,32 +221,8 @@ public class OutletVisitReport extends AppCompatActivity implements BasicFunctio
 
     @Override
     public void OnServerResponce(JSONObject jsonObject, int i) {
-        list.clear();
-        onstart=true;
-        if (i==101){
-            try {
-                JSONArray jsonArray = jsonObject.getJSONArray("report_data");
-                for (int j = 0 ; j<jsonArray.length(); j++ ){
-
-                        HashMap<String, String> map = new HashMap<>();
-                        map.put("route", jsonArray.getJSONObject(j).getString("route"));
-                        map.put("total_outlet", jsonArray.getJSONObject(j).getString("total_outlet"));
-                        map.put("total_visited", jsonArray.getJSONObject(j).getString("total_visited"));
-                        map.put("total_ec", jsonArray.getJSONObject(j).getString("total_ec"));
-                        list.add(map);
 
 
-                }
-
-                AdapterForOutletVisitReport adapterForOrderSummery = new AdapterForOutletVisitReport(this,list);
-                listview.setAdapter(adapterForOrderSummery);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-                Log.e("error",e.getMessage());
-            }
-
-        }
 
     }
 

@@ -1,5 +1,8 @@
 package com.srapp;
 
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+
 import android.Manifest;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
@@ -41,7 +44,11 @@ import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Difine;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Db_Actions.URL;
+import com.srapp.Util.JAPIClient;
 import com.srapp.Util.Parent;
+import com.srapp.apiService.ApiClient;
+import com.srapp.apiService.ApiInterface;
+import com.srapp.apiService.ApiInterfaceForJava;
 import com.srapp.kotlin.DataViewModel;
 import com.srapp.kotlin.DataViewModelFactory;
 import com.srapp.thermalprint.async.usbdevice.UsbDataBinder;
@@ -59,6 +66,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import NewPrint.BixolonPrinter;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends Parent implements BasicFunctionListener, DBListener {
 
@@ -81,7 +92,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
     ProgressDialog progressDialog;
 
     DataViewModel dataViewModel;
-
+    ApiInterfaceForJava api;
     public LoginActivity() {
         dataViewModel = null;
     }
@@ -102,7 +113,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
      /*   //-----------------------------------------
         mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         usbConnection();*/
-
+        api = JAPIClient.getClient().create(ApiInterfaceForJava.class);
         basicFunction = new BasicFunction(this, this);
         ds = new Data_Source(this, this, this);
 
@@ -173,8 +184,69 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                         jsonObject.put("mac", basicFunction.getPreference("mac"));
                         jsonObject.put("version", URL.VERSION);
 
-                         basicFunction.getResponceData(URL.Login, jsonObject.toString(), 101);
+                       //  basicFunction.getResponceData(URL.Login, jsonObject.toString(), 101);
                          Log.e("map : ", jsonObject.toString());
+
+
+                         ProgressDialog dailog = CheckConnection(LoginActivity.this,"Login Check...");
+                         if (dailog==null)
+                             return;
+
+                        api.Login(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                            @Override
+                            public void onResponse(Call<String> call, Response<String> response) {
+                                RcCount = 101;
+                                login_button.setEnabled(false);
+                                dailog.dismiss();
+                                Log.e("test",response.body());
+                                try {
+
+                                    JSONObject jsonObject=new JSONObject(response.body());
+                                    if (jsonObject.getJSONArray("response").getJSONObject(0).getString("status").equalsIgnoreCase("1")) {
+
+                                        basicFunction.savePreference("sr_uname",editUsername.getText().toString().trim());
+                                        FirebaseCrashlytics.getInstance().setUserId(editUsername.getText().toString().trim());
+                                        basicFunction.savePreference("password",editPassword.getText().toString().trim());
+                                        basicFunction.savePreference("office_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("office_id"));
+                                        basicFunction.savePreference("territory_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("territory_id"));
+                                        basicFunction.savePreference("store_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("store_id"));
+                                        basicFunction.savePreference("sales_person_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("sales_person_id"));
+                                        basicFunction.savePreference("office_name",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("office_name"));
+                                        basicFunction.savePreference("office_address",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("office_address"));
+                                        basicFunction.savePreference("office_phone",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("office_phone"));
+                                        basicFunction.savePreference("sr_name",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("sr_name"));
+                                        basicFunction.savePreference("db_name",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("db_name"));
+                                        basicFunction.savePreference("db_address",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("db_address"));
+                                        basicFunction.savePreference("db_mobile",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("db_mobile"));
+
+
+                            /*basicFunction.savePreference("store_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("store_id"));
+                            basicFunction.savePreference("ae_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("ae_id"));
+                            basicFunction.savePreference("tso_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("tso_id"));
+                            basicFunction.savePreference("db_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("db_id"));
+                            basicFunction.savePreference("sr_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("sr_id"));
+                            basicFunction.savePreference("sr_code",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("sr_code"));*/
+
+                                        Log.e("office_name",getPreference("office_name"));
+                                        ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+                                        ds.getlastupdateddate();
+
+                                    } else {
+                                        login_button.setEnabled(true);
+                                        Toast.makeText(LoginActivity.this , jsonObject.getJSONArray("response").getJSONObject(0).getString("message"), Toast.LENGTH_LONG).show();
+                                    }
+                                } catch (JSONException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<String> call, Throwable t) {
+
+                            }
+                        });
+
+
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -239,130 +311,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
 
     @Override
     public void OnServerResponce(JSONObject jsonObject, int RequestCode) {
-        Log.e("Json", jsonObject.toString());
-        try {
-            switch (RequestCode) {
-                case 101:
-                    RcCount = 101;
-                    login_button.setEnabled(false);
 
-                    if (jsonObject.getJSONArray("response").getJSONObject(0).getString("status").equalsIgnoreCase("1")) {
-
-                        basicFunction.savePreference("sr_uname",editUsername.getText().toString().trim());
-                        FirebaseCrashlytics.getInstance().setUserId(editUsername.getText().toString().trim());
-                        basicFunction.savePreference("password",editPassword.getText().toString().trim());
-                        basicFunction.savePreference("office_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("office_id"));
-                        basicFunction.savePreference("territory_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("territory_id"));
-                        basicFunction.savePreference("store_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("store_id"));
-                        basicFunction.savePreference("sales_person_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("sales_person_id"));
-                        basicFunction.savePreference("office_name",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("office_name"));
-                        basicFunction.savePreference("office_address",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("office_address"));
-                        basicFunction.savePreference("office_phone",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("office_phone"));
-                        basicFunction.savePreference("sr_name",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("sr_name"));
-                        basicFunction.savePreference("db_name",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("db_name"));
-                        basicFunction.savePreference("db_address",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("db_address"));
-                        basicFunction.savePreference("db_mobile",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("db_mobile"));
-
-
-                        /*basicFunction.savePreference("store_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("store_id"));
-                        basicFunction.savePreference("ae_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("ae_id"));
-                        basicFunction.savePreference("tso_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("tso_id"));
-                        basicFunction.savePreference("db_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("db_id"));
-                        basicFunction.savePreference("sr_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("sr_id"));
-                        basicFunction.savePreference("sr_code",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("sr_code"));*/
-
-                        Log.e("office_name",getPreference("office_name"));
-                        ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
-                        ds.getlastupdateddate();
-
-                    } else {
-                        login_button.setEnabled(true);
-                        Toast.makeText(this, jsonObject.getJSONArray("response").getJSONObject(0).getString("message"), Toast.LENGTH_LONG).show();
-                    }
-
-                    break;
-
-                case 102:
-                    RcCount = 102;
-                    ds.excQuery("delete  from product_history");
-                    ds.excQuery("delete  from instrument_type");
-                    ds.excQuery("delete  from location");
-                    ds.excQuery("delete  from materials");
-                    ds.excQuery("delete  from stock_info");
-                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
-                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_FISCAL_YEAR);
-                    ds.insertData(jsonObject.getJSONObject("response").toString(),1);
-                    Log.e("102", "OnServerResponce: "+"DELETED ALL DATA---------->" );
-                    //basicFunction.getResponceData(URL.Log,jsonObject.getJSONObject("response").toString(),11);
-                    login_button.setEnabled(true);
-
-                    break;
-                case 103:
-                    progressDialog = new ProgressDialog(this);
-                    progressDialog.setMessage("Downloading Data From Server...");
-                    progressDialog.setCancelable(false);
-                    progressDialog.show();
-
-                    RcCount = 103;
-                    ds.excQuery("delete from Policy_Table");
-                    ds.excQuery("delete from Bonus_Eligible_Group");
-                    ds.excQuery("delete from Bonus_Eligible_Outlet_Categories");
-                    ds.excQuery("delete from policy_root_product");
-                    ds.excQuery("delete from policy_product_Option");
-                    ds.excQuery("delete from policy_option_price_slab");
-                    ds.excQuery("delete from policy_bonus_product");
-                    ds.excQuery("delete from product_price_other_for_slabs_v2");
-                    ds.excQuery("delete from special_group");
-                    ds.excQuery("delete from special_group_details");
-                    ds.excQuery("delete from product_combination_list");
-                    ds.excQuery("delete from Product_combination_list_details_v2");
-                    ds.excQuery("delete from product_combinations");
-
-                    JsonObject jsonObj =  new JsonObject();
-                    jsonObj.addProperty("territory_id", basicFunction.getPreference("territory_id"));
-                    jsonObj.addProperty("so_id", basicFunction.getPreference("sales_person_id"));
-                    jsonObj.addProperty("mac", basicFunction.getPreference("mac"));
-                    jsonObj.addProperty("last_update_date","");
-                    jsonObj.addProperty("all","1");
-
-                    dataViewModel.getProductCombinationV2Data(jsonObj);
-
-                    dataViewModel.getProductCombinationListData(jsonObj);
-
-                    dataViewModel.getSpecialGroupData(jsonObj);
-
-                    ds.insertData(jsonObject,2);
-
-                    Log.e("Bonus_Combination_Data", " Inserted");
-
-                    break;
-
-                case 104:
-                    progressDialog = new ProgressDialog(this);
-                    progressDialog.setMessage("Downloading Outlets Data From Server...");
-                    progressDialog.setCancelable(false);
-                    progressDialog.show();
-                    RcCount = 104;
-                    ds.excQuery("delete from Bonus_Eligible_Outlets");
-                    ds.insertData(jsonObject,3);
-                   // insertbonusPolicyOutletData(jsonObject);
-                    break;
-                case 105:
-                    progressDialog = new ProgressDialog(this);
-                    progressDialog.setMessage("Downloading Unit Data From Server...");
-                    progressDialog.setCancelable(false);
-                    progressDialog.show();
-                    RcCount = 105;
-                    ds.excQuery("delete from unit_details");
-                    ds.insertData(jsonObject,4);
-                   // insertbonusUnitDetails(jsonObject);
-                    break;
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e("jsonexpmain",e.getMessage());
-        }
 
         /* startActivity(new Intent(LoginActivity.this, Dashboard.class));*/
     }
@@ -389,7 +338,39 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                     if (!json.equalsIgnoreCase("done") && RcCount==101) {
                         JSONObject jsonObject = new JSONObject(json);
                         jsonObject.put("mac", basicFunction.getPreference("mac"));
-                        basicFunction.getResponceData(URL.PULL, jsonObject.toString(), 102);
+                       // basicFunction.getResponceData(URL.PULL, jsonObject.toString(), 102);
+                        ProgressDialog dailog = CheckConnection(LoginActivity.this,"Downloading Master Data From Server...");
+                        if (dailog==null)
+                            return;
+                        api.PULL(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                            @Override
+                            public void onResponse(Call<String> call, Response<String> response) {
+                                JSONObject jsonObject= null;
+                                try {
+                                    jsonObject = new JSONObject(response.body());
+                                    dailog.dismiss();
+                                RcCount = 102;
+                                ds.excQuery("delete  from product_history");
+                                ds.excQuery("delete  from instrument_type");
+                                ds.excQuery("delete  from location");
+                                ds.excQuery("delete  from materials");
+                                ds.excQuery("delete  from stock_info");
+                                ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+                                ds.excQuery("delete  from "+ Tables.TABLE_NAME_FISCAL_YEAR);
+                                ds.insertData(jsonObject.getJSONObject("response").toString(),1);
+                                Log.e("102", "OnServerResponce: "+"DELETED ALL DATA---------->" );
+                                //basicFunction.getResponceData(URL.Log,jsonObject.getJSONObject("response").toString(),11);
+                                login_button.setEnabled(true);
+                                } catch (JSONException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<String> call, Throwable t) {
+
+                            }
+                        });
                     }
 
                    else if (json.equalsIgnoreCase("done") && RcCount==102){
@@ -399,7 +380,65 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                        jsonObject.put("so_id",basicFunction.getPreference("sales_person_id"));
                        jsonObject.put("mac",basicFunction.getPreference("mac"));
 
-                        basicFunction.getResponceData(URL.Bonus_Policy,jsonObject.toString(),103);
+                       // basicFunction.getResponceData(URL.Bonus_Policy,jsonObject.toString(),103);
+                        ProgressDialog dailog = CheckConnection(LoginActivity.this,"Downloading Bonus Policy Data From Server...");
+                        if (dailog==null)
+                            return;
+                        api.Bonus_Policy(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                            @Override
+                            public void onResponse(Call<String> call, Response<String> response) {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response.body());
+                                    dailog.dismiss();
+                                    progressDialog = new ProgressDialog(LoginActivity.this);
+                                    progressDialog.setMessage("Saving Bonus Policy's ...");
+                                    progressDialog.setCancelable(false);
+                                    progressDialog.show();
+
+                                    RcCount = 103;
+                                    ds.excQuery("delete from Policy_Table");
+                                    ds.excQuery("delete from Bonus_Eligible_Group");
+                                    ds.excQuery("delete from Bonus_Eligible_Outlet_Categories");
+                                    ds.excQuery("delete from policy_root_product");
+                                    ds.excQuery("delete from policy_product_Option");
+                                    ds.excQuery("delete from policy_option_price_slab");
+                                    ds.excQuery("delete from policy_bonus_product");
+                                    ds.excQuery("delete from product_price_other_for_slabs_v2");
+                                    ds.excQuery("delete from special_group");
+                                    ds.excQuery("delete from special_group_details");
+                                    ds.excQuery("delete from product_combination_list");
+                                    ds.excQuery("delete from Product_combination_list_details_v2");
+                                    ds.excQuery("delete from product_combinations");
+
+                                    JsonObject jsonObj =  new JsonObject();
+                                    jsonObj.addProperty("territory_id", basicFunction.getPreference("territory_id"));
+                                    jsonObj.addProperty("so_id", basicFunction.getPreference("sales_person_id"));
+                                    jsonObj.addProperty("mac", basicFunction.getPreference("mac"));
+                                    jsonObj.addProperty("last_update_date","");
+                                    jsonObj.addProperty("all","1");
+
+                                    dataViewModel.getProductCombinationV2Data(jsonObj);
+
+                                    dataViewModel.getProductCombinationListData(jsonObj);
+
+                                    dataViewModel.getSpecialGroupData(jsonObj);
+
+                                    ds.insertData(jsonObject,2);
+
+                                    Log.e("Bonus_Combination_Data", " Inserted");
+
+
+                                } catch (JSONException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<String> call, Throwable t) {
+
+                            }
+                        });
+
 
 
                     } else if (json.equalsIgnoreCase("dbPolicy") && RcCount==103){
@@ -409,7 +448,35 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                        jsonObject.put("so_id",basicFunction.getPreference("sales_person_id"));
                        jsonObject.put("mac",basicFunction.getPreference("mac"));
 
-                        basicFunction.getResponceData(URL.Bonus_Policy_Outlet,jsonObject.toString(),104);
+                       // basicFunction.getResponceData(URL.Bonus_Policy_Outlet,jsonObject.toString(),104);
+                        ProgressDialog dailog = CheckConnection(LoginActivity.this,"Downloading Unit Data From Server...");
+                        if (dailog==null)
+                            return;
+                        api.Bonus_Policy_Outlet(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                            @Override
+                            public void onResponse(Call<String> call, Response<String> response) {
+                                try {
+                                    dailog.dismiss();
+                                    JSONObject jsonObject = new JSONObject(response.body());
+                                    progressDialog = new ProgressDialog(LoginActivity.this);
+                                    progressDialog.setMessage("Saving Outlets Data From Server...");
+                                    progressDialog.setCancelable(false);
+                                    progressDialog.show();
+                                    RcCount = 104;
+                                    ds.excQuery("delete from Bonus_Eligible_Outlets");
+                                    ds.insertData(jsonObject,3);
+
+
+                                } catch (JSONException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<String> call, Throwable t) {
+
+                            }
+                        });
 
 
                     }else if (RcCount==104){
@@ -418,7 +485,35 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                         jsonObject.put("Territory_Id",basicFunction.getPreference("territory_id"));
                         jsonObject.put("so_id",basicFunction.getPreference("sales_person_id"));
                         jsonObject.put("mac",basicFunction.getPreference("mac"));
-                        basicFunction.getResponceData(URL.Measurement_Unit__Details_Table,jsonObject.toString(),105);
+                       // basicFunction.getResponceData(URL.Measurement_Unit__Details_Table,jsonObject.toString(),105);
+                        ProgressDialog dailog = CheckConnection(LoginActivity.this,"Downloading Unit Data From Server...");
+                        if (dailog==null)
+                            return;
+                        api.Measurement_Unit__Details_Table(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                            @Override
+                            public void onResponse(Call<String> call, Response<String> response) {
+                                try {
+                                    dailog.dismiss();
+                                    JSONObject jsonObject = new JSONObject(response.body());
+                                    progressDialog = new ProgressDialog(LoginActivity.this);
+                                    progressDialog.setMessage("Saving Unit Data From Server...");
+                                    progressDialog.setCancelable(false);
+                                    progressDialog.show();
+                                    RcCount = 105;
+                                    ds.excQuery("delete from unit_details");
+                                    ds.insertData(jsonObject,4);
+
+
+                                } catch (JSONException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<String> call, Throwable t) {
+
+                            }
+                        });
 
 
                     }else if (RcCount==105){
