@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -38,6 +39,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import static android.widget.LinearLayout.VERTICAL;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MarketList extends AppCompatActivity implements BasicFunctionListener {
 
@@ -169,7 +177,9 @@ public class MarketList extends AppCompatActivity implements BasicFunctionListen
                     initialPageIndex = 1;
 
 
-                    basicFunction.getResponceData(URL.MarketList, String.valueOf(primaryData),701);
+                  //  basicFunction.getResponceData(URL.MarketList, String.valueOf(primaryData),701);
+
+                    getdata(primaryData);
 
 
                 }
@@ -191,9 +201,9 @@ public class MarketList extends AppCompatActivity implements BasicFunctionListen
                     initialPageIndex = 1;
 
 
-                    basicFunction.getResponceData(URL.MarketList, String.valueOf(primaryData),701);
+                    //basicFunction.getResponceData(URL.MarketList, String.valueOf(primaryData),701);
 
-
+                    getdata(primaryData);
 
                 }
             }
@@ -224,6 +234,87 @@ public class MarketList extends AppCompatActivity implements BasicFunctionListen
                 StaticFlags.MARKET_THANA_SPINNER_POSITION = 0;
                 startActivity(new Intent( MarketList.this, Tools.class));
                 finish();
+            }
+        });
+    }
+
+    private void getdata(JSONObject primaryData) {
+        ProgressDialog dailog = CheckConnection(MarketList.this,"Getting Market List...");
+        if (dailog==null)
+            return;
+        getJAPi().MarketList(convertTORequestdata(primaryData)).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body());
+                    dailog.dismiss();
+                    isLoading = false;
+                    markets = new HashMap<>();
+                    marketIdList = new ArrayList<>();
+                    marketnameList = new ArrayList<>();
+
+                    try {
+                        for (int j = 0; j < jsonObject.getJSONArray("markets").length(); j++) {
+                            if (!jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_name").equals("")) {
+                                marketIdList.add(jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_id"));
+                                marketnameList.add(jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_name"));
+                            }
+
+                        }
+
+                        markets.put(Tables.MARKETS_market_id,marketIdList);
+                        markets.put(Tables.MARKETS_market_name,marketnameList);
+
+                        if (markets.get(Tables.MARKETS_market_name) != null && markets.get(Tables.MARKETS_market_name).size()>0) {
+
+                            marketListAdapter = new MarketListAdapter(markets);
+                            recyclerView.setLayoutManager(new LinearLayoutManager(MarketList.this));
+                            recyclerView.setAdapter(marketListAdapter);
+
+                            if (rcvIntent >0){
+                                recyclerView.scrollToPosition(getPosition(marketIdList,StaticFlags.MARKET_ID_FOR_POSITION));
+
+                            }
+
+                            marketListAdapter.setOnItemClickListener(new MarketListAdapter.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(int position) {
+
+                                }
+
+                                @Override
+                                public void onEditClick(int position) {
+                                    Intent intent = new Intent(MarketList.this, CreateNewMarket.class);
+                                    intent.putExtra("market_id", markets.get(Tables.MARKETS_market_id).get(position));
+                                    startActivity(intent);
+                                    finish();
+                                    Log.e("edit click", "onEditClick: " + markets.get(Tables.MARKETS_market_id).get(position));
+
+                                }
+
+                                @Override
+                                public void onViewClick(int position) {
+
+                                }
+                            });
+                        }else {
+                            recyclerView.setAdapter(null);
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    setup();
+
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
             }
         });
     }
@@ -270,93 +361,11 @@ public class MarketList extends AppCompatActivity implements BasicFunctionListen
     @Override
     public void OnServerResponce(JSONObject jsonObject, int i) {
 
-        isLoading = false;
-        Log.e("json response", "OnServerResponce: "+jsonObject+"  size.."+jsonObject.length()+" resp code : "+i );
-
-        if (i == 701){
-
-            markets = new HashMap<>();
-            marketIdList = new ArrayList<>();
-            marketnameList = new ArrayList<>();
-
-            try {
-                for (int j = 0; j < jsonObject.getJSONArray("markets").length(); j++) {
-                    if (!jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_name").equals("")) {
-                        marketIdList.add(jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_id"));
-                        marketnameList.add(jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_name"));
-                    }
-
-                }
-
-                markets.put(Tables.MARKETS_market_id,marketIdList);
-                markets.put(Tables.MARKETS_market_name,marketnameList);
-
-                if (markets.get(Tables.MARKETS_market_name) != null && markets.get(Tables.MARKETS_market_name).size()>0) {
-
-                    marketListAdapter = new MarketListAdapter(markets);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(MarketList.this));
-                    recyclerView.setAdapter(marketListAdapter);
-
-                    if (rcvIntent >0){
-                        recyclerView.scrollToPosition(getPosition(marketIdList,StaticFlags.MARKET_ID_FOR_POSITION));
-
-                    }
-
-                    marketListAdapter.setOnItemClickListener(new MarketListAdapter.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(int position) {
-
-                        }
-
-                        @Override
-                        public void onEditClick(int position) {
-                            Intent intent = new Intent(MarketList.this, CreateNewMarket.class);
-                            intent.putExtra("market_id", markets.get(Tables.MARKETS_market_id).get(position));
-                            startActivity(intent);
-                            finish();
-                            Log.e("edit click", "onEditClick: " + markets.get(Tables.MARKETS_market_id).get(position));
-
-                        }
-
-                        @Override
-                        public void onViewClick(int position) {
-
-                        }
-                    });
-                }else {
-                    recyclerView.setAdapter(null);
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
 
 
-        }else if (i == 702){
+    }
 
-            try {
-                for (int j = 0; j < jsonObject.getJSONArray("markets").length(); j++) {
-                    if (!jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_name").equals("")) {
-                        marketIdList.add(jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_id"));
-                        marketnameList.add(jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_name"));
-
-                    }
-
-                }
-
-                markets.put(Tables.MARKETS_market_id, marketIdList);
-                markets.put(Tables.MARKETS_market_name, marketnameList);
-
-                recyclerView.getAdapter().notifyDataSetChanged();
-
-                Log.e("50 data setes", "OnServerResponce: Adapter seted...");
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-        }
-
+    public void setup(){
         final LinearLayoutManager linManager = (LinearLayoutManager) recyclerView.getLayoutManager();
 
 
@@ -378,14 +387,13 @@ public class MarketList extends AppCompatActivity implements BasicFunctionListen
                     initialPageIndex++;
                     loadMoreData(initialPageIndex);
 
-                  //  Toast.makeText(MarketList.this," "+initialPageIndex,Toast.LENGTH_SHORT).show();
+                    //  Toast.makeText(MarketList.this," "+initialPageIndex,Toast.LENGTH_SHORT).show();
 
                     Log.e("last position", "onScrolled: "+linManager.findLastVisibleItemPosition() );
                 }
             }
 
         });
-
     }
 
     @Override
@@ -412,7 +420,49 @@ public class MarketList extends AppCompatActivity implements BasicFunctionListen
         }
 
 
-        basicFunction.getResponceData(URL.MarketList, String.valueOf(primaryData),702);
+       // basicFunction.getResponceData(URL.MarketList, String.valueOf(primaryData),702);
+
+        ProgressDialog dailog = CheckConnection(MarketList.this,"Market List Loading...");
+        if (dailog==null)
+            return;
+        getJAPi().MarketList(convertTORequestdata(primaryData)).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body());
+                    dailog.dismiss();
+                    isLoading = false;
+                    try {
+                        for (int j = 0; j < jsonObject.getJSONArray("markets").length(); j++) {
+                            if (!jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_name").equals("")) {
+                                marketIdList.add(jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_id"));
+                                marketnameList.add(jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_name"));
+
+                            }
+
+                        }
+
+                        markets.put(Tables.MARKETS_market_id, marketIdList);
+                        markets.put(Tables.MARKETS_market_name, marketnameList);
+
+                        recyclerView.getAdapter().notifyDataSetChanged();
+
+                        Log.e("50 data setes", "OnServerResponce: Adapter seted...");
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    setup();
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+            }
+        });
 
     }
 

@@ -129,7 +129,7 @@ public class Data_Source extends Parent {
 
     public void close() {
 
-        sqLiteDatabase.close();
+       // sqLiteDatabase.close();
     }
 
     public void excQuery(String Query) {
@@ -1583,12 +1583,14 @@ public class Data_Source extends Parent {
                 if (updateOrInsert(ORDER[0], ORDER[2], jsonObject1.getString(ORDER[2])))
                     sqLiteDatabase.update(ORDER[0], contentValues, ORDER_order_number + " =? ", ar);
                 else {
+
                     contentValues.put(ORDER_is_pushed, 1);
                     contentValues.put(ORDER_STATUS, PROCESSING_PENDING);
+                    open();
                     sqLiteDatabase.insert(ORDER[0], null, contentValues);
                 }
 
-                close();
+
 
 
                 excQuery("DELETE from ORDER_DETAILS where order_number ='" + jsonObject1.getString(ORDER[2]) + "'");
@@ -1618,7 +1620,7 @@ public class Data_Source extends Parent {
             e.printStackTrace();
             Log.e("updateOrderWithServer", e.getMessage());
         }
-
+        close();
 
         return null;
     }
@@ -1633,7 +1635,7 @@ public class Data_Source extends Parent {
         if (c != null && c.getCount() > 0) {
             status = c.getInt(0);
         }
-        sqLiteDatabase.close();
+        close();
         return status;
     }
 
@@ -2228,6 +2230,8 @@ public class Data_Source extends Parent {
 
                 }
 
+                cursorin.close();
+
                 try {
                     jsonObject.put(operationin[0], jsonArrayin);
                 } catch (JSONException e) {
@@ -2577,7 +2581,7 @@ public class Data_Source extends Parent {
         this.open();
         insertedID = sqLiteDatabase.insert(TableName, null, values);
         this.close();
-        sqLiteDatabase.close();
+        close();
         return insertedID;
 
     }

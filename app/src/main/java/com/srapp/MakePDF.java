@@ -4,6 +4,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -42,6 +43,13 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import static com.srapp.Db_Actions.Tables.SR_ID;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MakePDF extends AppCompatActivity implements  BasicFunctionListener, DBListener {
     private DatePickerDialog fromDatePickerDialog;
@@ -115,7 +123,8 @@ public class MakePDF extends AppCompatActivity implements  BasicFunctionListener
             jsonObject.put("end_date",bf.getPreference("Dend_date"));
             jsonObject.put("route_id",bf.getPreference("Droute_id"));
             jsonObject.put(SR_ID,bf.getPreference(SR_ID));
-            bf.getResponceData(URL.PROCESS_ORDER_LIST_FOR_MEMO,jsonObject.toString(),111);
+          //  bf.getResponceData(URL.PROCESS_ORDER_LIST_FOR_MEMO,jsonObject.toString(),111);
+            getProcessOrderList(jsonObject,111);
             isnetworkcalling = true;
         } catch (JSONException e) {
             e.printStackTrace();
@@ -146,7 +155,8 @@ public class MakePDF extends AppCompatActivity implements  BasicFunctionListener
                     jsonObject.put("end_date","0");
                     jsonObject.put("route_id","0");
                     jsonObject.put(SR_ID,bf.getPreference(SR_ID));
-                    bf.getResponceData(URL.PROCESS_ORDER_LIST_FOR_MEMO,jsonObject.toString(),112);
+                  //  bf.getResponceData(URL.PROCESS_ORDER_LIST_FOR_MEMO,jsonObject.toString(),112);
+                    getProcessOrderList(jsonObject,112);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -187,19 +197,37 @@ public class MakePDF extends AppCompatActivity implements  BasicFunctionListener
         });
     }
 
+    private void getProcessOrderList(JSONObject jsonObject,int code) {
+        ProgressDialog dailog = CheckConnection(MakePDF.this,"Get Memos...");
+        if (dailog==null)
+            return;
+        getJAPi().PROCESS_ORDER_LIST_FOR_MEMO(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body());
+                    dailog.dismiss();
+                    if(code==112){
+                        ds.updateWithServerProcessed(jsonObject,code);
+                    }else
+                    ds.updateWithServerProcessed(jsonObject,code);
+
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
     @Override
     public void OnServerResponce(JSONObject jsonObject, int i) {
         isnetworkcalling=false;
-        if (i==111){
-            ds.updateWithServerProcessed(jsonObject,i);
 
-
-        }else if(i==112){
-            ds.updateWithServerProcessed(jsonObject,i);
-
-
-
-        }
     }
 
     @Override
@@ -300,7 +328,8 @@ public class MakePDF extends AppCompatActivity implements  BasicFunctionListener
             jsonObject.put("end_date",bf.getPreference("Dend_date"));
             jsonObject.put("route_id",bf.getPreference("Droute_id"));
             jsonObject.put(SR_ID,bf.getPreference(SR_ID));
-            bf.getResponceData(URL.PROCESS_ORDER_LIST_FOR_MEMO,jsonObject.toString(),111);
+            //bf.getResponceData(URL.PROCESS_ORDER_LIST_FOR_MEMO,jsonObject.toString(),111);
+            getProcessOrderList(jsonObject,111);
         } catch (JSONException e) {
             e.printStackTrace();
         }

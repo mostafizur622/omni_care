@@ -126,7 +126,7 @@ public class GiftIssueActivity extends ParentActivity implements View.OnClickLis
 
           //  basicFunction.getResponceData(URL.GIFT_ITEM_Details,jsonObject.toString(),111);
 
-            ProgressDialog dailog = URL.CheckConnection(GiftIssueActivity.this,"Checking...");
+            ProgressDialog dailog = URL.CheckConnection(GiftIssueActivity.this,"Gift Item Details Loading...");
             if (dailog==null)
                 return;
             getJAPi().GIFT_ITEM_Details(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {

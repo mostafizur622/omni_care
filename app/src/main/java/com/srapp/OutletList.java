@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -38,6 +39,13 @@ import java.util.HashMap;
 
 import static android.widget.LinearLayout.VERTICAL;
 import static com.srapp.Db_Actions.Tables.SR_ID;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class OutletList extends AppCompatActivity implements BasicFunctionListener {
     Spinner thanaSpinner, marketSpinner;
@@ -288,7 +296,8 @@ public class OutletList extends AppCompatActivity implements BasicFunctionListen
                     initialPageIndex = 1;
                     nowCaling=WITH_THANA_ID;
 
-                    basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData),401);
+                   // basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData),401);
+                    getdata(primaryData);
 
                 }
 
@@ -316,7 +325,8 @@ public class OutletList extends AppCompatActivity implements BasicFunctionListen
                     Log.e("thana filter req", "onItemSelected: "+primaryData );
 
 
-                    basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData),401);
+                    //basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData),401);
+                    getdata(primaryData);
                     //............api call end................................................................
                 }
 
@@ -340,7 +350,8 @@ public class OutletList extends AppCompatActivity implements BasicFunctionListen
                     Log.e("thana filter req", "onItemSelected: "+primaryData );
 
 
-                    basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData),401);
+                    //basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData),401);
+                    getdata(primaryData);
 
                 }
 
@@ -364,7 +375,8 @@ public class OutletList extends AppCompatActivity implements BasicFunctionListen
                     initialPageIndex = 1;
 
 
-                    basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData),401);
+                   // basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData),401);
+                    getdata(primaryData);
 
                 }
 
@@ -480,6 +492,109 @@ public class OutletList extends AppCompatActivity implements BasicFunctionListen
 
     }
 
+    private void getdata(JSONObject primaryData) {
+
+        ProgressDialog dailog = CheckConnection(OutletList.this,"getting Outlets...");
+        if (dailog==null)
+            return;
+        getJAPi().OutletList(convertTORequestdata(primaryData)).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body());
+                    dailog.dismiss();
+                    isLoading = false;
+
+                    outletListAdapter = new OutletListAdapter();
+                    outletList = new HashMap<>();
+                    outletIdList = new ArrayList<>();
+                    outletNameList = new ArrayList<>();
+                    outlets = new ArrayList<>();
+                    outletMarketIdList = new ArrayList<>();
+                    outletThanaIdList = new ArrayList<>();
+                    try {
+                        for (int j = 0; j < jsonObject.getJSONArray("outlets").length(); j++) {
+                            if (!jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_name").equals("")) {
+                                outletIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_id"));
+                                outletNameList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_name"));
+                                outletThanaIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("thana_id"));
+                                outletMarketIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("market_id"));
+                            }
+
+                        }
+
+                        outletList.put(Tables.OUTLETS_ID, outletIdList);
+                        outletList.put(Tables.OUTLETS_OUTLET_NAME, outletNameList);
+                        outletList.put(Tables.OUTLETS_THANA_ID, outletThanaIdList);
+                        outletList.put(Tables.OUTLETS_MARKET_ID, outletMarketIdList);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        Log.e("json response", "OnServerResponce:" + jsonObject.getJSONArray("outlets").length());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
+                    outlets = outletList.get(Tables.OUTLETS_OUTLET_NAME);
+
+                    if (outlets != null && outlets.size() > 0) {
+                        recyclerView.setLayoutManager(new LinearLayoutManager(OutletList.this));
+                        outletListAdapter.setOutletNames(outletNameList);
+                        recyclerView.setAdapter(outletListAdapter);
+                        if (rcvIntent>0) {
+                            recyclerView.scrollToPosition(getPosition(outletIdList, StaticFlags.OUTLET_ID_FOR_SCROLL));
+                        }
+                        Log.e("50 data setes", "OnServerResponce: Adapter seted...");
+                    } else {
+                        recyclerView.setAdapter(null);
+                    }
+
+                    outletListAdapter.setOnItemClickListener(new OutletListAdapter.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(int position) {
+                            // initialize in viewholder class ---> itemview.setOnclik listener  line edit.setOnclick
+                        }
+
+                        @Override
+                        public void onEditClick(int position) {
+                            // Toast.makeText(OutletList.this,"Outlet Id"+outletList.get(Tables.OUTLETS_ID).get(position),Toast.LENGTH_SHORT).show();
+
+                            Intent intent = new Intent(OutletList.this,CreateOutlet.class);
+                            intent.putExtra("outlet_id_byClick",outletList.get(Tables.OUTLETS_ID).get(position));
+                            startActivity(intent);
+                            finish();
+
+                        }
+
+                        @Override
+                        public void onViewClick(int position) {
+                            Log.e("view btn click", "onViewClick: "+position );
+
+                            Intent intent = new Intent(OutletList.this,OutletView.class);
+                            intent.putExtra("outlet_id",outletList.get(Tables.OUTLETS_ID).get(position));
+                            startActivity(intent);
+                            finish();
+
+
+                        }
+                    });
+
+
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
     private void setSpinnerAdapter(HashMap<String,ArrayList<String> >dataMap, Spinner spinner, String idKey, String nameKey) {
         if (dataMap != null && dataMap.size()>0) {
 
@@ -537,89 +652,6 @@ public class OutletList extends AppCompatActivity implements BasicFunctionListen
         Log.e("json response", "OnServerResponce: "+jsonObject+"  size.."+jsonObject.length() );
 
         if (i == 401) {
-            isLoading = false;
-
-            outletListAdapter = new OutletListAdapter();
-            outletList = new HashMap<>();
-            outletIdList = new ArrayList<>();
-            outletNameList = new ArrayList<>();
-            outlets = new ArrayList<>();
-            outletMarketIdList = new ArrayList<>();
-            outletThanaIdList = new ArrayList<>();
-            try {
-                for (int j = 0; j < jsonObject.getJSONArray("outlets").length(); j++) {
-                    if (!jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_name").equals("")) {
-                        outletIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_id"));
-                        outletNameList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_name"));
-                        outletThanaIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("thana_id"));
-                        outletMarketIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("market_id"));
-                    }
-
-                }
-
-                outletList.put(Tables.OUTLETS_ID, outletIdList);
-                outletList.put(Tables.OUTLETS_OUTLET_NAME, outletNameList);
-                outletList.put(Tables.OUTLETS_THANA_ID, outletThanaIdList);
-                outletList.put(Tables.OUTLETS_MARKET_ID, outletMarketIdList);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                Log.e("json response", "OnServerResponce:" + jsonObject.getJSONArray("outlets").length());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-
-            outlets = outletList.get(Tables.OUTLETS_OUTLET_NAME);
-
-        /*if (i == 402) {
-            linManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-            recyclerView.setLayoutManager(linManager);
-        }*/
-
-            if (outlets != null && outlets.size() > 0) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(OutletList.this));
-                outletListAdapter.setOutletNames(outletNameList);
-                recyclerView.setAdapter(outletListAdapter);
-                if (rcvIntent>0) {
-                    recyclerView.scrollToPosition(getPosition(outletIdList, StaticFlags.OUTLET_ID_FOR_SCROLL));
-                }
-                Log.e("50 data setes", "OnServerResponce: Adapter seted...");
-            } else {
-                recyclerView.setAdapter(null);
-            }
-
-            outletListAdapter.setOnItemClickListener(new OutletListAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(int position) {
-                    // initialize in viewholder class ---> itemview.setOnclik listener  line edit.setOnclick
-                }
-
-                @Override
-                public void onEditClick(int position) {
-                   // Toast.makeText(OutletList.this,"Outlet Id"+outletList.get(Tables.OUTLETS_ID).get(position),Toast.LENGTH_SHORT).show();
-
-                    Intent intent = new Intent(OutletList.this,CreateOutlet.class);
-                    intent.putExtra("outlet_id_byClick",outletList.get(Tables.OUTLETS_ID).get(position));
-                    startActivity(intent);
-                    finish();
-
-                }
-
-                @Override
-                public void onViewClick(int position) {
-                    Log.e("view btn click", "onViewClick: "+position );
-
-                    Intent intent = new Intent(OutletList.this,OutletView.class);
-                    intent.putExtra("outlet_id",outletList.get(Tables.OUTLETS_ID).get(position));
-                    startActivity(intent);
-                    finish();
-
-
-                }
-            });
 
 
 
@@ -628,48 +660,18 @@ public class OutletList extends AppCompatActivity implements BasicFunctionListen
         else if (i == 402){
 
 
-            isLoading = false;
-            try {
-                for (int j = 0; j < jsonObject.getJSONArray("outlets").length(); j++) {
-                    if (!jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_name").equals("")) {
-                        outletIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_id"));
-                        outletNameList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_name"));
-                        outletThanaIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("thana_id"));
-                        outletMarketIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("market_id"));
-                    }
 
-                }
-
-                outletList.put(Tables.OUTLETS_ID, outletIdList);
-                outletList.put(Tables.OUTLETS_OUTLET_NAME, outletNameList);
-                outletList.put(Tables.OUTLETS_THANA_ID, outletThanaIdList);
-                outletList.put(Tables.OUTLETS_MARKET_ID, outletMarketIdList);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                Log.e("json response", "OnServerResponce:" + jsonObject.getJSONArray("outlets").length());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            outlets = outletList.get(Tables.OUTLETS_OUTLET_NAME);
-
-
-            if (outlets != null && outlets.size() > 0) {
-
-
-                recyclerView.getAdapter().notifyDataSetChanged();
-
-                Log.e("50 data setes", "OnServerResponce: Adapter seted...");
-            }
 
 
 
 
         }
 
+
+
+    }
+
+    public void setup(){
         final LinearLayoutManager linManager = (LinearLayoutManager) recyclerView.getLayoutManager();
 
 
@@ -685,29 +687,27 @@ public class OutletList extends AppCompatActivity implements BasicFunctionListen
 
                 //Log.e("entered scrolled.....", "onScrolled: "+"On Scroll.." );
 
-            if (linManager!=null) {
-                Log.e("testcount",  linManager.getItemCount()- THREAT_SHOT+ "On Scroll.."+linManager.findLastVisibleItemPosition()+" "+isLoading);
-                if (!isLoading && linManager.getItemCount() - THREAT_SHOT == linManager.findLastVisibleItemPosition()) {
-                    Log.e("entr scrolled..0n 402", "onScrolled: " + "On Scroll..");
-                    initialPageIndex++;
-                    loadMoreData(initialPageIndex);
+                if (linManager!=null) {
+                    Log.e("testcount",  linManager.getItemCount()- THREAT_SHOT+ "On Scroll.."+linManager.findLastVisibleItemPosition()+" "+isLoading);
+                    if (!isLoading && linManager.getItemCount() - THREAT_SHOT == linManager.findLastVisibleItemPosition()) {
 
-                    //  Toast.makeText(OutletList.this," "+initialPageIndex,Toast.LENGTH_SHORT).show();
+                        initialPageIndex++;
+                        loadMoreData(initialPageIndex);
 
-                    Log.e("last position", "onScrolled: " + linManager.findLastVisibleItemPosition());
+                        //  Toast.makeText(OutletList.this," "+initialPageIndex,Toast.LENGTH_SHORT).show();
+
+                        Log.e("last position", "onScrolled: " + linManager.findLastVisibleItemPosition());
+                    }else {
+
+                        Log.e("not_in_if", "onScrolled: " + linManager.findLastVisibleItemPosition());
+                    }
                 }else {
-
                     Log.e("not_in_if", "onScrolled: " + linManager.findLastVisibleItemPosition());
                 }
-            }else {
-                Log.e("not_in_if", "onScrolled: " + linManager.findLastVisibleItemPosition());
-            }
             }
 
         });
-
     }
-
 
 
     public void loadMoreData(int page){
@@ -727,7 +727,64 @@ public class OutletList extends AppCompatActivity implements BasicFunctionListen
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData),402);
+        //basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData),402);
+        ProgressDialog dailog = CheckConnection(OutletList.this,"Checking...");
+        if (dailog==null)
+            return;
+        getJAPi().OutletList(convertTORequestdata(primaryData)).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body());
+                    dailog.dismiss();
+
+                    isLoading = false;
+                    try {
+                        for (int j = 0; j < jsonObject.getJSONArray("outlets").length(); j++) {
+                            if (!jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_name").equals("")) {
+                                outletIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_id"));
+                                outletNameList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_name"));
+                                outletThanaIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("thana_id"));
+                                outletMarketIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("market_id"));
+                            }
+
+                        }
+
+                        outletList.put(Tables.OUTLETS_ID, outletIdList);
+                        outletList.put(Tables.OUTLETS_OUTLET_NAME, outletNameList);
+                        outletList.put(Tables.OUTLETS_THANA_ID, outletThanaIdList);
+                        outletList.put(Tables.OUTLETS_MARKET_ID, outletMarketIdList);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        Log.e("json response", "OnServerResponce:" + jsonObject.getJSONArray("outlets").length());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    outlets = outletList.get(Tables.OUTLETS_OUTLET_NAME);
+
+
+                    if (outlets != null && outlets.size() > 0) {
+
+
+                        recyclerView.getAdapter().notifyDataSetChanged();
+
+                        Log.e("50 data setes", "OnServerResponce: Adapter seted...");
+                    }
+                    setup();
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+            }
+        });
     }
 
     @Override

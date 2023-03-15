@@ -187,41 +187,7 @@ public class PriceList extends AppCompatActivity implements BasicFunctionListene
 
     @Override
     public void OnServerResponce(JSONObject jsonObject, int i) {
-        Log.e("resp---->", "OnServerResponce: "+i+"---- " +jsonObject );
-        if (i==101) {
 
-            try {
-
-                ds.excQuery("delete  from product_price");
-                ds.excQuery("delete from product_price_other_for_slabs_v2");
-                ds.excQuery("delete from special_group");
-                ds.excQuery("delete from special_group_details");
-                ds.excQuery("delete from product_combination_list");
-                ds.excQuery("delete from Product_combination_list_details_v2");
-                ds.excQuery("delete from product_combinations");
-
-                ds.insertData(jsonObject.getJSONObject("dist_product_price").toString(),1);
-                //ds.insertData(jsonObject,2);
-
-                JsonObject jsonObj =  new JsonObject();
-                jsonObj.addProperty("territory_id",basicFunction.getPreference("territory_id"));
-                jsonObj.addProperty("so_id",basicFunction.getPreference("sales_person_id"));
-                jsonObj.addProperty("mac",basicFunction.getPreference("mac"));
-                jsonObj.addProperty("last_update_date","");
-                jsonObj.addProperty("all","1");
-
-                dataViewModel.getProductCombinationV2Data(jsonObj);
-                dataViewModel.getProductCombinationListData(jsonObj);
-                dataViewModel.getSpecialGroupData(jsonObj);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }else if(i==103){
-
-
-
-        }
     }
 
     @Override
@@ -248,7 +214,49 @@ public class PriceList extends AppCompatActivity implements BasicFunctionListene
             runOnUiThread(new Runnable() {
                               @Override
                               public void run() {
-                                  basicFunction.getResponceData(URL.PriceList,primaryData.toString(),101);
+                                //  basicFunction.getResponceData(URL.PriceList,primaryData.toString(),101);
+
+                                  ProgressDialog dailog = CheckConnection(PriceList.this,"Getting Price...");
+                                  if (dailog==null)
+                                      return;
+                                  getJAPi().PriceList(convertTORequestdata(primaryData)).enqueue(new Callback<String>() {
+                                      @Override
+                                      public void onResponse(Call<String> call, Response<String> response) {
+                                          try {
+                                              JSONObject jsonObject = new JSONObject(response.body());
+                                              dailog.dismiss();
+                                              ds.excQuery("delete  from product_price");
+                                              ds.excQuery("delete from product_price_other_for_slabs_v2");
+                                              ds.excQuery("delete from special_group");
+                                              ds.excQuery("delete from special_group_details");
+                                              ds.excQuery("delete from product_combination_list");
+                                              ds.excQuery("delete from Product_combination_list_details_v2");
+                                              ds.excQuery("delete from product_combinations");
+
+                                              ds.insertData(jsonObject.getJSONObject("dist_product_price").toString(),1);
+                                              //ds.insertData(jsonObject,2);
+
+                                              JsonObject jsonObj =  new JsonObject();
+                                              jsonObj.addProperty("territory_id",basicFunction.getPreference("territory_id"));
+                                              jsonObj.addProperty("so_id",basicFunction.getPreference("sales_person_id"));
+                                              jsonObj.addProperty("mac",basicFunction.getPreference("mac"));
+                                              jsonObj.addProperty("last_update_date","");
+                                              jsonObj.addProperty("all","1");
+
+                                              dataViewModel.getProductCombinationV2Data(jsonObj);
+                                              dataViewModel.getProductCombinationListData(jsonObj);
+                                              dataViewModel.getSpecialGroupData(jsonObj);
+
+                                          } catch (JSONException e) {
+                                              throw new RuntimeException(e);
+                                          }
+                                      }
+
+                                      @Override
+                                      public void onFailure(Call<String> call, Throwable t) {
+
+                                      }
+                                  });
                               }
                           }
                 );

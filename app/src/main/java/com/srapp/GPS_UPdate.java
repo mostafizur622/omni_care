@@ -145,7 +145,7 @@ public class GPS_UPdate extends Parent implements BasicFunctionListener {
             jsonObject.put("sales_person_id",bF.getPreference("sales_person_id"));
            // bF.getResponceData(URL.GPS_UPDATE,jsonObject.toString(),100);
 
-            ProgressDialog dailog = CheckConnection(GPS_UPdate.this,"Checking...");
+            ProgressDialog dailog = CheckConnection(GPS_UPdate.this,"Updating GPS...");
             if (dailog==null)
                 return;
             getJAPi().GPS_UPDATE(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {

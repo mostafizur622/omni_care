@@ -37,7 +37,7 @@ import java.util.HashMap;
 import static com.srapp.Db_Actions.Tables.PROCESSING_COMPELETE;
 import static com.srapp.Db_Actions.Tables.SR_ID;
 import static com.srapp.Db_Actions.URL.CheckConnection;
-import static com.srapp.Db_Actions.URL.ORDER_DETAILS;
+
 import static com.srapp.TempData.PROCESSING_ON_SERVER;
 
 import static com.srapp.Db_Actions.Tables.SR_ID;
@@ -186,7 +186,7 @@ public class AdapterForOrderProcessShow extends BaseAdapter implements BasicFunc
                             jsonObject.put(SR_ID, bf.getPreference(SR_ID));
                           //  bf.getResponceData(URL.PROCESS_ORDER_LIST, jsonObject.toString(), 1001);
 
-                            ProgressDialog dailog = CheckConnection(context,"Checking...");
+                            ProgressDialog dailog = CheckConnection(context,"Getting Orders...");
                             if (dailog==null)
                                 return;
                             getJAPi().PROCESS_ORDER_LIST(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
@@ -242,7 +242,35 @@ public class AdapterForOrderProcessShow extends BaseAdapter implements BasicFunc
                             jsonObject.put("order_numbers", jsonArray);
                             jsonObject.put("mac", bf.getPreference("mac"));
                             jsonObject.put(SR_ID, bf.getPreference(SR_ID));
-                            bf.getResponceData(URL.CANCEL_ORDER_LIST, jsonObject.toString(), 1002);
+                          //  bf.getResponceData(URL.CANCEL_ORDER_LIST, jsonObject.toString(), 1002);
+
+                            ProgressDialog dailog = CheckConnection(context,"Cancel Order List...");
+                            if (dailog==null)
+                                return;
+                            getJAPi().CANCEL_ORDER_LIST(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                                @Override
+                                public void onResponse(Call<String> call, Response<String> response) {
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(response.body());
+                                        dailog.dismiss();
+                                        if (jsonObject.getJSONObject("schedule").getString("status").equalsIgnoreCase("1")) {
+                                            for (int j = 0; j < list.size(); j++) {
+                                                db.excQuery("delete from ORDER_table where order_number='" + list.get(j) + "'");
+                                                db.excQuery("delete from ORDER_DETAILS where order_number='" + list.get(j) + "'");
+
+                                            }
+                                        }
+
+                                    } catch (JSONException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<String> call, Throwable t) {
+
+                                }
+                            });
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -309,7 +337,54 @@ public class AdapterForOrderProcessShow extends BaseAdapter implements BasicFunc
             jsonObject.put("mac",bf.getPreference("mac"));
             jsonObject.put(SR_ID,bf.getPreference(SR_ID));
             jsonObject.put("order_number",maplist.get(position).get("order_number"));
-            bf.getResponceData(ORDER_DETAILS,jsonObject.toString(),1005);
+            //bf.getResponceData(ORDER_DETAILS,jsonObject.toString(),1005);
+
+            ProgressDialog dailog = CheckConnection(context,"Order Details Loading...");
+            if (dailog==null)
+                return;
+            getJAPi().ORDER_DETAILS(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body());
+                        dailog.dismiss();
+                        loaddeails = true;
+
+                        JSONArray jsonArray = new JSONArray();
+
+                        jsonArray = jsonObject.getJSONArray("schedule_order_details");
+
+                        for (int k = 0 ; k<jsonArray.length() ; k++){
+                            HashMap<String,String> map = new HashMap<>();
+
+                            map.put("product_name",jsonArray.getJSONObject(k).getString("product_name"));
+                            map.put("order_qty",jsonArray.getJSONObject(k).getString("order_qty"));
+                            map.put("invoice_qty",jsonArray.getJSONObject(k).getString("invoice_qty"));
+                            map.put("status",jsonArray.getJSONObject(k).getString("status"));
+
+                            ditailslist.add(map);
+
+
+                        }
+
+
+                        AdapterForOrderDetailsShedule adapter = new AdapterForOrderDetailsShedule(context,ditailslist);
+                        listView.setAdapter(adapter);
+
+
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+
+                }
+            });
+
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -381,54 +456,7 @@ public class AdapterForOrderProcessShow extends BaseAdapter implements BasicFunc
 
     @Override
     public void OnServerResponce(JSONObject jsonObject, int i) {
-        try {
-        if (i==1001) {
 
-
-
-
-        }else if(i==1005){
-            loaddeails = true;
-
-                JSONArray jsonArray = new JSONArray();
-
-                jsonArray = jsonObject.getJSONArray("schedule_order_details");
-
-                for (int k = 0 ; k<jsonArray.length() ; k++){
-                    HashMap<String,String> map = new HashMap<>();
-
-                    map.put("product_name",jsonArray.getJSONObject(k).getString("product_name"));
-                    map.put("order_qty",jsonArray.getJSONObject(k).getString("order_qty"));
-                    map.put("invoice_qty",jsonArray.getJSONObject(k).getString("invoice_qty"));
-                    map.put("status",jsonArray.getJSONObject(k).getString("status"));
-
-                   ditailslist.add(map);
-
-
-                }
-
-
-                AdapterForOrderDetailsShedule adapter = new AdapterForOrderDetailsShedule(context,ditailslist);
-                listView.setAdapter(adapter);
-
-
-        }else if(i==1002){
-
-            if (jsonObject.getJSONObject("schedule").getString("status").equalsIgnoreCase("1")) {
-                for (int j = 0; j < list.size(); j++) {
-                    db.excQuery("delete from ORDER_table where order_number='" + list.get(j) + "'");
-                    db.excQuery("delete from ORDER_DETAILS where order_number='" + list.get(j) + "'");
-
-                }
-            }
-        }
-
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e("log", e.getMessage());
-        }
     }
 
     @Override

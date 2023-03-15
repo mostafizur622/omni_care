@@ -2,6 +2,7 @@ package com.srapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -29,6 +30,13 @@ import java.util.HashMap;
 
 import static com.srapp.Db_Actions.Tables.OUTLET_ID;
 import static com.srapp.Db_Actions.Tables.SR_ID;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ViewLastRecord extends AppCompatActivity implements BasicFunctionListener {
 
@@ -97,7 +105,38 @@ public class ViewLastRecord extends AppCompatActivity implements BasicFunctionLi
             jsonObject.put(SR_ID, bF.getPreference(SR_ID));
             jsonObject.put(OUTLET_ID, outlate_id);
             jsonObject.put("mac", bF.getPreference("mac"));
-            bF.getResponceData(URL.LAST_MEMO, jsonObject.toString(), 111);
+           // bF.getResponceData(URL.LAST_MEMO, jsonObject.toString(), 111);
+
+            ProgressDialog dailog = CheckConnection(ViewLastRecord.this,"Get Memos...");
+            if (dailog==null)
+                return;
+            getJAPi().LAST_MEMO(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body());
+                        dailog.dismiss();
+                        JSONArray jsonArray = jsonObject.getJSONArray("last_memo_details");
+                        if (jsonArray.length()>0) {
+                            memoNumber = jsonArray.getJSONObject(0).getString("memo_number");
+                            memo_no = jsonArray.getJSONObject(0).getString("memo_number");
+                            TempData.MemoDate = jsonArray.getJSONObject(0).getString("memo_date");
+                            JSONObject jsonObject1 = new JSONObject();
+                            jsonObject1.put("memos", jsonArray);
+                            data_source.updateMemoWithServer(jsonObject1);
+                        }
+                        getOrders();
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+
+                }
+            });
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -116,26 +155,7 @@ public class ViewLastRecord extends AppCompatActivity implements BasicFunctionLi
     @Override
     public void OnServerResponce(JSONObject jsonObject, int i) {
 
-        if (i == 111) {
 
-            try {
-                JSONArray jsonArray = jsonObject.getJSONArray("last_memo_details");
-                if (jsonArray.length()>0) {
-                    memoNumber = jsonArray.getJSONObject(0).getString("memo_number");
-                    memo_no = jsonArray.getJSONObject(0).getString("memo_number");
-                    TempData.MemoDate = jsonArray.getJSONObject(0).getString("memo_date");
-                    JSONObject jsonObject1 = new JSONObject();
-                    jsonObject1.put("memos", jsonArray);
-                    data_source.updateMemoWithServer(jsonObject1);
-                }
-                getOrders();
-            } catch (JSONException e) {
-                e.printStackTrace();
-                Log.e("log",e.getMessage());
-            }
-
-
-        }
 
     }
 

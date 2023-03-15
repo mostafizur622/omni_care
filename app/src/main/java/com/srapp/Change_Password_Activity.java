@@ -1,5 +1,6 @@
 package com.srapp;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -21,6 +22,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import static com.srapp.Db_Actions.Tables.SR_ID;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class Change_Password_Activity extends AppCompatActivity implements BasicFunctionListener {
 
@@ -77,7 +85,36 @@ public class Change_Password_Activity extends AppCompatActivity implements Basic
                              jsonObject.put("mac",bf.getPreference("mac"));
                              jsonObject.put("new_password",newpass.getText().toString().trim());
                              jsonObject.put("old_password",oldpass.getText().toString().trim());
-                             bf.getResponceData(URL.CHANGE_PASSWORD,jsonObject.toString(),111);
+                           //  bf.getResponceData(URL.CHANGE_PASSWORD,jsonObject.toString(),111);
+
+                             ProgressDialog dailog = CheckConnection(Change_Password_Activity.this,"Changing Password...");
+                             if (dailog==null)
+                                 return;
+                             getJAPi().CHANGE_PASSWORD(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                                 @Override
+                                 public void onResponse(Call<String> call, Response<String> response) {
+                                     try {
+                                         JSONObject jsonObject = new JSONObject(response.body());
+                                         dailog.dismiss();
+                                         JSONObject jsonObject1 = jsonObject.getJSONObject("response");
+
+                                         if (jsonObject1.getString("status").equalsIgnoreCase("1")){
+                                             bf.savePreference("password",newpass.getText().toString().trim());
+                                             startActivity(new Intent( Change_Password_Activity.this, SR_Account_Activity.class));
+                                             finish();
+                                         }
+                                         Toast.makeText(Change_Password_Activity.this,jsonObject1.getString("message"),Toast.LENGTH_SHORT).show();
+
+                                     } catch (JSONException e) {
+                                         throw new RuntimeException(e);
+                                     }
+                                 }
+
+                                 @Override
+                                 public void onFailure(Call<String> call, Throwable t) {
+
+                                 }
+                             });
 
                          } catch (JSONException e) {
                              e.printStackTrace();
@@ -111,22 +148,7 @@ public class Change_Password_Activity extends AppCompatActivity implements Basic
 
     @Override
     public void OnServerResponce(JSONObject jsonObject, int i) {
-        if (i==111){
 
-            try {
-                JSONObject jsonObject1 = jsonObject.getJSONObject("response");
-
-                if (jsonObject1.getString("status").equalsIgnoreCase("1")){
-                  bf.savePreference("password",newpass.getText().toString().trim());
-                    startActivity(new Intent( Change_Password_Activity.this, SR_Account_Activity.class));
-                    finish();
-                }
-                Toast.makeText(Change_Password_Activity.this,jsonObject1.getString("message"),Toast.LENGTH_SHORT).show();
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
 
     }
 

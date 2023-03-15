@@ -1,5 +1,6 @@
 package com.srapp;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -43,6 +44,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import static android.widget.LinearLayout.VERTICAL;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class Bonus_Party_Affiliation extends AppCompatActivity implements BasicFunctionListener {
 
@@ -246,7 +254,9 @@ public class Bonus_Party_Affiliation extends AppCompatActivity implements BasicF
                     initialPageIndex = 1;
 
 
-                    basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData),401);
+                  //  basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData),401);
+
+                    Getdata(primaryData);
 
 
 
@@ -275,7 +285,8 @@ public class Bonus_Party_Affiliation extends AppCompatActivity implements BasicF
 
                     Log.e("thana filter req", "onItemSelected: "+primaryData );
 
-                    basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData),401);
+                    //basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData),401);
+                    Getdata(primaryData);
                     //............api call end....................
                 }
 
@@ -298,7 +309,8 @@ public class Bonus_Party_Affiliation extends AppCompatActivity implements BasicF
                     Log.e("thana filter req", "onItemSelected: "+primaryData );
 
 
-                    basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData),401);
+                    //basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData),401);
+                    Getdata(primaryData);
 
                 }
 
@@ -319,8 +331,8 @@ public class Bonus_Party_Affiliation extends AppCompatActivity implements BasicF
 
                     nowCaling = WITH_MARKET_ID;
                     initialPageIndex = 1;
-
-                    basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData),401);
+                    Getdata(primaryData);
+                    //basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData),401);
 
                 }
 
@@ -393,8 +405,8 @@ public class Bonus_Party_Affiliation extends AppCompatActivity implements BasicF
                         initialPageIndex = 1;
 
 
-                        basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData), 401);
-
+                       // basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData), 401);
+                        Getdata(primaryData);
 
                     }
 
@@ -422,7 +434,8 @@ public class Bonus_Party_Affiliation extends AppCompatActivity implements BasicF
                         Log.e("thana filter req", "onItemSelected: " + primaryData);
 
 
-                        basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData), 401);
+                      //  basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData), 401);
+                        Getdata(primaryData);
                         //............api call end....................
 
 
@@ -448,7 +461,8 @@ public class Bonus_Party_Affiliation extends AppCompatActivity implements BasicF
                         Log.e("thana filter req", "onItemSelected: " + primaryData);
 
 
-                        basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData), 401);
+                      //  basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData), 401);
+                        Getdata(primaryData);
 
                     }
 
@@ -472,7 +486,8 @@ public class Bonus_Party_Affiliation extends AppCompatActivity implements BasicF
                         initialPageIndex = 1;
 
 
-                        basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData), 401);
+                        //basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData), 401);
+                        Getdata(primaryData);
 
                     }
 
@@ -552,7 +567,60 @@ public class Bonus_Party_Affiliation extends AppCompatActivity implements BasicF
 
                 if (outletListAdapter.getSelected() != null && outletListAdapter.getSelected().size()>0 || outletListAdapter.getUnSelected() != null && outletListAdapter.getUnSelected().size() > 0) {
 
-                    basicFunction.getResponceData(URL.BonusParty, String.valueOf(primaryData), 101);
+                    //basicFunction.getResponceData(URL.BonusParty, String.valueOf(primaryData), 101);
+                    ProgressDialog dailog = CheckConnection(Bonus_Party_Affiliation.this,"Bonus Party Loading...");
+                    if (dailog==null)
+                        return;
+                    getJAPi().BonusParty(convertTORequestdata(primaryData)).enqueue(new Callback<String>() {
+                        @Override
+                        public void onResponse(Call<String> call, Response<String> response) {
+                            try {
+                                JSONObject jsonObject = new JSONObject(response.body());
+                                dailog.dismiss();
+                                isLoading = false;
+
+                                try {
+                                    if (jsonObject.getJSONObject("res").getString("status").equals("1")){
+
+                                        Log.e("size--->", "OnServerResponce: "+outletListAdapter.selected.size() );
+                                        Log.e("size--->", "OnServerResponce: "+outletListAdapter.unSelected.size() );
+
+                                        if (outletListAdapter.selected != null && outletListAdapter.selected.size()>0 ){
+                                            for (int j = 0; j<outletListAdapter.selected.size();j++){
+                                                Log.e("index--->", "OnServerResponce: "+outletListAdapter.initialState.indexOf(outletListAdapter.selected.get(j)) );
+                                                outletListAdapter.initialState.set(outletIdList.indexOf(outletListAdapter.selected.get(j)),1);
+                                            }
+                                        }
+
+                                        if (outletListAdapter.unSelected != null &&outletListAdapter.unSelected.size()>0 ){
+                                            for (int j = 0; j<outletListAdapter.unSelected.size();j++){
+                                                outletListAdapter.initialState.set(outletIdList.indexOf(outletListAdapter.unSelected.get(j)),0);
+                                            }
+                                        }
+
+                                        outletListAdapter.selected.clear();
+                                        outletListAdapter.unSelected.clear();
+
+                                        Toast.makeText(Bonus_Party_Affiliation.this,"Save SuccessFully",Toast.LENGTH_SHORT).show();
+
+                                    }
+
+                                    setupDetails();
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                            } catch (JSONException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<String> call, Throwable t) {
+
+                        }
+                    });
                 }
                 else {
                     Toast.makeText(Bonus_Party_Affiliation.this,"No Change Occurred",Toast.LENGTH_SHORT).show();
@@ -562,6 +630,107 @@ public class Bonus_Party_Affiliation extends AppCompatActivity implements BasicF
             }
         });
 
+    }
+
+    private void Getdata(JSONObject primaryData) {
+        ProgressDialog dailog = CheckConnection(Bonus_Party_Affiliation.this,"Getting Outlet List...");
+        if (dailog==null)
+            return;
+        getJAPi().OutletList(convertTORequestdata(primaryData)).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body());
+                    dailog.dismiss();
+                    isLoading = false;
+                    forBonusSelect = 1;
+
+                    outletList = new HashMap<>();
+                    outletIdList = new ArrayList<>();
+                    outletNameList = new ArrayList<>();
+                    outlets = new ArrayList<>();
+                    outletMarketIdList = new ArrayList<>();
+                    outletThanaIdList = new ArrayList<>();
+                    checkBoxStateList = new ArrayList<>();
+                    checkBoxStateListint = new ArrayList<>();
+                    try {
+                        for (int j = 0; j < jsonObject.getJSONArray("outlets").length(); j++) {
+                            if (!jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_name").equals("")) {
+
+
+                                String checked = jsonObject.getJSONArray("outlets").getJSONObject(j).getString("bonus_type_id");
+                                Log.e("checked-------->", "OnServerResponce: "+checked );
+                        /*if (checked.equals("null")){
+                            Log.e("null--------->", "OnServerResponce: "+"its null" );
+                        }*/
+
+                                if (!checked.equals("null") && checked.equals(bonusId)){
+                                    checkBoxStateList.add(true);
+                                    checkBoxStateListint.add(1);
+                                    outletIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_id"));
+                                    outletNameList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_name"));
+                                    outletThanaIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("thana_id"));
+                                    outletMarketIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("market_id"));
+                                }else if (checked.equals("null") || checked.equals("0") || checked.equals("")){
+                                    Log.e("blank state_or_free", "OnServerResponce: "+"entered" );
+                                    checkBoxStateList.add(false);
+                                    checkBoxStateListint.add(0);
+                                    outletIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_id"));
+                                    outletNameList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_name"));
+                                    outletThanaIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("thana_id"));
+                                    outletMarketIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("market_id"));
+                                }
+                            }
+
+                        }
+
+                        Log.e("------->cb list", "OnServerResponce:-----check box state0--------> "+checkBoxStateList );
+
+                        outletList.put(Tables.OUTLETS_ID, outletIdList);
+                        outletList.put(Tables.OUTLETS_OUTLET_NAME, outletNameList);
+                        outletList.put(Tables.OUTLETS_THANA_ID, outletThanaIdList);
+                        outletList.put(Tables.OUTLETS_MARKET_ID, outletMarketIdList);
+                        setupDetails();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        Log.e("json response", "OnServerResponce:" + jsonObject.getJSONArray("outlets").length());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
+                    outlets = outletList.get(Tables.OUTLETS_OUTLET_NAME);
+
+
+
+                    if (outlets != null && outlets.size() > 0) {
+                        recyclerView.setLayoutManager(new LinearLayoutManager(Bonus_Party_Affiliation.this));
+                /*checkBoxStateList = new ArrayList<>();
+                for (int j = 0 ; j<outlets.size();j++){
+                    checkBoxStateList.add(false);
+
+                }*/
+                        outletListAdapter = new BonusPartyAffAdapter(outletList,checkBoxStateList,checkBoxStateListint);
+                        recyclerView.setAdapter(outletListAdapter);
+
+                        Log.e("50 data setes", "OnServerResponce: Adapter seted...");
+                    } else {
+                        recyclerView.setAdapter(null);
+                    }
+
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+            }
+        });
     }
 
 
@@ -584,188 +753,12 @@ public class Bonus_Party_Affiliation extends AppCompatActivity implements BasicF
     @Override
     public void OnServerResponce(JSONObject jsonObject, final int i) {
 
-        Log.e("response code....", "OnServerResponce: "+i );
 
 
-        Log.e("json response", "OnServerResponce: "+jsonObject+"  size.."+jsonObject.length() );
 
-        if (i == 401) {
-            isLoading = false;
-            forBonusSelect = 1;
+    }
 
-            outletList = new HashMap<>();
-            outletIdList = new ArrayList<>();
-            outletNameList = new ArrayList<>();
-            outlets = new ArrayList<>();
-            outletMarketIdList = new ArrayList<>();
-            outletThanaIdList = new ArrayList<>();
-            checkBoxStateList = new ArrayList<>();
-            checkBoxStateListint = new ArrayList<>();
-            try {
-                for (int j = 0; j < jsonObject.getJSONArray("outlets").length(); j++) {
-                    if (!jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_name").equals("")) {
-
-
-                        String checked = jsonObject.getJSONArray("outlets").getJSONObject(j).getString("bonus_type_id");
-                        Log.e("checked-------->", "OnServerResponce: "+checked );
-                        /*if (checked.equals("null")){
-                            Log.e("null--------->", "OnServerResponce: "+"its null" );
-                        }*/
-
-                        if (!checked.equals("null") && checked.equals(bonusId)){
-                            checkBoxStateList.add(true);
-                            checkBoxStateListint.add(1);
-                            outletIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_id"));
-                            outletNameList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_name"));
-                            outletThanaIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("thana_id"));
-                            outletMarketIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("market_id"));
-                        }else if (checked.equals("null") || checked.equals("0") || checked.equals("")){
-                            Log.e("blank state_or_free", "OnServerResponce: "+"entered" );
-                            checkBoxStateList.add(false);
-                            checkBoxStateListint.add(0);
-                            outletIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_id"));
-                            outletNameList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_name"));
-                            outletThanaIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("thana_id"));
-                            outletMarketIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("market_id"));
-                        }
-                    }
-
-                }
-
-                Log.e("------->cb list", "OnServerResponce:-----check box state0--------> "+checkBoxStateList );
-
-                outletList.put(Tables.OUTLETS_ID, outletIdList);
-                outletList.put(Tables.OUTLETS_OUTLET_NAME, outletNameList);
-                outletList.put(Tables.OUTLETS_THANA_ID, outletThanaIdList);
-                outletList.put(Tables.OUTLETS_MARKET_ID, outletMarketIdList);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                Log.e("json response", "OnServerResponce:" + jsonObject.getJSONArray("outlets").length());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-
-            outlets = outletList.get(Tables.OUTLETS_OUTLET_NAME);
-
-        /*if (i == 402) {
-            linManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-            recyclerView.setLayoutManager(linManager);
-        }*/
-
-            if (outlets != null && outlets.size() > 0) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(Bonus_Party_Affiliation.this));
-                /*checkBoxStateList = new ArrayList<>();
-                for (int j = 0 ; j<outlets.size();j++){
-                    checkBoxStateList.add(false);
-
-                }*/
-                outletListAdapter = new BonusPartyAffAdapter(outletList,checkBoxStateList,checkBoxStateListint);
-                recyclerView.setAdapter(outletListAdapter);
-
-                Log.e("50 data setes", "OnServerResponce: Adapter seted...");
-            } else {
-                recyclerView.setAdapter(null);
-            }
-
-
-        }
-
-        else if (i == 402){
-
-            isLoading = false;
-
-
-            try {
-                for (int j = 0; j < jsonObject.getJSONArray("outlets").length(); j++) {
-                    if (!jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_name").equals("")) {
-                        String checked = jsonObject.getJSONArray("outlets").getJSONObject(j).getString("bonus_type_id");
-
-                        if (!checked.equals("null") && checked.equals(bonusId)){
-                            checkBoxStateList.add(true);
-                            checkBoxStateListint.add(1);
-                            outletIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_id"));
-                            outletNameList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_name"));
-                            outletThanaIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("thana_id"));
-                            outletMarketIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("market_id"));
-                        }else if (checked.equals("null") || checked.equals("0") || checked.equals("")){
-                            Log.e("blank state_or_free", "OnServerResponce: "+"entered" );
-                            checkBoxStateList.add(false);
-                            checkBoxStateListint.add(0);
-                            outletIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_id"));
-                            outletNameList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_name"));
-                            outletThanaIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("thana_id"));
-                            outletMarketIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("market_id"));
-                        }
-                    }
-
-                }
-
-                outletList.put(Tables.OUTLETS_ID, outletIdList);
-                outletList.put(Tables.OUTLETS_OUTLET_NAME, outletNameList);
-                outletList.put(Tables.OUTLETS_THANA_ID, outletThanaIdList);
-                outletList.put(Tables.OUTLETS_MARKET_ID, outletMarketIdList);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                Log.e("json response", "OnServerResponce:" + jsonObject.getJSONArray("outlets").length());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            outlets = outletList.get(Tables.OUTLETS_OUTLET_NAME);
-
-
-            if (outlets != null && outlets.size() > 0) {
-
-
-                recyclerView.getAdapter().notifyDataSetChanged();
-
-                Log.e("50 data setes", "OnServerResponce: Adapter seted...");
-            }
-
-        }
-
-        else if (i == 101){
-            isLoading = false;
-
-            try {
-                if (jsonObject.getJSONObject("res").getString("status").equals("1")){
-
-                    Log.e("size--->", "OnServerResponce: "+outletListAdapter.selected.size() );
-                    Log.e("size--->", "OnServerResponce: "+outletListAdapter.unSelected.size() );
-
-                    if (outletListAdapter.selected != null && outletListAdapter.selected.size()>0 ){
-                        for (int j = 0; j<outletListAdapter.selected.size();j++){
-                            Log.e("index--->", "OnServerResponce: "+outletListAdapter.initialState.indexOf(outletListAdapter.selected.get(j)) );
-                            outletListAdapter.initialState.set(outletIdList.indexOf(outletListAdapter.selected.get(j)),1);
-                        }
-                    }
-
-                    if (outletListAdapter.unSelected != null &&outletListAdapter.unSelected.size()>0 ){
-                        for (int j = 0; j<outletListAdapter.unSelected.size();j++){
-                            outletListAdapter.initialState.set(outletIdList.indexOf(outletListAdapter.unSelected.get(j)),0);
-                        }
-                    }
-
-                    outletListAdapter.selected.clear();
-                    outletListAdapter.unSelected.clear();
-
-                    Toast.makeText(Bonus_Party_Affiliation.this,"Save SuccessFully",Toast.LENGTH_SHORT).show();
-
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-        }
-
+    public void setupDetails(){
         final LinearLayoutManager linManager = (LinearLayoutManager) recyclerView.getLayoutManager();
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -816,7 +809,83 @@ public class Bonus_Party_Affiliation extends AppCompatActivity implements BasicF
             e.printStackTrace();
         }
 
-        basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData),402);
+        //basicFunction.getResponceData(URL.OutletList, String.valueOf(primaryData),402);
+
+        ProgressDialog dailog = CheckConnection(Bonus_Party_Affiliation.this,"Outlets Loading...");
+        if (dailog==null)
+            return;
+        getJAPi().OutletList(convertTORequestdata(primaryData)).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body());
+                    dailog.dismiss();
+
+
+                    isLoading = false;
+
+
+                    try {
+                        for (int j = 0; j < jsonObject.getJSONArray("outlets").length(); j++) {
+                            if (!jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_name").equals("")) {
+                                String checked = jsonObject.getJSONArray("outlets").getJSONObject(j).getString("bonus_type_id");
+
+                                if (!checked.equals("null") && checked.equals(bonusId)){
+                                    checkBoxStateList.add(true);
+                                    checkBoxStateListint.add(1);
+                                    outletIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_id"));
+                                    outletNameList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_name"));
+                                    outletThanaIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("thana_id"));
+                                    outletMarketIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("market_id"));
+                                }else if (checked.equals("null") || checked.equals("0") || checked.equals("")){
+                                    Log.e("blank state_or_free", "OnServerResponce: "+"entered" );
+                                    checkBoxStateList.add(false);
+                                    checkBoxStateListint.add(0);
+                                    outletIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_id"));
+                                    outletNameList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("outlet_name"));
+                                    outletThanaIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("thana_id"));
+                                    outletMarketIdList.add(jsonObject.getJSONArray("outlets").getJSONObject(j).getString("market_id"));
+                                }
+                            }
+
+                        }
+
+                        outletList.put(Tables.OUTLETS_ID, outletIdList);
+                        outletList.put(Tables.OUTLETS_OUTLET_NAME, outletNameList);
+                        outletList.put(Tables.OUTLETS_THANA_ID, outletThanaIdList);
+                        outletList.put(Tables.OUTLETS_MARKET_ID, outletMarketIdList);
+                        setupDetails();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        Log.e("json response", "OnServerResponce:" + jsonObject.getJSONArray("outlets").length());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    outlets = outletList.get(Tables.OUTLETS_OUTLET_NAME);
+
+
+                    if (outlets != null && outlets.size() > 0) {
+
+
+                        recyclerView.getAdapter().notifyDataSetChanged();
+
+                        Log.e("50 data setes", "OnServerResponce: Adapter seted...");
+                    }
+
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+            }
+        });
 
         //isLoading=false;
 

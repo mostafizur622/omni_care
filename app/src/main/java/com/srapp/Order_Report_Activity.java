@@ -321,7 +321,7 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
 
            // bf.getResponceData(URL.GET_LAST_RECORD, jsonObject.toString(), 101);
 
-            ProgressDialog dailog = URL.CheckConnection(Order_Report_Activity.this,"Checking...");
+            ProgressDialog dailog = URL.CheckConnection(Order_Report_Activity.this,"Orders Loading...");
             if (dailog==null)
                 return;
             getJAPi().GET_LAST_RECORD(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {

@@ -386,7 +386,31 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                                     e.printStackTrace();
                                 }
 
-                                bf.getResponceData(URL.CANCEL_ORDER, jsonObject.toString(), 111);
+                              //  bf.getResponceData(URL.CANCEL_ORDER, jsonObject.toString(), 111);
+
+                                ProgressDialog dailog = CheckConnection(DetailsOrderReport.this,"Getting Orders...");
+                                if (dailog==null)
+                                    return;
+                                getJAPi().CANCEL_ORDER(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                                    @Override
+                                    public void onResponse(Call<String> call, Response<String> response) {
+                                        try {
+                                            JSONObject jsonObject = new JSONObject(response.body());
+                                            dailog.dismiss();
+                                            db.excQuery("delete from " + TABLE_NAME_ORDER + " where " + ORDER_order_number + " ='" + TempData.orderNumber + "'");
+                                            db.excQuery("delete from " + TABLE_NAME_ORDER_DETAILS + " where " + ORDER_order_number + " ='" + TempData.orderNumber + "'");
+                                            finish();
+
+                                        } catch (JSONException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<String> call, Throwable t) {
+
+                                    }
+                                });
                             } else {
                                 Toast.makeText(DetailsOrderReport.this, "NO Internet Connection", Toast.LENGTH_LONG).show();
                                 btnEdit.setEnabled(true);
@@ -1078,7 +1102,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
             public void run() {
               //  bf.getResponceData(URL.CREATE_MEMO, json, 102);
 
-                ProgressDialog dailog = CheckConnection(DetailsOrderReport.this,"Checking...");
+                ProgressDialog dailog = CheckConnection(DetailsOrderReport.this,"Creating Memo...");
                 if (dailog==null)
                     return;
                 try {
@@ -1259,9 +1283,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
     public void OnServerResponce(JSONObject jsonObject, int i) {
         if (i == 111) {
 
-            db.excQuery("delete from " + TABLE_NAME_ORDER + " where " + ORDER_order_number + " ='" + TempData.orderNumber + "'");
-            db.excQuery("delete from " + TABLE_NAME_ORDER_DETAILS + " where " + ORDER_order_number + " ='" + TempData.orderNumber + "'");
-            finish();
+
         }
 
         if (ORDER_TO_MEMO == 1) {

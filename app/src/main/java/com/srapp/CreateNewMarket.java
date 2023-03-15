@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -44,6 +45,13 @@ import java.util.Date;
 import java.util.HashMap;
 
 import static com.srapp.Db_Actions.Tables.SR_ID;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CreateNewMarket extends AppCompatActivity implements BasicFunctionListener {
     ImageView homeBtn,backBtn;
@@ -271,7 +279,50 @@ public class CreateNewMarket extends AppCompatActivity implements BasicFunctionL
                 e.printStackTrace();
             }
 
-            basic.getResponceData(URL.MarketDetails, String.valueOf(primaryData),801);
+            //basic.getResponceData(URL.MarketDetails, String.valueOf(primaryData),801);
+
+            ProgressDialog dailog = CheckConnection(CreateNewMarket.this,"Market Details Loading...");
+            if (dailog==null)
+                return;
+            getJAPi().MarketDetails(convertTORequestdata(primaryData)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body());
+                        dailog.dismiss();
+                        markets = new HashMap<>();
+
+                        markets.put(Tables.MARKETS_market_id,jsonObject.getJSONArray("markets").getJSONObject(0).getString("market_id"));
+                        markets.put(Tables.MARKETS_market_name,jsonObject.getJSONArray("markets").getJSONObject(0).getString("market_name"));
+                        markets.put(Tables.MARKETS_thana_id,jsonObject.getJSONArray("markets").getJSONObject(0).getString("thana_id"));
+                        markets.put(Tables.MARKETS_location_type_id,jsonObject.getJSONArray("markets").getJSONObject(0).getString("location_type_id"));
+                        markets.put(Tables.MARKETS_address,jsonObject.getJSONArray("markets").getJSONObject(0).getString("address"));
+                        markets.put(Tables.MARKETS_root_id,jsonObject.getJSONArray("markets").getJSONObject(0).getString("route_id"));
+
+                        // markets = ds.getIndivMarketDetails(market_id_byIntent);
+
+
+                        routeSelection = getPosition(routeData.get(Tables.ROUTE_ID),markets.get(Tables.MARKETS_root_id));
+                        thanaSelection = getPosition(thanaData.get(Tables.THANA_TH_id),markets.get(Tables.MARKETS_thana_id));
+                        locationaSelection = getPosition(locationData.get(Tables.LOCATION_location_id),markets.get(Tables.MARKETS_location_type_id));
+
+                        routeSpinner.setSelection(routeSelection);
+                        thanaSpinner.setSelection(thanaSelection);
+                        locationTypeSpinner.setSelection(locationaSelection);
+
+                        marketNameTv.setText(markets.get(Tables.MARKETS_market_name));
+                        addressTv.setText(markets.get(Tables.MARKETS_address));
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+
+                }
+            });
 
 
         }
@@ -585,37 +636,6 @@ public class CreateNewMarket extends AppCompatActivity implements BasicFunctionL
             }
         }
 
-        else if (RequestCode == 801){
-            Log.e("market edit...>", "OnServerResponce: "+jsonObject );
-            try {
-
-                markets = new HashMap<>();
-
-                markets.put(Tables.MARKETS_market_id,jsonObject.getJSONArray("markets").getJSONObject(0).getString("market_id"));
-                markets.put(Tables.MARKETS_market_name,jsonObject.getJSONArray("markets").getJSONObject(0).getString("market_name"));
-                markets.put(Tables.MARKETS_thana_id,jsonObject.getJSONArray("markets").getJSONObject(0).getString("thana_id"));
-                markets.put(Tables.MARKETS_location_type_id,jsonObject.getJSONArray("markets").getJSONObject(0).getString("location_type_id"));
-                markets.put(Tables.MARKETS_address,jsonObject.getJSONArray("markets").getJSONObject(0).getString("address"));
-                markets.put(Tables.MARKETS_root_id,jsonObject.getJSONArray("markets").getJSONObject(0).getString("route_id"));
-
-               // markets = ds.getIndivMarketDetails(market_id_byIntent);
-
-
-                routeSelection = getPosition(routeData.get(Tables.ROUTE_ID),markets.get(Tables.MARKETS_root_id));
-                thanaSelection = getPosition(thanaData.get(Tables.THANA_TH_id),markets.get(Tables.MARKETS_thana_id));
-                locationaSelection = getPosition(locationData.get(Tables.LOCATION_location_id),markets.get(Tables.MARKETS_location_type_id));
-
-                routeSpinner.setSelection(routeSelection);
-                thanaSpinner.setSelection(thanaSelection);
-                locationTypeSpinner.setSelection(locationaSelection);
-
-                marketNameTv.setText(markets.get(Tables.MARKETS_market_name));
-                addressTv.setText(markets.get(Tables.MARKETS_address));
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
 
     }
 

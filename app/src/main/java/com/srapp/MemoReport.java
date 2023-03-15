@@ -287,7 +287,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
 
 
             //bf.getResponceData(URL.GET_LAST_MEMO, jsonObject.toString(), 101);
-            ProgressDialog dailog = CheckConnection(MemoReport.this,"Checking...");
+            ProgressDialog dailog = CheckConnection(MemoReport.this,"Memo Loading...");
             if (dailog==null)
                 return;
             getJAPi().GET_LAST_MEMO(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {

@@ -3,6 +3,7 @@ package com.srapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -36,6 +37,13 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import static com.srapp.Db_Actions.Tables.SR_ID;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class Attendance_history extends AppCompatActivity implements BasicFunctionListener {
 
@@ -217,7 +225,44 @@ public class Attendance_history extends AppCompatActivity implements BasicFuncti
                 }
 
 
-                bf.getResponceData(URL.ATTENDANCE_HISTORY, jsonObject.toString(), 101);
+               // bf.getResponceData(URL.ATTENDANCE_HISTORY, jsonObject.toString(), 101);
+
+                ProgressDialog dailog = CheckConnection(Attendance_history.this,"History Loading...");
+                if (dailog==null)
+                    return;
+                getJAPi().ATTENDANCE_HISTORY(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response.body());
+                            dailog.dismiss();
+                            ArrayList<HashMap<String,String>> list = new ArrayList<>();
+                            try {
+                                for (int i = 0; jsonObject.getJSONArray("report").length() > i; i++) {
+                                    HashMap<String,String> map = new HashMap<>();
+                                    map.put("date",jsonObject.getJSONArray("report").getJSONObject(i).getString("date"));
+                                    map.put("check_in_time",jsonObject.getJSONArray("report").getJSONObject(i).getString("check_in_time"));
+                                    map.put("check_out_time",jsonObject.getJSONArray("report").getJSONObject(i).getString("check_out_time"));
+                                    list.add(map);
+                                }
+                            }catch (Exception e){
+
+                            }
+                            AdapterForAttendanceHistory adapterForAttendanceHistory = new AdapterForAttendanceHistory(Attendance_history.this,list);
+                            listview.setAdapter(adapterForAttendanceHistory);
+
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+
+                    }
+                });
+
+
             } else {
                 Toast.makeText(this, "NO Internet Connection", Toast.LENGTH_LONG).show();
             }
@@ -230,20 +275,7 @@ public class Attendance_history extends AppCompatActivity implements BasicFuncti
     @Override
     public void OnServerResponce(JSONObject jsonObject, int RequestCode) {
 
-        ArrayList<HashMap<String,String>> list = new ArrayList<>();
-        try {
-            for (int i = 0; jsonObject.getJSONArray("report").length() > i; i++) {
-                HashMap<String,String> map = new HashMap<>();
-                map.put("date",jsonObject.getJSONArray("report").getJSONObject(i).getString("date"));
-                map.put("check_in_time",jsonObject.getJSONArray("report").getJSONObject(i).getString("check_in_time"));
-                map.put("check_out_time",jsonObject.getJSONArray("report").getJSONObject(i).getString("check_out_time"));
-                list.add(map);
-            }
-        }catch (Exception e){
 
-        }
-        AdapterForAttendanceHistory adapterForAttendanceHistory = new AdapterForAttendanceHistory(this,list);
-        listview.setAdapter(adapterForAttendanceHistory);
     }
 
     @Override

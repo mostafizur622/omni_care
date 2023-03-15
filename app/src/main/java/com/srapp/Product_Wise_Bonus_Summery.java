@@ -3,6 +3,7 @@ package com.srapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -34,6 +35,13 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import static com.srapp.Db_Actions.Tables.SR_ID;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class Product_Wise_Bonus_Summery extends AppCompatActivity implements BasicFunctionListener {
     private DatePickerDialog fromDatePickerDialog;
@@ -163,7 +171,47 @@ public class Product_Wise_Bonus_Summery extends AppCompatActivity implements Bas
             }
 
 
-            bf.getResponceData(URL.PRODUCT_WISE_BONUS_SUMMERY, jsonObject.toString(), 101);
+            //bf.getResponceData(URL.PRODUCT_WISE_BONUS_SUMMERY, jsonObject.toString(), 101);
+            ProgressDialog dailog = CheckConnection(Product_Wise_Bonus_Summery.this,"Getting Report...");
+            if (dailog==null)
+                return;
+            getJAPi().PRODUCT_WISE_BONUS_SUMMERY(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body());
+                        dailog.dismiss();
+                        list.clear();
+                        onstart=true;
+
+                        JSONArray jsonArray = jsonObject.getJSONArray("product_bonus_report");
+                        for (int j = 0 ; j<jsonArray.length(); j++ ){
+                            if (Double.parseDouble(jsonArray.getJSONObject(j).getString("total_qty"))>0) {
+                                HashMap<String, String> map = new HashMap<>();
+                                map.put("product_name", jsonArray.getJSONObject(j).getString("product_name"));
+                                //Log.println(1,"total_qty",jsonArray.getJSONObject(j).getString("total_qty"));
+                                Log.e("total_qty",jsonArray.getJSONObject(j).getString("total_qty"));
+                                map.put("EC", jsonArray.getJSONObject(j).getString("total_ec"));
+                                map.put("OC", jsonArray.getJSONObject(j).getString("total_oc"));
+                                map.put("qty", jsonArray.getJSONObject(j).getString("total_qty"));
+
+                                //map.put("total_price", jsonArray.getJSONObject(j).getString("total_price"));
+                                list.add(map);
+                            }
+
+                        }
+                        AdapterForOrderSummery adapterForOrderSummery = new AdapterForOrderSummery(Product_Wise_Bonus_Summery.this,list);
+                        listview.setAdapter(adapterForOrderSummery);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+
+                }
+            });
         } else {
             Toast.makeText(this, "NO Internet Connection", Toast.LENGTH_LONG).show();
         }
@@ -171,36 +219,8 @@ public class Product_Wise_Bonus_Summery extends AppCompatActivity implements Bas
 
     @Override
     public void OnServerResponce(JSONObject jsonObject, int i) {
-        list.clear();
-        onstart=true;
-
-        if (i==101){
-            try {
-                JSONArray jsonArray = jsonObject.getJSONArray("product_bonus_report");
-                for (int j = 0 ; j<jsonArray.length(); j++ ){
-                    if (Double.parseDouble(jsonArray.getJSONObject(j).getString("total_qty"))>0) {
-                        HashMap<String, String> map = new HashMap<>();
-                        map.put("product_name", jsonArray.getJSONObject(j).getString("product_name"));
-                        Log.println(1,"total_qty",jsonArray.getJSONObject(j).getString("total_qty"));
-                        Log.e("total_qty",jsonArray.getJSONObject(j).getString("total_qty"));
-                        map.put("EC", jsonArray.getJSONObject(j).getString("total_ec"));
-                        map.put("OC", jsonArray.getJSONObject(j).getString("total_oc"));
-                        map.put("qty", jsonArray.getJSONObject(j).getString("total_qty"));
-
-                        //map.put("total_price", jsonArray.getJSONObject(j).getString("total_price"));
-                        list.add(map);
-                    }
-
-                }
-                AdapterForOrderSummery adapterForOrderSummery = new AdapterForOrderSummery(this,list);
-                listview.setAdapter(adapterForOrderSummery);
 
 
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-        }
 
 
     }

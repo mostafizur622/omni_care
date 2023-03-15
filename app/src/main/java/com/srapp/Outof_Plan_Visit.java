@@ -1,6 +1,7 @@
 package com.srapp;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -36,6 +37,13 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import static com.srapp.Db_Actions.Tables.SR_ID;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class Outof_Plan_Visit extends AppCompatActivity implements BasicFunctionListener {
     Spinner routesp, marketSpinner;
@@ -153,7 +161,33 @@ public class Outof_Plan_Visit extends AppCompatActivity implements BasicFunction
                     jsonObject.put("market_id",market_id);
                     jsonObject.put("mac",bf.getPreference("mac"));
                     jsonObject.put("remarks",remarks.getText().toString().trim());
-                    bf.getResponceData(URL.OUT_OF_PLAN_VISIT,jsonObject.toString(),100);
+                  //  bf.getResponceData(URL.OUT_OF_PLAN_VISIT,jsonObject.toString(),100);
+
+                    ProgressDialog dailog = CheckConnection(Outof_Plan_Visit.this,"Get Plan...");
+                    if (dailog==null)
+                        return;
+                    getJAPi().OUT_OF_PLAN_VISIT(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                        @Override
+                        public void onResponse(Call<String> call, Response<String> response) {
+                            try {
+                                JSONObject jsonObject = new JSONObject(response.body());
+                                dailog.dismiss();
+                                JSONObject jsonObject1 = jsonObject.getJSONObject("visit_plan");
+                                Toast.makeText(Outof_Plan_Visit.this,jsonObject1.getString("message"),Toast.LENGTH_SHORT).show();
+                                Intent ii = new Intent(Outof_Plan_Visit.this, SR_Account_Activity.class);
+                                startActivity(ii);
+                                finish();
+
+                            } catch (JSONException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<String> call, Throwable t) {
+
+                        }
+                    });
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -219,19 +253,7 @@ public class Outof_Plan_Visit extends AppCompatActivity implements BasicFunction
 
     @Override
     public void OnServerResponce(JSONObject jsonObject, int i) {
-        if (i==100){
-            try {
-                JSONObject jsonObject1 = jsonObject.getJSONObject("visit_plan");
-                Toast.makeText(this,jsonObject1.getString("message"),Toast.LENGTH_SHORT).show();
-                Intent ii = new Intent(this, SR_Account_Activity.class);
-                startActivity(ii);
-                finish();
 
-            } catch (JSONException e) {
-
-
-            }
-        }
 
     }
 

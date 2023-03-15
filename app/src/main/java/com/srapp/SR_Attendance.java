@@ -88,7 +88,7 @@ public class SR_Attendance extends AppCompatActivity implements BasicFunctionLis
 
         bf = new BasicFunction(this,this);
         try {
-            ProgressDialog dailog = CheckConnection(SR_Attendance.this,"Checking...");
+            ProgressDialog dailog = CheckConnection(SR_Attendance.this,"getting Attendance Status...");
             if (dailog==null)
                 return;
             getJAPi().GET_ATTENDANCE_STATUS(convertTORequestdata(new JSONObject().put("so_id",bf.getPreference(SR_ID)).put("mac",bf.getPreference("mac")))).enqueue(new Callback<String>() {

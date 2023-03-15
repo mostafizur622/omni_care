@@ -2,6 +2,7 @@ package com.srapp.Adapter;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -40,6 +41,7 @@ import com.srapp.Db_Actions.Data_Source;
 import com.srapp.DeliveryReport;
 import com.srapp.DetailsOrderReport;
 import com.srapp.R;
+import com.srapp.SyncActivity;
 import com.srapp.TempData;
 import com.srapp.print.PrintRecyclerAdapter;
 import com.srapp.print.PrintSelectedOrdersActivity;
@@ -64,9 +66,15 @@ import static com.srapp.Db_Actions.Tables.PRODUCT_ID;
 import static com.srapp.Db_Actions.Tables.PRODUCT_PRICE_PRICE;
 import static com.srapp.Db_Actions.Tables.PRODUCT_PRODUCT_NAME;
 import static com.srapp.Db_Actions.Tables.SR_ID;
-import static com.srapp.Db_Actions.URL.ORDER_DETAILS;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
 import static com.srapp.DetailsOrderReport.discount_info;
 import static com.srapp.TempData.MEMO_EDIT;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AdapterForMultiOrderPrint extends BaseAdapter implements BasicFunctionListener {
 
@@ -271,7 +279,45 @@ public class AdapterForMultiOrderPrint extends BaseAdapter implements BasicFunct
             jsonObject.put("mac", bf.getPreference("mac"));
             jsonObject.put(SR_ID, bf.getPreference(SR_ID));
             jsonObject.put("order_number", maplist.get(position).get("order_number"));
-            bf.getResponceData(ORDER_DETAILS, jsonObject.toString(), 1005);
+          //  bf.getResponceData(ORDER_DETAILS, jsonObject.toString(), 1005);
+
+            ProgressDialog dailog = CheckConnection(context,"Get Order Details...");
+            if (dailog==null)
+                return;
+            getJAPi().ORDER_DETAILS(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body());
+                        dailog.dismiss();
+                        JSONArray jsonArray = new JSONArray();
+
+                        jsonArray = jsonObject.getJSONArray("schedule_order_details");
+
+                        for (int k = 0; k < jsonArray.length(); k++) {
+                            HashMap<String, String> map = new HashMap<>();
+
+                            map.put("product_name", jsonArray.getJSONObject(k).getString("product_name"));
+                            map.put("order_qty", jsonArray.getJSONObject(k).getString("order_qty"));
+                            map.put("invoice_qty", jsonArray.getJSONObject(k).getString("invoice_qty"));
+                            map.put("status", jsonArray.getJSONObject(k).getString("status"));
+
+                            ditailslist.add(map);
+
+                        }
+                        AdapterForOrderDetailsShedule adapter = new AdapterForOrderDetailsShedule(context, ditailslist);
+                        listView.setAdapter(adapter);
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+
+                }
+            });
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -314,7 +360,7 @@ public class AdapterForMultiOrderPrint extends BaseAdapter implements BasicFunct
 
     @Override
     public void OnServerResponce(JSONObject jsonObject, int i) {
-        try {
+
             if (i == 1001) {
 
                 //JSONObject jsonArray = jsonObject.getJSONObject("schedule");
@@ -328,29 +374,10 @@ public class AdapterForMultiOrderPrint extends BaseAdapter implements BasicFunct
 
             } else if (i == 1005) {
 
-                JSONArray jsonArray = new JSONArray();
 
-                jsonArray = jsonObject.getJSONArray("schedule_order_details");
-
-                for (int k = 0; k < jsonArray.length(); k++) {
-                    HashMap<String, String> map = new HashMap<>();
-
-                    map.put("product_name", jsonArray.getJSONObject(k).getString("product_name"));
-                    map.put("order_qty", jsonArray.getJSONObject(k).getString("order_qty"));
-                    map.put("invoice_qty", jsonArray.getJSONObject(k).getString("invoice_qty"));
-                    map.put("status", jsonArray.getJSONObject(k).getString("status"));
-
-                    ditailslist.add(map);
-
-                }
-                AdapterForOrderDetailsShedule adapter = new AdapterForOrderDetailsShedule(context, ditailslist);
-                listView.setAdapter(adapter);
             }
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e("log", e.getMessage());
-        }
+
     }
 
     @Override

@@ -290,10 +290,10 @@ public class GiftIssueAdaper extends BaseAdapter implements BasicFunctionListene
 
                            // bf.getResponceData(URL.GIFT_ISSUE,finalJsonobj.toString(),11);
 
-							ProgressDialog dailog = CheckConnection(context,"Gift Issue...");
+							ProgressDialog dailog = CheckConnection(context,"Gift Issue Loading...");
 							if (dailog==null)
 								return;
-							getJAPi().SET_ATTENDANCE_STATUS(convertTORequestdata(finalJsonobj)).enqueue(new Callback<String>() {
+							getJAPi().GIFT_ISSUE(convertTORequestdata(finalJsonobj)).enqueue(new Callback<String>() {
 								@Override
 								public void onResponse(Call<String> call, Response<String> response) {
 									try {

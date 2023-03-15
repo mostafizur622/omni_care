@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -49,6 +50,13 @@ import static com.srapp.Db_Actions.Tables.ORDER_order_number;
 import static com.srapp.Db_Actions.Tables.PRODUCT_PRODUCT_NAME;
 import static com.srapp.Db_Actions.Tables.SR_ID;
 import static com.srapp.Db_Actions.Tables.TABLE_NAME_ORDER_DETAILS;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class BonusReport extends Parent implements BasicFunctionListener {
     ImageView img;
@@ -280,39 +288,7 @@ public class BonusReport extends Parent implements BasicFunctionListener {
 
     @Override
     public void OnServerResponce(JSONObject jsonObject, int i) {
-        if (i==101){
-            try {
-                list.clear();
-                JSONArray jsonArray = jsonObject.getJSONArray("product_order_report");
-                JSONObject object = jsonArray.getJSONObject(0);
-                ec.setText(object.getString("total_ec"));
-                oc.setText(object.getString("total_oc"));
-                tqty.setText(object.getString("total_qty"));
-                JSONArray jsonArray1 = object.getJSONArray("report_details");
 
-                for (int pos = 0 ; pos<jsonArray1.length(); pos++){
-
-                    HashMap<String,String>  map = new HashMap<>();
-
-                    map.put("dist_order_no",jsonArray1.getJSONObject(pos).getString("dist_order_no"));
-                    map.put("order_date",jsonArray1.getJSONObject(pos).getString("order_date"));
-                    map.put("outlet_name",jsonArray1.getJSONObject(pos).getString("outlet_name"));
-                    map.put("sales_qty",jsonArray1.getJSONObject(pos).getString("sales_qty"));
-                    list.add(map);
-
-
-                }
-
-
-                AdapterForProductWiseSaleReport adapterForProductWiseSaleReport = new AdapterForProductWiseSaleReport(this,list);
-                listview.setAdapter(adapterForProductWiseSaleReport);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-                Log.e("jsone",e.getMessage());
-            }
-
-        }
     }
 
     @Override
@@ -342,7 +318,52 @@ public class BonusReport extends Parent implements BasicFunctionListener {
                 }
 
 
-                bf.getResponceData(URL.PRODUCT_WISE_BONUS, jsonObject.toString(), 101);
+              //  bf.getResponceData(URL.PRODUCT_WISE_BONUS, jsonObject.toString(), 101);
+
+                ProgressDialog dailog = CheckConnection(BonusReport.this,"Report Loading...");
+                if (dailog==null)
+                    return;
+                getJAPi().PRODUCT_WISE_BONUS(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response.body());
+                            dailog.dismiss();
+
+                            list.clear();
+                            JSONArray jsonArray = jsonObject.getJSONArray("product_order_report");
+                            JSONObject object = jsonArray.getJSONObject(0);
+                            ec.setText(object.getString("total_ec"));
+                            oc.setText(object.getString("total_oc"));
+                            tqty.setText(object.getString("total_qty"));
+                            JSONArray jsonArray1 = object.getJSONArray("report_details");
+
+                            for (int pos = 0 ; pos<jsonArray1.length(); pos++){
+
+                                HashMap<String,String>  map = new HashMap<>();
+
+                                map.put("dist_order_no",jsonArray1.getJSONObject(pos).getString("dist_order_no"));
+                                map.put("order_date",jsonArray1.getJSONObject(pos).getString("order_date"));
+                                map.put("outlet_name",jsonArray1.getJSONObject(pos).getString("outlet_name"));
+                                map.put("sales_qty",jsonArray1.getJSONObject(pos).getString("sales_qty"));
+                                list.add(map);
+
+
+                            }
+
+
+                            AdapterForProductWiseSaleReport adapterForProductWiseSaleReport = new AdapterForProductWiseSaleReport(BonusReport.this,list);
+                            listview.setAdapter(adapterForProductWiseSaleReport);
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+
+                    }
+                });
             } else {
                 Toast.makeText(this, "NO Internet Connection", Toast.LENGTH_LONG).show();
             }

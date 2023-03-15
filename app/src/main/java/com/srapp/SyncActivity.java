@@ -297,19 +297,7 @@
 
 
 
-        } else if (i == 110) {
-
-
-                updateOutlet(jsonObject);
-
-
-
-        } else if (i == 109) {
-
-            updateMarket(jsonObject);
-
-
-        } else if (i == 1412) {
+        }  else if (i == 1412) {
 
 
 
@@ -399,7 +387,29 @@
         marketObj.put("mac", bf.getPreference("mac"));
         marketObj.put("sales_person_id", bf.getPreference(SR_ID));
         marketObj.put("market_list", jsonArray);
-        bf.getResponceData(URL.CreateMarket, marketObj.toString(), 109);
+        //bf.getResponceData(URL.CreateMarket, marketObj.toString(), 109);
+
+        ProgressDialog dailog = CheckConnection(SyncActivity.this,"Checking...");
+        if (dailog==null)
+            return;
+        getJAPi().CreateMarket(convertTORequestdata(marketObj)).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body());
+                    dailog.dismiss();
+
+                    updateMarket(jsonObject);
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+            }
+        });
 
     }
 
@@ -436,7 +446,29 @@
             Log.e("error", e.getMessage());
             e.printStackTrace();
         }
-            bf.getResponceData(URL.CreateOutlet, marketObj.toString(), 110);
+           // bf.getResponceData(URL.CreateOutlet, marketObj.toString(), 110);
+
+        ProgressDialog dailog = CheckConnection(SyncActivity.this,"Checking...");
+        if (dailog==null)
+            return;
+        getJAPi().CreateOutlet(convertTORequestdata(marketObj)).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body());
+                    dailog.dismiss();
+                    updateOutlet(jsonObject);
+
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+            }
+        });
 
     }
 

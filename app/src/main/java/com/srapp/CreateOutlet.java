@@ -9,6 +9,7 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -62,7 +63,14 @@ import java.util.Date;
 import java.util.HashMap;
 
 import static com.srapp.Db_Actions.Tables.SR_ID;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
 import static com.srapp.TempData.OldBPSelected_policy_type;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CreateOutlet extends AppCompatActivity implements BasicFunctionListener {
     Spinner outletCategoySpinner, marketSpinner, outletSpinner;
@@ -344,7 +352,120 @@ public class CreateOutlet extends AppCompatActivity implements BasicFunctionList
                 e.printStackTrace();
             }
 
-            basicFunction.getResponceData(URL.OutletDetails, String.valueOf(primaryData),601);
+            //basicFunction.getResponceData(URL.OutletDetails, String.valueOf(primaryData),601);
+
+            ProgressDialog dailog = CheckConnection(CreateOutlet.this,"get Outlet Details...");
+            if (dailog==null)
+                return;
+            getJAPi().OutletDetails(convertTORequestdata(primaryData)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body());
+                        dailog.dismiss();
+                        mktIdResponse =jsonObject.getJSONObject("outlets").getJSONObject("0").getString("market_id");
+                        outletCategoryIdResponse = jsonObject.getJSONObject("outlets").getJSONObject("0").getString("outlet_category_id");
+
+                        outletNameResponse = jsonObject.getJSONObject("outlets").getJSONObject("0").getString("outlet_name");
+                        mobileRespone = jsonObject.getJSONObject("outlets").getJSONObject("0").getString("mobile");
+                        outlet_addrerss = jsonObject.getJSONObject("outlets").getJSONObject("0").has("address")?jsonObject.getJSONObject("outlets").getJSONObject("0").getString("address"):"";
+                        contNameRespo = jsonObject.getJSONObject("outlets").getJSONObject("0").getString("owner_name");
+                        pharmaTypeRespo = jsonObject.getJSONObject("outlets").getJSONObject("0").getString("pharma_type");
+                        if (jsonObject.getJSONObject("outlets").getJSONObject("0").getString("isActivated").equalsIgnoreCase("1")){
+                            is_active.setChecked(true);
+                        }else {
+                            is_active.setChecked(false);
+                        }
+
+                        for (int k = 0; k <jsonObject.getJSONObject("outlets").getJSONArray("images").length(); k++){
+                            imgRespoList.add(jsonObject.getJSONObject("outlets").getJSONArray("images").getString(k));
+                        }
+
+                        Log.e("image_list", "OnServerResponce--------------->>: "+imgRespoList );
+
+
+
+                        // outlet = ds.getIndivOutletDetails(outlet_id);
+
+                        Log.e(" for edit", "outlet.........>> " + outlet_id + " details " + outlet);
+                        marketSelection = getPosition(markets.get(Tables.MARKETS_market_id), mktIdResponse);
+                        Log.e("market spinnr position", "onCreate: " + marketSelection);
+
+                        marketcategorySelection = getPosition(outletCategories.get(Tables.OUTLETS_CATAGORY_ID), outletCategoryIdResponse);
+                        Log.e("------>", "OnServerResponce:---------> mkt id respo: "+mktIdResponse+" selection : "+marketSelection );
+                        if (marketSelection == -1){
+                            marketSelection = 0;
+                        }
+                        marketSpinner.setSelection(marketSelection);
+                        outletCategoySpinner.setSelection(marketcategorySelection);
+
+                        if (pharmaTypeRespo.equals("1") ||pharmaTypeRespo.equals("Pharma")) {
+
+                            RadioButton b = findViewById(pharmaType.getChildAt(0).getId());
+                            b.setChecked(true);
+
+                        } else if (pharmaTypeRespo.equals("Non Pharma") || pharmaTypeRespo.equals("0")) {
+                            RadioButton b = findViewById(pharmaType.getChildAt(1).getId());
+                            b.setChecked(true);
+
+                        }
+
+                        outletName_et.setText(outletNameResponse);
+                        //incharge_name_et.setText(outlet.get(Tables.OUTLETS_INCHARGE_NAME));
+                        owner_name_et.setText(contNameRespo);
+                        address_et.setText(outlet_addrerss);
+                        mobile_num_et.setText(mobileRespone);
+                        //address_et.setText(outlet.get(Tables.OUTLETS_ADDRESS));
+
+                        Log.e("Image respo List", "OnServerResponce......>>: "+imgRespoList );
+                        if (imgRespoList.size()>0){
+                            for (int k = 0; k <imgRespoList.size();k++){
+                                outletImgViewList[k].setVisibility(View.VISIBLE);
+                                Picasso.with(CreateOutlet.this).
+                                        load(imgRespoList.get(k))
+                                        .into(outletImgViewList[k]);
+
+                            }
+                        }
+                    /*for (int x = 0; x <imgRespoList.size();x++){
+                        if (imgRespoList.get(x) != null && !imgRespoList.get(x).equals("")){
+                            outletImgViewList[x].setVisibility(View.VISIBLE);
+                            Picasso.with(this).
+                                    load(imgRespoList.get(x))
+                                    .into(outletImgViewList[x]);
+
+                        }
+                    }
+*/
+                        Log.e("encode testt...", "OnServerResponce:..........> "+encoded1 );
+
+
+
+            /*if (outlet.get(Tables.OUTLETS_ISACTIVATED) != null &&outlet.get(Tables.OUTLETS_ISACTIVATED).equals("1")){
+                status_switch.setChecked(true);
+            }else {
+                status_switch.setChecked(false);
+            }*/
+
+            /*if (outlet.get(Tables.OUTLETS_ISNGO)!= null &&outlet.get(Tables.OUTLETS_ISNGO).equals("1")){
+                isNgo.setChecked(true);
+            }else {
+                isNgo.setChecked(false);
+            }*/
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    saveBtn.setText("Update");
+                    title.setText("Update Outlet");
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+
+                }
+            });
 
 
         }
@@ -950,108 +1071,8 @@ public class CreateOutlet extends AppCompatActivity implements BasicFunctionList
 
         }
 
-        else if (RequestCode == 601){
-
-            try {
-
-                mktIdResponse =jsonObject.getJSONObject("outlets").getJSONObject("0").getString("market_id");
-                outletCategoryIdResponse = jsonObject.getJSONObject("outlets").getJSONObject("0").getString("outlet_category_id");
-
-                outletNameResponse = jsonObject.getJSONObject("outlets").getJSONObject("0").getString("outlet_name");
-                mobileRespone = jsonObject.getJSONObject("outlets").getJSONObject("0").getString("mobile");
-                outlet_addrerss = jsonObject.getJSONObject("outlets").getJSONObject("0").has("address")?jsonObject.getJSONObject("outlets").getJSONObject("0").getString("address"):"";
-                contNameRespo = jsonObject.getJSONObject("outlets").getJSONObject("0").getString("owner_name");
-                pharmaTypeRespo = jsonObject.getJSONObject("outlets").getJSONObject("0").getString("pharma_type");
-               if (jsonObject.getJSONObject("outlets").getJSONObject("0").getString("isActivated").equalsIgnoreCase("1")){
-                is_active.setChecked(true);
-               }else {
-                   is_active.setChecked(false);
-               }
-
-                for (int k = 0; k <jsonObject.getJSONObject("outlets").getJSONArray("images").length(); k++){
-                    imgRespoList.add(jsonObject.getJSONObject("outlets").getJSONArray("images").getString(k));
-                }
-
-                Log.e("image_list", "OnServerResponce--------------->>: "+imgRespoList );
 
 
-
-                // outlet = ds.getIndivOutletDetails(outlet_id);
-
-                Log.e(" for edit", "outlet.........>> " + outlet_id + " details " + outlet);
-                marketSelection = getPosition(markets.get(Tables.MARKETS_market_id), mktIdResponse);
-                Log.e("market spinnr position", "onCreate: " + marketSelection);
-
-                marketcategorySelection = getPosition(outletCategories.get(Tables.OUTLETS_CATAGORY_ID), outletCategoryIdResponse);
-                Log.e("------>", "OnServerResponce:---------> mkt id respo: "+mktIdResponse+" selection : "+marketSelection );
-                if (marketSelection == -1){
-                    marketSelection = 0;
-                }
-                marketSpinner.setSelection(marketSelection);
-                outletCategoySpinner.setSelection(marketcategorySelection);
-
-                if (pharmaTypeRespo.equals("1") ||pharmaTypeRespo.equals("Pharma")) {
-
-                    RadioButton b = findViewById(pharmaType.getChildAt(0).getId());
-                    b.setChecked(true);
-
-                } else if (pharmaTypeRespo.equals("Non Pharma") || pharmaTypeRespo.equals("0")) {
-                    RadioButton b = findViewById(pharmaType.getChildAt(1).getId());
-                    b.setChecked(true);
-
-                }
-
-                outletName_et.setText(outletNameResponse);
-                //incharge_name_et.setText(outlet.get(Tables.OUTLETS_INCHARGE_NAME));
-                owner_name_et.setText(contNameRespo);
-                address_et.setText(outlet_addrerss);
-                mobile_num_et.setText(mobileRespone);
-                //address_et.setText(outlet.get(Tables.OUTLETS_ADDRESS));
-
-                Log.e("Image respo List", "OnServerResponce......>>: "+imgRespoList );
-                if (imgRespoList.size()>0){
-                    for (int k = 0; k <imgRespoList.size();k++){
-                        outletImgViewList[k].setVisibility(View.VISIBLE);
-                        Picasso.with(this).
-                                load(imgRespoList.get(k))
-                                .into(outletImgViewList[k]);
-
-                    }
-                }
-                    /*for (int x = 0; x <imgRespoList.size();x++){
-                        if (imgRespoList.get(x) != null && !imgRespoList.get(x).equals("")){
-                            outletImgViewList[x].setVisibility(View.VISIBLE);
-                            Picasso.with(this).
-                                    load(imgRespoList.get(x))
-                                    .into(outletImgViewList[x]);
-
-                        }
-                    }
-*/
-                Log.e("encode testt...", "OnServerResponce:..........> "+encoded1 );
-
-
-
-            /*if (outlet.get(Tables.OUTLETS_ISACTIVATED) != null &&outlet.get(Tables.OUTLETS_ISACTIVATED).equals("1")){
-                status_switch.setChecked(true);
-            }else {
-                status_switch.setChecked(false);
-            }*/
-
-            /*if (outlet.get(Tables.OUTLETS_ISNGO)!= null &&outlet.get(Tables.OUTLETS_ISNGO).equals("1")){
-                isNgo.setChecked(true);
-            }else {
-                isNgo.setChecked(false);
-            }*/
-
-            }catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            saveBtn.setText("Update");
-            title.setText("Update Outlet");
-
-        }
 
     }
 

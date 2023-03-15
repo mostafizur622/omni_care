@@ -36,7 +36,6 @@ import java.util.HashMap;
 import static com.srapp.Db_Actions.Tables.PROCESSING_PENDING;
 import static com.srapp.Db_Actions.Tables.SR_ID;
 import static com.srapp.Db_Actions.URL.CheckConnection;
-import static com.srapp.Db_Actions.URL.ORDER_DETAILS;
 import static com.srapp.Db_Actions.URL.convertTORequestdata;
 import static com.srapp.Db_Actions.URL.getJAPi;
 
@@ -167,7 +166,7 @@ public class AdapterForOrderUnProcessShow extends BaseAdapter implements BasicFu
                             jsonObject.put(SR_ID, bf.getPreference(SR_ID));
                             //bf.getResponceData(URL.UNPROCESS_ORDER_LIST, jsonObject.toString(), 1001);
 
-                            ProgressDialog dailog = CheckConnection(context,"Checking...");
+                            ProgressDialog dailog = CheckConnection(context,"Orders Loading...");
                             if (dailog==null)
                                 return;
                             getJAPi().UNPROCESS_ORDER_LIST(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
@@ -248,7 +247,49 @@ public class AdapterForOrderUnProcessShow extends BaseAdapter implements BasicFu
             jsonObject.put("mac",bf.getPreference("mac"));
             jsonObject.put(SR_ID,bf.getPreference(SR_ID));
             jsonObject.put("order_number",maplist.get(position).get("order_number"));
-            bf.getResponceData(ORDER_DETAILS,jsonObject.toString(),1005);
+            //bf.getResponceData(ORDER_DETAILS,jsonObject.toString(),1005);
+
+            ProgressDialog dailog = CheckConnection(context,"Getting Order Details...");
+            if (dailog==null)
+                return;
+            getJAPi().ORDER_DETAILS(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body());
+                        dailog.dismiss();
+
+                        JSONArray jsonArray = new JSONArray();
+
+                        jsonArray = jsonObject.getJSONArray("schedule_order_details");
+
+                        for (int k = 0 ; k<jsonArray.length() ; k++){
+                            HashMap<String,String> map = new HashMap<>();
+
+                            map.put("product_name",jsonArray.getJSONObject(k).getString("product_name"));
+                            map.put("order_qty",jsonArray.getJSONObject(k).getString("order_qty"));
+                            map.put("invoice_qty",jsonArray.getJSONObject(k).getString("invoice_qty"));
+                            map.put("status",jsonArray.getJSONObject(k).getString("status"));
+
+                            ditailslist.add(map);
+
+
+                        }
+
+
+                        AdapterForOrderDetailsShedule adapter = new AdapterForOrderDetailsShedule(context,ditailslist);
+                        listView.setAdapter(adapter);
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+
+                }
+            });
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -299,7 +340,7 @@ public class AdapterForOrderUnProcessShow extends BaseAdapter implements BasicFu
 
     @Override
     public void OnServerResponce(JSONObject jsonObject, int i) {
-        try {
+
         if (i==1001) {
 
                 //JSONObject jsonArray = jsonObject.getJSONObject("schedule");
@@ -311,38 +352,11 @@ public class AdapterForOrderUnProcessShow extends BaseAdapter implements BasicFu
                 notifyDataSetChanged();
 
 
-        }else if(i==1005){
-
-                JSONArray jsonArray = new JSONArray();
-
-                jsonArray = jsonObject.getJSONArray("schedule_order_details");
-
-                for (int k = 0 ; k<jsonArray.length() ; k++){
-                    HashMap<String,String> map = new HashMap<>();
-
-                    map.put("product_name",jsonArray.getJSONObject(k).getString("product_name"));
-                    map.put("order_qty",jsonArray.getJSONObject(k).getString("order_qty"));
-                    map.put("invoice_qty",jsonArray.getJSONObject(k).getString("invoice_qty"));
-                    map.put("status",jsonArray.getJSONObject(k).getString("status"));
-
-                   ditailslist.add(map);
-
-
-                }
-
-
-                AdapterForOrderDetailsShedule adapter = new AdapterForOrderDetailsShedule(context,ditailslist);
-                listView.setAdapter(adapter);
-
-
         }
 
 
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e("log", e.getMessage());
-        }
+
     }
 
     @Override

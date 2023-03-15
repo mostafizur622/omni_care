@@ -1,6 +1,11 @@
 package com.srapp;
 
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -41,6 +46,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class Visit_Plan_Activity extends AppCompatActivity implements BasicFunctionListener {
 
@@ -157,7 +166,9 @@ public class Visit_Plan_Activity extends AppCompatActivity implements BasicFunct
             e.printStackTrace();
         }
 
-        basicFunction.getResponceData(URL.VisitPlan,primaryData.toString(),901);
+       // basicFunction.getResponceData(URL.VisitPlan,primaryData.toString(),901);
+        getData(primaryData);
+
         //..............api call end..................//
 
         datePick.setOnClickListener(new View.OnClickListener() {
@@ -192,7 +203,8 @@ public class Visit_Plan_Activity extends AppCompatActivity implements BasicFunct
                             e.printStackTrace();
                         }
 
-                        basicFunction.getResponceData(URL.VisitPlan,primaryData.toString(),901);
+                        //basicFunction.getResponceData(URL.VisitPlan,primaryData.toString(),901);
+                        getData(primaryData);
                         //..............api call end..................//
 
 
@@ -218,7 +230,8 @@ public class Visit_Plan_Activity extends AppCompatActivity implements BasicFunct
                         e.printStackTrace();
                     }
 
-                    basicFunction.getResponceData(URL.VisitPlan, primaryData.toString(), 901);
+                   // basicFunction.getResponceData(URL.VisitPlan, primaryData.toString(), 901);
+                    getData(primaryData);
                 if (noInternet != 1) {
                     showing = 0;
                     linearLayout.setVisibility(View.INVISIBLE);
@@ -252,6 +265,213 @@ public class Visit_Plan_Activity extends AppCompatActivity implements BasicFunct
 
     }
 
+    private void getData(JSONObject primaryData) {
+        ProgressDialog dailog = CheckConnection(Visit_Plan_Activity.this,"Get Visit Plan...");
+        if (dailog==null)
+            return;
+        getJAPi().VisitPlan(convertTORequestdata(primaryData)).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body());
+                    dailog.dismiss();
+
+
+
+                    routeList = new HashMap<>();
+                    routeIdList = new ArrayList<>();
+                    routeNameList = new ArrayList<>();
+                    daysList = new ArrayList<String[]>();
+
+
+                    try {
+
+                        for (int x = 0; x < jsonObject.getJSONArray("visit_list").length(); x++) {
+                            daysStatus = new String[7];
+                            routeIdList.add(jsonObject.getJSONArray("visit_list").getJSONObject(x).getString("route_id"));
+                            routeNameList.add(jsonObject.getJSONArray("visit_list").getJSONObject(x).getString("route_name"));
+                            daysStatus[0] = jsonObject.getJSONArray("visit_list").getJSONObject(x).getString("sat");
+                            daysStatus[1] = jsonObject.getJSONArray("visit_list").getJSONObject(x).getString("sun");
+                            daysStatus[2] = jsonObject.getJSONArray("visit_list").getJSONObject(x).getString("mon");
+                            daysStatus[3] = jsonObject.getJSONArray("visit_list").getJSONObject(x).getString("tue");
+                            daysStatus[4] = jsonObject.getJSONArray("visit_list").getJSONObject(x).getString("wed");
+                            daysStatus[5] = jsonObject.getJSONArray("visit_list").getJSONObject(x).getString("thu");
+                            daysStatus[6] = jsonObject.getJSONArray("visit_list").getJSONObject(x).getString("fri");
+
+                            daysList.add(daysStatus);
+                        }
+
+                        routeList.put(Tables.ROUTE_ID, routeIdList);
+                        routeList.put(Tables.ROUTE_NAME, routeNameList);
+
+                        Market_Adapter adapter = new Market_Adapter(routeList.get(Tables.ROUTE_NAME),daysList);
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(Visit_Plan_Activity.this);
+                        recyclerView.setLayoutManager(linearLayoutManager);
+                        recyclerView.setAdapter(adapter);
+
+                        adapter.setOnItemClickListener(new Market_Adapter.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(int position) {
+                                Log.e("days status------>", "onClick: --------->"+daysList.size()+" "+routeList.get(Tables.ROUTE_NAME).size() );
+                                if (basicFunction.isInternetOn()) {
+                                    routeId = routeIdList.get(position);
+                                    rtMktLable.setText("Market List");
+                                    linearLayout.setVisibility(View.VISIBLE);
+                                    routeLable.setText("Route: " + routeNameList.get(position));
+                                    routeBtn.setVisibility(View.VISIBLE);
+                                    showing = 1;
+                                    String txt = "";
+                                    for (int i = 0; i < daysName.length; i++) {
+                                        if (daysList.get(position)[i].equals("1")) {
+                                            txt = txt + daysName[i] + " ";
+                                        }
+                                    }
+                                    dayLable.setText("Days: " + txt.trim());
+
+                                  getMarketlist();
+
+
+
+                                    //...........api call end..........//
+                                }else {
+                                    Toast.makeText(Visit_Plan_Activity.this,"No Internet Connection",Toast.LENGTH_SHORT).show();
+                                }
+
+                            }
+
+                            @Override
+                            public void onEditClick(int position) {
+
+                            }
+
+                            @Override
+                            public void onViewClick(int position) {
+
+                            }
+                        });
+
+
+
+
+                    }catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
+
+
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+            }
+        });
+
+
+    }
+
+    private void getMarketlist() {
+
+        //.....call api for market list for route.....//
+        final int[] initialPageIndex = {1};
+        JSONObject primaryData = new JSONObject();
+        try {
+            primaryData.put("mac", basicFunction.getPreference("mac"));
+            primaryData.put("sales_person_id", basicFunction.getPreference("sales_person_id"));
+            primaryData.put("route_id", routeId);
+            primaryData.put("page", initialPageIndex[0]);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        //basicFunction.getResponceData(URL.MarketList, String.valueOf(primaryData), 902);
+
+        ProgressDialog dailog = CheckConnection(Visit_Plan_Activity.this,"Get Market List...");
+        if (dailog==null)
+            return;
+        getJAPi().MarketList(convertTORequestdata(primaryData)).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body());
+                    dailog.dismiss();
+
+                    isLoading = false;
+                    markets = new HashMap<>();
+                    marketIdList = new ArrayList<>();
+                    marketnameList = new ArrayList<>();
+
+                    try {
+                        for (int j = 0; j < jsonObject.getJSONArray("markets").length(); j++) {
+                            if (!jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_name").equals("")) {
+                                marketIdList.add(jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_id"));
+                                marketnameList.add(jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_name"));
+                            }
+
+                        }
+
+                        markets.put(Tables.MARKETS_market_id,marketIdList);
+                        markets.put(Tables.MARKETS_market_name,marketnameList);
+
+                        if (markets.get(Tables.MARKETS_market_name) != null && markets.get(Tables.MARKETS_market_name).size()>0) {
+
+                            //recyclerView = new RecyclerView(this);
+
+                            marketListAdapter = new VisitPlanMktListAdapter(markets);
+                            recyclerView.setLayoutManager(new LinearLayoutManager(Visit_Plan_Activity.this));
+                            recyclerView.setAdapter(marketListAdapter);
+
+                        }else {
+                            recyclerView.setAdapter(null);
+                        }
+
+                        final LinearLayoutManager linManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+                            @Override
+                            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                                super.onScrollStateChanged(recyclerView, newState);
+                            }
+
+                            @Override
+                            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                                super.onScrolled(recyclerView, dx, dy);
+
+                                //Log.e("entered scrolled.....", "onScrolled: "+"On Scroll.." );
+
+
+                                if (!isLoading && linManager.getItemCount() - THREAT_SHOT== linManager.findLastVisibleItemPosition()){
+                                    Log.e("entr scrolled..0n 402", "onScrolled: "+"On Scroll.." );
+                                    initialPageIndex[0]++;
+                                    loadMoreData(initialPageIndex[0],routeId);
+
+                                    Toast.makeText(Visit_Plan_Activity.this," "+ initialPageIndex[0],Toast.LENGTH_SHORT).show();
+
+                                    Log.e("last position", "onScrolled: "+linManager.findLastVisibleItemPosition() );
+                                }
+                            }
+
+                        });
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+            }
+        });
+    }
+
     private ArrayList<String> getList() {
         ArrayList<String> market_List = new ArrayList<>();
         market_List.add("Adarshapara");
@@ -266,222 +486,8 @@ public class Visit_Plan_Activity extends AppCompatActivity implements BasicFunct
 
     @Override
     public void OnServerResponce(JSONObject jsonObject, int i) {
-        Log.e("response---->"+i, "<---------OnServerResponce------->: "+jsonObject );
-
-        if (i==901){
-            routeList = new HashMap<>();
-            routeIdList = new ArrayList<>();
-            routeNameList = new ArrayList<>();
-            daysList = new ArrayList<String[]>();
 
 
-            try {
-
-                for (int x = 0; x < jsonObject.getJSONArray("visit_list").length(); x++) {
-                    daysStatus = new String[7];
-                    routeIdList.add(jsonObject.getJSONArray("visit_list").getJSONObject(x).getString("route_id"));
-                    routeNameList.add(jsonObject.getJSONArray("visit_list").getJSONObject(x).getString("route_name"));
-                    daysStatus[0] = jsonObject.getJSONArray("visit_list").getJSONObject(x).getString("sat");
-                    daysStatus[1] = jsonObject.getJSONArray("visit_list").getJSONObject(x).getString("sun");
-                    daysStatus[2] = jsonObject.getJSONArray("visit_list").getJSONObject(x).getString("mon");
-                    daysStatus[3] = jsonObject.getJSONArray("visit_list").getJSONObject(x).getString("tue");
-                    daysStatus[4] = jsonObject.getJSONArray("visit_list").getJSONObject(x).getString("wed");
-                    daysStatus[5] = jsonObject.getJSONArray("visit_list").getJSONObject(x).getString("thu");
-                    daysStatus[6] = jsonObject.getJSONArray("visit_list").getJSONObject(x).getString("fri");
-
-                    daysList.add(daysStatus);
-                }
-
-                routeList.put(Tables.ROUTE_ID, routeIdList);
-                routeList.put(Tables.ROUTE_NAME, routeNameList);
-
-                Market_Adapter adapter = new Market_Adapter(routeList.get(Tables.ROUTE_NAME),daysList);
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-                recyclerView.setLayoutManager(linearLayoutManager);
-                recyclerView.setAdapter(adapter);
-
-                adapter.setOnItemClickListener(new Market_Adapter.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(int position) {
-                        Log.e("days status------>", "onClick: --------->"+daysList.size()+" "+routeList.get(Tables.ROUTE_NAME).size() );
-                        if (basicFunction.isInternetOn()) {
-                            routeId = routeIdList.get(position);
-                            rtMktLable.setText("Market List");
-                            linearLayout.setVisibility(View.VISIBLE);
-                            routeLable.setText("Route: " + routeNameList.get(position));
-                            routeBtn.setVisibility(View.VISIBLE);
-                            showing = 1;
-                            String txt = "";
-                            for (int i = 0; i < daysName.length; i++) {
-                                if (daysList.get(position)[i].equals("1")) {
-                                    txt = txt + daysName[i] + " ";
-                                }
-                            }
-                            dayLable.setText("Days: " + txt.trim());
-
-                            //.....call api for market list for route.....//
-                            int initialPageIndex = 1;
-                            JSONObject primaryData = new JSONObject();
-                            try {
-                                primaryData.put("mac", basicFunction.getPreference("mac"));
-                                primaryData.put("sales_person_id", basicFunction.getPreference("sales_person_id"));
-                                primaryData.put("route_id", routeId);
-                                primaryData.put("page", initialPageIndex);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            basicFunction.getResponceData(URL.MarketList, String.valueOf(primaryData), 902);
-                            //...........api call end..........//
-                        }else {
-                            Toast.makeText(Visit_Plan_Activity.this,"No Internet Connection",Toast.LENGTH_SHORT).show();
-                        }
-
-                    }
-
-                    @Override
-                    public void onEditClick(int position) {
-
-                    }
-
-                    @Override
-                    public void onViewClick(int position) {
-
-                    }
-                });
-
-
-
-
-            }catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-
-        }
-        else if (i == 902){
-            isLoading = false;
-            markets = new HashMap<>();
-            marketIdList = new ArrayList<>();
-            marketnameList = new ArrayList<>();
-
-            try {
-                for (int j = 0; j < jsonObject.getJSONArray("markets").length(); j++) {
-                    if (!jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_name").equals("")) {
-                        marketIdList.add(jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_id"));
-                        marketnameList.add(jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_name"));
-                    }
-
-                }
-
-                markets.put(Tables.MARKETS_market_id,marketIdList);
-                markets.put(Tables.MARKETS_market_name,marketnameList);
-
-                if (markets.get(Tables.MARKETS_market_name) != null && markets.get(Tables.MARKETS_market_name).size()>0) {
-
-                    //recyclerView = new RecyclerView(this);
-
-                    marketListAdapter = new VisitPlanMktListAdapter(markets);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(Visit_Plan_Activity.this));
-                    recyclerView.setAdapter(marketListAdapter);
-
-                }else {
-                    recyclerView.setAdapter(null);
-                }
-
-                final LinearLayoutManager linManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-                recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                    @Override
-                    public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                        super.onScrollStateChanged(recyclerView, newState);
-                    }
-
-                    @Override
-                    public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                        super.onScrolled(recyclerView, dx, dy);
-
-                        //Log.e("entered scrolled.....", "onScrolled: "+"On Scroll.." );
-
-
-                        if (!isLoading && linManager.getItemCount() - THREAT_SHOT== linManager.findLastVisibleItemPosition()){
-                            Log.e("entr scrolled..0n 402", "onScrolled: "+"On Scroll.." );
-                            initialPageIndex++;
-                            loadMoreData(initialPageIndex,routeId);
-
-                            Toast.makeText(Visit_Plan_Activity.this," "+initialPageIndex,Toast.LENGTH_SHORT).show();
-
-                            Log.e("last position", "onScrolled: "+linManager.findLastVisibleItemPosition() );
-                        }
-                    }
-
-                });
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-        }
-        else if (i == 903){
-            try {
-                for (int j = 0; j < jsonObject.getJSONArray("markets").length(); j++) {
-                    if (!jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_name").equals("")) {
-                        marketIdList.add(jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_id"));
-                        marketnameList.add(jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_name"));
-
-                    }
-
-                }
-
-                markets.put(Tables.MARKETS_market_id, marketIdList);
-                markets.put(Tables.MARKETS_market_name, marketnameList);
-
-                recyclerView.getAdapter().notifyDataSetChanged();
-
-                Log.e("50 data setes", "OnServerResponce: Adapter seted...");
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-/*
-        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(this, recyclerView, new RecyclerTouchListener.ClickListener() {
-            @Override
-            public void onClick(View view, int position) {
-                // Toast.makeText(Visit_Plan_Activity.this,""+daysList.get(position).toString(),Toast.LENGTH_SHORT).show();
-                Log.e("days status------>", "onClick: --------->"+daysList.size()+" "+routeList.get(Tables.ROUTE_NAME).size() );
-                routeId = routeIdList.get(position);
-                rtMktLable.setText("Route : "+routeNameList.get(position));
-                dayLable.setVisibility(View.VISIBLE);
-                routeBtn.setVisibility(View.VISIBLE);
-                String txt = "";
-                for (int i =0; i<daysName.length;i++){
-                    if (daysList.get(position)[i].equals("1")){
-                        txt = txt+ daysName[i]+" ";
-                    }
-                }
-                dayLable.setText(txt.trim());
-
-                //.....call api for market list for route.....//
-                int initialPageIndex = 1;
-                JSONObject primaryData = new JSONObject();
-                try {
-                    primaryData.put("mac",basicFunction.getPreference("mac"));
-                    primaryData.put("sales_person_id",basicFunction.getPreference("sales_person_id"));
-                    primaryData.put("route_id",routeId);
-                    primaryData.put("page",initialPageIndex);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                basicFunction.getResponceData(URL.MarketList, String.valueOf(primaryData),902);
-                //...........api call end..........//
-            }
-
-            @Override
-            public void onLongClick(View view, int position) {
-
-            }
-        }));
-*/
 
 
     }
@@ -508,7 +514,47 @@ public class Visit_Plan_Activity extends AppCompatActivity implements BasicFunct
         }
 
 
-        basicFunction.getResponceData(URL.MarketList, String.valueOf(primaryData),903);
+        //basicFunction.getResponceData(URL.MarketList, String.valueOf(primaryData),903);
+
+
+        ProgressDialog dailog = CheckConnection(Visit_Plan_Activity.this,"Checking...");
+        if (dailog==null)
+            return;
+        getJAPi().MarketList(convertTORequestdata(primaryData)).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body());
+                    dailog.dismiss();
+
+                        for (int j = 0; j < jsonObject.getJSONArray("markets").length(); j++) {
+                            if (!jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_name").equals("")) {
+                                marketIdList.add(jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_id"));
+                                marketnameList.add(jsonObject.getJSONArray("markets").getJSONObject(j).getString("market_name"));
+
+                            }
+
+                        }
+
+                        markets.put(Tables.MARKETS_market_id, marketIdList);
+                        markets.put(Tables.MARKETS_market_name, marketnameList);
+
+                        recyclerView.getAdapter().notifyDataSetChanged();
+
+                        Log.e("50 data setes", "OnServerResponce: Adapter seted...");
+
+
+
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+            }
+        });
 
     }
 
@@ -530,7 +576,8 @@ public class Visit_Plan_Activity extends AppCompatActivity implements BasicFunct
             }
             showing = 0;
 
-            basicFunction.getResponceData(URL.VisitPlan, primaryData.toString(), 901);
+            //basicFunction.getResponceData(URL.VisitPlan, primaryData.toString(), 901);
+            getData(primaryData);
         }else {
             super.onBackPressed();
             startActivity(new Intent( Visit_Plan_Activity.this, SR_Account_Activity.class));
@@ -558,7 +605,8 @@ public class Visit_Plan_Activity extends AppCompatActivity implements BasicFunct
                 }
                 showing = 0;
 
-                basicFunction.getResponceData(URL.VisitPlan, primaryData.toString(), 901);
+               // basicFunction.getResponceData(URL.VisitPlan, primaryData.toString(), 901);
+                getData(primaryData);
             }else {
                 //super.onBackPressed();
                 startActivity(new Intent( Visit_Plan_Activity.this, SR_Account_Activity.class));

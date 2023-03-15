@@ -3,6 +3,7 @@ package com.srapp.Adapter;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -23,6 +24,7 @@ import com.srapp.Dashboard;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.URL;
 import com.srapp.R;
+import com.srapp.SyncActivity;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
@@ -34,7 +36,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.srapp.Db_Actions.Tables.SR_ID;
-import static com.srapp.Db_Actions.URL.ORDER_DETAILS;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AdapterForOrderReadyForPDF extends BaseAdapter implements BasicFunctionListener {
 
@@ -156,7 +165,46 @@ public class AdapterForOrderReadyForPDF extends BaseAdapter implements BasicFunc
                             jsonObject.put("order_numbers", jsonArray);
                             jsonObject.put("mac", bf.getPreference("mac"));
                             jsonObject.put(SR_ID, bf.getPreference(SR_ID));
-                            bf.getResponceData(URL.MAKE_PFD, jsonObject.toString(), 1001);
+                          //  bf.getResponceData(URL.MAKE_PFD, jsonObject.toString(), 1001);
+
+                            ProgressDialog dailog = CheckConnection(context,"Generate PDF...");
+                            if (dailog==null)
+                                return;
+                            getJAPi().MAKE_PFD(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                                @Override
+                                public void onResponse(Call<String> call, Response<String> response) {
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(response.body());
+                                        dailog.dismiss();
+                                        Log.e("Link",jsonObject.getJSONObject("outlet").getString("link"));
+                                        DownloadManager mManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+                                        DownloadManager.Request mRqRequest = new DownloadManager.Request(
+                                                Uri.parse(jsonObject.getJSONObject("outlet").getString("link")));
+                                        mRqRequest.setDescription("File Downloading");
+                                        mRqRequest.setDestinationInExternalPublicDir("/SR_App_Invoice_Documents","SR_App(Invoice)+"+bf.getCurrentDateTime()+".pdf");
+//  mRqRequest.setDestinationUri(Uri.parse("give your local path"));
+                                        mRqRequest.allowScanningByMediaScanner();
+                                        mRqRequest.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                                        long idDownLoad = mManager.enqueue(mRqRequest);
+
+              /*  for (int j = 0; j < list.size(); j++) {
+
+                    db.updateOrderStatus(list.get(j),PROCESSING_PENDING+"");
+
+                }*/
+                                        notifyDataSetChanged();
+
+                                    } catch (JSONException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<String> call, Throwable t) {
+
+                                }
+                            });
+
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -217,7 +265,48 @@ public class AdapterForOrderReadyForPDF extends BaseAdapter implements BasicFunc
             jsonObject.put("mac",bf.getPreference("mac"));
             jsonObject.put(SR_ID,bf.getPreference(SR_ID));
             jsonObject.put("order_number",maplist.get(position).get("order_number"));
-            bf.getResponceData(ORDER_DETAILS,jsonObject.toString(),1005);
+            //bf.getResponceData(ORDER_DETAILS,jsonObject.toString(),1005);
+
+            ProgressDialog dailog = CheckConnection(context,"Generating PDF...");
+            if (dailog==null)
+                return;
+            getJAPi().ORDER_DETAILS(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body());
+                        dailog.dismiss();
+                        JSONArray jsonArray = new JSONArray();
+
+                        jsonArray = jsonObject.getJSONArray("schedule_order_details");
+
+                        for (int k = 0 ; k<jsonArray.length() ; k++){
+                            HashMap<String,String> map = new HashMap<>();
+
+                            map.put("product_name",jsonArray.getJSONObject(k).getString("product_name"));
+                            map.put("order_qty",jsonArray.getJSONObject(k).getString("order_qty"));
+                            map.put("invoice_qty",jsonArray.getJSONObject(k).getString("invoice_qty"));
+                            map.put("status",jsonArray.getJSONObject(k).getString("status"));
+
+                            ditailslist.add(map);
+
+
+                        }
+
+
+                        AdapterForOrderDetailsShedule adapter = new AdapterForOrderDetailsShedule(context,ditailslist);
+                        listView.setAdapter(adapter);
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+
+                }
+            });
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -268,62 +357,10 @@ public class AdapterForOrderReadyForPDF extends BaseAdapter implements BasicFunc
 
     @Override
     public void OnServerResponce(JSONObject jsonObject, int i) {
-        try {
-            if (i==1001) {
-
-                //JSONObject jsonArray = jsonObject.getJSONObject("schedule");
-
-                Log.e("Link",jsonObject.getJSONObject("outlet").getString("link"));
-                DownloadManager mManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-                DownloadManager.Request mRqRequest = new DownloadManager.Request(
-                        Uri.parse(jsonObject.getJSONObject("outlet").getString("link")));
-                mRqRequest.setDescription("File Downloading");
-                mRqRequest.setDestinationInExternalPublicDir("/SR_App_Invoice_Documents","SR_App(Invoice)+"+bf.getCurrentDateTime()+".pdf");
-//  mRqRequest.setDestinationUri(Uri.parse("give your local path"));
-                mRqRequest.allowScanningByMediaScanner();
-                mRqRequest.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-                long idDownLoad = mManager.enqueue(mRqRequest);
-
-              /*  for (int j = 0; j < list.size(); j++) {
-
-                    db.updateOrderStatus(list.get(j),PROCESSING_PENDING+"");
-
-                }*/
-                notifyDataSetChanged();
-
-
-            }else if(i==1005){
-
-                JSONArray jsonArray = new JSONArray();
-
-                jsonArray = jsonObject.getJSONArray("schedule_order_details");
-
-                for (int k = 0 ; k<jsonArray.length() ; k++){
-                    HashMap<String,String> map = new HashMap<>();
-
-                    map.put("product_name",jsonArray.getJSONObject(k).getString("product_name"));
-                    map.put("order_qty",jsonArray.getJSONObject(k).getString("order_qty"));
-                    map.put("invoice_qty",jsonArray.getJSONObject(k).getString("invoice_qty"));
-                    map.put("status",jsonArray.getJSONObject(k).getString("status"));
-
-                    ditailslist.add(map);
-
-
-                }
-
-
-                AdapterForOrderDetailsShedule adapter = new AdapterForOrderDetailsShedule(context,ditailslist);
-                listView.setAdapter(adapter);
-
-
-            }
 
 
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e("log", e.getMessage());
-        }
+
     }
 
     @Override

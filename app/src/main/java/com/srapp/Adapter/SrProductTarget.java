@@ -1,7 +1,12 @@
 package com.srapp.Adapter;
 
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
@@ -29,6 +34,10 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SrProductTarget extends AppCompatActivity implements BasicFunctionListener {
 
@@ -73,7 +82,29 @@ public class SrProductTarget extends AppCompatActivity implements BasicFunctionL
             e.printStackTrace();
         }
 
-        basicFunction.getResponceData(URL.ProductTarget,primaryData.toString(),901);
+        //basicFunction.getResponceData(URL.ProductTarget,primaryData.toString(),901);
+
+        ProgressDialog dailog = CheckConnection(SrProductTarget.this,"Sales Target Loading...");
+        if (dailog==null)
+            return;
+        getJAPi().ProductTarget(convertTORequestdata(primaryData)).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body());
+                    dailog.dismiss();
+
+
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+            }
+        });
         //..............api call end..................//
 
 

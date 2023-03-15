@@ -1,5 +1,10 @@
 package com.srapp;
 
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
+
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -29,6 +34,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class OutletView extends AppCompatActivity implements BasicFunctionListener {
 
@@ -99,7 +108,95 @@ public class OutletView extends AppCompatActivity implements BasicFunctionListen
             }
 
 
-            basicFunction.getResponceData(URL.OutletDetails, String.valueOf(primaryData),501);
+          //  basicFunction.getResponceData(URL.OutletDetails, String.valueOf(primaryData),501);
+
+            ProgressDialog dailog = CheckConnection(OutletView.this,"Checking...");
+            if (dailog==null)
+                return;
+            getJAPi().OutletDetails(convertTORequestdata(primaryData)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body());
+                        dailog.dismiss();
+                        valueList.add(jsonObject.getJSONObject("outlets").getJSONObject("0").getString("outlet_name"));
+                        attributeList.add("Outlet Name");
+
+                        int position = getPosition(ds.getOutletCategories().get(Tables.OUTLET_CATEGORY_CATEGORY_ID),jsonObject.getJSONObject("outlets").getJSONObject("0").getString("outlet_category_id"));
+                        String outletType;
+                        if (position>0)
+                            outletType = ds.getOutletCategories().get(Tables.OUTLET_CATEGORY_NAME).get(position);
+                        else
+                            outletType = ds.getOutletCategories().get(Tables.OUTLET_CATEGORY_NAME).get(0);
+
+
+                        valueList.add(outletType);
+                        attributeList.add("Outlet Type");
+
+                        if (jsonObject.getJSONObject("outlets").getJSONObject("0").getString("pharma_type").equals("0")){
+                            pharmaType = "No";
+                        }else {
+                            pharmaType = "Yes";
+                        }
+
+                        valueList.add(pharmaType);
+                        attributeList.add("Pharma Type");
+
+                        valueList.add(jsonObject.getJSONObject("outlets").getJSONObject("0").getString("owner_name"));
+                        attributeList.add("Contact Name");
+
+                        valueList.add(jsonObject.getJSONObject("outlets").getJSONObject("0").getString("mobile"));
+                        attributeList.add("Mobile");
+
+                        valueList.add(jsonObject.getJSONObject("outlets").getJSONObject("0").getString("market_name"));
+                        attributeList.add("Market Name");
+
+                        valueList.add(jsonObject.getJSONObject("outlets").getJSONObject("0").getString("thana_name"));
+                        attributeList.add("Thana Name");
+
+            /*valueList.add(jsonObject.getJSONObject("outlets").getJSONArray("images").getString(0));
+            attributeList.add("Image1");
+
+            valueList.add(jsonObject.getJSONObject("outlets").getJSONArray("images").getString(1));
+            attributeList.add("Image2");
+
+            valueList.add(jsonObject.getJSONObject("outlets").getJSONArray("images").getString(2));
+            attributeList.add("Image2");*/
+                        attributeList.add("for image");
+
+                        outletList.put("Attributes",attributeList);
+                        outletList.put("Values",valueList);
+
+                        if (jsonObject.getJSONObject("outlets").getJSONArray("images").length()>0) {
+
+                            for (int z = 0; z < jsonObject.getJSONObject("outlets").getJSONArray("images").length(); z++) {
+                                imageList.add(jsonObject.getJSONObject("outlets").getJSONArray("images").getString(z));
+                            }
+                        }
+
+            /*imageList.add(jsonObject.getJSONObject("outlets").getJSONArray("images").getString(0));
+            imageList.add(jsonObject.getJSONObject("outlets").getJSONArray("images").getString(1));
+            imageList.add(jsonObject.getJSONObject("outlets").getJSONArray("images").getString(2));*/
+
+                        outletList.put("image_list",imageList);
+
+                        Log.e("Outlet List", "OnServerResponce:----------->>> "+outletList );
+
+                        adapter = new OutletViewAdapter(outletList,OutletView.this);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(OutletView.this));
+                        recyclerView.setAdapter(adapter);
+                        recyclerView.addItemDecoration(new DividerItemDecoration(OutletView.this,DividerItemDecoration.VERTICAL));
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+
+                }
+            });
 
             recyclerView =  findViewById(R.id.outlet_view_recycler);
 
@@ -114,80 +211,6 @@ public class OutletView extends AppCompatActivity implements BasicFunctionListen
     public void OnServerResponce(JSONObject jsonObject, int i) {
         Log.e(" 501 response", "OnServerResponce: "+jsonObject );
 
-        try {
-
-            valueList.add(jsonObject.getJSONObject("outlets").getJSONObject("0").getString("outlet_name"));
-            attributeList.add("Outlet Name");
-
-            int position = getPosition(ds.getOutletCategories().get(Tables.OUTLET_CATEGORY_CATEGORY_ID),jsonObject.getJSONObject("outlets").getJSONObject("0").getString("outlet_category_id"));
-            String outletType;
-           if (position>0)
-             outletType = ds.getOutletCategories().get(Tables.OUTLET_CATEGORY_NAME).get(position);
-           else
-               outletType = ds.getOutletCategories().get(Tables.OUTLET_CATEGORY_NAME).get(0);
-
-
-            valueList.add(outletType);
-            attributeList.add("Outlet Type");
-
-            if (jsonObject.getJSONObject("outlets").getJSONObject("0").getString("pharma_type").equals("0")){
-                pharmaType = "No";
-            }else {
-                pharmaType = "Yes";
-            }
-
-            valueList.add(pharmaType);
-            attributeList.add("Pharma Type");
-
-            valueList.add(jsonObject.getJSONObject("outlets").getJSONObject("0").getString("owner_name"));
-            attributeList.add("Contact Name");
-
-            valueList.add(jsonObject.getJSONObject("outlets").getJSONObject("0").getString("mobile"));
-            attributeList.add("Mobile");
-
-            valueList.add(jsonObject.getJSONObject("outlets").getJSONObject("0").getString("market_name"));
-            attributeList.add("Market Name");
-
-            valueList.add(jsonObject.getJSONObject("outlets").getJSONObject("0").getString("thana_name"));
-            attributeList.add("Thana Name");
-
-            /*valueList.add(jsonObject.getJSONObject("outlets").getJSONArray("images").getString(0));
-            attributeList.add("Image1");
-
-            valueList.add(jsonObject.getJSONObject("outlets").getJSONArray("images").getString(1));
-            attributeList.add("Image2");
-
-            valueList.add(jsonObject.getJSONObject("outlets").getJSONArray("images").getString(2));
-            attributeList.add("Image2");*/
-            attributeList.add("for image");
-
-            outletList.put("Attributes",attributeList);
-            outletList.put("Values",valueList);
-
-            if (jsonObject.getJSONObject("outlets").getJSONArray("images").length()>0) {
-
-                for (int z = 0; z < jsonObject.getJSONObject("outlets").getJSONArray("images").length(); z++) {
-                    imageList.add(jsonObject.getJSONObject("outlets").getJSONArray("images").getString(z));
-                }
-            }
-
-            /*imageList.add(jsonObject.getJSONObject("outlets").getJSONArray("images").getString(0));
-            imageList.add(jsonObject.getJSONObject("outlets").getJSONArray("images").getString(1));
-            imageList.add(jsonObject.getJSONObject("outlets").getJSONArray("images").getString(2));*/
-
-            outletList.put("image_list",imageList);
-
-            Log.e("Outlet List", "OnServerResponce:----------->>> "+outletList );
-
-            adapter = new OutletViewAdapter(outletList,this);
-            recyclerView.setLayoutManager(new LinearLayoutManager(this));
-            recyclerView.setAdapter(adapter);
-            recyclerView.addItemDecoration(new DividerItemDecoration(OutletView.this,DividerItemDecoration.VERTICAL));
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
 
 
