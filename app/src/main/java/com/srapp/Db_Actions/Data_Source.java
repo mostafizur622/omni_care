@@ -2291,7 +2291,10 @@ public class Data_Source extends Parent {
                 JSONObject jsonObj = new JSONObject(jsonObject.toString());
 
                 // Getting JSON Array node
-
+                HashMap<String,String> datacheck1 = new HashMap<String, String>();
+                datacheck1.put("table_name","Policy_Table");
+                datacheck1.put("item_count",jsonObj.getJSONArray("policy_list").length()+"");
+                InsertTable(datacheck1,"dataCheck");
                 for (int i = 0; i < jsonObj.getJSONArray("policy_list").length(); i++) {
                     Log.e("policy_table", "policy_table.toString()");
 
@@ -2327,6 +2330,10 @@ public class Data_Source extends Parent {
                         Log.e("policy_tablex1", e.getMessage());
                     }
 
+                    HashMap<String,String> datacheck = new HashMap<String, String>();
+                    datacheck.put("table_name","Bonus_Eligible_Group");
+                    datacheck.put("item_count",policy_group.length()+"");
+                    InserOrupdate(datacheck,"dataCheck");
                     for (int t = 0; t < policy_group.length(); t++) {
                         HashMap<String, String> map1 = new HashMap<>();
                         map1.put("outlet_group_id", policy_group.getJSONObject(t).getString("reffrence_id")); //outlet_group_id
@@ -2334,7 +2341,10 @@ public class Data_Source extends Parent {
                         InsertTable(map1, "Bonus_Eligible_Group");
                     }
 
-
+                    datacheck = new HashMap<String, String>();
+                    datacheck.put("table_name","Bonus_Eligible_Outlet_Categories");
+                    datacheck.put("item_count",policy_outlet_category.length()+"");
+                    InserOrupdate(datacheck,"dataCheck");
                     for (int t = 0; t < policy_outlet_category.length(); t++) {
                         HashMap<String, String> map1 = new HashMap<>();
                         map1.put("category_id", policy_outlet_category.getJSONObject(t).getString("reffrence_id")); //outlet_category_id
@@ -2343,6 +2353,10 @@ public class Data_Source extends Parent {
                     }
 
                     // Added 16 Nov 2021
+                    datacheck = new HashMap<String, String>();
+                    datacheck.put("table_name","DiscountBonusPolicyToExcludingOutletGroupSr");
+                    datacheck.put("item_count",excludingOutletGroupSr.length()+"");
+                    InserOrupdate(datacheck,"dataCheck");
                     for (int exsp = 0; exsp < excludingOutletGroupSr.length(); exsp++) {
                         HashMap<String, String> exspMap = new HashMap<>();
                         exspMap.put("_id", excludingOutletGroupSr.getJSONObject(exsp).getString("id"));
@@ -2353,7 +2367,10 @@ public class Data_Source extends Parent {
                         InsertTable(exspMap, "DiscountBonusPolicyToExcludingOutletGroupSr");
                     }
 
-
+                    datacheck = new HashMap<String, String>();
+                    datacheck.put("table_name","DiscountBonusPolicyToSpecialGroupSo");
+                    datacheck.put("item_count",policy_special_group.length()+"");
+                    InserOrupdate(datacheck,"dataCheck");
                     // Added 23 April 2021
                     for (int sp = 0; sp < policy_special_group.length(); sp++) {
                         HashMap<String, String> spMap = new HashMap<>();
@@ -2363,14 +2380,20 @@ public class Data_Source extends Parent {
                         spMap.put("reffrence_id", policy_special_group.getJSONObject(sp).getString("reffrence_id"));
                         InsertTable(spMap, "DiscountBonusPolicyToSpecialGroupSo");
                     }
-
+                    datacheck = new HashMap<String, String>();
+                    datacheck.put("table_name","policy_root_product");
+                    datacheck.put("item_count",policy_root_product.length()+"");
+                    InserOrupdate(datacheck,"dataCheck");
                     for (int t = 0; t < policy_root_product.length(); t++) {
                         HashMap<String, String> map1 = new HashMap<>();
                         map1.put("root_product_id", policy_root_product.getJSONObject(t).getString("product_id"));
                         map1.put("policy_id", policy_root_product.getJSONObject(t).getString("discount_bonus_policy_id"));
                         InsertTable(map1, "policy_root_product");
                     }
-
+                    datacheck = new HashMap<String, String>();
+                    datacheck.put("table_name","policy_product_Option");
+                    datacheck.put("item_count",policy_product_option.length()+"");
+                    InserOrupdate(datacheck,"dataCheck");
                     for (int t = 0; t < policy_product_option.length(); t++) {
                         HashMap<String, String> map1 = new HashMap<>();
                         map1.put("policy_id", policy_product_option.getJSONObject(t).getString("discount_bonus_policy_id"));//group_wise_discount_bonus_policy_id
@@ -2405,7 +2428,10 @@ public class Data_Source extends Parent {
                         JSONArray policy_deafult_product = policy_product_option.getJSONObject(t).
                                 getJSONArray("DiscountBonusPolicyDefaultBonusProductSelection");
 
-
+                        datacheck = new HashMap<String, String>();
+                        datacheck.put("table_name","policy_option_price_slab");
+                        datacheck.put("item_count",policy_option_price_slap.length()+"");
+                        InserOrupdate(datacheck,"dataCheck");
                         for (int b = 0; b < policy_option_price_slap.length(); b++) {
                             HashMap<String, String> map2 = new HashMap<>();
                             map2.put("policy_product_option_id", policy_option_price_slap.getJSONObject(b).getString("discount_bonus_policy_option_id"));// group_wise_discount_bonus_policy_option_id
@@ -2414,7 +2440,10 @@ public class Data_Source extends Parent {
                             InsertTable(map2, "policy_option_price_slab");
 
                         }
-
+                        datacheck = new HashMap<String, String>();
+                        datacheck.put("table_name","policy_default_product");
+                        datacheck.put("item_count",policy_deafult_product.length()+"");
+                        InserOrupdate(datacheck,"dataCheck");
                          for (int b = 0; b < policy_deafult_product.length(); b++) {
                             HashMap<String, String> map2 = new HashMap<>();
                             map2.put("policy_id", policy_deafult_product.getJSONObject(b).getString("discount_bonus_policy_id"));// group_wise_discount_bonus_policy_option_id
@@ -2424,7 +2453,10 @@ public class Data_Source extends Parent {
 
                         }
 
-
+                        datacheck = new HashMap<String, String>();
+                        datacheck.put("table_name","policy_bonus_product");
+                        datacheck.put("item_count",policy_bonus_product.length()+"");
+                        InserOrupdate(datacheck,"dataCheck");
 
                         for (int tt = 0; tt < policy_bonus_product.length(); tt++) {
                             HashMap<String, String> map2 = new HashMap<>();
@@ -2442,7 +2474,10 @@ public class Data_Source extends Parent {
                             InsertTable(map2, "policy_bonus_product");
 
                         }
-
+                        datacheck = new HashMap<String, String>();
+                        datacheck.put("table_name","DiscountBonusPolicyOptionExclusionProduct");
+                        datacheck.put("item_count",policy_option_exclusion.length()+"");
+                        InserOrupdate(datacheck,"dataCheck");
                         //  added to 23 April 2021
                         for (int ex = 0; ex < policy_option_exclusion.length(); ex++) {
                             HashMap<String, String> map2 = new HashMap<>();
@@ -2452,7 +2487,10 @@ public class Data_Source extends Parent {
                             map2.put("min_qty", policy_option_exclusion.getJSONObject(ex).getString("min_qty"));
                             InsertTable(map2, "DiscountBonusPolicyOptionExclusionProduct");
                         }
-
+                        datacheck = new HashMap<String, String>();
+                        datacheck.put("table_name","DiscountBonusPolicyOptionInclusionProduct");
+                        datacheck.put("item_count",policy_option_inclusion.length()+"");
+                        InserOrupdate(datacheck,"dataCheck");
                         //  added to 23 April 2021
                         for (int in = 0; in < policy_option_inclusion.length(); in++) {
                             HashMap<String, String> map2 = new HashMap<>();
@@ -2479,9 +2517,27 @@ public class Data_Source extends Parent {
         }
     }
 
+    private void InserOrupdate(HashMap<String, String> map, String dataCheck) {
+        try {
+            Log.e("InserOrupdate: ", "InserOrupdate: "+ map.get("table_name"));
+            open();
+            Cursor c = rawQuery("Select * from "+dataCheck+" where table_name= '"+map.get("table_name")+"'");
+            if (c!=null&&c.getCount()>0){
+                excQuery("update dataCheck set item_count=item_count+"+map.get("item_count")+" where table_name='"+map.get("table_name")+"'");
+            }else {
+                InsertTable(map,dataCheck);
+            }
+        }catch (Exception e){
+            Log.e("exception", "InserOrupdate: "+e.getMessage());
+        }
+
+
+
+    }
+
     private void saveImage(String urls, String product_name) throws IOException {
 
-        if (urls.equalsIgnoreCase("http://202.126.123.157/smc_test/app/webroot/img/product_img/")) {
+        if (urls.equalsIgnoreCase("http://202.126.123.157/smc_test/app/webroot/img/product_img/")||urls.equalsIgnoreCase("http://182.160.103.236:8079/app/webroot/img/product_img/")) {
             return;
         }
         java.net.URL url = new java.net.URL(urls);
@@ -2530,6 +2586,10 @@ public class Data_Source extends Parent {
     private void insertbonusUnitDetails(JSONObject jsonObj) throws JSONException {
 
         JSONArray MeasurementUnitList = jsonObj.getJSONArray("unit_info");
+        HashMap<String,String> datacheck = new HashMap<String, String>();
+        datacheck.put("table_name","unit_details");
+        datacheck.put("item_count",MeasurementUnitList.length()+"");
+        InsertTable(datacheck,"dataCheck");
 
         for (int i = 0; i < MeasurementUnitList.length(); i++) {
             JSONObject c = MeasurementUnitList.getJSONObject(i);
@@ -2555,8 +2615,52 @@ public class Data_Source extends Parent {
 
 
         }
-        progressDialog.dismiss();
-        dbListener.OnLocalDBdataRetrive("unit_details");
+
+
+
+            //Log.e("test", checkData()+"" );
+
+        if (checkData()){
+            progressDialog.dismiss();
+            dbListener.OnLocalDBdataRetrive("unit_details");
+        }else {
+            progressDialog.dismiss();
+            dbListener.OnLocalDBdataRetrive("false");
+        }
+
+
+
+    }
+
+    private boolean checkData() {
+        Boolean can_login = true;
+        Cursor cursor = rawQuery("Select * from dataCheck","checkData");
+        cursor.moveToFirst();
+        if (cursor!=null && cursor.getCount()>0){
+            do {
+               String table_name = cursor.getString(1);
+
+              int items = getitemcount(table_name);
+
+              if (items<cursor.getInt(2)){
+                  Log.e("checks", "table_name="+table_name+" total_data_in_main_table="+items+" data_in_table="+cursor.getInt(2) );
+                  return false;
+              }
+
+            }while (cursor.moveToNext());
+        }
+        cursor.close();
+        return can_login;
+    }
+
+    private int getitemcount(String table_name) {
+        open();
+
+        Cursor c = rawQuery("select * from "+table_name,"checkData");
+        c.moveToFirst();
+        int size = c.getCount();
+        c.close();
+        return size;
     }
 
     public long InsertTablemap(HashMap<String, String> data, String TableName) {
@@ -2588,12 +2692,19 @@ public class Data_Source extends Parent {
 
     private void insertbonusPolicyOutletData(JSONObject jsonObject) {
         JSONArray Bonus_policy_outlet;
+
+
         try {
 
             if (jsonObject != null) {
 
                 Log.e("response_Bonus_Policy ", jsonObject.toString());
                 JSONObject jsonObj = new JSONObject(jsonObject.toString());
+
+                HashMap<String,String> datacheck = new HashMap<String, String>();
+                datacheck.put("table_name","Bonus_Eligible_Outlets");
+                datacheck.put("item_count",jsonObj.getJSONArray("outlet_group_list").length()+"");
+                InsertTable(datacheck,"dataCheck");
 
                 // Getting JSON Array node
                 Bonus_policy_outlet = jsonObj.getJSONArray("outlet_group_list");
@@ -4157,7 +4268,11 @@ public class Data_Source extends Parent {
 
 
                             JSONArray jsonArray = jsonObject.getJSONArray(Allfild[i][0]);
+                            ContentValues contentValues = new ContentValues();
 
+                            contentValues.put(Tables.DataCheck_table_name,Allfild[i][0]);
+                            contentValues.put(Tables.DataCheck_Item_count,jsonArray.length());
+                            sqLiteDatabase.insert(Tables.TABLE_NAME_DataCheck,null,contentValues);
                             for (int t = 0; t < jsonArray.length(); t++) {
 
                                 JSONObject jsonObjecttemp = jsonArray.getJSONObject(t);
@@ -4238,7 +4353,8 @@ public class Data_Source extends Parent {
                     sqLiteDatabase.execSQL("delete from DiscountBonusPolicyToExcludingOutletGroupSr");
 
                     insertbonusPolicyData(jsonObject);
-                } else if (code == 3) {
+                }
+                else if (code == 3) {
                     insertbonusPolicyOutletData(jsonObject);
                 } else if (code == 4) {
                     insertbonusUnitDetails(jsonObject);

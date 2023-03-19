@@ -229,6 +229,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
 
                                         Log.e("office_name",getPreference("office_name"));
                                         ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+                                        ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
                                         ds.getlastupdateddate();
 
                                     } else {
@@ -518,8 +519,17 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
 
                     }else if (RcCount==105){
                         progressDialog.dismiss();
-                        startActivity(new Intent(LoginActivity.this, Dashboard.class));
-                        finish();
+
+
+                        if (json.equalsIgnoreCase("false")){
+
+                            basicFunction.savePreference("sales_person_id","null");
+                            login_button.setEnabled(true);
+                            Toast.makeText(LoginActivity.this , "Data Can't Load Properly Please try again", Toast.LENGTH_LONG).show();
+                        }else {
+                            startActivity(new Intent(LoginActivity.this, Dashboard.class));
+                            finish();
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

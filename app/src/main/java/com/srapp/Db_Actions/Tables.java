@@ -2026,6 +2026,24 @@ public class Tables extends Parent {
             ")";
 
 
+
+    //.................................THANA...........................................
+    public static final String TABLE_NAME_DataCheck = "dataCheck";
+
+    public static final String DataCheck_P_id = "_id";
+
+    public static final String DataCheck_table_name = "table_name";
+    public static final String DataCheck_Item_count = "item_count";
+
+
+    public static final String CREATE_DataCheck_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME_DataCheck + "("
+            + DataCheck_P_id + " INTEGER PRIMARY KEY," +
+            DataCheck_table_name + " VARCHAR," +
+            DataCheck_Item_count + " INTEGER," +
+            THANA_UPDATED_AT + " DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME'))" +
+            ")";
+
+
     //.................................thana_territory...........................................
     public static final String TABLE_NAME_THANA_TERRITORY = "thana_territory";
 

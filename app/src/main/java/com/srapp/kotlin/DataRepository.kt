@@ -40,6 +40,10 @@ class DataRepository(val application: Application) {
                         pricePushStatus.postValue("Successful")
                         Log.e("all_json_data", response.body().toString())
 
+                        val datacheck = HashMap<String, String>()
+                        datacheck["table_name"]="product_combinations"
+                        datacheck["item_count"]=response.body()?.getProductCombination()?.size.toString()
+                        db.InsertTable(datacheck,"dataCheck")
                         for (i in 0 until response.body()?.getProductCombination()?.size!!) {
                             var product_id = response.body()?.getProductCombination()?.get(i)?.getProductId()
                             var combination_id = response.body()?.getProductCombination()?.get(i)?.getCombinationId()
@@ -60,6 +64,7 @@ class DataRepository(val application: Application) {
                             map2["slab_id"] = id!! // No need
                             map2["updated_at"] = updated_at!!
                             db.InsertTable(map2, "product_combinations")
+
 
                             for (j in 0 until response.body()?.getProductCombination()?.get(i)?.getOtherPricing()?.size!!) {
                                 if (!response.body()?.getProductCombination()?.get(i)?.getOtherPricing().isNullOrEmpty()) {
@@ -82,6 +87,7 @@ class DataRepository(val application: Application) {
 
                         }
                     } catch (e: Exception) {
+                        Log.e("Error", "Product price V2 data fail:" + e.message)
                     }
 
                 } else {
@@ -109,6 +115,10 @@ class DataRepository(val application: Application) {
                         pricePushStatus.postValue("Successfully")
                         Log.e("all_data_special_group", response.body().toString())
 
+                        val datacheck = HashMap<String, String>()
+                        datacheck["table_name"]="special_group"
+                        datacheck["item_count"]=response.body()?.getSpecialGroup()?.size.toString()
+                        db.InsertTable(datacheck,"dataCheck")
                         for (i in 0 until response.body()?.getSpecialGroup()?.size!!) {
                             var _id = response.body()?.getSpecialGroup()?.get(i)?.getId()
                             var name = response.body()?.getSpecialGroup()?.get(i)?.getName()
@@ -171,6 +181,11 @@ class DataRepository(val application: Application) {
                 if (response.isSuccessful) {
                     try {
                       //  Log.i("PCombinationListData", Gson().toJson(response))
+
+                        val datacheck = HashMap<String, String>()
+                        datacheck["table_name"]="product_combination_list"
+                        datacheck["item_count"]=response.body()?.getCombinations()?.size.toString()
+                        db.InsertTable(datacheck,"dataCheck")
 
                         for (i in 0 until response.body()?.getCombinations()?.size!!) {
                             var _id = response.body()?.getCombinations()?.get(i)?.getId()
