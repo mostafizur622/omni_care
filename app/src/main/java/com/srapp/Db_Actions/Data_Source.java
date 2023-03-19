@@ -2641,9 +2641,9 @@ public class Data_Source extends Parent {
                String table_name = cursor.getString(1);
 
               int items = getitemcount(table_name);
-
+                Log.e("checks", "table_name="+table_name+" total_data_in_main_table="+items+" data_in_table="+cursor.getInt(2) );
               if (items<cursor.getInt(2)){
-                  Log.e("checks", "table_name="+table_name+" total_data_in_main_table="+items+" data_in_table="+cursor.getInt(2) );
+
                   return false;
               }
 
