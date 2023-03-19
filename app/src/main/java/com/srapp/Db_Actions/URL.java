@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.srapp.LoginActivity;
@@ -23,7 +24,7 @@ public class URL {
 
   //  public static final String Domain = "http://182.160.103.236:8079/api_data_dist124Retrives/"; //after_marge dec 6 2021
     //public static final String Domain = "http://182.160.103.236:8079/api_data_dist133Retrives/"; //after_marge dec 6 2021
-   public static final String Domain = "http://202.126.123.157/smc_test/api_data_dist133_retrives/"; //after_marge dec 6 2021
+   public static final String Domain = "http://202.126.123.157/smc_test/api_data_dist135_retrives/"; //after_marge dec 6 2021
    //public static final String Domain = "http://52.148.73.105/api_data_dist123Retrives/"; //after_marge dec 6 2021
    //public static final String Domain = "http://202.126.123.157/smc_test_mk/api_data_dist122Retrives/"; //after_marge dec 6 2021nnnnnnnnn
 
@@ -86,6 +87,7 @@ public class URL {
     public static final String OUT_OF_PLAN_VISIT = Domain + "dist_create_out_of_plan_visit.json";
 
  public static ApiInterfaceForJava getJAPi() {
+  android.util.Log.e("getJAPi", "getJAPi: ");
   return JAPIClient.getClient().create(ApiInterfaceForJava.class);
  }
 

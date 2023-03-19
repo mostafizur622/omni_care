@@ -220,12 +220,12 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                                         basicFunction.savePreference("db_mobile",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("db_mobile"));
 
 
-                            /*basicFunction.savePreference("store_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("store_id"));
+                            basicFunction.savePreference("store_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("store_id"));
                             basicFunction.savePreference("ae_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("ae_id"));
                             basicFunction.savePreference("tso_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("tso_id"));
                             basicFunction.savePreference("db_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("db_id"));
                             basicFunction.savePreference("sr_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("sr_id"));
-                            basicFunction.savePreference("sr_code",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("sr_code"));*/
+                            basicFunction.savePreference("sr_code",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("sr_code"));
 
                                         Log.e("office_name",getPreference("office_name"));
                                         ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
