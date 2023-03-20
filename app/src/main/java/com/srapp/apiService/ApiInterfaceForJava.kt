@@ -46,7 +46,7 @@ interface ApiInterfaceForJava {
     fun CREATE_MEMO(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
-    @POST("dist_create_order    .json")
+    @POST("dist_create_order.json")
     fun ORDERPUSH(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
@@ -186,7 +186,7 @@ interface ApiInterfaceForJava {
     fun PRODUCT_WISE_BONUS_SUMMERY(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
-    @POST("dist_visit_plan_list.json")
+    @POST("dist_order_stock_info.json")
     fun Stock(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")

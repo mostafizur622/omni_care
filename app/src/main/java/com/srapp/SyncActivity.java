@@ -139,11 +139,8 @@
                                 try {
                                     JSONObject jsonObject = new JSONObject(response.body());
                                     dailog.dismiss();
-                                    try {
-                                        generatemarketJson();
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
+
+                                    generatemarketJson();
 
                                 } catch (JSONException e) {
                                     throw new RuntimeException(e);
@@ -186,6 +183,7 @@
     public void OnLocalDBdataRetrive(final String json) {
 
 
+        Log.e("OnLocalDBdataRetrive", "OnLocalDBdataRetrive: "+json );
         runOnUiThread(() -> {
             try {
 
@@ -239,19 +237,27 @@
                     getJAPi().ORDERPUSH(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
+
+                           // Log.e("log", "onResponse: ",response );
+
+                            dailog.dismiss();
+
                             try {
+                                JSONObject jsonObject = new JSONObject(response.body());
                                 int status = jsonObject.getJSONObject("order").getInt("status");
 
                                 if (status==1) {
 
                                     ds.updatePushStatus();
-                                    Flag = 1;
-                                    ds.getlastupdateddate();
+
                                 }
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+
+                            Flag = 1;
+                            ds.getlastupdateddate();
                         }
 
                         @Override
