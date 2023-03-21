@@ -120,7 +120,7 @@ public class SR_Attendance extends AppCompatActivity implements BasicFunctionLis
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-
+                    dailog.dismiss();
                 }
             });
 
@@ -167,7 +167,7 @@ public class SR_Attendance extends AppCompatActivity implements BasicFunctionLis
 
                             @Override
                             public void onFailure(Call<String> call, Throwable t) {
-
+                                dailog.dismiss();
                             }
                         });
                     } catch (JSONException e) {
@@ -207,7 +207,7 @@ public class SR_Attendance extends AppCompatActivity implements BasicFunctionLis
 
                             @Override
                             public void onFailure(Call<String> call, Throwable t) {
-
+                                dailog.dismiss();
                             }
                         });
 

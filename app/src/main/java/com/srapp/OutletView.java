@@ -194,7 +194,7 @@ public class OutletView extends AppCompatActivity implements BasicFunctionListen
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-
+                    dailog.dismiss();
                 }
             });
 

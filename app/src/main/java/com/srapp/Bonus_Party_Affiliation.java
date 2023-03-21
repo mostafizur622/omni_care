@@ -618,7 +618,7 @@ public class Bonus_Party_Affiliation extends AppCompatActivity implements BasicF
 
                         @Override
                         public void onFailure(Call<String> call, Throwable t) {
-
+                            dailog.dismiss();
                         }
                     });
                 }
@@ -690,7 +690,7 @@ public class Bonus_Party_Affiliation extends AppCompatActivity implements BasicF
                         outletList.put(Tables.OUTLETS_OUTLET_NAME, outletNameList);
                         outletList.put(Tables.OUTLETS_THANA_ID, outletThanaIdList);
                         outletList.put(Tables.OUTLETS_MARKET_ID, outletMarketIdList);
-                        setupDetails();
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -715,7 +715,7 @@ public class Bonus_Party_Affiliation extends AppCompatActivity implements BasicF
                 }*/
                         outletListAdapter = new BonusPartyAffAdapter(outletList,checkBoxStateList,checkBoxStateListint);
                         recyclerView.setAdapter(outletListAdapter);
-
+                        setupDetails();
                         Log.e("50 data setes", "OnServerResponce: Adapter seted...");
                     } else {
                         recyclerView.setAdapter(null);
@@ -728,7 +728,7 @@ public class Bonus_Party_Affiliation extends AppCompatActivity implements BasicF
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-
+                dailog.dismiss();
             }
         });
     }
@@ -883,7 +883,7 @@ public class Bonus_Party_Affiliation extends AppCompatActivity implements BasicF
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-
+                dailog.dismiss();
             }
         });
 

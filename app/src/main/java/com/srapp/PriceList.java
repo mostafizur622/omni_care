@@ -165,7 +165,7 @@ public class PriceList extends AppCompatActivity implements BasicFunctionListene
 
                     @Override
                     public void onFailure(Call<String> call, Throwable t) {
-
+                        dailog.dismiss();
                     }
                 });
                 //primaryData.put("page",initialPageIndex);
@@ -254,7 +254,7 @@ public class PriceList extends AppCompatActivity implements BasicFunctionListene
 
                                       @Override
                                       public void onFailure(Call<String> call, Throwable t) {
-
+                                          dailog.dismiss();
                                       }
                                   });
                               }

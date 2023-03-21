@@ -298,7 +298,7 @@ public class DeliveryReport extends AppCompatActivity implements BasicFunctionLi
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-
+                dailog.dismiss();
             }
         });
 
@@ -324,7 +324,7 @@ public class DeliveryReport extends AppCompatActivity implements BasicFunctionLi
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-
+                dailog.dismiss();
             }
         });
 

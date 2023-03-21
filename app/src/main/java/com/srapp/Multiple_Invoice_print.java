@@ -315,7 +315,7 @@ public class Multiple_Invoice_print extends AppCompatActivity implements BasicFu
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-
+                    dailog.dismiss();
                 }
             });
 

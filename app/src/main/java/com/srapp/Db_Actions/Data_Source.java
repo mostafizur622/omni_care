@@ -3471,7 +3471,7 @@ public class Data_Source extends Parent {
 
                 } while (c.moveToNext());
             }
-
+            if (progressDialog!=null)
             progressDialog.dismiss();
             dbListener.OnLocalDBdataRetrive(list);
 

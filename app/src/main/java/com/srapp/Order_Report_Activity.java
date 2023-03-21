@@ -349,7 +349,7 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-
+                    dailog.dismiss();
                 }
             });
         }else {

@@ -317,7 +317,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-
+                    dailog.dismiss();
                 }
             });
 

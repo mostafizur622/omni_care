@@ -112,7 +112,7 @@ public class Change_Password_Activity extends AppCompatActivity implements Basic
 
                                  @Override
                                  public void onFailure(Call<String> call, Throwable t) {
-
+                                     dailog.dismiss();
                                  }
                              });
 

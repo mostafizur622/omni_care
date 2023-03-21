@@ -201,7 +201,7 @@ public class AdapterForOrderReadyForPDF extends BaseAdapter implements BasicFunc
 
                                 @Override
                                 public void onFailure(Call<String> call, Throwable t) {
-
+                                    dailog.dismiss();
                                 }
                             });
 
@@ -304,7 +304,7 @@ public class AdapterForOrderReadyForPDF extends BaseAdapter implements BasicFunc
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-
+                    dailog.dismiss();
                 }
             });
         } catch (JSONException e) {

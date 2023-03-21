@@ -328,7 +328,7 @@ public class GiftIssueAdaper extends BaseAdapter implements BasicFunctionListene
 
 								@Override
 								public void onFailure(Call<String> call, Throwable t) {
-
+									dailog.dismiss();
 								}
 							});
 

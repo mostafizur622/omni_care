@@ -329,7 +329,7 @@ public class GiftIssueList extends AppCompatActivity implements BasicFunctionLis
 
                     @Override
                     public void onFailure(Call<String> call, Throwable t) {
-
+                        dailog.dismiss();
                     }
                 });
                 apicall=false;

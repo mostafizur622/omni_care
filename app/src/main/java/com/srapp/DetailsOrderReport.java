@@ -408,7 +408,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
                                     @Override
                                     public void onFailure(Call<String> call, Throwable t) {
-
+                                        dailog.dismiss();
                                     }
                                 });
                             } else {
@@ -1159,7 +1159,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
                         @Override
                         public void onFailure(Call<String> call, Throwable t) {
-
+                            dailog.dismiss();
                         }
                     });
                 } catch (JSONException e) {

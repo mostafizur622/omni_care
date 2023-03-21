@@ -320,7 +320,7 @@ public class CreateNewMarket extends AppCompatActivity implements BasicFunctionL
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-
+                    dailog.dismiss();
                 }
             });
 

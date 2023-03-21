@@ -367,7 +367,7 @@ public class Visit_Plan_Activity extends AppCompatActivity implements BasicFunct
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-
+                dailog.dismiss();
             }
         });
 
@@ -467,7 +467,7 @@ public class Visit_Plan_Activity extends AppCompatActivity implements BasicFunct
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-
+                dailog.dismiss();
             }
         });
     }
@@ -552,7 +552,7 @@ public class Visit_Plan_Activity extends AppCompatActivity implements BasicFunct
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-
+                dailog.dismiss();
             }
         });
 

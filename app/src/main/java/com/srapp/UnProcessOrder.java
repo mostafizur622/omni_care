@@ -335,7 +335,7 @@ public class UnProcessOrder extends AppCompatActivity implements BasicFunctionLi
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-
+                dailog.dismiss();
             }
         });
 

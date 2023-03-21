@@ -330,7 +330,7 @@ public class Outlet_wise_sales_report extends Parent implements BasicFunctionLis
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-
+                    dailog.dismiss();
                 }
             });
 

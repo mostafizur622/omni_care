@@ -214,7 +214,7 @@ public class AdapterForOrderProcessShow extends BaseAdapter implements BasicFunc
 
                                 @Override
                                 public void onFailure(Call<String> call, Throwable t) {
-
+                                    dailog.dismiss();
                                 }
                             });
 
@@ -268,7 +268,7 @@ public class AdapterForOrderProcessShow extends BaseAdapter implements BasicFunc
 
                                 @Override
                                 public void onFailure(Call<String> call, Throwable t) {
-
+                                    dailog.dismiss();
                                 }
                             });
 
@@ -380,7 +380,7 @@ public class AdapterForOrderProcessShow extends BaseAdapter implements BasicFunc
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-
+                    dailog.dismiss();
                 }
             });
 

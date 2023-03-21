@@ -315,7 +315,7 @@ public class AdapterForMultiOrderPrint extends BaseAdapter implements BasicFunct
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-
+                    dailog.dismiss();
                 }
             });
         } catch (JSONException e) {

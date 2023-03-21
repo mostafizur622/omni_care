@@ -271,7 +271,7 @@ public class ReportBonusPartyReport extends ParentActivity implements View.OnCli
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-
+                    dailog.dismiss();
                 }
             });
 

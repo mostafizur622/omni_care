@@ -315,7 +315,7 @@ public class ProductWiseDeliveryReport extends Parent implements BasicFunctionLi
 
                     @Override
                     public void onFailure(Call<String> call, Throwable t) {
-
+                        dailog.dismiss();
                     }
                 });
             } else {

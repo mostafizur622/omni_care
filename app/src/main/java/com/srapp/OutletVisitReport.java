@@ -208,7 +208,7 @@ public class OutletVisitReport extends AppCompatActivity implements BasicFunctio
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-
+                    dailog.dismiss();
                 }
             });
 

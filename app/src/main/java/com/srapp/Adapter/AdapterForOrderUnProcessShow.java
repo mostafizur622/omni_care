@@ -184,7 +184,7 @@ public class AdapterForOrderUnProcessShow extends BaseAdapter implements BasicFu
 
                                 @Override
                                 public void onFailure(Call<String> call, Throwable t) {
-
+                                    dailog.dismiss();
                                 }
                             });
 
@@ -287,7 +287,7 @@ public class AdapterForOrderUnProcessShow extends BaseAdapter implements BasicFu
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-
+                    dailog.dismiss();
                 }
             });
         } catch (JSONException e) {

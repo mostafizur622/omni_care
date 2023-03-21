@@ -149,7 +149,7 @@
 
                             @Override
                             public void onFailure(Call<String> call, Throwable t) {
-
+                                dailog.dismiss();
                             }
                         });
 
@@ -226,7 +226,7 @@
 
                         @Override
                         public void onFailure(Call<String> call, Throwable t) {
-
+                            dailog.dismiss();
                         }
                     });
                 } else if (Flag == 2) {
@@ -413,7 +413,7 @@
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-
+                dailog.dismiss();
             }
         });
 
@@ -472,7 +472,7 @@
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-
+                dailog.dismiss();
             }
         });
 

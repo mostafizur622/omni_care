@@ -391,7 +391,7 @@ public class SrStoreStatus extends ParentActivity implements BasicFunctionListen
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-
+                dailog.dismiss();
             }
         });
     }

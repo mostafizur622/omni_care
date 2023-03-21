@@ -243,7 +243,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
 
                             @Override
                             public void onFailure(Call<String> call, Throwable t) {
-
+                                dailog.dismiss();
                             }
                         });
 
@@ -369,7 +369,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
 
                             @Override
                             public void onFailure(Call<String> call, Throwable t) {
-
+                                dailog.dismiss();
                             }
                         });
                     }
@@ -436,7 +436,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
 
                             @Override
                             public void onFailure(Call<String> call, Throwable t) {
-
+                                dailog.dismiss();
                             }
                         });
 
@@ -475,7 +475,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
 
                             @Override
                             public void onFailure(Call<String> call, Throwable t) {
-
+                                dailog.dismiss();
                             }
                         });
 
@@ -512,7 +512,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
 
                             @Override
                             public void onFailure(Call<String> call, Throwable t) {
-
+                                dailog.dismiss();
                             }
                         });
 

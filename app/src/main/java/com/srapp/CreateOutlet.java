@@ -463,7 +463,7 @@ public class CreateOutlet extends AppCompatActivity implements BasicFunctionList
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-
+                    dailog.dismiss();
                 }
             });
 

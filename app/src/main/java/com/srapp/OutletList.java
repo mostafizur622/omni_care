@@ -590,7 +590,7 @@ public class OutletList extends AppCompatActivity implements BasicFunctionListen
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-
+                dailog.dismiss();
             }
         });
     }
@@ -782,7 +782,7 @@ public class OutletList extends AppCompatActivity implements BasicFunctionListen
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-
+                dailog.dismiss();
             }
         });
     }

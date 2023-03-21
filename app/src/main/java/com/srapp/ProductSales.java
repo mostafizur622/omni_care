@@ -654,7 +654,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
 
                             @Override
                             public void onFailure(Call<String> call, Throwable t) {
-
+                                dailog.dismiss();
                             }
                         });
                     } catch (JSONException e) {
@@ -686,7 +686,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
 
                             @Override
                             public void onFailure(Call<String> call, Throwable t) {
-
+                                dailog.dismiss();
                             }
                         });
                     } catch (JSONException e) {

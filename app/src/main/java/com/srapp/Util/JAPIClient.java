@@ -16,6 +16,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
 import okio.Buffer;
 
 import okhttp3.Interceptor;
@@ -41,7 +43,12 @@ public class JAPIClient {
 
             HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
             interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).addInterceptor(new Interceptor() {
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .addInterceptor(interceptor)
+                    .connectTimeout(30, TimeUnit.MINUTES)
+                    .readTimeout(30, TimeUnit.MINUTES)
+                    .writeTimeout(30, TimeUnit.MINUTES)
+                    .addInterceptor(new Interceptor() {
                 @NonNull
                 @Override
                 public Response intercept(@NonNull Chain chain) throws IOException {

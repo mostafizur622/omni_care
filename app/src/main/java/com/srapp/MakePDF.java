@@ -219,7 +219,7 @@ public class MakePDF extends AppCompatActivity implements  BasicFunctionListener
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-
+                dailog.dismiss();
             }
         });
     }

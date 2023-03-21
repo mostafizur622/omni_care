@@ -209,7 +209,7 @@ public class Product_Wise_Bonus_Summery extends AppCompatActivity implements Bas
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-
+                    dailog.dismiss();
                 }
             });
         } else {

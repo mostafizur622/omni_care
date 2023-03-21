@@ -102,7 +102,7 @@ public class SrProductTarget extends AppCompatActivity implements BasicFunctionL
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-
+                dailog.dismiss();
             }
         });
         //..............api call end..................//

@@ -258,7 +258,7 @@ public class Attendance_history extends AppCompatActivity implements BasicFuncti
 
                     @Override
                     public void onFailure(Call<String> call, Throwable t) {
-
+                        dailog.dismiss();
                     }
                 });
 

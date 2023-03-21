@@ -185,7 +185,7 @@ public class Outof_Plan_Visit extends AppCompatActivity implements BasicFunction
 
                         @Override
                         public void onFailure(Call<String> call, Throwable t) {
-
+                            dailog.dismiss();
                         }
                     });
                 } catch (JSONException e) {

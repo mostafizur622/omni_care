@@ -168,7 +168,7 @@ public class GiftIssueActivity extends ParentActivity implements View.OnClickLis
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
-
+                    dailog.dismiss();
                 }
             });
 
