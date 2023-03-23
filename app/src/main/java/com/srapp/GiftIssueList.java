@@ -102,8 +102,10 @@ public class GiftIssueList extends AppCompatActivity implements BasicFunctionLis
         newgift.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent( GiftIssueList.this, GiftIssueActivity.class));
+                Intent i = new Intent( GiftIssueList.this, GiftIssueActivity.class);
+                startActivity(i);
                 finish();
+
             }
         });
 

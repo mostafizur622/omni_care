@@ -100,7 +100,9 @@ public class GiftIssueActivity extends ParentActivity implements View.OnClickLis
         db=new Data_Source(this);
         basicFunction = new BasicFunction(this,this);
           remarks = findViewById(R.id.remarks);
-        if (getIntent()!=null){
+          Log.e("is_null",(getIntent()!=null)+"");
+        state = getIntent().getIntExtra("state",5);
+        if (state!=5){
             giftIssue_id = getIntent().getStringExtra("gift_id");
             gift_date = getIntent().getStringExtra("gift_date");
             state = getIntent().getIntExtra("state",5);
@@ -162,7 +164,7 @@ public class GiftIssueActivity extends ParentActivity implements View.OnClickLis
                         listView.setAdapter(Adapter);
 
                     } catch (JSONException e) {
-                        throw new RuntimeException(e);
+                       Log.e("exception",e.getLocalizedMessage());
                     }
                 }
 
