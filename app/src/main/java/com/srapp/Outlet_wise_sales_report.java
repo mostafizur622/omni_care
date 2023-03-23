@@ -135,7 +135,8 @@ public class Outlet_wise_sales_report extends Parent implements BasicFunctionLis
                 bf.savePreference("prouteId", routeID);
                 MarketParse(routeID);
 
-
+                bf.savePreference("start_date", dateFormatter.format(Calendar.getInstance().getTime()));
+                bf.savePreference("end_date", dateFormatter.format(Calendar.getInstance().getTime()));
                 Log.e("****************", "&&&&&&&&&&&&&&&&&&&&&&" + routeID + "     " + name);
                 if (!routeList.equals("00")) {
 

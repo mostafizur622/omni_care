@@ -101,11 +101,12 @@ public class GiftIssueActivity extends ParentActivity implements View.OnClickLis
         basicFunction = new BasicFunction(this,this);
           remarks = findViewById(R.id.remarks);
           Log.e("is_null",(getIntent()!=null)+"");
-        state = getIntent().getIntExtra("state",5);
-        if (state!=5){
+
+        if (getIntent()!=null){
             giftIssue_id = getIntent().getStringExtra("gift_id");
             gift_date = getIntent().getStringExtra("gift_date");
             state = getIntent().getIntExtra("state",5);
+           // state = getIntent().getIntExtra("state",5);
             Log.e("state",state+"");
             SaveButton = findViewById(R.id.SaveButton);
             if (state==1) {
@@ -149,23 +150,25 @@ public class GiftIssueActivity extends ParentActivity implements View.OnClickLis
                             remarks.setText(jsonObject.getJSONObject("details").getJSONObject("gift_issue").getString("remarks"));
 
 
-                        if (state==0) {
-                            for (int i = 0; i < itemListContent.size(); i++) {
-                                if (itemListContent.get(i).get("quantity").equalsIgnoreCase("")) {
-                                    itemListContent.remove(i);
-                                }
-                            }
-                        }
 
-
-
-                        Adapter = new GiftIssueAdaper(GiftIssueActivity.this, getPreference("SO"), getPreference("FiscalYearID"),state);
-                        ListView listView = (ListView) findViewById(R.id.list);
-                        listView.setAdapter(Adapter);
 
                     } catch (JSONException e) {
                        Log.e("exception",e.getLocalizedMessage());
                     }
+
+                    if (state==0) {
+                        for (int i = 0; i < itemListContent.size(); i++) {
+                            if (itemListContent.get(i).get("quantity").equalsIgnoreCase("")) {
+                                itemListContent.remove(i);
+                            }
+                        }
+                    }
+
+
+
+                    Adapter = new GiftIssueAdaper(GiftIssueActivity.this, getPreference("SO"), getPreference("FiscalYearID"),state);
+                    ListView listView = (ListView) findViewById(R.id.list);
+                    listView.setAdapter(Adapter);
                 }
 
                 @Override
