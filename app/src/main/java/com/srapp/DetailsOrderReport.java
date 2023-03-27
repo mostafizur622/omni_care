@@ -1116,7 +1116,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
                                 try {
 
-                                    if (jsonObject.has("NAME"))
+                                   /* if (jsonObject.has("NAME"))
                                         if (jsonObject.getString("NAME").equalsIgnoreCase("TANVIR")) {
                                             db.excQuery("delete from memos where memo_number='" + memoNo + "'");
                                             db.excQuery("delete from memos where memo_number='" + memoNo + "'");
@@ -1126,7 +1126,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                                             MEMO_EDIT = true;
                                             Back = 1;
                                             return;
-                                        }
+                                        }*/
 
                                     if (jsonObject.getJSONObject("memo").getString("status").equalsIgnoreCase("1")) {
                                         db.excQuery("update ORDER_table set is_complete='1' , status = '2' WHERE order_number = '" + TempData.orderNumber + "'");

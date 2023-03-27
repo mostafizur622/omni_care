@@ -68,7 +68,6 @@ public class Outlet_wise_sales_report extends Parent implements BasicFunctionLis
     String _OutletID = "0";
     ListView order_list;
     ArrayList<HashMap<String, String>> arrayList;
-
     ImageView homeBtn, backBtn;
     TextView userIdTV, titleTV;
 
