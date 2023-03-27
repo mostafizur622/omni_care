@@ -165,6 +165,8 @@ public class OrderProcess extends Parent implements BasicFunctionListener {
         getJAPi().ORDERS_FOR_PROCESS(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
+
+                int countorder=0;
                 try {
                     JSONObject jsonObject = new JSONObject(response.body());
                     dailog.dismiss();
@@ -186,7 +188,10 @@ public class OrderProcess extends Parent implements BasicFunctionListener {
                             map.put("status","2");
 
                             arrayList.add(map);
-                            ds.updatepushStatus(jsonArray.getJSONObject(j).getString("order_number"),"1");
+                            if (ds.getOrderPushStatus(jsonArray.getJSONObject(j).getString("order_number"))==0) {
+                                countorder++;
+                                ds.updatepushStatus(jsonArray.getJSONObject(j).getString("order_number"), "1");
+                            }
                         }
 
                         adapter = new AdapterForOrderProcessShow(OrderProcess.this,arrayList);
@@ -196,6 +201,10 @@ public class OrderProcess extends Parent implements BasicFunctionListener {
 
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
+                }
+
+                if (countorder>0){
+                    Toast.makeText(OrderProcess.this, countorder+"Order Synced Successfully", Toast.LENGTH_LONG).show();
                 }
             }
 

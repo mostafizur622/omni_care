@@ -3309,6 +3309,20 @@ public class Data_Source extends Parent {
         return policyWiseSlabsArrayList;
     }
 
+    public int getOrderPushStatus(String order_number) {
+
+        String query2 = "select is_pushed from order_table where order_number='"+order_number+"'";
+
+        Cursor cursor = sqLiteDatabase.rawQuery(query2, null);
+        cursor.moveToFirst();
+
+        if (cursor!=null && cursor.getCount()>0){
+           return cursor.getInt(0);
+        }
+        else return 1;
+    }
+
+
     private class updateorderWithServer extends AsyncTask<String, String, String> {
         JSONObject jsonObject = new JSONObject();
         int i;
