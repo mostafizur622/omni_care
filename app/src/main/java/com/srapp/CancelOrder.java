@@ -145,7 +145,8 @@ public class CancelOrder extends Parent implements BasicFunctionListener {
             }
 
         }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
-
+        fromDatePickerDialog.getDatePicker().setMinDate(newCalendar.getTimeInMillis()-5184000000l);
+        fromDatePickerDialog.getDatePicker().setMaxDate(newCalendar.getTimeInMillis());
     }
 
     private void getdata( JSONObject jsonObject) {

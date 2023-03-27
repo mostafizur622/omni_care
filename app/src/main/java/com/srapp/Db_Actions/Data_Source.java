@@ -2047,6 +2047,12 @@ public class Data_Source extends Parent {
         close();
     }
 
+    public void updatepushStatus(String dist_order_no, String IS_PUSH) {
+        open();
+        sqLiteDatabase.execSQL("update " + TABLE_NAME_ORDER + " set " + ORDER_is_pushed + " = '" + IS_PUSH + "' where " + ORDER_order_number + " ='" + dist_order_no + "'");
+        close();
+    }
+
     public long updateMarket(HashMap<String, String> updatedMarket, String marketId) {
         this.open();
         String[] id = {marketId};

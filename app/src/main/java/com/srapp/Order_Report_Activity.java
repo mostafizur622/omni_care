@@ -252,12 +252,12 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
         enddate.setOnClickListener(this);
 
         Calendar newCalendar = Calendar.getInstance();
+
         fromDatePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
 
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 Calendar newDate = Calendar.getInstance();
                 newDate.set(year, monthOfYear, dayOfMonth);
-
                 bf.savePreference("start_Date", dateFormatter.format(newDate.getTime()));
                 startdate.setText(bf.getPreference("start_Date"));
                 if (onstart)
@@ -266,6 +266,10 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
             }
 
         }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+
+        fromDatePickerDialog.getDatePicker().setMinDate(newCalendar.getTimeInMillis()-5184000000l);
+        fromDatePickerDialog.getDatePicker().setMaxDate(newCalendar.getTimeInMillis());
+
 
 
         toDatePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
@@ -283,6 +287,9 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
             }
 
         }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+
+        toDatePickerDialog.getDatePicker().setMinDate(newCalendar.getTimeInMillis()-5184000000l);
+        toDatePickerDialog.getDatePicker().setMaxDate(newCalendar.getTimeInMillis());
 
 
 	       /* Intent idn = new Intent(SO_TargetActivity.this, SO_TargetActivity.class);

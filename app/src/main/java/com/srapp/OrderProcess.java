@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.srapp.Adapter.AdapterForOrderProcessShow;
+import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Util.Parent;
 import com.tanvir.BasicFun.BasicFunction;
@@ -53,6 +54,7 @@ public class OrderProcess extends Parent implements BasicFunctionListener {
     BasicFunction bf;
     ImageView homeBtn,backBtn;
     TextView userIdTV,titleTV;
+    Data_Source ds;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +62,7 @@ public class OrderProcess extends Parent implements BasicFunctionListener {
 
         homeBtn = findViewById(R.id.home);
         backBtn = findViewById(R.id.back);
-
+        ds=new Data_Source(this);
         userIdTV = findViewById(R.id.user_txt_view);
         titleTV = findViewById(R.id.title_tv);
 
@@ -149,6 +151,9 @@ public class OrderProcess extends Parent implements BasicFunctionListener {
 
         }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
 
+        fromDatePickerDialog.getDatePicker().setMinDate(newCalendar.getTimeInMillis()-5184000000l);
+        fromDatePickerDialog.getDatePicker().setMaxDate(newCalendar.getTimeInMillis());
+
     }
 
     private void getdata(JSONObject jsonObject) {
@@ -181,6 +186,7 @@ public class OrderProcess extends Parent implements BasicFunctionListener {
                             map.put("status","2");
 
                             arrayList.add(map);
+                            ds.updatepushStatus(jsonArray.getJSONObject(j).getString("order_number"),"1");
                         }
 
                         adapter = new AdapterForOrderProcessShow(OrderProcess.this,arrayList);

@@ -302,6 +302,11 @@ class BonusCampaignActivity : AppCompatActivity() , BasicFunctionListener{
             newCalendar[Calendar.DAY_OF_MONTH]
         )
 
+        fromDatePickerDialog!!.datePicker.minDate=newCalendar.timeInMillis-5184000000
+        fromDatePickerDialog!!.datePicker.maxDate=newCalendar.timeInMillis
+
+
+
         toDatePickerDialog = DatePickerDialog(
             this, { view, year, monthOfYear, dayOfMonth ->
                 val newDate = Calendar.getInstance()
@@ -314,6 +319,9 @@ class BonusCampaignActivity : AppCompatActivity() , BasicFunctionListener{
             }, newCalendar[Calendar.YEAR], newCalendar[Calendar.MONTH],
             newCalendar[Calendar.DAY_OF_MONTH]
         )
+
+        toDatePickerDialog!!.datePicker.minDate=newCalendar.timeInMillis-5184000000
+        toDatePickerDialog!!.datePicker.maxDate=newCalendar.timeInMillis
     }
 
     override fun OnServerResponce(jsonObject: JSONObject?, RequestCode: Int) {
