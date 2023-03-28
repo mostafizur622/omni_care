@@ -1147,6 +1147,8 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
+                                    db.excQuery("delete from memos  WHERE memo_number = '" + memoNo + "'");
+                                    db.excQuery("delete from memo_details  WHERE memo_number = '" + memoNo + "'");
                                 }
 
 
@@ -1159,6 +1161,9 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
                         @Override
                         public void onFailure(Call<String> call, Throwable t) {
+
+                            db.excQuery("delete from memos  WHERE memo_number = '" + memoNo + "'");
+                            db.excQuery("delete from memo_details  WHERE memo_number = '" + memoNo + "'");
                             dailog.dismiss();
                         }
                     });

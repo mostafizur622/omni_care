@@ -45,9 +45,9 @@ public class JAPIClient {
             interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
             OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(interceptor)
-                    .connectTimeout(30, TimeUnit.MINUTES)
-                    .readTimeout(30, TimeUnit.MINUTES)
-                    .writeTimeout(30, TimeUnit.MINUTES)
+                    .connectTimeout(5, TimeUnit.MINUTES)
+                    .readTimeout(5, TimeUnit.MINUTES)
+                    .writeTimeout(5, TimeUnit.MINUTES)
                     .addInterceptor(new Interceptor() {
                 @NonNull
                 @Override

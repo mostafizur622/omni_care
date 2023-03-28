@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.srapp.Db_Actions.DB_Helper
+import com.srapp.Db_Actions.Data_Source
 import com.srapp.TempData
 import com.srapp.apiService.ApiClient
 import com.srapp.apiService.ApiInterface
@@ -19,7 +20,7 @@ import kotlin.collections.set
 
 class DataRepository(val application: Application) {
 
-    val db = DB_Helper(application)
+    val db = Data_Source(application)
 
     val pricePushStatus = MutableLiveData<String>()
 

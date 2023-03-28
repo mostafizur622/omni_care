@@ -48,8 +48,10 @@
  import org.json.JSONObject;
 
  import java.util.ArrayList;
+ import java.util.Calendar;
  import java.util.HashMap;
  import java.util.Iterator;
+ import java.util.concurrent.TimeUnit;
 
  import retrofit2.Call;
  import retrofit2.Callback;
@@ -117,10 +119,10 @@
         sync_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if(checkTime())
                 if (isInternetOn()){
                     try {
-
+                        bf.savePreference("lastSyncTime",(System.currentTimeMillis()+(5*60*1000))+"");
                      //   String url = URL.UpdatePushTime;
 
                         JSONObject obJson = new JSONObject();
@@ -179,7 +181,29 @@
         });
     }
 
-    @Override
+     private boolean checkTime() {
+
+         if (bf.getPreference("lastSyncTime").equalsIgnoreCase("null")){
+             return true;
+         }
+
+         long lastSyncTime = Long.parseLong(bf.getPreference("lastSyncTime"));
+         long timeRem = lastSyncTime-System.currentTimeMillis();
+         Log.e("exception",timeRem+"");
+         if (timeRem<1){
+             return true;
+         }
+
+         if (timeRem<(60*1000)){
+             Toast.makeText(this, "Please Wait less than a Minute TO Sync Again", Toast.LENGTH_SHORT).show();
+         }else {
+             Toast.makeText(this, "Please Wait "+ TimeUnit.MILLISECONDS.toMinutes(timeRem)+" Minute TO Sync Again", Toast.LENGTH_SHORT).show();
+         }
+
+         return false;
+     }
+
+     @Override
     public void OnLocalDBdataRetrive(final String json) {
 
 
@@ -262,7 +286,8 @@
 
                         @Override
                         public void onFailure(Call<String> call, Throwable t) {
-
+                            dailog.dismiss();
+                            Toast.makeText(SyncActivity.this,   "Order Not push try Again or Check Order Process from More", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
