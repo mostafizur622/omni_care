@@ -265,19 +265,25 @@
                            // Log.e("log", "onResponse: ",response );
 
                             dailog.dismiss();
+                            if (response.code()==200) {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(response.body());
+                                    int status = jsonObject.getJSONObject("order").getInt("status");
 
-                            try {
-                                JSONObject jsonObject = new JSONObject(response.body());
-                                int status = jsonObject.getJSONObject("order").getInt("status");
+                                    if (status == 1) {
 
-                                if (status==1) {
+                                        ds.updatePushStatus();
 
-                                    ds.updatePushStatus();
+                                    }
 
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
 
-                            } catch (JSONException e) {
-                                e.printStackTrace();
+
+                            }else {
+
+                                Toast.makeText(SyncActivity.this,   "Order Not push try Again or Check Order Process from More", Toast.LENGTH_SHORT).show();
                             }
 
                             Flag = 1;

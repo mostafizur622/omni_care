@@ -111,7 +111,7 @@ public class AdapterForMemoReport extends BaseAdapter {
 		final String memoNo = mapContent.get(MEMOS_memo_number);
 		Log.e("---------orderNo--------",memoNo);
 		
-		TextView txtTotalAmount=(TextView)((Activity) context).findViewById(R.id.TotalAmount);
+		/*TextView txtTotalAmount=(TextView)((Activity) context).findViewById(R.id.TotalAmount);
 		TextView TotalEC=(TextView)((Activity) context).findViewById(R.id.TotalEC);
 		txtTotalAmount.setText("0.0");
 		Double sum=0.0;
@@ -125,7 +125,7 @@ public class AdapterForMemoReport extends BaseAdapter {
 //		sum=(Double) roundTwoDecimals(sum);
 //		txtTotalAmount.setText(String.valueOf(sum));
 		txtTotalAmount.setText(String.format("%.2f", sum));
-		TotalEC.setText(String.valueOf(countEC));
+		TotalEC.setText(String.valueOf(countEC));*/
 		
 		
 		

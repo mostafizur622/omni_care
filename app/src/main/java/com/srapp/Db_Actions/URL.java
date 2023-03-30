@@ -23,7 +23,7 @@ public class URL {
   //public static final String Domain = "http://192.168.10.82:90/smc-e-sales/api_data_dist124Retrives/"; //2 may 2021
 
   //  public static final String Domain = "http://182.160.103.236:8079/api_data_dist124Retrives/"; //after_marge dec 6 2021
-    public static final String Domain = "http://182.160.103.234:8079/api_data_dist135Retrives/"; //after_marge dec 6 2021
+    public static final String Domain = "http://182.160.103.236:8079/api_data_dist135Retrives/"; //after_marge dec 6 2021
    //public static final String Domain = "http://202.126.123.157/smc_test/api_data_dist135_retrives/"; //after_marge dec 6 2021
    //public static final String Domain = "http://52.148.73.105/api_data_dist123Retrives/"; //after_marge dec 6 2021
    //public static final String Domain = "http://202.126.123.157/smc_test_mk/api_data_dist122Retrives/"; //after_marge dec 6 2021nnnnnnnnn

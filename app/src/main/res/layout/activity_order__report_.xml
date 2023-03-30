@@ -258,6 +258,18 @@
 
                     </LinearLayout>
 
+                    <Button
+                        android:id="@+id/search"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:text="Search"
+                        android:background="@drawable/red_round_button"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="18dp"></Button>
+
                 </LinearLayout>
 
 

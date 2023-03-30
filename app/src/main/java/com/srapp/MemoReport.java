@@ -11,7 +11,8 @@ import android.content.Intent;
         import android.util.Log;
         import android.view.KeyEvent;
         import android.view.View;
-        import android.widget.AdapterView;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
         import android.widget.ArrayAdapter;
         import android.widget.Button;
         import android.widget.DatePicker;
@@ -21,7 +22,8 @@ import android.content.Intent;
         import android.widget.TextView;
         import android.widget.Toast;
 
-        import com.srapp.Adapter.AdapterForMemoReport;
+import com.google.gson.JsonArray;
+import com.srapp.Adapter.AdapterForMemoReport;
         import com.srapp.Adapter.AdapterForSalesReport;
         import com.srapp.Adapter.SpinnerAdapter;
         import com.srapp.Db_Actions.Data_Source;
@@ -41,7 +43,8 @@ import android.content.Intent;
 
         import androidx.appcompat.app.AppCompatActivity;
 
-        import org.json.JSONException;
+import org.json.JSONArray;
+import org.json.JSONException;
         import org.json.JSONObject;
 
         import static com.srapp.Db_Actions.Tables.OUTLETS;
@@ -61,7 +64,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
     private DatePickerDialog toDatePickerDialog;
     private SimpleDateFormat dateFormatter;
     String[] SPINNERLIST = {"Rahim Store", "Jamal Electronics", "Jakir Pharmacy"};
-    Button startdate, enddate;
+    Button startdate, enddate,search;
     HashMap<String, ArrayList<String>> outlate = new HashMap<>();
     HashMap<String, ArrayList<String>> outlet_catagary = new HashMap<>();
     ListView listview;
@@ -73,6 +76,12 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
     ImageView homeBtn,backBtn;
     TextView userIdTV,titleTV  ;
     boolean onstart=false;
+    TextView txtTotalAmount;
+    TextView TotalEC;
+    Boolean isLoading = false;
+    int pageIndex=0;
+    private final int THREAT_SHOT = 7;
+    AdapterForMemoReport adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +89,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
         setContentView(R.layout.activity_memo_report);
         homeBtn = findViewById(R.id.home);
         backBtn = findViewById(R.id.back);
+        search = findViewById(R.id.search);
         homeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,19 +105,22 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
                 finish();
             }
         });
+        listview = findViewById(R.id.Order_Report_recycleView);
         userIdTV = findViewById(R.id.user_txt_view);
         titleTV = findViewById(R.id.title_tv);
-
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String value = prefs.getString(Tables.SR_ID, "0");
         userIdTV.setText(value);
-
+        txtTotalAmount=findViewById(R.id.TotalAmount);
+        TotalEC=findViewById(R.id.TotalEC);
         bf = new BasicFunction(this, this);
-        listview = findViewById(R.id.Order_Report_recycleView);
+
         startdate = findViewById(R.id.startdate);
         enddate = findViewById(R.id.enddate);
         list = new ArrayList<>();
         db = new Data_Source(this);
+        adapter =  new AdapterForMemoReport(MemoReport.this, list);
+        listview.setAdapter(adapter);
         outlate = db.getAccessories(false, "00", OUTLETS, "no");
         dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         outlate.get(OUTLETS[3]).add(0, "All");
@@ -170,10 +183,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MemoReport.this, R.layout.spinner_item, outlate.get(OUTLETS[3]));
                 outlatesp.setAdapter(arrayAdapter);
                 bf.savePreference("outlet_category_id_mreport",outlet_catagary.get(OUTLETS_CATAGORY_ID).get(position));
-                if (onstart) {
-                    DataView();
-                    onstart=false;
-                }
+
             }
 
             @Override
@@ -193,9 +203,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
                     textView.setPadding(0, 0, 0, 0);
                 }
                 bf.savePreference("outlate_id", outlate.get(OUTLETS[2]).get(position));
-                if (onstart) {
-                    DataView();
-                }
+
             }
 
             @Override
@@ -204,10 +212,16 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
             }
         });
 
-        listview = findViewById(R.id.Order_Report_recycleView);
+     search.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+
+             DataView();
+         }
+     });
 
 
-        DataView();
+        
     }
 
 
@@ -234,7 +248,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
 
                 bf.savePreference("start_Date", dateFormatter.format(newDate.getTime()));
                 startdate.setText(bf.getPreference("start_Date"));
-                DataView();
+                
 
             }
 
@@ -249,7 +263,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
 
             bf.savePreference("end_date", dateFormatter.format(newDate.getTime()));
             enddate.setText(bf.getPreference("end_date"));
-            DataView();
+            
 
         }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
         toDatePickerDialog.getDatePicker().setMinDate(newCalendar.getTimeInMillis()-5184000000l);
@@ -266,12 +280,42 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
     protected void onResume() {
         super.onResume();
         if (onResunme)
-            DataView();
+            
         onResunme=true;
 
     }
 
+
+    private boolean checkDuration() {
+        Date sd = convertTodate(bf.getPreference("start_Date"));
+        Date ed = convertTodate(bf.getPreference("end_date"));
+        long diffrence = TimeUnit.MILLISECONDS.toDays(ed.getTime()-sd.getTime());
+
+        if (diffrence>7){
+            return true;
+        }
+
+
+        return false;
+
+    }
+
+    private Date convertTodate(String start_date) {
+
+        try {
+            return dateFormatter.parse(start_date);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
     private void DataView() {
+
+        if (checkDuration()){
+            Toast.makeText(this,"Cannot select date more than 7 days Interval",Toast.LENGTH_LONG).show();
+            return;
+        }
 
         Log.e("DataView", "DataView");
 
@@ -297,25 +341,38 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
             getJAPi().GET_LAST_MEMO(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
+
+                    int countorder = 0;
                     try {
                         JSONObject jsonObject = new JSONObject(response.body());
                         dailog.dismiss();
                         onstart=true;
-                        TextView txtTotalAmount = findViewById(R.id.TotalAmount);
-                        TextView TotalEC= findViewById(R.id.TotalEC);
-                        txtTotalAmount.setText("0.0");
-                        TotalEC.setText("0.0");
                         Log.e("MemoJsonResponse",jsonObject.toString());
-                        db.updateMemoWithServer(jsonObject);
+                        db.insertData(jsonObject,6);
        /* if (i!=11)
         bf.getResponceData(URL.Log,jsonObject.toString(),11);*/
 
-                        list = db.getMemos(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlate_id"), bf.getPreference("outlet_category_id_mreport"));
-                        AdapterForMemoReport adapter = new AdapterForMemoReport(MemoReport.this, list);
+
+                        JSONArray jsonArray = jsonObject.getJSONArray("memos");
+                        for(int i =0 ; i<jsonArray.length(); i++){
+                            if (db.getOrderPushStatus(jsonArray.getJSONObject(i).getString("order_number"))==0) {
+                                countorder++;
+                                db.updatepushStatus(jsonArray.getJSONObject(i).getString("order_number"), "1");
+                            }
+                        }
+
+                        list = db.getMemos(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlate_id"), bf.getPreference("outlet_category_id_mreport"),0);
+                         adapter = new AdapterForMemoReport(MemoReport.this, list);
                         listview.setAdapter(adapter);
+
+                        setEC();
 
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
+                    }
+
+                    if (countorder>0){
+                        Toast.makeText(MemoReport.this, countorder+"Order Synced Successfully", Toast.LENGTH_LONG).show();
                     }
                 }
 
@@ -326,18 +383,51 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
             });
 
         }else {
-            TextView txtTotalAmount = findViewById(R.id.TotalAmount);
-            TextView TotalEC= findViewById(R.id.TotalEC);
-            txtTotalAmount.setText("0.0");
-            TotalEC.setText("0.0");
-            list = db.getMemos(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlate_id"), bf.getPreference("outlet_category_id_mreport"));
-            AdapterForMemoReport adapter = new AdapterForMemoReport(this, list);
+            setEC();
+            list = db.getMemos(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlate_id"), bf.getPreference("outlet_category_id_mreport"),0);
+             adapter = new AdapterForMemoReport(this, list);
             listview.setAdapter(adapter);
         }
 
+        listview.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                Log.e("data",  listview.getCount()+" "+THREAT_SHOT +" "+listview.getLastVisiblePosition()+" "+isLoading);
+                if (!isLoading && listview.getCount()- THREAT_SHOT== listview.getLastVisiblePosition()){
+
+                    pageIndex++;
+
+                    ArrayList<HashMap<String, String>> chanck_list =db.getMemos(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlate_id"), bf.getPreference("outlet_category_id_mreport"),pageIndex);
+
+                    if(chanck_list.size()>0) {
+                        list.addAll(chanck_list);
+                        adapter.notifyDataSetChanged();
+
+                    } else
+                        isLoading = true;
+                    //  Toast.makeText(MarketList.this," "+initialPageIndex,Toast.LENGTH_SHORT).show();
+
+
+                }
+            }
+        });
 
 
 
+    }
+
+
+    private void setEC() {
+
+        HashMap<String,String> map =   db.getEcandMemoAmount(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id"),bf.getPreference("outlet_category_id_report"));
+
+        txtTotalAmount.setText(map.get("memo_value"));
+        TotalEC.setText(map.get("EC"));
     }
 
     @Override

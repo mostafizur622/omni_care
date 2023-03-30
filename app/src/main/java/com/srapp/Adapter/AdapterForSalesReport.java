@@ -131,9 +131,9 @@ public class AdapterForSalesReport extends BaseAdapter {
 			txtAction12.setBackgroundColor(Color.parseColor("#ede500"));
 		}
 
-
-
 		final String orderNo = mapContent.get(ORDER_order_number);
+
+		/*
 		Log.e("---------orderNo--------",orderNo);
 		
 		TextView txtTotalAmount=(TextView)((Activity) context).findViewById(R.id.TotalAmount);
@@ -150,7 +150,7 @@ public class AdapterForSalesReport extends BaseAdapter {
 //		sum=(Double) roundTwoDecimals(sum);
 //		txtTotalAmount.setText(String.valueOf(sum));
 		txtTotalAmount.setText(String.format("%.2f", sum));
-		TotalEC.setText(String.valueOf(countEC));
+		TotalEC.setText(String.valueOf(countEC));*/
 		
 		
 		

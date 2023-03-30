@@ -1543,7 +1543,7 @@ public class Data_Source extends Parent {
 
     }
 
-    public ArrayList<HashMap<String, String>> updateWithServer(JSONObject jsonObject) {
+    public ArrayList<HashMap<String, String>> updateWithServer(JSONObject jsonObject,int code) {
 
         try {
             JSONArray jsonArray = jsonObject.getJSONArray("orders");
@@ -1622,6 +1622,9 @@ public class Data_Source extends Parent {
         }
         close();
 
+        if (code==5){
+            progressDialog.dismiss();
+        }
         return null;
     }
 
@@ -1639,7 +1642,7 @@ public class Data_Source extends Parent {
         return status;
     }
 
-    public ArrayList<HashMap<String, String>> updateMemoWithServer(JSONObject jsonObject) {
+    public ArrayList<HashMap<String, String>> updateMemoWithServer(JSONObject jsonObject,int code) {
 
         try {
             JSONArray jsonArray = jsonObject.getJSONArray("memos");
@@ -1709,7 +1712,9 @@ public class Data_Source extends Parent {
             e.printStackTrace();
             //Loge("updateOrderWithServer", e.getMessage());
         }
-
+        if (code==6){
+            progressDialog.dismiss();
+        }
 
         return null;
     }
@@ -1890,7 +1895,7 @@ public class Data_Source extends Parent {
 
     }
 
-    public ArrayList<HashMap<String, String>> getNotPushedOrder(String start_date, String end_date, String outlate_id, String outlate_category_id) {
+    public ArrayList<HashMap<String, String>> getNotPushedOrder(String start_date, String end_date, String outlate_id, String outlate_category_id,int offset) {
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
 
         //Loge("Item", outlate_id + "  " + outlate_category_id);
@@ -1906,8 +1911,9 @@ public class Data_Source extends Parent {
         else if (outlate_id.equals("0") && !outlate_category_id.equalsIgnoreCase("0"))
             Query = "SELECT * FROM " + Tables.TABLE_NAME_ORDER + " as ot INNER join outlets as o on ot.outlet_id=o.outlet_id  where o.outlet_category_id='" + outlate_category_id + "' and  " + Tables.ORDER_order_date + ">=" + "'" + start_date + "'" + " and " + Tables.ORDER_order_date + " <=" + "'" + end_date + "'  ORDER BY order_number ASC";
         //Loge("DataView2", Query);
-
+        Query+= " LIMIT "+ (offset*25)+" , 25";
         Cursor c = sqLiteDatabase.rawQuery(Query, null);
+        Log.e("getNotPushedOrder", "getNotPushedOrder: "+Query);
         c.moveToFirst();
         if (c != null && c.getCount() > 0) {
 
@@ -1942,7 +1948,7 @@ public class Data_Source extends Parent {
 
     }
 
-    public ArrayList<HashMap<String, String>> getMemos(String start_date, String end_date, String outlate_id, String outlate_category_id) {
+    public ArrayList<HashMap<String, String>> getMemos(String start_date, String end_date, String outlate_id, String outlate_category_id,int offset) {
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
         open();
         String Query = "";
@@ -1955,7 +1961,7 @@ public class Data_Source extends Parent {
         else if (outlate_id.equals("0") && !outlate_category_id.equalsIgnoreCase("0"))
             Query = "SELECT * FROM " + Tables.TABLE_NAME_MEMOS + " as ot INNER join outlets as o on ot.outlet_id=o.outlet_id  where o.outlet_category_id='" + outlate_category_id + "' and  " + Tables.MEMOS_memo_date + ">=" + "'" + start_date + "'" + " and " + Tables.MEMOS_memo_date + " <=" + "'" + end_date + "'  ORDER BY order_number ASC";
         //Loge("DataView", Query);
-
+        Query+= " LIMIT "+ (offset*25)+" , 25";
         Cursor c = sqLiteDatabase.rawQuery(Query, null);
         c.moveToFirst();
         if (c != null && c.getCount() > 0) {
@@ -1983,6 +1989,50 @@ public class Data_Source extends Parent {
 
 
         return list;
+    }
+
+
+
+
+
+    public HashMap<String, String> getEcandMemoAmount(String start_date, String end_date, String outlate_id, String outlate_category_id) {
+     HashMap<String, String> map = new HashMap<>();
+        open();
+        String Query = "";
+        if (outlate_id.equals("0") && outlate_category_id.equalsIgnoreCase("0"))
+            Query = "SELECT Sum(gross_value) FROM " + TABLE_NAME_MEMOS + " where " + MEMOS_memo_date + ">=" + "'" + start_date + "'" + " and " + Tables.MEMOS_memo_date + " <=" + "'" + end_date + "'  ORDER BY order_number ASC";
+        else if (!outlate_id.equals("0") && outlate_category_id.equalsIgnoreCase("0"))
+            Query = "SELECT Sum(gross_value) FROM " + Tables.TABLE_NAME_MEMOS + " where " + Tables.MEMOS_memo_date + ">=" + "'" + start_date + "'" + " and " + Tables.MEMOS_memo_date + " <=" + "'" + end_date + "' AND " + ORDER_outlet_id + "='" + outlate_id + "' ORDER BY order_number ASC";
+        else if (!outlate_id.equals("0") && !outlate_category_id.equalsIgnoreCase("0"))
+            Query = "SELECT Sum(gross_value) FROM " + Tables.TABLE_NAME_MEMOS + " as ot INNER join outlets as o on ot.outlet_id=o.outlet_id  where o.outlet_category_id='" + outlate_category_id + "' and  " + Tables.MEMOS_memo_date + ">=" + "'" + start_date + "'" + " and " + Tables.MEMOS_memo_date + " <=" + "'" + end_date + "' AND ot." + ORDER_outlet_id + "='" + outlate_id + "' ORDER BY order_number ASC";
+        else if (outlate_id.equals("0") && !outlate_category_id.equalsIgnoreCase("0"))
+            Query = "SELECT Sum(gross_value) FROM " + Tables.TABLE_NAME_MEMOS + " as ot INNER join outlets as o on ot.outlet_id=o.outlet_id  where o.outlet_category_id='" + outlate_category_id + "' and  " + Tables.MEMOS_memo_date + ">=" + "'" + start_date + "'" + " and " + Tables.MEMOS_memo_date + " <=" + "'" + end_date + "'  ORDER BY order_number ASC";
+        //Loge("DataView", Query);
+
+        Cursor c = sqLiteDatabase.rawQuery(Query, null);
+        Log.e("getEcandMemoAmount", "getNotPushedOrder: "+Query);
+        c.moveToFirst();
+        if (c != null && c.getCount() > 0) {
+
+            map.put("memo_value",c.getString(0));
+        }else {
+            map.put("memo_value","0.00");
+        }
+
+
+        Query= Query.replace("Sum(gross_value)","count(_id)");
+        Cursor c1 = sqLiteDatabase.rawQuery(Query, null);
+        Log.e("getNotPushedOrder", "getNotPushedOrder: "+Query);
+        c1.moveToFirst();
+        if (c1 != null && c1.getCount() > 0) {
+
+            map.put("EC",c1.getString(0));
+        }else {
+            map.put("EC","0");
+        }
+
+        Log.e("getEcandMemoAmount", map.toString() +"  "+Query);
+        return map ;
     }
 
     private String getSingleFilter(String tableName, String value, String outletsId, String retunr_field) {
@@ -3323,6 +3373,50 @@ public class Data_Source extends Parent {
         else return 1;
     }
 
+    public HashMap<String, String> getEcandOrderAmount(String start_date, String end_date, String outlate_id, String outlate_category_id) {
+
+        HashMap<String, String> map = new HashMap<>();
+
+        //Loge("Item", outlate_id + "  " + outlate_category_id);
+        open();
+        String Query = "";
+
+        if (outlate_id.equals("0") && outlate_category_id.equalsIgnoreCase("0"))
+            Query = "SELECT Sum(gross_value) FROM " + Tables.TABLE_NAME_ORDER + " where " + Tables.ORDER_order_date + ">=" + "'" + start_date + "'" + " and " + Tables.ORDER_order_date + " <=" + "'" + end_date + "'  ORDER BY order_number ASC";
+        else if (!outlate_id.equals("0") && outlate_category_id.equalsIgnoreCase("0"))
+            Query = "SELECT Sum(gross_value) FROM " + Tables.TABLE_NAME_ORDER + " where " + Tables.ORDER_order_date + ">=" + "'" + start_date + "'" + " and " + Tables.ORDER_order_date + " <=" + "'" + end_date + "' AND " + ORDER_outlet_id + "='" + outlate_id + "' ORDER BY order_number ASC";
+        else if (!outlate_id.equals("0") && !outlate_category_id.equalsIgnoreCase("0"))
+            Query = "SELECT Sum(gross_value) FROM " + Tables.TABLE_NAME_ORDER + " as ot INNER join outlets as o on ot.outlet_id=o.outlet_id  where o.outlet_category_id='" + outlate_category_id + "' and  " + Tables.ORDER_order_date + ">=" + "'" + start_date + "'" + " and " + Tables.ORDER_order_date + " <=" + "'" + end_date + "' AND ot." + ORDER_outlet_id + "='" + outlate_id + "' ORDER BY order_number ASC";
+        else if (outlate_id.equals("0") && !outlate_category_id.equalsIgnoreCase("0"))
+            Query = "SELECT Sum(gross_value) FROM " + Tables.TABLE_NAME_ORDER + " as ot INNER join outlets as o on ot.outlet_id=o.outlet_id  where o.outlet_category_id='" + outlate_category_id + "' and  " + Tables.ORDER_order_date + ">=" + "'" + start_date + "'" + " and " + Tables.ORDER_order_date + " <=" + "'" + end_date + "'  ORDER BY order_number ASC";
+        //Loge("DataView2", Query);
+        ///Query+= " LIMIT "+ (offset*25)+" , 25";
+        Cursor c = sqLiteDatabase.rawQuery(Query, null);
+        Log.e("getEcandMemoAmount", "getNotPushedOrder: "+Query);
+        c.moveToFirst();
+        if (c != null && c.getCount() > 0) {
+
+            map.put("memo_value",c.getString(0));
+        }else {
+            map.put("memo_value","0.00");
+        }
+
+
+        Query= Query.replace("Sum(gross_value)","count(_id)");
+        Cursor c1 = sqLiteDatabase.rawQuery(Query, null);
+        Log.e("getNotPushedOrder", "getNotPushedOrder: "+Query);
+        c1.moveToFirst();
+        if (c1 != null && c1.getCount() > 0) {
+
+            map.put("EC",c1.getString(0));
+        }else {
+            map.put("EC","0");
+        }
+
+        Log.e("getEcandMemoAmount", map.toString() +"  "+Query);
+        return map ;
+    }
+
 
     private class updateorderWithServer extends AsyncTask<String, String, String> {
         JSONObject jsonObject = new JSONObject();
@@ -4277,8 +4371,8 @@ public class Data_Source extends Parent {
                 if (code == 1) {
                     JSONObject jsonObject = new JSONObject(json);
 
-                    updateWithServer(jsonObject);
-                    updateMemoWithServer(jsonObject);
+                    updateWithServer(jsonObject,code);
+                    updateMemoWithServer(jsonObject,code);
 
                     for (int i = 0; i < Allfild.length; i++) {
 
@@ -4379,6 +4473,10 @@ public class Data_Source extends Parent {
                     insertbonusPolicyOutletData(jsonObject);
                 } else if (code == 4) {
                     insertbonusUnitDetails(jsonObject);
+                }else if (code == 5) {
+                    updateWithServer(jsonObject,code);
+                }else if (code == 6) {
+                    updateMemoWithServer(jsonObject,code);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

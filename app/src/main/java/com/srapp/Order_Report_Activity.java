@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -35,6 +36,7 @@ import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -45,6 +47,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -69,7 +72,10 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
     private SimpleDateFormat dateFormatter;
     String[] SPINNERLIST = {"Rahim Store", "Jamal Electronics", "Jakir Pharmacy"};
     ListView listview;
-    Button startdate, enddate;
+    Boolean isLoading = false;
+    int pageIndex=0;
+    private final int THREAT_SHOT = 2;
+    Button startdate, enddate,search;
     HashMap<String, ArrayList<String>> outlate = new HashMap<>();
     HashMap<String, ArrayList<String>> outlet_catagary = new HashMap<>();
     ListView Order_Report_recycleView;
@@ -78,10 +84,12 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
     Spinner outlatesp, outlet_catagary_spinner;
     ArrayList<HashMap<String, String>> list;
     boolean onResunme=false;
-    boolean onstart=false;
-
+    boolean onstart=true;
+    AdapterForSalesReport adapter;
     ImageView homeBtn,backBtn;
     TextView userIdTV,titleTV  ;
+    TextView txtTotalAmount;
+    TextView TotalEC;
 
 
     @Override
@@ -91,7 +99,9 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
 
         homeBtn = findViewById(R.id.home);
         backBtn = findViewById(R.id.back);
-
+        search = findViewById(R.id.search);
+         txtTotalAmount=findViewById(R.id.TotalAmount);
+         TotalEC=findViewById(R.id.TotalEC);
         userIdTV = findViewById(R.id.user_txt_view);
         titleTV = findViewById(R.id.title_tv);
 
@@ -103,7 +113,10 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
         Order_Report_recycleView = findViewById(R.id.Order_Report_recycleView);
         startdate = findViewById(R.id.startdate);
         enddate = findViewById(R.id.enddate);
+        listview = findViewById(R.id.Order_Report_recycleView);
         list = new ArrayList<>();
+        adapter = new AdapterForSalesReport(this, list);
+        listview.setAdapter(adapter);
         db = new Data_Source(this);
         outlate = db.getAccessories(false, "00", OUTLETS, "no");
         dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
@@ -189,11 +202,8 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
                 outlatesp.setAdapter(arrayAdapter);
                 bf.savePreference("outlet_category_id_report",outlet_catagary.get(OUTLETS_CATAGORY_ID).get(position));
                 /*ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(Order_Report_Activity.this, R.layout.spinner_item, outlate.get(OUTLETS[3]));*/
+                Log.e("DataView1", "outlet_catagary_spinner "+onstart);
 
-                if (onstart) {
-                    DataView();
-                    onstart=false;
-                }
 
             }
 
@@ -216,9 +226,8 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
                 }
 
                 bf.savePreference("outlet_id", outlate.get(OUTLETS[2]).get(position));
-                if (onstart) {
-                    DataView();
-                }
+                Log.e("DataView1", "outlatesp "+onstart);
+
             }
 
             @Override
@@ -227,12 +236,21 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
             }
         });
 
-        listview = findViewById(R.id.Order_Report_recycleView);
 
 
-        DataView();
+       // Log.e("DataView1", "oncreate");
+        //DataView();
+
 
         //onstart=true;
+
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                DataView();
+            }
+        });
 
     }
 
@@ -260,8 +278,8 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
                 newDate.set(year, monthOfYear, dayOfMonth);
                 bf.savePreference("start_Date", dateFormatter.format(newDate.getTime()));
                 startdate.setText(bf.getPreference("start_Date"));
-                if (onstart)
-                DataView();
+                Log.e("DataView1", "fromDatePickerDialog "+onstart);
+
 
             }
 
@@ -280,9 +298,8 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
 
                 bf.savePreference("end_date", dateFormatter.format(newDate.getTime()));
                 enddate.setText(bf.getPreference("end_date"));
-                if (onstart) {
-                    DataView();
-                }
+                Log.e("DataView1", "toDatePickerDialog "+onstart);
+
 
             }
 
@@ -301,16 +318,25 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
     @Override
     protected void onResume() {
         super.onResume();
-        if (onResunme)
-        DataView();
-        onResunme=true;
+        if (onResunme) {
+            DataView();
+            onResunme = true;
+            Log.e("DataView1", "onResume");
+        }
 
     }
 
+
     private void  DataView() {
 
-        Log.e("DataView1", "DataView");
 
+        if (checkDuration()){
+            Toast.makeText(this,"Cannot select date more than 7 days Interval",Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        Log.e("DataView1", "DataView");
+        pageIndex=0;
         if (bf.isInternetOn()) {
 
             JSONObject jsonObject = new JSONObject();
@@ -343,10 +369,12 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
                         txtTotalAmount.setText("0.0");
                         TotalEC.setText("0.0");
 
-                        db.updateWithServer(jsonObject);
+                        db.insertData(jsonObject,5);
+                        
+                        setEC();
 
-                        list = db.getNotPushedOrder(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id"),bf.getPreference("outlet_category_id_report"));
-                        AdapterForSalesReport adapter = new AdapterForSalesReport(Order_Report_Activity.this, list);
+                        list = db.getNotPushedOrder(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id"),bf.getPreference("outlet_category_id_report"),pageIndex);
+                         adapter = new AdapterForSalesReport(Order_Report_Activity.this, list);
                         listview.setAdapter(adapter);
 
                     } catch (JSONException e) {
@@ -359,18 +387,75 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
                     dailog.dismiss();
                 }
             });
-        }else {
-
-            TextView txtTotalAmount = findViewById(R.id.TotalAmount);
-            TextView TotalEC= findViewById(R.id.TotalEC);
-            txtTotalAmount.setText("0.0");
-            TotalEC.setText("0.0");
-
-            list = db.getNotPushedOrder(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id"),bf.getPreference("outlet_category_id_report"));
-            AdapterForSalesReport adapter = new AdapterForSalesReport(this, list);
+        }
+        else {
+            onstart=true;
+            setEC();
+            Log.e("DataView1", "else "+onstart);
+            list = db.getNotPushedOrder(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id"),bf.getPreference("outlet_category_id_report"),pageIndex);
+            adapter = new AdapterForSalesReport(this, list);
             listview.setAdapter(adapter);
         }
 
+        listview.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                Log.e("data",  listview.getCount()+" "+THREAT_SHOT +" "+listview.getLastVisiblePosition()+" "+isLoading);
+                if (!isLoading && listview.getCount()- THREAT_SHOT== listview.getLastVisiblePosition()){
+                    Log.e("entr scrolled..0n 402", "onScrolled: "+"On Scroll.." );
+                    pageIndex++;
+                   // loadMoreData(initialPageIndex);
+                    ArrayList<HashMap<String, String>> chanck_list = db.getNotPushedOrder(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id"),bf.getPreference("outlet_category_id_report"),pageIndex);
+
+                    if(chanck_list.size()>0) {
+                        list.addAll(chanck_list);
+                        adapter.notifyDataSetChanged();
+
+                    } else
+                        isLoading = true;
+                    //  Toast.makeText(MarketList.this," "+initialPageIndex,Toast.LENGTH_SHORT).show();
+
+                    Log.e("last position", "onScrolled: "+listview.getLastVisiblePosition() );
+                }
+            }
+        });
+
+    }
+
+    private void setEC() {
+
+     HashMap<String,String> map =   db.getEcandOrderAmount(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id"),bf.getPreference("outlet_category_id_report"));
+
+     txtTotalAmount.setText(map.get("memo_value"));
+        TotalEC.setText(map.get("EC"));
+    }
+
+    private boolean checkDuration() {
+        Date sd = convertTodate(bf.getPreference("start_Date"));
+        Date ed = convertTodate(bf.getPreference("end_date"));
+        long diffrence = TimeUnit.MILLISECONDS.toDays(ed.getTime()-sd.getTime());
+
+        if (diffrence>7){
+            return true;
+        }
+
+
+        return false;
+
+    }
+
+    private Date convertTodate(String start_date) {
+
+        try {
+            return dateFormatter.parse(start_date);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

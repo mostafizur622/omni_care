@@ -123,7 +123,7 @@ public class ViewLastRecord extends AppCompatActivity implements BasicFunctionLi
                             TempData.MemoDate = jsonArray.getJSONObject(0).getString("memo_date");
                             JSONObject jsonObject1 = new JSONObject();
                             jsonObject1.put("memos", jsonArray);
-                            data_source.updateMemoWithServer(jsonObject1);
+                            data_source.insertData(jsonObject1,6);
                         }
                         getOrders();
 
