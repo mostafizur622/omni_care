@@ -2019,8 +2019,18 @@ public class Data_Source extends Parent {
             map.put("memo_value","0.00");
         }
 
+        if (outlate_id.equals("0") && outlate_category_id.equalsIgnoreCase("0"))
+            Query= Query.replace("Sum(gross_value)","count(_id)");
+        else if (!outlate_id.equals("0") && outlate_category_id.equalsIgnoreCase("0"))
+            Query= Query.replace("Sum(gross_value)","count(_id)");
+        else if (!outlate_id.equals("0") && !outlate_category_id.equalsIgnoreCase("0"))
+            Query= Query.replace("Sum(gross_value)","count(ot._id)");
+        else if (outlate_id.equals("0") && !outlate_category_id.equalsIgnoreCase("0"))
+            Query= Query.replace("Sum(gross_value)","count(ot._id)");
 
-        Query= Query.replace("Sum(gross_value)","count(_id)");
+
+
+
         Cursor c1 = sqLiteDatabase.rawQuery(Query, null);
         Log.e("getNotPushedOrder", "getNotPushedOrder: "+Query);
         c1.moveToFirst();
@@ -3402,7 +3412,16 @@ public class Data_Source extends Parent {
         }
 
 
-        Query= Query.replace("Sum(gross_value)","count(_id)");
+
+
+        if (outlate_id.equals("0") && outlate_category_id.equalsIgnoreCase("0"))
+            Query= Query.replace("Sum(gross_value)","count(_id)");
+        else if (!outlate_id.equals("0") && outlate_category_id.equalsIgnoreCase("0"))
+            Query= Query.replace("Sum(gross_value)","count(_id)");
+        else if (!outlate_id.equals("0") && !outlate_category_id.equalsIgnoreCase("0"))
+            Query= Query.replace("Sum(gross_value)","count(ot._id)");
+        else if (outlate_id.equals("0") && !outlate_category_id.equalsIgnoreCase("0"))
+            Query= Query.replace("Sum(gross_value)","count(ot._id)");
         Cursor c1 = sqLiteDatabase.rawQuery(Query, null);
         Log.e("getNotPushedOrder", "getNotPushedOrder: "+Query);
         c1.moveToFirst();
