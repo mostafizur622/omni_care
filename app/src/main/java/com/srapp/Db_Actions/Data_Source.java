@@ -1710,7 +1710,7 @@ public class Data_Source extends Parent {
 
         } catch (JSONException e) {
             e.printStackTrace();
-            //Loge("updateOrderWithServer", e.getMessage());
+            Log.e("updateMemoWithServer", e.getMessage());
         }
         if (code==6){
             progressDialog.dismiss();

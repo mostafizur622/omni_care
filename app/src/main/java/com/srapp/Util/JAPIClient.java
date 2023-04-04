@@ -1,5 +1,7 @@
 package com.srapp.Util;
 
+import static com.srapp.Db_Actions.Tables.SR_ID;
+
 import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -73,6 +75,7 @@ public class JAPIClient {
                         finaljsonObject.put("territory_id", getPreference("territory_id"));
                         finaljsonObject.put("tso_id", getPreference("tso_id"));
                         finaljsonObject.put("ae_id", getPreference("ae_id"));
+                        finaljsonObject.put(SR_ID,getPreference(SR_ID));
 
                         Request.Builder rb =chain.request().newBuilder();
 
