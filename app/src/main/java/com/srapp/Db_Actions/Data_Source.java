@@ -1543,7 +1543,7 @@ public class Data_Source extends Parent {
 
     }
 
-    public ArrayList<HashMap<String, String>> updateWithServer(JSONObject jsonObject,int code) {
+    public ArrayList<HashMap<String, String>> updateWithServer(JSONObject jsonObject,int code) throws JSONException {
 
         try {
             JSONArray jsonArray = jsonObject.getJSONArray("orders");
@@ -1624,7 +1624,10 @@ public class Data_Source extends Parent {
 
         if (code==5){
             progressDialog.dismiss();
+            dbListener.OnLocalDBdataRetrive(code+"");
         }
+
+
         return null;
     }
 
@@ -1642,7 +1645,7 @@ public class Data_Source extends Parent {
         return status;
     }
 
-    public ArrayList<HashMap<String, String>> updateMemoWithServer(JSONObject jsonObject,int code) {
+    public ArrayList<HashMap<String, String>> updateMemoWithServer(JSONObject jsonObject,int code) throws JSONException {
 
         try {
             JSONArray jsonArray = jsonObject.getJSONArray("memos");
@@ -1714,6 +1717,7 @@ public class Data_Source extends Parent {
         }
         if (code==6){
             progressDialog.dismiss();
+            dbListener.OnLocalDBdataRetrive(code+"");
         }
 
         return null;

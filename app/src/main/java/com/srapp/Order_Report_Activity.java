@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.srapp.Adapter.AdapterForSalesReport;
 import com.srapp.Adapter.OrderAdapter;
 import com.srapp.Adapter.SpinnerAdapter;
+import com.srapp.Db_Actions.DBListener;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Db_Actions.URL;
@@ -66,7 +67,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Order_Report_Activity extends AppCompatActivity implements View.OnClickListener, BasicFunctionListener {
+public class Order_Report_Activity extends AppCompatActivity implements View.OnClickListener, BasicFunctionListener, DBListener {
     private DatePickerDialog fromDatePickerDialog;
     private DatePickerDialog toDatePickerDialog;
     private SimpleDateFormat dateFormatter;
@@ -117,7 +118,7 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
         list = new ArrayList<>();
         adapter = new AdapterForSalesReport(this, list);
         listview.setAdapter(adapter);
-        db = new Data_Source(this);
+        db = new Data_Source(this,this);
         outlate = db.getAccessories(false, "00", OUTLETS, "no");
         dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         outlate.get(OUTLETS[3]).add(0, "All");
@@ -371,11 +372,7 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
 
                         db.insertData(jsonObject,5);
                         
-                        setEC();
 
-                        list = db.getNotPushedOrder(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id"),bf.getPreference("outlet_category_id_report"),pageIndex);
-                         adapter = new AdapterForSalesReport(Order_Report_Activity.this, list);
-                        listview.setAdapter(adapter);
 
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
@@ -484,4 +481,32 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
     }
 
 
+    @Override
+    public void OnLocalDBdataRetrive(String json) throws JSONException {
+        if (Integer.parseInt(json)==5) {
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    setEC();
+
+                    list = db.getNotPushedOrder(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id"), bf.getPreference("outlet_category_id_report"), pageIndex);
+                    adapter = new AdapterForSalesReport(Order_Report_Activity.this, list);
+                    listview.setAdapter(adapter);
+
+                }
+            });
+
+        }
+    }
+
+    @Override
+    public void OnLocalDBdataRetrive(ArrayList<HashMap<String, String>> arrayList) {
+
+    }
+
+    @Override
+    public void OnLocalDBdataRetrive(HashMap<String, String> hasmap) {
+
+    }
 }

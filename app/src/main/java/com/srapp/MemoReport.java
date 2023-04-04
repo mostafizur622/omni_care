@@ -26,7 +26,8 @@ import com.google.gson.JsonArray;
 import com.srapp.Adapter.AdapterForMemoReport;
         import com.srapp.Adapter.AdapterForSalesReport;
         import com.srapp.Adapter.SpinnerAdapter;
-        import com.srapp.Db_Actions.Data_Source;
+import com.srapp.Db_Actions.DBListener;
+import com.srapp.Db_Actions.Data_Source;
         import com.srapp.Db_Actions.Tables;
         import com.srapp.Db_Actions.URL;
         import com.tanvir.BasicFun.BasicFunction;
@@ -59,7 +60,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MemoReport extends AppCompatActivity implements View.OnClickListener, BasicFunctionListener {
+public class MemoReport extends AppCompatActivity implements View.OnClickListener, BasicFunctionListener, DBListener {
     private DatePickerDialog fromDatePickerDialog;
     private DatePickerDialog toDatePickerDialog;
     private SimpleDateFormat dateFormatter;
@@ -118,7 +119,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
         startdate = findViewById(R.id.startdate);
         enddate = findViewById(R.id.enddate);
         list = new ArrayList<>();
-        db = new Data_Source(this);
+        db = new Data_Source(this,this);
         adapter =  new AdapterForMemoReport(MemoReport.this, list);
         listview.setAdapter(adapter);
         outlate = db.getAccessories(false, "00", OUTLETS, "no");
@@ -361,11 +362,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
                             }
                         }
 
-                        list = db.getMemos(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlate_id"), bf.getPreference("outlet_category_id_mreport"),0);
-                         adapter = new AdapterForMemoReport(MemoReport.this, list);
-                        listview.setAdapter(adapter);
 
-                        setEC();
 
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
@@ -453,6 +450,36 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
             return true;
         }
         return super.onKeyDown(keyCode, event);
+
+    }
+
+    @Override
+    public void OnLocalDBdataRetrive(String json) throws JSONException {
+
+        if (Integer.parseInt(json)==6) {
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    list = db.getMemos(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlate_id"), bf.getPreference("outlet_category_id_mreport"), 0);
+                    adapter = new AdapterForMemoReport(MemoReport.this, list);
+                    listview.setAdapter(adapter);
+
+                    setEC();
+                }
+            });
+
+        }
+    }
+
+    @Override
+    public void OnLocalDBdataRetrive(ArrayList<HashMap<String, String>> arrayList) {
+
+    }
+
+    @Override
+    public void OnLocalDBdataRetrive(HashMap<String, String> hasmap) {
 
     }
 }
