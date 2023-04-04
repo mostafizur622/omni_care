@@ -620,7 +620,7 @@ public class PrintActivityP extends ParentActivity {
         }
 
         String  outlet_id="" ,market_id="";
-        Cursor c = db.rawQuery(Query);
+        Cursor c = db.rawQueryCoustom(Query);
         if (c.getCount() > 0) {
             if (c.moveToFirst()) do {
                 date = c.getString(0);
@@ -632,7 +632,7 @@ public class PrintActivityP extends ParentActivity {
 
         }
 
-        Cursor c2 = db.rawQuery("SELECT O.outlet_name, M.market_name FROM outlets O LEFT JOIN markets M ON(O.market_id=M.market_id) WHERE O.outlet_id='"+outlet_id+"'");
+        Cursor c2 = db.rawQueryCoustom("SELECT O.outlet_name, M.market_name FROM outlets O LEFT JOIN markets M ON(O.market_id=M.market_id) WHERE O.outlet_id='"+outlet_id+"'");
         if (c2 != null) {
             if (c2.moveToFirst()) {
                 do {
@@ -646,7 +646,7 @@ public class PrintActivityP extends ParentActivity {
             }
         }
 
-        Cursor c3 = db.rawQuery("SELECT T.thana_name FROM markets M LEFT JOIN thana T ON(M.thana_id=T.thana_id) WHERE M.market_id='"+market_id+"'");
+        Cursor c3 = db.rawQueryCoustom("SELECT T.thana_name FROM markets M LEFT JOIN thana T ON(M.thana_id=T.thana_id) WHERE M.market_id='"+market_id+"'");
         if (c3 != null) {
             if (c3.moveToFirst()) {
                 do {

@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.media.Image;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -16,13 +15,11 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.srapp.Adapter.SpinnerAdapter;
 import com.srapp.Adapter.SrProductTarget_Adapter;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
@@ -37,7 +34,6 @@ import org.json.JSONObject;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -213,7 +209,7 @@ public class SrProductTarget extends AppCompatActivity implements BasicFunctionL
 
         Cursor c ;
 
-        c= db.rawQuery("SELECT * FROM fiscal_year");
+        c= db.rawQueryCoustom("SELECT * FROM fiscal_year");
 
 
 

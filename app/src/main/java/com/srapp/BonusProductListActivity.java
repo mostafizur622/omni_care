@@ -162,7 +162,7 @@ public class BonusProductListActivity extends Parent {
         ProductCategoryName.add("All");
 
         String proIn = "IN(";
-        Cursor c1 = db.rawQuery("SELECT DISTINCT product_category_id FROM so_stocks where so_id=" + "'" + getPreference("SO") + "'");
+        Cursor c1 = db.rawQueryCoustom("SELECT DISTINCT product_category_id FROM so_stocks where so_id=" + "'" + getPreference("SO") + "'");
         Log.e("Count", "" + c1.getCount());
         if (c1 != null) {
             if (c1.moveToFirst()) {
@@ -183,7 +183,7 @@ public class BonusProductListActivity extends Parent {
 
         Log.e("Query", "SELECT * FROM product_categories where so_id=" + "'" + getPreference("SO") + "' AND category_id " + proIn);
         //Cursor c = db.rawQuery("SELECT * FROM product_categories where so_id="+"'"+getPreference("SO")+"' AND category_id "+proIn);
-        Cursor c = db.rawQuery("SELECT * FROM product_categories where so_id=" + "'" + getPreference("SO") + "'");
+        Cursor c = db.rawQueryCoustom("SELECT * FROM product_categories where so_id=" + "'" + getPreference("SO") + "'");
         Log.e("CategoryCont:", c.getCount() + "");
         if (c != null) {
             if (c.moveToFirst()) {
@@ -223,7 +223,7 @@ public class BonusProductListActivity extends Parent {
         }
 
         String query1 = "SELECT DISTINCT(product_id) FROM product_history WHERE start_date<=" + "'" + memodate + "'" + " and end_date>=" + "'" + memodate + "' AND is_bonus=1";
-        c2 = db.rawQuery(query1);
+        c2 = db.rawQueryCoustom(query1);
         Log.e("query", query1 + " " + c2.getCount());
         if (c2 != null) {
             if (c2.moveToFirst()) {
@@ -238,7 +238,7 @@ public class BonusProductListActivity extends Parent {
                         EditQuery = ">=";
                     }
                     String query = "SELECT product_name, product_type_id FROM product WHERE product_id='" + product_id + "'";
-                    Cursor c12 = db.rawQuery(query);
+                    Cursor c12 = db.rawQueryCoustom(query);
                     Log.e("Query", query);
                     if (c12 != null) {
                         if (c12.moveToFirst()) {
@@ -263,7 +263,7 @@ public class BonusProductListActivity extends Parent {
                             if (Double.parseDouble("2.00") > 0) {
                                 BonusItemListFromDB.add(product_list_map);
                             } else {
-                                Cursor cMD = db.rawQuery("select * from "+TABLE_NAME_ORDER_DETAILS+" where product_id = '" + product_id + "' and "+ORDER_order_number+"='" + TempData.orderNumber + "' and is_bonus='1'");
+                                Cursor cMD = db.rawQueryCoustom("select * from "+TABLE_NAME_ORDER_DETAILS+" where product_id = '" + product_id + "' and "+ORDER_order_number+"='" + TempData.orderNumber + "' and is_bonus='1'");
                                 if (cMD != null & cMD.getCount() > 0) {
                                     BonusItemListFromDB.add(product_list_map);
                                 }

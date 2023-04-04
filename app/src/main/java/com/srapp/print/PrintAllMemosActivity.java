@@ -3,7 +3,6 @@ package com.srapp.print;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -20,11 +19,9 @@ import android.hardware.usb.UsbManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -39,7 +36,6 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import androidx.core.app.ActivityCompat;
@@ -49,7 +45,6 @@ import com.bxl.config.editor.BXLConfigLoader;
 import com.dantsu.escposprinter.connection.DeviceConnection;
 import com.dantsu.escposprinter.connection.usb.UsbConnection;
 import com.dantsu.escposprinter.connection.usb.UsbPrintersConnections;
-import com.google.gson.Gson;
 import com.gprinter.io.PortManager;
 import com.gprinter.io.UsbPort;
 import com.gprinter.utils.Command;
@@ -60,9 +55,7 @@ import com.srapp.TempData;
 
 import org.json.JSONArray;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -73,80 +66,27 @@ import java.util.Set;
 
 import NewPrint.BixolonPrinter;
 
-import static NewPrint.EscapeSequence.ESCAPE_CHARACTERS;
 import static com.srapp.Db_Actions.Tables.PRODUCT_BOOLEAN_QUANTITY;
 import static com.srapp.Db_Actions.Tables.PRODUCT_ID;
 import static com.srapp.Db_Actions.Tables.PRODUCT_PRICE_PRICE;
 import static com.srapp.Db_Actions.Tables.PRODUCT_PRODUCT_NAME;
 import static com.srapp.DetailsOrderReport.discount_info;
-import static com.srapp.TempData.discount_data;
 import static com.srapp.print.newprint.Constant.CONN_STATE_DISCONN;
 import static com.srapp.print.newprint.Constant.Connect_cuccess;
 import static com.srapp.print.newprint.Constant.Connect_fail;
 
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 
-import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.net.Uri;
 
-import android.Manifest;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.text.SpannableStringBuilder;
-import android.text.TextUtils;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.core.app.ActivityCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.bxl.config.editor.BXLConfigLoader;
-import com.google.gson.Gson;
-import com.itextpdf.text.pdf.parser.Line;
-import com.srapp.Db_Actions.Data_Source;
-import com.srapp.DeliveryReport;
 import com.srapp.DetailsOrderReport;
-import com.srapp.Multiple_Invoice_print;
-import com.srapp.R;
-import com.srapp.TempData;
 import com.srapp.Util.PrintedListener;
 import com.srapp.print.newprint.Constant;
 import com.srapp.print.newprint.PrintContent;
@@ -156,19 +96,8 @@ import com.srapp.thermalprint.async.AsyncEscPosPrinter;
 import com.srapp.thermalprint.async.AsyncUsbEscPosPrint;
 import com.srapp.thermalprint.async.PrinterTextParserImg;
 
-import org.json.JSONArray;
-
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Set;
 
 public class PrintAllMemosActivity extends ParentActivity {
     private Button mConnectBtn;
@@ -764,7 +693,7 @@ public class PrintAllMemosActivity extends ParentActivity {
         } else {
             Query = "SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where  status='1' and order_date>=" + "'" + FromDate + "'" + " and order_date <=" + "'" + ToDate + "' ORDER BY _id DESC";
         }
-        Cursor c = db.rawQuery(Query);
+        Cursor c = db.rawQueryCoustom(Query);
         Log.e("Query", "SELECT memo_number, memo_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where memo_date>=" + "'" + FromDate + "'" + " and memo_date <=" + "'" + ToDate + "' ORDER BY _id DESC");
         if (c != null && c.getCount() > 0) {
             if (c.moveToFirst()) {
@@ -826,7 +755,7 @@ public class PrintAllMemosActivity extends ParentActivity {
                     TempData.DISCOUNT = c.getDouble(7);
                     TempData.VAT = c.getDouble(8);
 
-                    Cursor c2 = db.rawQuery("SELECT O.outlet_name, M.market_name,O.address, O.mobile FROM outlets O LEFT JOIN markets M ON(O.market_id=M.market_id) WHERE O.outlet_id='" + outlet_id + "'");
+                    Cursor c2 = db.rawQueryCoustom("SELECT O.outlet_name, M.market_name,O.address, O.mobile FROM outlets O LEFT JOIN markets M ON(O.market_id=M.market_id) WHERE O.outlet_id='" + outlet_id + "'");
                     if (c2 != null) {
                         if (c2.moveToFirst()) {
                             do {
@@ -848,7 +777,7 @@ public class PrintAllMemosActivity extends ParentActivity {
                         outlet_address_phone.setVisibility(View.VISIBLE);
                     }*/
 
-                    Cursor c3 = db.rawQuery("SELECT T.thana_name FROM markets M LEFT JOIN thana T ON(M.thana_id=T.thana_id) WHERE M.market_id='" + market_id + "'");
+                    Cursor c3 = db.rawQueryCoustom("SELECT T.thana_name FROM markets M LEFT JOIN thana T ON(M.thana_id=T.thana_id) WHERE M.market_id='" + market_id + "'");
                     if (c3 != null) {
                         if (c3.moveToFirst()) {
                             do {
@@ -859,7 +788,7 @@ public class PrintAllMemosActivity extends ParentActivity {
                         }
                     }
 
-                    Cursor c4 = db.rawQuery("SELECT OC.outlet_category_name FROM outlets O LEFT JOIN outlet_categories OC ON (O.outlet_category_id = OC.outlet_category_id) where O.outlet_id='" + outlet_id + "'");
+                    Cursor c4 = db.rawQueryCoustom("SELECT OC.outlet_category_name FROM outlets O LEFT JOIN outlet_categories OC ON (O.outlet_category_id = OC.outlet_category_id) where O.outlet_id='" + outlet_id + "'");
                     if (c4.getCount() > 0) {
                         if (c4.moveToFirst()) {
                             do {
@@ -878,7 +807,7 @@ public class PrintAllMemosActivity extends ParentActivity {
                     String MemoDetails = "SELECT MD.product_id,P.product_name ,MD.quantity, MD.price,MD.vat,MD.discount_type,MD.discount_amount FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='0'";
                     Log.e("MemoDetails", "MemoDetails: " + MemoDetails);
                     discount_info = "";
-                    Cursor cursor = db.rawQuery(MemoDetails);
+                    Cursor cursor = db.rawQueryCoustom(MemoDetails);
 
 
                     if (cursor != null) {
@@ -917,7 +846,7 @@ public class PrintAllMemosActivity extends ParentActivity {
                     String Gift1 = "";
                     String MemoDetailsForGift = "SELECT MD.product_id,P.product_name ,MD.quantity FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='1'";
                     Log.e("MemoDetailsForGift", "MemoDetailsForGift: " + MemoDetailsForGift);
-                    Cursor cur2 = db.rawQuery(MemoDetailsForGift);
+                    Cursor cur2 = db.rawQueryCoustom(MemoDetailsForGift);
                     if (cur2 != null) {
                         if (cur2.moveToFirst()) {
                             do {
@@ -937,7 +866,7 @@ public class PrintAllMemosActivity extends ParentActivity {
                     String Bonus1 = "", Bonus = "";
                     String MemoDetailsForBonus = "SELECT MD.product_id,P.product_name ,MD.quantity , MD.measurement_unit_id  FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='2'";
                     Log.e("MemoDetailsForBonus", "MemoDetailsForBonus: " + MemoDetailsForBonus);
-                    Cursor cur = db.rawQuery(MemoDetailsForBonus);
+                    Cursor cur = db.rawQueryCoustom(MemoDetailsForBonus);
                     if (cur != null) {
                         if (cur.moveToFirst()) {
                             do {
@@ -1116,7 +1045,7 @@ public class PrintAllMemosActivity extends ParentActivity {
 
     private String getMeasurementUnitName(String mesurement_unit_id) {
         Data_Source db = new Data_Source(PrintAllMemosActivity.this);
-        Cursor c = db.rawQuery("select unit_name from unit where unit_id='" + mesurement_unit_id + "'");
+        Cursor c = db.rawQueryCoustom("select unit_name from unit where unit_id='" + mesurement_unit_id + "'");
         c.moveToFirst();
         if (c.getCount() > 0) {
             return c.getString(0);

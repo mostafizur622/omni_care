@@ -1,13 +1,8 @@
 package com.srapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -17,7 +12,6 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -28,8 +22,6 @@ import android.widget.Toast;
 
 import com.srapp.Adapter.AdapterForBonusPartyReport;
 import com.srapp.Db_Actions.Data_Source;
-import com.srapp.Db_Actions.URL;
-import com.srapp.Model.Reports;
 import com.srapp.Util.ParentActivity;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
@@ -39,11 +31,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Locale;
 
-import static com.srapp.Db_Actions.Tables.MARKET_ID;
 import static com.srapp.Db_Actions.Tables.SR_ID;
 import static com.srapp.Db_Actions.URL.CheckConnection;
 import static com.srapp.Db_Actions.URL.convertTORequestdata;
@@ -370,7 +359,7 @@ public class ReportBonusPartyReport extends ParentActivity implements View.OnCli
     {
         ThanaID.clear();
         ThanaName.clear();
-        Cursor c = db.rawQuery("SELECT * FROM route");
+        Cursor c = db.rawQueryCoustom("SELECT * FROM route");
         if (c != null) {
             if (c.moveToFirst()) {
                 do {
@@ -400,7 +389,7 @@ public class ReportBonusPartyReport extends ParentActivity implements View.OnCli
         MarketName.clear();
         MarketID.add("0");
         MarketName.add("All");
-        Cursor c = db.rawQuery("SELECT * FROM markets where route_id='"+Thana_ID+"'   ORDER BY market_name COLLATE NOCASE ASC");
+        Cursor c = db.rawQueryCoustom("SELECT * FROM markets where route_id='"+Thana_ID+"'   ORDER BY market_name COLLATE NOCASE ASC");
         if (c != null) {
             if (c.moveToFirst()) {
                 do {
@@ -452,7 +441,7 @@ public class ReportBonusPartyReport extends ParentActivity implements View.OnCli
 
         Cursor c ;
 
-        c= db.rawQuery("SELECT * FROM fiscal_year ");
+        c= db.rawQueryCoustom("SELECT * FROM fiscal_year ");
 
 
 

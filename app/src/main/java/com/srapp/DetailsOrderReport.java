@@ -87,11 +87,9 @@ import com.srapp.Adapter.AdapterForMemoDetails;
 import com.srapp.Db_Actions.DBListener;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
-import com.srapp.Db_Actions.URL;
 import com.srapp.Model.OrderDetailsModel;
 import com.srapp.Util.Parent;
 import com.srapp.print.PrintActivity;
-import com.srapp.print.huawei.PrintActivityP;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
@@ -191,7 +189,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
             Query = "SELECT " + ORDER_TOTAL_VAT + " FROM " + TABLE_NAME_ORDER + " where " + ORDER_order_number + "='" + TempData.orderNumber + "'";
         else
             Query = "SELECT " + MEMOS_TOTAL_Vat + " FROM " + TABLE_NAME_MEMOS + " where " + MEMOS_memo_number + "='" + TempData.memoNumber + "'";
-        Cursor c = db.rawQuery(Query);
+        Cursor c = db.rawQueryCoustom(Query);
         Log.e("Quearymem", Query + " sixe" + c.getCount());
         c.moveToFirst();
 
@@ -281,7 +279,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                 }
 
                 Log.e("Query", Query);
-                Cursor c7 = db.rawQuery(Query);
+                Cursor c7 = db.rawQueryCoustom(Query);
                 if (c7.getCount() > 0) {
                     if (c7.moveToFirst()) {
                         do {
@@ -293,7 +291,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                             Log.e("printVat", String.valueOf(TempData.VAT));
 
                             vat.setText(TempData.VAT + "");
-                            Cursor c8 = db.rawQuery("SELECT m.market_name,t.thana_name FROM outlets O LEFT JOIN markets m ON (O.market_id = m.market_id) INNER JOIN thana as t on m.thana_id=t.thana_id where o.outlet_id='" + outletId + "' limit 1");
+                            Cursor c8 = db.rawQueryCoustom("SELECT m.market_name,t.thana_name FROM outlets O LEFT JOIN markets m ON (O.market_id = m.market_id) INNER JOIN thana as t on m.thana_id=t.thana_id where o.outlet_id='" + outletId + "' limit 1");
                             if (c8.getCount() > 0) {
                                 if (c8.moveToFirst()) {
                                     do {
@@ -307,7 +305,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                             }
 
 
-                            Cursor c6 = db.rawQuery("SELECT OC.outlet_category_name , o.address, o.mobile FROM outlets O LEFT JOIN outlet_categories OC ON (O.outlet_category_id = OC.outlet_category_id) where outlet_id='" + outletId + "'");
+                            Cursor c6 = db.rawQueryCoustom("SELECT OC.outlet_category_name , o.address, o.mobile FROM outlets O LEFT JOIN outlet_categories OC ON (O.outlet_category_id = OC.outlet_category_id) where outlet_id='" + outletId + "'");
 
                             if (c6.getCount() > 0) {
                                 if (c6.moveToFirst()) {
@@ -459,7 +457,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                 Query1 = "SELECT " + MEMOS_table_id + "," + MEMOS_ORDER_NUMBER + ", " + MEMOS_is_pushed + "," + MEMOS_outlet_id + "," + MEMOS_memo_date + "," + MEMOS_market_id + ", " + MEMOS_from_app + ", " + MEMOS_memo_date_time + ", " + MEMOS_editable + ", " + MEMOS_gross_value + "," + MEMOS_for_memo_delete + "," + MEMOS_memo_number + " FROM " + TABLE_NAME_MEMOS + " where " + MEMOS_memo_number + "='" + TempData.orderNumber + "'";
 
 
-            Cursor c1 = db.rawQuery(Query1);
+            Cursor c1 = db.rawQueryCoustom(Query1);
             Log.e("Quearymem", Query1 + " sixe" + c1.getCount());
             if (c1 != null) {
 
@@ -509,7 +507,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
             policyArrayList.clear();
             PolicySetRelation.clear();
 
-            Cursor setzerotoqty = db.rawQuery("SELECT * FROM product ORDER BY product_order ASC");
+            Cursor setzerotoqty = db.rawQueryCoustom("SELECT * FROM product ORDER BY product_order ASC");
 
             if (setzerotoqty != null) {
                 if (setzerotoqty.moveToFirst()) {
@@ -589,7 +587,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                 order_no_con+" AND " +
                 "policy_id is not null AND policy_id !='null'" +
                 " AND policy_id !=''  AND policy_id!=0";
-        Cursor policy_wise_order_details = db.rawQuery(query);
+        Cursor policy_wise_order_details = db.rawQueryCoustom(query);
         Log.e("MemoDetailsQuery",query);
         Log.e("policy_memo_data_print", DatabaseUtils.dumpCursorToString(policy_wise_order_details));
 
@@ -668,7 +666,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
     }
     private void MakeMemo() {
 
-        Cursor c = db.rawQuery("select * from order_table where order_number='" + TempData.orderNumber + "'");
+        Cursor c = db.rawQueryCoustom("select * from order_table where order_number='" + TempData.orderNumber + "'");
         c.moveToFirst();
         if (c != null && c.getCount() > 0) {
             HashMap<String, String> map = new HashMap<>();
@@ -689,7 +687,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
         }
 
-        Cursor c1 = db.rawQuery("select * from order_details where order_number='" + TempData.orderNumber + "'");
+        Cursor c1 = db.rawQueryCoustom("select * from order_details where order_number='" + TempData.orderNumber + "'");
 
         c1.moveToFirst();
         if (c1 != null && c1.getCount() > 0) {
@@ -786,12 +784,12 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
         Log.e("MemoDetails", memo_id);
 
-        Cursor cursor = db.rawQuery(memo_id, "testeeee");
+        Cursor cursor = db.rawQueryCoustom(memo_id, "testeeee");
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 String product_name = "";
                 do {
-                    Cursor c1 = db.rawQuery("SELECT " + PRODUCT_PRODUCT_NAME + " From " + TABLE_NAME_PRODUCT + " WHERE " + PRODUCT_ID + "='" + cursor.getString(0) + "'");
+                    Cursor c1 = db.rawQueryCoustom("SELECT " + PRODUCT_PRODUCT_NAME + " From " + TABLE_NAME_PRODUCT + " WHERE " + PRODUCT_ID + "='" + cursor.getString(0) + "'");
                     if (c1 != null) {
                         if (c1.moveToFirst()) {
                             do {
@@ -867,7 +865,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
     private void getDiscount(String s) {
         int distype = 0;
         Double discountp = 0.0;
-        Cursor cursor = db.rawQuery("select discount_percent,discount_type from discounts where memo_value <=" + s + " and date_from <= '" + TempData.MemoDate + "' and date_to>='" + TempData.MemoDate + "' order by memo_value DESC limit 1");
+        Cursor cursor = db.rawQueryCoustom("select discount_percent,discount_type from discounts where memo_value <=" + s + " and date_from <= '" + TempData.MemoDate + "' and date_to>='" + TempData.MemoDate + "' order by memo_value DESC limit 1");
         cursor.moveToFirst();
         if (cursor != null && cursor.getCount() > 0) {
 
@@ -892,7 +890,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
 
 
-        Cursor c = db.rawQuery(memo_id);
+        Cursor c = db.rawQueryCoustom(memo_id);
         c.moveToFirst();
         if (c.getCount()>0 && c!=null){
             discountt.setText(c.getString(0));
@@ -923,14 +921,14 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
         Log.e("MemoDetails", memo_id);
 
-        Cursor cursor = db.rawQuery(memo_id);
+        Cursor cursor = db.rawQueryCoustom(memo_id);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 String product_name = "";
                 do {
                     String productId = cursor.getString(0);
                     Log.e("productId: ", productId);
-                    Cursor c1 = db.rawQuery("SELECT " + PRODUCT_PRODUCT_NAME + " From " + TABLE_NAME_PRODUCT + " WHERE " + PRODUCT_ID + "='" + productId + "'");
+                    Cursor c1 = db.rawQueryCoustom("SELECT " + PRODUCT_PRODUCT_NAME + " From " + TABLE_NAME_PRODUCT + " WHERE " + PRODUCT_ID + "='" + productId + "'");
                     Log.e("raw Query : ", "SELECT product_name From products WHERE product_id='" + productId + "'");
                     if (c1 != null) {
                         if (c1.moveToFirst()) {
@@ -979,7 +977,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
         Log.e("memoQuery", memoQuery);
 
-        Cursor cursor = db.rawQuery(memoQuery);
+        Cursor cursor = db.rawQueryCoustom(memoQuery);
         Log.e("memoQueryCount", String.valueOf(cursor.getCount()));
 
         if (cursor != null) {
@@ -987,7 +985,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                 String product_name = "";
                 do {
                     String productId = cursor.getString(0);
-                    Cursor c1 = db.rawQuery("SELECT " + PRODUCT_PRODUCT_NAME + " From " + TABLE_NAME_PRODUCT + " WHERE " + PRODUCT_ID + "='" + productId + "'");
+                    Cursor c1 = db.rawQueryCoustom("SELECT " + PRODUCT_PRODUCT_NAME + " From " + TABLE_NAME_PRODUCT + " WHERE " + PRODUCT_ID + "='" + productId + "'");
                     if (c1 != null) {
                         if (c1.moveToFirst()) {
                             do {
@@ -1058,7 +1056,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
             return "";
         }
 
-        Cursor c = db.rawQuery("select unit_name from unit where unit_id='" + unit_id + "'", "getunitname");
+        Cursor c = db.rawQueryCoustom("select unit_name from unit where unit_id='" + unit_id + "'", "getunitname");
         c.moveToFirst();
         if (c.getCount() > 0) {
             return " " + c.getString(0);
@@ -1069,7 +1067,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
     void clearPrefarance() {
 
 
-        Cursor c = db.rawQuery("select product_id from product");
+        Cursor c = db.rawQueryCoustom("select product_id from product");
         c.moveToFirst();
         if (c != null && c.getCount() > 0) {
 
@@ -1236,14 +1234,14 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
         else
             memoGIFTQuery = "SELECT " + PRODUCT_ID + ", " + PRODUCT_BOOLEAN_QUANTITY + " FROM " + TABLE_NAME_MEMO_DETAILS + " WHERE " + MEMO_DETAILS_memo_number + "='" + TempData.memoNumber + "' AND product_type='1'";
         Log.e("memoGIFTQuery", memoGIFTQuery);
-        Cursor cursor = db.rawQuery(memoGIFTQuery);
+        Cursor cursor = db.rawQueryCoustom(memoGIFTQuery);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 String product_name = "";
                 do {
 
                     String productId = cursor.getString(0);
-                    Cursor c1 = db.rawQuery("SELECT " + PRODUCT_PRODUCT_NAME + " From " + TABLE_NAME_PRODUCT + " WHERE " + PRODUCT_ID + "='" + productId + "'");
+                    Cursor c1 = db.rawQueryCoustom("SELECT " + PRODUCT_PRODUCT_NAME + " From " + TABLE_NAME_PRODUCT + " WHERE " + PRODUCT_ID + "='" + productId + "'");
 
                     if (c1 != null) {
                         if (c1.moveToFirst()) {
@@ -1354,7 +1352,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
         @Override
         protected Void doInBackground(Void... voids) {
-            Cursor c3 = db.rawQuery("SELECT\n" +
+            Cursor c3 = db.rawQueryCoustom("SELECT\n" +
                     "  P.product_id,\n" +
                     "  P.product_name,\n" +
                     "  P.product_category_id,\n" +

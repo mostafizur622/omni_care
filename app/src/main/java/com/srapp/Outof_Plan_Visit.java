@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.JsonReader;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -20,11 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.srapp.Db_Actions.Data_Source;
-import com.srapp.Db_Actions.URL;
-import com.srapp.Model.SR_Account;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
-import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -200,7 +196,7 @@ public class Outof_Plan_Visit extends AppCompatActivity implements BasicFunction
     private void RouteParse() {
         Route_id.clear();
         Route_name.clear();
-        Cursor c = db.rawQuery("SELECT * FROM route ORDER BY route_name ASC");
+        Cursor c = db.rawQueryCoustom("SELECT * FROM route ORDER BY route_name ASC");
         if (c != null) {
             if (c.moveToFirst()) {
                 do {
@@ -225,7 +221,7 @@ public class Outof_Plan_Visit extends AppCompatActivity implements BasicFunction
     private void MarketParse(String Route_ID) {
         MarketID.clear();
         MarketName.clear();
-        Cursor c = db.rawQuery("SELECT * FROM markets where route_id=" + "'" + Route_ID + "' and is_active='1' ORDER BY market_name COLLATE NOCASE ASC");
+        Cursor c = db.rawQueryCoustom("SELECT * FROM markets where route_id=" + "'" + Route_ID + "' and is_active='1' ORDER BY market_name COLLATE NOCASE ASC");
 
         Log.e("querymarket", "SELECT * FROM markets where route_id=" + "'" + Route_ID + "' and is_active!='1' ORDER BY market_name COLLATE NOCASE ASC");
         if (c != null) {

@@ -1,12 +1,8 @@
 package com.srapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.UrlQuerySanitizer;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -301,7 +297,7 @@ public class GiftIssueActivity extends ParentActivity implements View.OnClickLis
         listThanaName.clear();
         listThanaId.add("0");
         listThanaName.add("Select Route");
-        Cursor c = db.rawQuery("SELECT * FROM route ORDER BY route_name COLLATE NOCASE ASC");
+        Cursor c = db.rawQueryCoustom("SELECT * FROM route ORDER BY route_name COLLATE NOCASE ASC");
         if (c != null) {
             if (c.moveToFirst()) {
                 do {
@@ -337,7 +333,7 @@ public class GiftIssueActivity extends ParentActivity implements View.OnClickLis
 	c=db.rawQuery("SELECT * FROM outlets where market_id = "+"'"+MarketID+"' and isDeactivated!='1' ORDER BY outlet_name COLLATE NOCASE ASC");
 	else
 		c=db.rawQuery("SELECT * FROM outlets WHERE isDeactivated!='1' ORDER BY outlet_name COLLATE NOCASE ASC");*/
-        c=db.rawQuery("SELECT * FROM outlets where market_id = "+"'"+MarketID+"'  ORDER BY outlet_name COLLATE NOCASE ASC");
+        c=db.rawQueryCoustom("SELECT * FROM outlets where market_id = "+"'"+MarketID+"'  ORDER BY outlet_name COLLATE NOCASE ASC");
         if (c != null) {
             if (c.moveToFirst()) {
                 do {
@@ -372,7 +368,7 @@ public class GiftIssueActivity extends ParentActivity implements View.OnClickLis
         MarketID.add("0");
         MarketName.clear();
         MarketName.add("All");
-        Cursor c = db.rawQuery("SELECT * FROM markets where  route_id="+"'"+Thana_ID+"' ORDER BY market_name COLLATE NOCASE ASC");
+        Cursor c = db.rawQueryCoustom("SELECT * FROM markets where  route_id="+"'"+Thana_ID+"' ORDER BY market_name COLLATE NOCASE ASC");
         if (c != null) {
             if (c.moveToFirst()) {
                 do {
@@ -403,7 +399,7 @@ public class GiftIssueActivity extends ParentActivity implements View.OnClickLis
     {
         itemListContent.clear();
 
-        Cursor c1 =db.rawQuery("SELECT product_id,product_name FROM product  WHERE product_type_id in(3,2) GROUP BY product_id");
+        Cursor c1 =db.rawQueryCoustom("SELECT product_id,product_name FROM product  WHERE product_type_id in(3,2) GROUP BY product_id");
 
         if (c1 != null) {
             if (c1.moveToFirst()) {
@@ -490,7 +486,7 @@ public class GiftIssueActivity extends ParentActivity implements View.OnClickLis
 
     private void setoutletSetAddress(String outlet_id) {
 
-        Cursor cursor = db.rawQuery("select m.route_id , m.market_id from outlets as o inner Join markets as m on o.market_id==m.market_id where o.outlet_id = '"+outlet_id+"'");
+        Cursor cursor = db.rawQueryCoustom("select m.route_id , m.market_id from outlets as o inner Join markets as m on o.market_id==m.market_id where o.outlet_id = '"+outlet_id+"'");
         cursor.moveToFirst();
         if (cursor!=null && cursor.getCount()>0 ){
             MarketParse(cursor.getString(0));

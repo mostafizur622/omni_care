@@ -1,8 +1,5 @@
 package com.srapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -23,12 +20,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.srapp.Adapter.AdapterForBonusProductList;
 import com.srapp.Adapter.AdapterForProductWiseSaleReport;
-import com.srapp.Adapter.AdapterForSalesReport;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
-import com.srapp.Db_Actions.URL;
 import com.srapp.Util.Parent;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
@@ -37,19 +31,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
-import static com.srapp.Db_Actions.Tables.ORDER_order_number;
-import static com.srapp.Db_Actions.Tables.PRODUCT_PRODUCT_NAME;
 import static com.srapp.Db_Actions.Tables.SR_ID;
-import static com.srapp.Db_Actions.Tables.TABLE_NAME_ORDER_DETAILS;
 import static com.srapp.Db_Actions.URL.CheckConnection;
 import static com.srapp.Db_Actions.URL.convertTORequestdata;
 import static com.srapp.Db_Actions.URL.getJAPi;
@@ -185,7 +173,7 @@ public class BonusReport extends Parent implements BasicFunctionListener {
 
 
         String query1 = "SELECT DISTINCT(ph.product_id) FROM product_history as ph  WHERE  is_bonus=1";
-       Cursor c2 = db.rawQuery(query1);
+       Cursor c2 = db.rawQueryCoustom(query1);
         Log.e("query", query1 + " " + c2.getCount());
         if (c2 != null) {
             if (c2.moveToFirst()) {
@@ -196,7 +184,7 @@ public class BonusReport extends Parent implements BasicFunctionListener {
 
 
                     String query = "SELECT product_name, product_id FROM product WHERE product_id='" + product_id + "'";
-                    Cursor c12 = db.rawQuery(query);
+                    Cursor c12 = db.rawQueryCoustom(query);
                     Log.e("Query", query);
                     if (c12 != null) {
                         if (c12.moveToFirst()) {

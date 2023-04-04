@@ -75,7 +75,7 @@ class CurrentOfferProductActivity : AppCompatActivity() {
 
         val productList = java.util.ArrayList<String>()
 
-        val cursorProduct = db!!.rawQuery("SELECT policy_name, start_date, end_date, policy_id FROM  Policy_Table where end_date>='"+getCurrentDate()+"' and start_date<='"+getCurrentDate()+"'")
+        val cursorProduct = db!!.rawQueryCoustom("SELECT policy_name, start_date, end_date, policy_id FROM  Policy_Table where end_date>='"+getCurrentDate()+"' and start_date<='"+getCurrentDate()+"'")
 
         Log.i(TAG, "SELECT policy_name, start_date, end_date, policy_id FROM  Policy_Table where end_date>='"+getCurrentDate()+"' and start_date<='"+getCurrentDate()+"'")
         Log.e("Current_product:", cursorProduct.toString())

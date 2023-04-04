@@ -1,26 +1,15 @@
 package com.srapp.Util;
 
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.style.ForegroundColorSpan;
 import android.util.Log;
-import android.view.Window;
-import android.widget.TextView;
 
 import com.srapp.Db_Actions.Data_Source;
 
@@ -61,7 +50,7 @@ public class ParentActivity extends Activity{
 		for(int i=0;i<hashArray.size();i++)
 		{
 			String query="SELECT product_order FROM products WHERE product_id='"+hashArray.get(i).get("product_id")+"'";
-			Cursor c=db.rawQuery(query);
+			Cursor c=db.rawQueryCoustom(query);
 			if(c!=null)
 			{
 				if(c.moveToFirst())
@@ -213,7 +202,7 @@ public class ParentActivity extends Activity{
 		 Log.d("outlete",outlet);
 
 		 String query2="SELECT product_id FROM product_boolean_table WHERE outlet_id='"+getPreference("OutletID")+"' AND boolean='true'";
-		 Cursor c23=db.rawQuery(query2);
+		 Cursor c23=db.rawQueryCoustom(query2);
 		 int count22=c23.getCount();
 		 Log.e("QUERY COUNT:", "..............."+count22);
 		 if(c23!=null)
@@ -224,7 +213,7 @@ public class ParentActivity extends Activity{
 				 	 String productId=c23.getString(0);
 					 String query="SELECT is_injectable FROM products WHERE product_id='"+productId+"'";
 					 Log.e("QUERY:", "..............."+query);
-					 Cursor c=db.rawQuery(query);
+					 Cursor c=db.rawQueryCoustom(query);
 					 int count23=c.getCount();
 					 Log.e("QUERY COUNT:", "..............."+count23);
 

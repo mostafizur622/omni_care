@@ -94,7 +94,7 @@ public class Sales_Memo extends Parent {
             Boolean validInput = true;
 
             String query = "SELECT quantity,product_id FROM product_boolean WHERE outlet_id='" + getPreference("OutletID") + "' AND boolean='true' ";
-            Cursor c2 = ds.rawQuery(query);
+            Cursor c2 = ds.rawQueryCoustom(query);
             int count = c2.getCount();
             Log.e("QUERY COUNT:", "..............." + count + "query" + query);
             if (c2 != null) {
@@ -136,7 +136,7 @@ public class Sales_Memo extends Parent {
 
         });
         String outlet = getPreference("OutletID");
-        Cursor c3 = ds.rawQuery("select outlet_category_id from outlets where outlet_id='" + outlet + "'");
+        Cursor c3 = ds.rawQueryCoustom("select outlet_category_id from outlets where outlet_id='" + outlet + "'");
         c3.moveToFirst();
         Log.e("count", c3.getCount() + "");
         if (c3 != null && c3.getCount() > 0) {
@@ -221,7 +221,7 @@ public class Sales_Memo extends Parent {
         }
 
         Log.e("bonus_show(query1)", "bonus_show(query1)" + query1);
-        Cursor c2 = ds.rawQuery(query1);
+        Cursor c2 = ds.rawQueryCoustom(query1);
         if (c2 != null) {
             if (c2.moveToFirst()) {
                 do {

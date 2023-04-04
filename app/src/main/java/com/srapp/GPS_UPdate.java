@@ -1,7 +1,6 @@
 package com.srapp;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
@@ -26,7 +25,6 @@ import android.widget.Toast;
 
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
-import com.srapp.Db_Actions.URL;
 import com.srapp.Util.Parent;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
@@ -122,7 +120,7 @@ public class GPS_UPdate extends Parent implements BasicFunctionListener {
 
     private void getOutLetLocation() {
 
-        Cursor c = db.rawQuery("select latitude,longitude from outlets where outlet_id='"+bF.getPreference("OutletID")+"'");
+        Cursor c = db.rawQueryCoustom("select latitude,longitude from outlets where outlet_id='"+bF.getPreference("OutletID")+"'");
             c.moveToFirst();
         if (c.getCount()>0 && c!=null){
 

@@ -103,7 +103,7 @@ class OfferDetailsActivity1 : AppCompatActivity() {
 
     private fun RootProductNameGet(policyId: String) {
 
-        val cursorProduct = db!!.rawQuery(
+        val cursorProduct = db!!.rawQueryCoustom(
             "SELECT product.product_name\n" +
                     "FROM product \n" +
                     "INNER JOIN policy_root_product ON " +
@@ -125,7 +125,7 @@ class OfferDetailsActivity1 : AppCompatActivity() {
     private fun ProductNameAndPriceGet(cursorPolicyOption: Cursor, disPrice: String) {
 
         //--------------------Product  and price ----------------------------------
-        val cursorProducts = db!!.rawQuery(
+        val cursorProducts = db!!.rawQueryCoustom(
             "SELECT product.product_name, price\n" +
                     "from product_combinations pc\n" +
                     "INNER join policy_option_price_slab pop on pc.slab_id=pop.slab_id\n" +
@@ -152,7 +152,7 @@ class OfferDetailsActivity1 : AppCompatActivity() {
     private fun BonusProductAndQtyGet(cursorPolicyOption: Cursor) {
 
         //--------------------Bonus product and Qty ----------------------------------
-        val cursorBonusProduct = db!!.rawQuery(
+        val cursorBonusProduct = db!!.rawQueryCoustom(
             "SELECT product_name, \n" +
                     "policy_bonus_product.bonus_qty, \n" +
                     "unit.unit_name\n" +
@@ -181,7 +181,7 @@ class OfferDetailsActivity1 : AppCompatActivity() {
     private fun PolicyOptionDataGet(policyId: String) {
 
         //--------------------Policy Option----------------------------------
-        val cursorPolicyOption = db!!.rawQuery(
+        val cursorPolicyOption = db!!.rawQueryCoustom(
             "SELECT \n" +
                     "\tmain_min_qty,\n" +
                     "\tunit.unit_name,\n" +

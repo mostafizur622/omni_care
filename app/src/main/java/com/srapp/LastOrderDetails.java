@@ -1,17 +1,14 @@
 package com.srapp;
 
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -22,49 +19,20 @@ import androidx.annotation.RequiresApi;
 
 import com.srapp.Adapter.AdapterForMemoDetails;
 import com.srapp.Db_Actions.Data_Source;
-import com.srapp.Db_Actions.Tables;
-import com.srapp.Db_Actions.URL;
 import com.srapp.Model.OrderDetailsModel;
 import com.srapp.Util.Parent;
-import com.srapp.print.PrintActivity;
-import com.srapp.print.PrintActivity_For_Memo;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.srapp.Db_Actions.Tables.MEMOS_ORDER_NUMBER;
 import static com.srapp.Db_Actions.Tables.MEMOS_TOTAL_Vat;
-import static com.srapp.Db_Actions.Tables.MEMOS_editable;
-import static com.srapp.Db_Actions.Tables.MEMOS_for_memo_delete;
-import static com.srapp.Db_Actions.Tables.MEMOS_from_app;
-import static com.srapp.Db_Actions.Tables.MEMOS_gross_value;
-import static com.srapp.Db_Actions.Tables.MEMOS_is_pushed;
-import static com.srapp.Db_Actions.Tables.MEMOS_market_id;
-import static com.srapp.Db_Actions.Tables.MEMOS_memo_date;
-import static com.srapp.Db_Actions.Tables.MEMOS_memo_date_time;
 import static com.srapp.Db_Actions.Tables.MEMOS_memo_number;
-import static com.srapp.Db_Actions.Tables.MEMOS_outlet_id;
-import static com.srapp.Db_Actions.Tables.MEMOS_table_id;
-import static com.srapp.Db_Actions.Tables.ORDER_STATUS;
 import static com.srapp.Db_Actions.Tables.ORDER_TOTAL_VAT;
-import static com.srapp.Db_Actions.Tables.ORDER_editable;
-import static com.srapp.Db_Actions.Tables.ORDER_for_order_delete;
-import static com.srapp.Db_Actions.Tables.ORDER_from_app;
-import static com.srapp.Db_Actions.Tables.ORDER_gross_value;
-import static com.srapp.Db_Actions.Tables.ORDER_is_pushed;
-import static com.srapp.Db_Actions.Tables.ORDER_market_id;
-import static com.srapp.Db_Actions.Tables.ORDER_order_date;
-import static com.srapp.Db_Actions.Tables.ORDER_order_date_time;
 import static com.srapp.Db_Actions.Tables.ORDER_order_number;
-import static com.srapp.Db_Actions.Tables.ORDER_outlet_id;
-import static com.srapp.Db_Actions.Tables.ORDER_table_id;
-import static com.srapp.Db_Actions.Tables.PROCESSING_COMPELETE;
-import static com.srapp.Db_Actions.Tables.PROCESSING_PENDING;
 import static com.srapp.Db_Actions.Tables.PRODUCT_BOOLEAN_QUANTITY;
 import static com.srapp.Db_Actions.Tables.PRODUCT_ID;
 import static com.srapp.Db_Actions.Tables.PRODUCT_PRICE_PRICE;
@@ -75,11 +43,8 @@ import static com.srapp.Db_Actions.Tables.TABLE_NAME_MEMO_DETAILS;
 import static com.srapp.Db_Actions.Tables.TABLE_NAME_ORDER;
 import static com.srapp.Db_Actions.Tables.TABLE_NAME_ORDER_DETAILS;
 import static com.srapp.Db_Actions.Tables.TABLE_NAME_PRODUCT;
-import static com.srapp.Db_Actions.Tables.TABLE_NAME_PRODUCT_BOOLEAN;
 import static com.srapp.TempData.BonusArrayList;
 import static com.srapp.TempData.MEMO_EDIT;
-import static com.srapp.TempData.ORDER_TO_MEMO;
-import static com.srapp.TempData.TotalBonusProductList;
 
 
 public class LastOrderDetails extends Parent implements BasicFunctionListener {
@@ -158,7 +123,7 @@ LinearLayout temp;
             Query="SELECT "+ ORDER_TOTAL_VAT+" FROM "+TABLE_NAME_ORDER+" where "+ ORDER_order_number+"='"+TempData.orderNumber +"'";
         else
             Query= "SELECT "+MEMOS_TOTAL_Vat +" FROM "+TABLE_NAME_MEMOS+" where "+ MEMOS_memo_number+"='"+TempData.orderNumber +"'";
-        Cursor c = db.rawQuery(Query);
+        Cursor c = db.rawQueryCoustom(Query);
         Log.e("Quearymem",Query+" sixe"+c.getCount());
         c.moveToFirst();
 
@@ -188,14 +153,14 @@ LinearLayout temp;
 
         Log.e("MemoDetails",memo_id);
 
-        Cursor cursor=db.rawQuery(memo_id);
+        Cursor cursor=db.rawQueryCoustom(memo_id);
         if(cursor!=null)
         {
             if(cursor.moveToFirst())
             {
                 String product_name="";
                 do{
-                    Cursor c1=db.rawQuery("SELECT "+PRODUCT_PRODUCT_NAME+" From "+TABLE_NAME_PRODUCT+" WHERE "+PRODUCT_ID+"='"+cursor.getString(0)+"'");
+                    Cursor c1=db.rawQueryCoustom("SELECT "+PRODUCT_PRODUCT_NAME+" From "+TABLE_NAME_PRODUCT+" WHERE "+PRODUCT_ID+"='"+cursor.getString(0)+"'");
                     if(c1!=null)
                     {
                         if(c1.moveToFirst())
@@ -248,7 +213,7 @@ LinearLayout temp;
 
         Log.e("MemoDetails",memo_id);
 
-        Cursor cursor=db.rawQuery(memo_id);
+        Cursor cursor=db.rawQueryCoustom(memo_id);
         if(cursor!=null)
         {
             if(cursor.moveToFirst())
@@ -257,7 +222,7 @@ LinearLayout temp;
                 do{
                     String productId =cursor.getString(0);
                     Log.e("productId: ", productId);
-                    Cursor c1=db.rawQuery("SELECT "+PRODUCT_PRODUCT_NAME+" From "+TABLE_NAME_PRODUCT+" WHERE "+PRODUCT_ID+"='"+productId+"'");
+                    Cursor c1=db.rawQueryCoustom("SELECT "+PRODUCT_PRODUCT_NAME+" From "+TABLE_NAME_PRODUCT+" WHERE "+PRODUCT_ID+"='"+productId+"'");
                     Log.e("raw Query : ", "SELECT product_name From products WHERE product_id='"+productId+"'");
                     if(c1!=null)
                     {
@@ -304,7 +269,7 @@ LinearLayout temp;
             memoQuery="SELECT "+PRODUCT_ID+", "+PRODUCT_BOOLEAN_QUANTITY+" FROM "+TABLE_NAME_MEMO_DETAILS+" WHERE "+MEMOS_memo_number+"='"+TempData.memoNumber +"' AND product_type='2'";
 
         Log.e("memoQuery",memoQuery);
-        Cursor cursor=db.rawQuery(memoQuery);
+        Cursor cursor=db.rawQueryCoustom(memoQuery);
         Log.e("memoQueryCount", String.valueOf(cursor.getCount()));
         if(cursor!=null)
         {
@@ -313,7 +278,7 @@ LinearLayout temp;
                 String product_name="";
                 do{
                     String productId =cursor.getString(0);
-                    Cursor c1=db.rawQuery("SELECT "+PRODUCT_PRODUCT_NAME+" From "+TABLE_NAME_PRODUCT+" WHERE "+PRODUCT_ID+"='"+productId+"'");
+                    Cursor c1=db.rawQueryCoustom("SELECT "+PRODUCT_PRODUCT_NAME+" From "+TABLE_NAME_PRODUCT+" WHERE "+PRODUCT_ID+"='"+productId+"'");
                     if(c1!=null)
                     {
                         if(c1.moveToFirst())
@@ -386,7 +351,7 @@ LinearLayout temp;
 
         String memoGIFTQuery="SELECT "+PRODUCT_ID+", "+PRODUCT_BOOLEAN_QUANTITY+" FROM "+TABLE_NAME_ORDER_DETAILS+" WHERE "+ORDER_order_number+"='"+TempData.orderNumber +"' AND product_type='1'";
         Log.e("memoGIFTQuery",memoGIFTQuery);
-        Cursor cursor=db.rawQuery(memoGIFTQuery);
+        Cursor cursor=db.rawQueryCoustom(memoGIFTQuery);
         if(cursor!=null)
         {
             if(cursor.moveToFirst())
@@ -395,7 +360,7 @@ LinearLayout temp;
                 do{
 
                     String productId =cursor.getString(0);
-                    Cursor c1=db.rawQuery("SELECT "+PRODUCT_PRODUCT_NAME+" From "+TABLE_NAME_PRODUCT+" WHERE "+PRODUCT_ID+"='"+productId+"'");
+                    Cursor c1=db.rawQueryCoustom("SELECT "+PRODUCT_PRODUCT_NAME+" From "+TABLE_NAME_PRODUCT+" WHERE "+PRODUCT_ID+"='"+productId+"'");
 
                     if(c1!=null)
                     {
@@ -462,7 +427,7 @@ LinearLayout temp;
 
         int distype=0;
         Double discountp = 0.0;
-        Cursor cursor =  db.rawQuery("select discount_percent,discount_type from discounts where memo_value <="+s+" and date_from <= '"+TempData.MemoDate+"' and date_to>='"+TempData.MemoDate+"' order by memo_value DESC limit 1");
+        Cursor cursor =  db.rawQueryCoustom("select discount_percent,discount_type from discounts where memo_value <="+s+" and date_from <= '"+TempData.MemoDate+"' and date_to>='"+TempData.MemoDate+"' order by memo_value DESC limit 1");
         cursor.moveToFirst();
         if (cursor != null && cursor.getCount() > 0) {
 

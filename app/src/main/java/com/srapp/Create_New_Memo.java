@@ -530,7 +530,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
                 TempData.SaleScreen = "OutletAccount";
                 if (CheckOutletValidation()) {
                     TempData.MarketID = _MarketID;
-                    Cursor c5 = db.rawQuery("SELECT * FROM outlets where outlet_id = " + "'" + _OutletID + "'");
+                    Cursor c5 = db.rawQueryCoustom("SELECT * FROM outlets where outlet_id = " + "'" + _OutletID + "'");
                     if (c5 != null) {
                         if (c5.moveToFirst()) {
                             do {
@@ -630,7 +630,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
     void clearPrefarance(){
 
 
-        Cursor c = db.rawQuery("select product_id from product");
+        Cursor c = db.rawQueryCoustom("select product_id from product");
         c.moveToFirst();
         if (c!=null && c.getCount()>0){
 
@@ -684,7 +684,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
     private void ThanaParse() {
         Route_id.clear();
         Route_name.clear();
-        Cursor c = db.rawQuery("SELECT * FROM route ORDER BY route_name ASC");
+        Cursor c = db.rawQueryCoustom("SELECT * FROM route ORDER BY route_name ASC");
         if (c != null) {
             if (c.moveToFirst()) {
                 do {
@@ -716,7 +716,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
     private void MarketParse(String Thana_ID) {
         MarketID.clear();
         MarketName.clear();
-        Cursor c = db.rawQuery("SELECT * FROM markets where route_id=" + "'" + Thana_ID + "' and is_active='1' ORDER BY market_name COLLATE NOCASE ASC");
+        Cursor c = db.rawQueryCoustom("SELECT * FROM markets where route_id=" + "'" + Thana_ID + "' and is_active='1' ORDER BY market_name COLLATE NOCASE ASC");
 
         Log.e("querymarket", "SELECT * FROM markets where route_id=" + "'" + Thana_ID + "' and is_active!='1' ORDER BY market_name COLLATE NOCASE ASC");
         if (c != null) {
@@ -790,7 +790,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
         OutletCategoryID.add("0");
         OutletCategoryName.add("All");
 
-        Cursor c = db.rawQuery("SELECT * FROM outlet_categories ORDER BY outlet_category_name COLLATE NOCASE ASC");
+        Cursor c = db.rawQueryCoustom("SELECT * FROM outlet_categories ORDER BY outlet_category_name COLLATE NOCASE ASC");
         if (c != null) {
             if (c.moveToFirst()) {
                 do {
@@ -832,10 +832,10 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
         String Query;
         if (typeID.equalsIgnoreCase("0")) {
             Query = "SELECT * FROM outlets  WHERE market_id='" + marketID + "' and isActivated='1' ORDER BY outlet_name COLLATE NOCASE ASC";
-            c = db.rawQuery(Query);
+            c = db.rawQueryCoustom(Query);
         } else {
             Query = "SELECT * FROM outlets  WHERE market_id='" + marketID + "' AND outlet_category_id='" + typeID + "' and isActivated='1' ORDER BY outlet_name COLLATE NOCASE ASC";
-            c = db.rawQuery(Query);
+            c = db.rawQueryCoustom(Query);
         }
         c.moveToFirst();
         Log.e("courser count", Query + " " + c.getCount() + "");

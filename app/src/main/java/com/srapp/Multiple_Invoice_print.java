@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -36,7 +35,6 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -326,7 +324,7 @@ public class Multiple_Invoice_print extends AppCompatActivity implements BasicFu
     private void ThanaParse() {
         routeList.clear();
         ThanaName.clear();
-        Cursor c = db.rawQuery("SELECT * FROM route ORDER BY route_name ASC");
+        Cursor c = db.rawQueryCoustom("SELECT * FROM route ORDER BY route_name ASC");
         if (c != null) {
             if (c.moveToFirst()) {
                 do {
@@ -362,7 +360,7 @@ public class Multiple_Invoice_print extends AppCompatActivity implements BasicFu
         String Market_Id = "0";
         MarketID.clear();
         MarketName.clear();
-        Cursor c = db.rawQuery("SELECT * FROM markets where route_id=" + "'" + Thana_ID + "' and is_active='1' ORDER BY market_name COLLATE NOCASE ASC");
+        Cursor c = db.rawQueryCoustom("SELECT * FROM markets where route_id=" + "'" + Thana_ID + "' and is_active='1' ORDER BY market_name COLLATE NOCASE ASC");
 
         Log.e("querymarket", "SELECT * FROM markets where route_id=" + "'" + Thana_ID + "' and is_active!='1' ORDER BY market_name COLLATE NOCASE ASC");
         if (c != null) {
@@ -408,10 +406,10 @@ public class Multiple_Invoice_print extends AppCompatActivity implements BasicFu
         String Query;
         if (typeID.equalsIgnoreCase("0")) {
             Query = "SELECT * FROM outlets  WHERE market_id='" + marketID + "' and isActivated='1' ORDER BY outlet_name COLLATE NOCASE ASC";
-            c = db.rawQuery(Query);
+            c = db.rawQueryCoustom(Query);
         } else {
             Query = "SELECT * FROM outlets  WHERE market_id='" + marketID + "' AND outlet_category_id='" + typeID + "' and isActivated='1' ORDER BY outlet_name COLLATE NOCASE ASC";
-            c = db.rawQuery(Query);
+            c = db.rawQueryCoustom(Query);
         }
 
         c.moveToFirst();
