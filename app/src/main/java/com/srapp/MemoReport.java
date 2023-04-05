@@ -147,7 +147,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
 
         setDateTimeField();
 
-        bf.savePreference("outlate_id", "0");
+        bf.savePreference("outlet_id_OrderReport", "0");
         bf.savePreference("outlet_category_id_mreport", "0");
 
         startdate.setOnClickListener(new View.OnClickListener() {
@@ -203,7 +203,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
                     textView.setTextColor(getResources().getColor(R.color.background_card));
                     textView.setPadding(0, 0, 0, 0);
                 }
-                bf.savePreference("outlate_id", outlate.get(OUTLETS[2]).get(position));
+                bf.savePreference("outlet_id_OrderReport", outlate.get(OUTLETS[2]).get(position));
 
             }
 
@@ -326,7 +326,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
             try {
                 jsonObject.put("start_date", bf.getPreference("start_Date"));
                 jsonObject.put("end_date", bf.getPreference("end_date"));
-                jsonObject.put("outlet_id", bf.getPreference("outlate_id"));
+                jsonObject.put("outlet_id", bf.getPreference("outlet_id_OrderReport"));
                 jsonObject.put("outlet_category_id", bf.getPreference("outlet_category_id_mreport"));
                 jsonObject.put(SR_ID, bf.getPreference(SR_ID));
                 jsonObject.put("mac", bf.getPreference("mac"));
@@ -381,7 +381,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
 
         }else {
             setEC();
-            list = db.getMemos(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlate_id"), bf.getPreference("outlet_category_id_mreport"),0);
+            list = db.getMemos(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id_OrderReport"), bf.getPreference("outlet_category_id_mreport"),0);
              adapter = new AdapterForMemoReport(this, list);
             listview.setAdapter(adapter);
         }
@@ -399,7 +399,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
 
                     pageIndex++;
 
-                    ArrayList<HashMap<String, String>> chanck_list =db.getMemos(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlate_id"), bf.getPreference("outlet_category_id_mreport"),pageIndex);
+                    ArrayList<HashMap<String, String>> chanck_list =db.getMemos(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id_OrderReport"), bf.getPreference("outlet_category_id_mreport"),pageIndex);
 
                     if(chanck_list.size()>0) {
                         list.addAll(chanck_list);
@@ -421,7 +421,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
 
     private void setEC() {
 
-        HashMap<String,String> map =   db.getEcandMemoAmount(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id"),bf.getPreference("outlet_category_id_report"));
+        HashMap<String,String> map =   db.getEcandMemoAmount(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id_OrderReport"),bf.getPreference("outlet_category_id_report"));
 
         txtTotalAmount.setText(map.get("memo_value"));
         TotalEC.setText(map.get("EC"));
@@ -462,7 +462,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
                 @Override
                 public void run() {
 
-                    list = db.getMemos(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlate_id"), bf.getPreference("outlet_category_id_mreport"), 0);
+                    list = db.getMemos(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id_OrderReport"), bf.getPreference("outlet_category_id_mreport"), 0);
                     adapter = new AdapterForMemoReport(MemoReport.this, list);
                     listview.setAdapter(adapter);
 

@@ -15,6 +15,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.srapp.TempData;
@@ -4226,6 +4227,7 @@ public class Data_Source extends Parent {
 
                     }
                     String[] operationin = MEMO_DETAILS;
+                    open();
                     Cursor cursorin = sqLiteDatabase.rawQuery("select * from " + "memo_details" + " where " + Tables.MEMOS_memo_number + " ='" + cursor.getString(cursor.getColumnIndex(operation[2])) + "'", null);
                     cursorin.moveToFirst();
 
@@ -4261,11 +4263,16 @@ public class Data_Source extends Parent {
 
 
                     }
-
+                    cursorin.close();
+                    close();
                     try {
                         jsonObject.put("memo_details", jsonArrayin);
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        if (progressDialog != null)
+                            progressDialog.dismiss();
+
+                        Toast.makeText(context,"Can't get Order From DB",Toast.LENGTH_LONG).show();
                     }
 
 
