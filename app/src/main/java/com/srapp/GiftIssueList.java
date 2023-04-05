@@ -21,7 +21,6 @@ import android.widget.Toast;
 
 import com.srapp.Adapter.AdapterForGiftIssueList;
 import com.srapp.Db_Actions.Data_Source;
-import com.srapp.Db_Actions.URL;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
@@ -169,7 +168,7 @@ public class GiftIssueList extends AppCompatActivity implements BasicFunctionLis
     {
         RouteID.clear();
         RouteName.clear();
-        Cursor c = db.rawQuery("SELECT * FROM route");
+        Cursor c = db.rawQueryCoustom("SELECT * FROM route");
         if (c != null) {
             if (c.moveToFirst()) {
                 do {
@@ -199,7 +198,7 @@ public class GiftIssueList extends AppCompatActivity implements BasicFunctionLis
         MarketName.clear();
         MarketID.add("0");
         MarketName.add("All");
-        Cursor c = db.rawQuery("SELECT * FROM markets where route_id='"+Thana_ID+"'   ORDER BY market_name COLLATE NOCASE ASC");
+        Cursor c = db.rawQueryCoustom("SELECT * FROM markets where route_id='"+Thana_ID+"'   ORDER BY market_name COLLATE NOCASE ASC");
         if (c != null) {
             if (c.moveToFirst()) {
                 do {

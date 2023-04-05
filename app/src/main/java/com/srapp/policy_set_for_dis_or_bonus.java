@@ -22,7 +22,6 @@ import com.srapp.Util.ParentActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 
 import static android.content.ContentValues.TAG;
 import static com.srapp.Adapter.SalesOrderDetailsAdaper1.bonus_policylistener;
@@ -399,7 +398,7 @@ public class policy_set_for_dis_or_bonus extends Parent {
         String pname = "";
         String productsquery = "SELECT product_id,product_name FROM  products WHERE product_id='" + bonus_product_id + "' limit 1";
         Log.e("STOCK QUERY:", productsquery);
-        Cursor cursor = db.rawQuery(productsquery, "Bonus_product_Policy8");
+        Cursor cursor = db.rawQueryCoustom(productsquery, "Bonus_product_Policy8");
         cursor.moveToFirst();
         if (cursor != null && cursor.getCount() > 0) {
             return cursor.getString(1);
@@ -419,7 +418,7 @@ public class policy_set_for_dis_or_bonus extends Parent {
             return quantity;
         } else {
 
-            Cursor cursor = db.rawQuery("select qty_in_base from unit_details where product_id='" + product_id + "' and measurement_unit_id ='7'");
+            Cursor cursor = db.rawQueryCoustom("select qty_in_base from unit_details where product_id='" + product_id + "' and measurement_unit_id ='7'");
 
             cursor.moveToFirst();
 
@@ -428,7 +427,7 @@ public class policy_set_for_dis_or_bonus extends Parent {
                 quantityd = quantityd * cursor.getDouble(0);
                 cursor.close();
                 Log.e("quantityd*", quantityd + "");
-                Cursor cursor1 = db.rawQuery("select qty_in_base from unit_details where product_id='" + product_id + "' and measurement_unit_id ='" + measurement_unit_id + "'");
+                Cursor cursor1 = db.rawQueryCoustom("select qty_in_base from unit_details where product_id='" + product_id + "' and measurement_unit_id ='" + measurement_unit_id + "'");
 
                 cursor1.moveToFirst();
 
@@ -442,7 +441,7 @@ public class policy_set_for_dis_or_bonus extends Parent {
 
 
             } else {
-                Cursor cursor1 = db.rawQuery("select qty_in_base from unit_details where product_id='" + product_id + "' and measurement_unit_id ='7'");
+                Cursor cursor1 = db.rawQueryCoustom("select qty_in_base from unit_details where product_id='" + product_id + "' and measurement_unit_id ='7'");
 
                 cursor1.moveToFirst();
 
@@ -472,7 +471,7 @@ public class policy_set_for_dis_or_bonus extends Parent {
         String stockQtyquey = "SELECT SUM(quantity) as quantity FROM  van_stocks WHERE product_id='" + product_id + "'";
         Log.e("STOCK_QUERY:", stockQtyquey);
         double stockQty = 0;
-        Cursor cursor1 = db.rawQuery(stockQtyquey, "Bonus_product_Policy7");
+        Cursor cursor1 = db.rawQueryCoustom(stockQtyquey, "Bonus_product_Policy7");
         if (cursor1 != null) {
             if (cursor1.moveToFirst()) {
                 Double stock = cursor1.getDouble(0);
@@ -504,7 +503,7 @@ public class policy_set_for_dis_or_bonus extends Parent {
 
     private Double getvanqtyafteredit(String product_id) {
 
-        Cursor cursor = db.rawQuery("select quantity from memo_details where memo_no='" + TempData.memoNumber + "' and product_id ='" + product_id + "' and is_bonus='0' and product_type='" + 0 + "'", "getmemoqty");
+        Cursor cursor = db.rawQueryCoustom("select quantity from memo_details where memo_no='" + TempData.memoNumber + "' and product_id ='" + product_id + "' and is_bonus='0' and product_type='" + 0 + "'", "getmemoqty");
         cursor.moveToFirst();
         if (cursor != null && cursor.getCount() > 0) {
 
@@ -515,7 +514,7 @@ public class policy_set_for_dis_or_bonus extends Parent {
 
     private double getmemoqty(String bonus_product_id, String policy_id) {
 
-        Cursor cursor = db.rawQuery("select quantity from memo_details where memo_no='" + TempData.memoNumber + "' and product_id ='" + bonus_product_id + "' and is_bonus='3' and policy_id='" + policy_id + "'", "getmemoqty");
+        Cursor cursor = db.rawQueryCoustom("select quantity from memo_details where memo_no='" + TempData.memoNumber + "' and product_id ='" + bonus_product_id + "' and is_bonus='3' and policy_id='" + policy_id + "'", "getmemoqty");
         cursor.moveToFirst();
         if (cursor != null && cursor.getCount() > 0) {
 

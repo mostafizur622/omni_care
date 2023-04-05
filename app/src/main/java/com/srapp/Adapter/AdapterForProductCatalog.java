@@ -8,8 +8,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Environment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +22,6 @@ import androidx.annotation.RequiresApi;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Product_policy_Details;
 import com.srapp.R;
-import com.srapp.policy_set;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -32,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 import static com.srapp.Db_Actions.Tables.PRODUCT_PRODUCT_ID;
 import static com.srapp.Db_Actions.Tables.PRODUCT_PRODUCT_NAME;
@@ -112,7 +108,7 @@ public class AdapterForProductCatalog extends BaseAdapter {
     private String getcolor(String product_id) {
         Data_Source ds = new Data_Source(context);
 
-        Cursor c = ds.rawQuery("select * from policy_root_product where root_product_id='"+product_id+"'");
+        Cursor c = ds.rawQueryCoustom("select * from policy_root_product where root_product_id='"+product_id+"'");
 
         c.moveToFirst();
         if (c!=null && c.getCount()>0) {
@@ -128,7 +124,7 @@ public class AdapterForProductCatalog extends BaseAdapter {
 
         Data_Source ds = new Data_Source(context);
 
-        Cursor c = ds.rawQuery("select min_quantity, price from product_combinations where product_id='"+product_id+"' AND combination_id=0 and effective_date=(SELECT max(effective_date) from product_combinations where product_id='"+product_id+"' AND price!='0' and combination_id=0 and effective_date<='"+getCurrentDate()+"') order by min_quantity ASC limit 3");
+        Cursor c = ds.rawQueryCoustom("select min_quantity, price from product_combinations where product_id='"+product_id+"' AND combination_id=0 and effective_date=(SELECT max(effective_date) from product_combinations where product_id='"+product_id+"' AND price!='0' and combination_id=0 and effective_date<='"+getCurrentDate()+"') order by min_quantity ASC limit 3");
 
         c.moveToFirst();
         layoutprice.setWeightSum(c.getCount()+1);
@@ -157,7 +153,7 @@ public class AdapterForProductCatalog extends BaseAdapter {
                 }while (c.moveToNext());
             }else {
 
-            Cursor c1 = ds.rawQuery("select  price from product_price where product_id='"+product_id+"' AND  effective_date=(SELECT max(effective_date) from product_combinations where product_id='"+product_id+"' AND effective_date<='"+getCurrentDate()+"')  limit 1");
+            Cursor c1 = ds.rawQueryCoustom("select  price from product_price where product_id='"+product_id+"' AND  effective_date=(SELECT max(effective_date) from product_combinations where product_id='"+product_id+"' AND effective_date<='"+getCurrentDate()+"')  limit 1");
             c1.moveToFirst();
             if (c!=null && c.getCount()>0) {
                 do {

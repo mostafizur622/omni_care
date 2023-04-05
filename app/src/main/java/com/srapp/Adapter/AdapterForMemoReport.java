@@ -1,6 +1,5 @@
 package com.srapp.Adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,7 +16,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.srapp.Db_Actions.Data_Source;
-import com.srapp.Db_Actions.Tables;
 import com.srapp.DetailsOrderReport;
 import com.srapp.R;
 import com.srapp.TempData;
@@ -148,7 +146,7 @@ public class AdapterForMemoReport extends BaseAdapter {
 				TempData.MarketID="";
 				TempData.From_App="";
 				TempData.DayCloseMemoEditable="";
-				Cursor c =db.rawQuery("SELECT _id,"+ MEMOS_memo_number+comma+MEMOS_is_pushed+comma+MEMOS_outlet_id+comma+MEMOS_memo_date+comma+MEMOS_market_id+comma+MEMOS_from_app+comma+MEMOS_memo_date_time+comma+MEMOS_editable+comma+MEMOS_gross_value+comma+MEMOS_for_memo_delete+comma+MEMOS_ORDER_NUMBER+"  FROM "+TABLE_NAME_MEMOS+" where "+MEMOS_memo_number+"='"+memoNo+"'");
+				Cursor c =db.rawQueryCoustom("SELECT _id,"+ MEMOS_memo_number+comma+MEMOS_is_pushed+comma+MEMOS_outlet_id+comma+MEMOS_memo_date+comma+MEMOS_market_id+comma+MEMOS_from_app+comma+MEMOS_memo_date_time+comma+MEMOS_editable+comma+MEMOS_gross_value+comma+MEMOS_for_memo_delete+comma+MEMOS_ORDER_NUMBER+"  FROM "+TABLE_NAME_MEMOS+" where "+MEMOS_memo_number+"='"+memoNo+"'");
 				//Log.e("Querymemo","SELECT _id,"+ MEMOS_memo_number+comma+MEMOS_is_pushed+comma+MEMOS_outlet_id+comma+MEMOS_memo_date+comma+MEMOS_market_id+comma+MEMOS_from_app+comma+MEMOS_memo_date_time+comma+MEMOS_editable+comma+MEMOS_gross_value+comma+MEMOS_for_memo_delete+"  FROM "+TABLE_NAME_MEMOS+" where "+MEMOS_memo_number+"='"+memoNo+"'");
 				if(c!=null)
 				{
@@ -177,7 +175,7 @@ public class AdapterForMemoReport extends BaseAdapter {
 					}
 				}
 
-				Cursor c3 = db.rawQuery("SELECT * FROM outlets  WHERE outlet_id='"+TempData.OutletID+"'");
+				Cursor c3 = db.rawQueryCoustom("SELECT * FROM outlets  WHERE outlet_id='"+TempData.OutletID+"'");
 				  if (c3 != null) {
 						if (c3.moveToFirst()) {
 							do {

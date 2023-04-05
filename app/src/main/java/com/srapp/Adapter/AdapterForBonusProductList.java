@@ -462,7 +462,7 @@ public class AdapterForBonusProductList extends BaseAdapter {
 
 //                            Log.e("---------------TempData.SESSIONID-----------", TempData.SESSIONID);
                             double boolean_quantity = 0.0;
-                            Cursor c5= db.rawQuery("SELECT quantity FROM product_boolean WHERE  product_id = '"+_product_id+"' and outlet_id='"+TempData.OutletID+"'");
+                            Cursor c5= db.rawQueryCoustom("SELECT quantity FROM product_boolean WHERE  product_id = '"+_product_id+"' and outlet_id='"+TempData.OutletID+"'");
                             if(c5!=null)
                             {
                                 if(c5.moveToFirst())
@@ -478,7 +478,7 @@ public class AdapterForBonusProductList extends BaseAdapter {
 
 
                             double memo_details_quantity = 0.0;
-                            Cursor c2= db.rawQuery("SELECT quantity FROM memo_details WHERE  " +
+                            Cursor c2= db.rawQueryCoustom("SELECT quantity FROM memo_details WHERE  " +
                                     "product_id = '"+_product_id+"' and memo_number='"+TempData
                                     .orderNumber +"'" +" AND price > 0");
                             if(c2!=null)
@@ -497,7 +497,7 @@ public class AdapterForBonusProductList extends BaseAdapter {
 
 
                             double bonus_quantity = 0.0;
-                            Cursor c3= db.rawQuery("SELECT quantity FROM memo_details WHERE  " +
+                            Cursor c3= db.rawQueryCoustom("SELECT quantity FROM memo_details WHERE  " +
                                     "product_id = '"+_product_id+"' and memo_number='"+TempData
                                     .orderNumber +"'" +" AND price = 0");
                             if(c3!=null)

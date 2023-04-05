@@ -563,7 +563,7 @@ public class PrintActivity_For_Memo extends ParentActivity {
 
         Log.e("Query222",Query);
 
-        Cursor c = db.rawQuery(Query);
+        Cursor c = db.rawQueryCoustom(Query);
         if (c.getCount() > 0) {
             if (c.moveToFirst()) do {
                 date = c.getString(0);

@@ -8,7 +8,6 @@ import static com.srapp.print.newprint.Constant.Connect_fail;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -20,7 +19,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -57,7 +55,6 @@ import com.dantsu.escposprinter.connection.usb.UsbConnection;
 import com.dantsu.escposprinter.connection.usb.UsbPrintersConnections;
 
 
-import com.google.zxing.BarcodeFormat;
 import com.gprinter.io.PortManager;
 import com.gprinter.io.UsbPort;
 import com.gprinter.utils.Command;
@@ -681,7 +678,7 @@ public class PrintActivity<BarcodeFormat> extends ParentActivity {
         }
 
         String outlet_id = "", market_id = "";
-        Cursor c = db.rawQuery(Query);
+        Cursor c = db.rawQueryCoustom(Query);
         if (c.getCount() > 0) {
             if (c.moveToFirst()) do {
                 date = c.getString(0);
@@ -690,7 +687,7 @@ public class PrintActivity<BarcodeFormat> extends ParentActivity {
             } while (c.moveToNext());
         }
 
-        Cursor c2 = db.rawQuery("SELECT O.outlet_name, M.market_name FROM outlets O LEFT JOIN markets M ON(O.market_id=M.market_id) WHERE O.outlet_id='" + outlet_id + "'");
+        Cursor c2 = db.rawQueryCoustom("SELECT O.outlet_name, M.market_name FROM outlets O LEFT JOIN markets M ON(O.market_id=M.market_id) WHERE O.outlet_id='" + outlet_id + "'");
         if (c2 != null) {
             if (c2.moveToFirst()) {
                 do {
@@ -702,7 +699,7 @@ public class PrintActivity<BarcodeFormat> extends ParentActivity {
             }
         }
 
-        Cursor c3 = db.rawQuery("SELECT T.thana_name FROM markets M LEFT JOIN thana T ON(M.thana_id=T.thana_id) WHERE M.market_id='" + market_id + "'");
+        Cursor c3 = db.rawQueryCoustom("SELECT T.thana_name FROM markets M LEFT JOIN thana T ON(M.thana_id=T.thana_id) WHERE M.market_id='" + market_id + "'");
         if (c3 != null) {
             if (c3.moveToFirst()) {
                 do {

@@ -99,7 +99,7 @@ class BonusCampaignActivity : AppCompatActivity() , BasicFunctionListener{
         }
 
         val productList = java.util.ArrayList<String>()
-        val cursorProduct = db!!.rawQuery("SELECT product_name,product_id FROM  product where product_type_id=1")
+        val cursorProduct = db!!.rawQueryCoustom("SELECT product_name,product_id FROM  product where product_type_id=1")
         if (cursorProduct != null) {
             if (cursorProduct.moveToFirst()) {
                 do {

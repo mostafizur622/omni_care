@@ -28,7 +28,6 @@ import com.srapp.Adapter.SpinnerAdapter;
 import com.srapp.Db_Actions.DBListener;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
-import com.srapp.Db_Actions.URL;
 import com.srapp.print.PrintSelectedOrdersActivity;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
@@ -240,7 +239,7 @@ public class MakePDF extends AppCompatActivity implements  BasicFunctionListener
     {
         ThanaID.clear();
         ThanaName.clear();
-        Cursor c = ds.rawQuery("SELECT * FROM route ORDER BY route_name ASC");
+        Cursor c = ds.rawQueryCoustom("SELECT * FROM route ORDER BY route_name ASC");
         if (c != null) {
             if (c.moveToFirst()) {
                 do {

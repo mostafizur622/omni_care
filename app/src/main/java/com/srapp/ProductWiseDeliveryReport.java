@@ -1,8 +1,5 @@
 package com.srapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -24,10 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.srapp.Adapter.AdapterForProductWiseSaleReport;
-import com.srapp.Adapter.AdapterForSalesReport;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
-import com.srapp.Db_Actions.URL;
 import com.srapp.Util.Parent;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
@@ -36,16 +31,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
-import static com.srapp.Db_Actions.Tables.PRODUCT_PRODUCT_NAME;
 import static com.srapp.Db_Actions.Tables.SR_ID;
 import static com.srapp.Db_Actions.URL.CheckConnection;
 import static com.srapp.Db_Actions.URL.convertTORequestdata;
@@ -176,7 +167,7 @@ public class ProductWiseDeliveryReport extends Parent implements BasicFunctionLi
     private void setProductSp() {
         productNameList.clear();
         productIdList.clear();
-        Cursor c = db.rawQuery("select product_id, product_name from product");
+        Cursor c = db.rawQueryCoustom("select product_id, product_name from product");
 
         c.moveToFirst();
         if (c!=null && c.getCount()>0){

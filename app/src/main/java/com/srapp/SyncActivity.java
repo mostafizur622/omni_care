@@ -7,16 +7,11 @@
  import static com.srapp.Db_Actions.URL.getJAPi;
 
  import android.app.AlertDialog;
- import android.app.PendingIntent;
  import android.app.ProgressDialog;
- import android.content.BroadcastReceiver;
  import android.content.Context;
  import android.content.Intent;
- import android.content.IntentFilter;
  import android.content.SharedPreferences;
  import android.database.Cursor;
- import android.hardware.usb.UsbDevice;
- import android.hardware.usb.UsbManager;
  import android.net.ConnectivityManager;
  import android.net.NetworkInfo;
  import android.os.Build;
@@ -39,7 +34,6 @@
  import com.srapp.Db_Actions.Tables;
  import com.srapp.Db_Actions.URL;
  import com.srapp.Util.Parent;
- import com.srapp.thermalprint.async.usbdevice.UsbDataBinder;
  import com.tanvir.BasicFun.BasicFunction;
  import com.tanvir.BasicFun.BasicFunctionListener;
 
@@ -48,9 +42,7 @@
  import org.json.JSONObject;
 
  import java.util.ArrayList;
- import java.util.Calendar;
  import java.util.HashMap;
- import java.util.Iterator;
  import java.util.concurrent.TimeUnit;
 
  import retrofit2.Call;
@@ -403,7 +395,7 @@
     private void generatemarketJson() throws JSONException {
         JSONObject marketObj = new JSONObject();
         JSONArray jsonArray = new JSONArray();
-        Cursor c = ds.rawQuery("select * from markets where is_pushed='0'");
+        Cursor c = ds.rawQueryCoustom("select * from markets where is_pushed='0'");
         c.moveToFirst();
         if (c != null && c.getCount() > 0) {
             do {
@@ -456,7 +448,7 @@
         try {
         Log.e("outlet", "outlet");
 
-        Cursor c = ds.rawQuery("select * from outlets where isPushed='0'");
+        Cursor c = ds.rawQueryCoustom("select * from outlets where isPushed='0'");
         c.moveToFirst();
         if (c != null && c.getCount() > 0) {
             do {

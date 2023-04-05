@@ -13,7 +13,6 @@ import static NewPrint.EscapeSequence.ESCAPE_CHARACTERS;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -35,7 +34,6 @@ import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -725,7 +723,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
 
         for (int i = 0; i < orderList.size(); i++) {
 
-            Cursor c = db.rawQuery("SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_number=" + "'" + orderList.get(i) + "'");
+            Cursor c = db.rawQueryCoustom("SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_number=" + "'" + orderList.get(i) + "'");
             Log.e("Query", "SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_number=" + "'" + orderList.get(i) + "'");
             String memo_no = "";
             if (c != null && c.getCount() > 0) {
@@ -742,7 +740,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
                         TempData.DISCOUNT = c.getDouble(7);
                         TempData.VAT = c.getDouble(8);
 
-                        Cursor c2 = db.rawQuery("SELECT O.outlet_name, M.market_name,O.address FROM outlets O LEFT JOIN markets M ON(O.market_id=M.market_id) WHERE O.outlet_id='" + outlet_id + "'");
+                        Cursor c2 = db.rawQueryCoustom("SELECT O.outlet_name, M.market_name,O.address FROM outlets O LEFT JOIN markets M ON(O.market_id=M.market_id) WHERE O.outlet_id='" + outlet_id + "'");
                         if (c2 != null) {
                             if (c2.moveToFirst()) {
                                 do {
@@ -755,7 +753,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
                             }
                         }
 
-                        Cursor c3 = db.rawQuery("SELECT T.thana_name FROM markets M LEFT JOIN thana T ON(M.thana_id=T.thana_id) WHERE M.market_id='" + market_id + "'");
+                        Cursor c3 = db.rawQueryCoustom("SELECT T.thana_name FROM markets M LEFT JOIN thana T ON(M.thana_id=T.thana_id) WHERE M.market_id='" + market_id + "'");
                         if (c3 != null) {
                             if (c3.moveToFirst()) {
                                 do {
@@ -766,7 +764,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
                             }
                         }
 
-                        Cursor c4 = db.rawQuery("SELECT OC.outlet_category_name FROM outlets O LEFT JOIN outlet_categories OC ON (O.outlet_category_id = OC.outlet_category_id) where O.outlet_id='" + outlet_id + "'");
+                        Cursor c4 = db.rawQueryCoustom("SELECT OC.outlet_category_name FROM outlets O LEFT JOIN outlet_categories OC ON (O.outlet_category_id = OC.outlet_category_id) where O.outlet_id='" + outlet_id + "'");
                         if (c4.getCount() > 0) {
                             if (c4.moveToFirst()) {
                                 do {
@@ -821,7 +819,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
 //                    Cursor c3 = db.rawQuery("SELECT T.thana_name FROM markets M LEFT JOIN thana T ON(M.market_id=T.market_id) WHERE market_id='"+market_id+"'");
                         Log.e("MemoDetails", "MemoDetails: " + MemoDetails);
                         discount_info = "";
-                        Cursor cursor = db.rawQuery(MemoDetails);
+                        Cursor cursor = db.rawQueryCoustom(MemoDetails);
                         if (cursor != null) {
                             if (cursor.moveToFirst()) {
                                 do {
@@ -860,7 +858,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
                         String Gift1 = "";
                         String MemoDetailsForGift = "SELECT MD.product_id,P.product_name ,MD.quantity FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='1'";
                         Log.e("MemoDetailsForGift", "MemoDetailsForGift: " + MemoDetailsForGift);
-                        Cursor cur2 = db.rawQuery(MemoDetailsForGift);
+                        Cursor cur2 = db.rawQueryCoustom(MemoDetailsForGift);
                         if (cur2 != null) {
                             if (cur2.moveToFirst()) {
                                 do {
@@ -880,7 +878,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
                         String Bonus1 = "", Bonus = "";
                         String MemoDetailsForBonus = "SELECT MD.product_id,P.product_name ,MD.quantity , MD.measurement_unit_id  FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='2'";
                         Log.e("MemoDetailsForBonus", "MemoDetailsForBonus: " + MemoDetailsForBonus);
-                        Cursor cur = db.rawQuery(MemoDetailsForBonus);
+                        Cursor cur = db.rawQueryCoustom(MemoDetailsForBonus);
                         if (cur != null) {
                             if (cur.moveToFirst()) {
                                 do {
@@ -1032,7 +1030,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
             TextView area_office, outlet_name_category_address, market_thana, order_memo_no_date, outlet_address_phone;
             TextView discountTxt, bonus, gift = null, total_bill, discount, vatCal, net_payable, sr_db_name, mobile_no, sr_address, office_copy;
 
-            Cursor c = db.rawQuery("SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_number=" + "'" + orderList.get(i) + "'");
+            Cursor c = db.rawQueryCoustom("SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_number=" + "'" + orderList.get(i) + "'");
             Log.e("Query", "SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_number=" + "'" + orderList.get(i) + "'");
             String memo_no = "";
 
@@ -1080,7 +1078,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
                         TempData.DISCOUNT = c.getDouble(7);
                         TempData.VAT = c.getDouble(8);
 
-                        Cursor c2 = db.rawQuery("SELECT O.outlet_name, M.market_name,O.address,O.mobile FROM outlets O LEFT JOIN markets M ON(O.market_id=M.market_id) WHERE O.outlet_id='" + outlet_id + "'");
+                        Cursor c2 = db.rawQueryCoustom("SELECT O.outlet_name, M.market_name,O.address,O.mobile FROM outlets O LEFT JOIN markets M ON(O.market_id=M.market_id) WHERE O.outlet_id='" + outlet_id + "'");
                         if (c2 != null) {
                             if (c2.moveToFirst()) {
                                 do {
@@ -1094,7 +1092,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
                             }
                         }
 
-                        Cursor c3 = db.rawQuery("SELECT T.thana_name FROM markets M LEFT JOIN thana T ON(M.thana_id=T.thana_id) WHERE M.market_id='" + market_id + "'");
+                        Cursor c3 = db.rawQueryCoustom("SELECT T.thana_name FROM markets M LEFT JOIN thana T ON(M.thana_id=T.thana_id) WHERE M.market_id='" + market_id + "'");
                         if (c3 != null) {
                             if (c3.moveToFirst()) {
                                 do {
@@ -1105,7 +1103,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
                             }
                         }
 
-                        Cursor c4 = db.rawQuery("SELECT OC.outlet_category_name FROM outlets O LEFT JOIN outlet_categories OC ON (O.outlet_category_id = OC.outlet_category_id) where O.outlet_id='" + outlet_id + "'");
+                        Cursor c4 = db.rawQueryCoustom("SELECT OC.outlet_category_name FROM outlets O LEFT JOIN outlet_categories OC ON (O.outlet_category_id = OC.outlet_category_id) where O.outlet_id='" + outlet_id + "'");
                         if (c4.getCount() > 0) {
                             if (c4.moveToFirst()) {
                                 do {
@@ -1123,7 +1121,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
                         String MemoDetails = "SELECT MD.product_id,P.product_name ,MD.quantity, MD.price,MD.vat,MD.discount_type,MD.discount_amount FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='0'";
                         Log.e("MemoDetails", "MemoDetails: " + MemoDetails);
                         discount_info = "";
-                        Cursor cursor = db.rawQuery(MemoDetails);
+                        Cursor cursor = db.rawQueryCoustom(MemoDetails);
 
 
                         if (cursor != null) {
@@ -1162,7 +1160,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
                         String Gift1 = "";
                         String MemoDetailsForGift = "SELECT MD.product_id,P.product_name ,MD.quantity FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='1'";
                         Log.e("MemoDetailsForGift", "MemoDetailsForGift: " + MemoDetailsForGift);
-                        Cursor cur2 = db.rawQuery(MemoDetailsForGift);
+                        Cursor cur2 = db.rawQueryCoustom(MemoDetailsForGift);
                         if (cur2 != null) {
                             if (cur2.moveToFirst()) {
                                 do {
@@ -1182,7 +1180,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
                         String Bonus1 = "", Bonus = "";
                         String MemoDetailsForBonus = "SELECT MD.product_id,P.product_name ,MD.quantity , MD.measurement_unit_id  FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='2'";
                         Log.e("MemoDetailsForBonus", "MemoDetailsForBonus: " + MemoDetailsForBonus);
-                        Cursor cur = db.rawQuery(MemoDetailsForBonus);
+                        Cursor cur = db.rawQueryCoustom(MemoDetailsForBonus);
                         if (cur != null) {
                             if (cur.moveToFirst()) {
                                 do {
@@ -1349,7 +1347,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
 
     private String getMeasurementUnitName(String mesurement_unit_id) {
         Data_Source db = new Data_Source(PrintSelectedOrdersActivity.this);
-        Cursor c = db.rawQuery("select unit_name from unit where unit_id='" + mesurement_unit_id + "'");
+        Cursor c = db.rawQueryCoustom("select unit_name from unit where unit_id='" + mesurement_unit_id + "'");
         c.moveToFirst();
         if (c.getCount() > 0) {
             return c.getString(0);
@@ -1359,7 +1357,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
 
     private String getOutletAddress(String string) {
         Data_Source db = new Data_Source(PrintSelectedOrdersActivity.this);
-        Cursor c = db.rawQuery("select address from outlets where outlet_id='" + string + "'");
+        Cursor c = db.rawQueryCoustom("select address from outlets where outlet_id='" + string + "'");
 
         if (c != null && c.getCount() > 0) {
             if (c.getString(0) != null && c.getString(0).equalsIgnoreCase("null"))

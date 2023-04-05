@@ -603,7 +603,7 @@ public class PrintAllMemosActivityP extends ParentActivity
         TempData.TempBonus="";
         String AllPrint="";
         Data_Source db=new Data_Source(PrintAllMemosActivityP.this);
-        Cursor c=db.rawQuery("SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_date>="+"'"+FromDate+"'"+" and order_date <="+"'"+ToDate+"' and status='1' ORDER BY _id DESC");
+        Cursor c=db.rawQueryCoustom("SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_date>="+"'"+FromDate+"'"+" and order_date <="+"'"+ToDate+"' and status='1' ORDER BY _id DESC");
        Log.e("Query","SELECT memo_number, memo_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value FROM memos where memo_date>="+"'"+FromDate+"'"+" and memo_date <="+"'"+ToDate+"' ORDER BY _id DESC");
         String memo_no="";
         if (c!= null && c.getCount()>0)
@@ -622,7 +622,7 @@ public class PrintAllMemosActivityP extends ParentActivity
                      TempData.DISCOUNT=c.getDouble(7);
                      TempData.VAT=c.getDouble(8);
 
-                    Cursor c2 = db.rawQuery("SELECT O.outlet_name, M.market_name FROM outlets O LEFT JOIN markets M ON(O.market_id=M.market_id) WHERE O.outlet_id='"+outlet_id+"'");
+                    Cursor c2 = db.rawQueryCoustom("SELECT O.outlet_name, M.market_name FROM outlets O LEFT JOIN markets M ON(O.market_id=M.market_id) WHERE O.outlet_id='"+outlet_id+"'");
                     if (c2 != null) {
                         if (c2.moveToFirst()) {
                             do {
@@ -636,7 +636,7 @@ public class PrintAllMemosActivityP extends ParentActivity
                         }
                     }
 
-                    Cursor c3 = db.rawQuery("SELECT T.thana_name FROM markets M LEFT JOIN thana T ON(M.thana_id=T.thana_id) WHERE M.market_id='"+market_id+"'");
+                    Cursor c3 = db.rawQueryCoustom("SELECT T.thana_name FROM markets M LEFT JOIN thana T ON(M.thana_id=T.thana_id) WHERE M.market_id='"+market_id+"'");
                     if (c3 != null) {
                         if (c3.moveToFirst()) {
                             do {
@@ -647,7 +647,7 @@ public class PrintAllMemosActivityP extends ParentActivity
                         }
                     }
 
-                    Cursor c4=db.rawQuery("SELECT OC.outlet_category_name FROM outlets O LEFT JOIN outlet_categories OC ON (O.outlet_category_id = OC.outlet_category_id) where O.outlet_id='"+outlet_id+"'");
+                    Cursor c4=db.rawQueryCoustom("SELECT OC.outlet_category_name FROM outlets O LEFT JOIN outlet_categories OC ON (O.outlet_category_id = OC.outlet_category_id) where O.outlet_id='"+outlet_id+"'");
                     if(c4.getCount()>0) {
                         if (c4.moveToFirst()) {
                             do {
@@ -699,7 +699,7 @@ public class PrintAllMemosActivityP extends ParentActivity
 //                    Cursor c3 = db.rawQuery("SELECT T.thana_name FROM markets M LEFT JOIN thana T ON(M.market_id=T.market_id) WHERE market_id='"+market_id+"'");
                     Log.e("MemoDetails","MemoDetails: "+MemoDetails);
                     discount_info="";
-                    Cursor cursor=db.rawQuery(MemoDetails);
+                    Cursor cursor=db.rawQueryCoustom(MemoDetails);
                     if(cursor!=null)
                     {
                         if(cursor.moveToFirst())
@@ -743,7 +743,7 @@ public class PrintAllMemosActivityP extends ParentActivity
                     String Gift1="";
                     String  MemoDetailsForGift="SELECT MD.product_id,P.product_name ,MD.quantity FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='"+memo_no+"' and MD.product_type='1'";
                     Log.e("MemoDetailsForGift","MemoDetailsForGift: "+MemoDetailsForGift);
-                    Cursor cur2=db.rawQuery(MemoDetailsForGift);
+                    Cursor cur2=db.rawQueryCoustom(MemoDetailsForGift);
                     if(cur2!=null)
                     {
                         if(cur2.moveToFirst())
@@ -765,7 +765,7 @@ public class PrintAllMemosActivityP extends ParentActivity
                     String Bonus1="",Bonus="";
                     String  MemoDetailsForBonus="SELECT MD.product_id,P.product_name ,MD.quantity FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='"+memo_no+"' and MD.product_type='2'";
                     Log.e("MemoDetailsForBonus","MemoDetailsForBonus: "+MemoDetailsForBonus);
-                    Cursor cur=db.rawQuery(MemoDetailsForBonus);
+                    Cursor cur=db.rawQueryCoustom(MemoDetailsForBonus);
                     if(cur!=null)
                     {
                         if(cur.moveToFirst())

@@ -58,7 +58,6 @@ import static com.srapp.TempData.BPSelected_product;
 import static com.srapp.TempData.BPSelected_set;
 import static com.srapp.TempData.BPbonus_product;
 import static com.srapp.TempData.BPbonus_product_t;
-import static com.srapp.TempData.BonusShowList;
 import static com.srapp.TempData.MEMO_EDIT;
 import static com.srapp.TempData.OldBPSelected_bonus;
 import static com.srapp.TempData.OldBPSelected_option_id;
@@ -836,7 +835,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
     }
 
     private HashMap<String, String> getDiscountDetails(String id, String total_price) {
-        Cursor c = db.rawQuery("select * from discount_policy where dis_policy='" + id + "' and total_price<=" + total_price + " and '" + memodate + "' between start_date and end_date" + "  ORDER by total_price DESC LIMIT 1");
+        Cursor c = db.rawQueryCoustom("select * from discount_policy where dis_policy='" + id + "' and total_price<=" + total_price + " and '" + memodate + "' between start_date and end_date" + "  ORDER by total_price DESC LIMIT 1");
         HashMap<String, String> map = new HashMap();
         c.moveToFirst();
         if (c.getCount() > 0 && c != null) {
@@ -861,7 +860,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
     }
 
     private List<HashMap<String, String>> getSelectedProduct() {
-        Cursor c = db.rawQuery("select * from discount_policy_products");
+        Cursor c = db.rawQueryCoustom("select * from discount_policy_products");
         ArrayList<HashMap<String, String>> list = new ArrayList();
         c.moveToFirst();
         if (c.getCount() > 0 && c != null) {
@@ -2196,7 +2195,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
     private boolean checkDefaultProduct(String policy_id, String product_id) {
 
-        Cursor c = db.rawQuery("select * from policy_default_product where policy_id =" + policy_id + " and product_id=" + product_id + "");
+        Cursor c = db.rawQueryCoustom("select * from policy_default_product where policy_id =" + policy_id + " and product_id=" + product_id + "");
         Log.e("dproduct55555", "select * from policy_default_product where policy_id =" + policy_id + " and product_id=" + product_id + "");
         c.moveToFirst();
         if (c.getCount() > 0 && c != null) {
@@ -2285,7 +2284,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
             Double price_ad = 0.0, price = 0.0, discount = 0.0;
 
             if (deduct_from_value == "0") {
-                Cursor cursor = db.rawQuery("select pc.price, pc.slab_id from product_combinations as pc inner join policy_option_price_slab as pops on pops.slab_id = pc.slab_id where pops.policy_product_option_id='" + option_id + "' and pops.option_product_id='" + option_product_id + "' and pc.product_id = '" + option_product_id + "'", "Bonus_product_Policy6");
+                Cursor cursor = db.rawQueryCoustom("select pc.price, pc.slab_id from product_combinations as pc inner join policy_option_price_slab as pops on pops.slab_id = pc.slab_id where pops.policy_product_option_id='" + option_id + "' and pops.option_product_id='" + option_product_id + "' and pc.product_id = '" + option_product_id + "'", "Bonus_product_Policy6");
                 Log.d("discount", DatabaseUtils.dumpCursorToString(cursor) + " : " + discount_amount);
 
                 cursor.moveToFirst();
@@ -2339,7 +2338,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
         Double quantityd = Double.parseDouble(quantity);
         Double measurement_unit_idd = Double.parseDouble(measurement_unit_id);
 
-        Cursor cursor = db.rawQuery("select \n" +
+        Cursor cursor = db.rawQueryCoustom("select \n" +
                 "\tROUND(((case when ud.qty_in_base is null then 1 else ud.qty_in_base end)*" + quantityd + "),0)\n" +
                 "from \n" +
                 "products p\n" +
@@ -2362,7 +2361,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
             quantityd = cursor.getDouble(0);
             cursor.close();
             Log.e("quantityd*", quantityd + "");
-            Cursor cursor1 = db.rawQuery("select \n" +
+            Cursor cursor1 = db.rawQueryCoustom("select \n" +
                     "\tprintf('%.2f'," + quantityd + "/(case when ud.qty_in_base is null then 1 else ud.qty_in_base end))\n" +
                     "from \n" +
                     "products p\n" +
@@ -2409,7 +2408,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
         try {
             String queryforvat = "SELECT vat From product_price WHERE product_id='" + product_id + "' AND effective_date=(SELECT max(effective_date) from product_price where product_id='" + product_id + "' AND effective_date<='" + memodate + "') ORDER BY  vat DESC LIMIT 1";
             Log.e("queryvatnormal", queryforvat);
-            Cursor cursorvat = db.rawQuery(queryforvat);
+            Cursor cursorvat = db.rawQueryCoustom(queryforvat);
             vat = 0.0;
             if (cursorvat.getCount() > 0) {
                 try {
@@ -2438,7 +2437,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
         String pname = "";
         String productsquery = "SELECT product_id,product_name FROM  product WHERE product_id='" + bonus_product_id + "' limit 1";
         Log.e("STOCK QUERY:", productsquery);
-        Cursor cursor = db.rawQuery(productsquery, "Bonus_product_Policy8");
+        Cursor cursor = db.rawQueryCoustom(productsquery, "Bonus_product_Policy8");
         cursor.moveToFirst();
         if (cursor != null && cursor.getCount() > 0) {
             pname = cursor.getString(1);
@@ -2459,7 +2458,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
         boolean flag = true;
 
-        Cursor cursor = db.rawQuery(Query);
+        Cursor cursor = db.rawQueryCoustom(Query);
         cursor.moveToFirst();
         if (cursor != null && cursor.getCount() > 0) {
 
@@ -2481,8 +2480,8 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
             Query1 = "select count(_id) from memo_details where memo_number='" + salesMemoNo + "' and product_type='0'";
         }
 
-        Cursor cursor1 = db.rawQuery(Query1);
-        Cursor cursor2 = db.rawQuery("select count(_id) from product_boolean where outlet_id='" + TempData.OutletID + "' and boolean='true'", "cursor2");
+        Cursor cursor1 = db.rawQueryCoustom(Query1);
+        Cursor cursor2 = db.rawQueryCoustom("select count(_id) from product_boolean where outlet_id='" + TempData.OutletID + "' and boolean='true'", "cursor2");
         cursor2.moveToFirst();
         cursor1.moveToFirst();
         if (cursor1 != null && cursor2 != null) {
@@ -2530,7 +2529,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
         String line = "";
         String productsquery = "SELECT product_id,product_name FROM  product WHERE product_id='" + s + "' limit 1";
         Log.e("STOCK QUERY:", productsquery);
-        Cursor cursor = db.rawQuery(productsquery, "Bonus_product_Policy8");
+        Cursor cursor = db.rawQueryCoustom(productsquery, "Bonus_product_Policy8");
         cursor.moveToFirst();
         if (cursor != null && cursor.getCount() > 0) {
 
@@ -2543,7 +2542,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
     private double getmemoqtywithpolicy(String policy_id) {
 
-        Cursor cursor = db.rawQuery("select Sum(quantity) from memo_details where memo_number='" + TempData.memoNumber + "' and policy_id ='" + policy_id + "' and is_bonus='3'", "getmemoqty");
+        Cursor cursor = db.rawQueryCoustom("select Sum(quantity) from memo_details where memo_number='" + TempData.memoNumber + "' and policy_id ='" + policy_id + "' and is_bonus='3'", "getmemoqty");
         cursor.moveToFirst();
         if (cursor != null && cursor.getCount() > 0) {
 
@@ -2578,7 +2577,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
             return quantity;
         } else {
 
-            Cursor cursor = db.rawQuery("select qty_in_base from unit_details where product_id='" + product_id + "' and measurement_unit_id ='" + measurement_unit_id + "'");
+            Cursor cursor = db.rawQueryCoustom("select qty_in_base from unit_details where product_id='" + product_id + "' and measurement_unit_id ='" + measurement_unit_id + "'");
 
             cursor.moveToFirst();
 
@@ -2587,7 +2586,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                 quantityd = quantityd * cursor.getDouble(0);
                 cursor.close();
                 Log.e("quantityd*", quantityd + "");
-                Cursor cursor1 = db.rawQuery("select qty_in_base from unit_details where product_id='" + product_id + "' and measurement_unit_id ='7'");
+                Cursor cursor1 = db.rawQueryCoustom("select qty_in_base from unit_details where product_id='" + product_id + "' and measurement_unit_id ='7'");
 
                 cursor1.moveToFirst();
 
@@ -2601,7 +2600,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
 
             } else {
-                Cursor cursor1 = db.rawQuery("select qty_in_base from unit_details where product_id='" + product_id + "' and measurement_unit_id ='7'");
+                Cursor cursor1 = db.rawQueryCoustom("select qty_in_base from unit_details where product_id='" + product_id + "' and measurement_unit_id ='7'");
 
                 cursor1.moveToFirst();
 
@@ -2626,7 +2625,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
     private double getmemoqty(String bonus_product_id) {
 
-        Cursor cursor = db.rawQuery("select quantity from order_details where order_number='" + TempData.orderNumber + "' and product_id ='" + bonus_product_id + "' and is_bonus='3'", "getmemoqty");
+        Cursor cursor = db.rawQueryCoustom("select quantity from order_details where order_number='" + TempData.orderNumber + "' and product_id ='" + bonus_product_id + "' and is_bonus='3'", "getmemoqty");
         cursor.moveToFirst();
         if (cursor != null && cursor.getCount() > 0) {
 
@@ -2638,7 +2637,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
     private void vatCalculation(String product_id, Double quantity, Double price, int pos) {
         Double vatprice = 0.0, vatofvat = 0.0;
-        Cursor c = db.rawQuery("select vat from product_price where product_id='" + product_id + "' and vat!='null'");
+        Cursor c = db.rawQueryCoustom("select vat from product_price where product_id='" + product_id + "' and vat!='null'");
         c.moveToFirst();
         if (c != null && c.getCount() > 0) {
             vatprice = (price * 100) / (100 + c.getDouble(0));
@@ -2652,7 +2651,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
     private void getDiscount(Double sp_discount, String s) {
         int distype = 0;
         discountp = 0.0;
-        Cursor cursor = db.rawQuery("select discount_percent,discount_type from discounts where memo_value <=" + s + " and date_from <= '" + memodate + "' and date_to>='" + memodate + "' order by memo_value DESC limit 1");
+        Cursor cursor = db.rawQueryCoustom("select discount_percent,discount_type from discounts where memo_value <=" + s + " and date_from <= '" + memodate + "' and date_to>='" + memodate + "' order by memo_value DESC limit 1");
         Log.e("DisQuery", "select discount_percent,discount_type from discounts where memo_value <=" + s + " and date_from <= '" + memodate + "' and date_to>='" + memodate + "' order by memo_value DESC limit 1");
         cursor.moveToFirst();
         if (cursor != null && cursor.getCount() > 0) {
@@ -2780,7 +2779,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
     private void showLimitExeednotification(double giventQty, String product_id) {
 
-        Cursor c = db.rawQuery("SELECT quantity-booking_quantity>" + giventQty + " as p from stock_info WHERE  product_id = '" + product_id + "'");
+        Cursor c = db.rawQueryCoustom("SELECT quantity-booking_quantity>" + giventQty + " as p from stock_info WHERE  product_id = '" + product_id + "'");
         Log.e("ProductSales", "SELECT quantity-booking_quantity>" + giventQty + " as p from stock_info WHERE  product_id = '" + product_id + "'");
         c.moveToFirst();
         if (c != null && c.getCount() > 0) {

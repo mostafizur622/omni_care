@@ -35,7 +35,6 @@ import com.srapp.Adapter.SalesOrderDetailsAdaper1;
 import com.srapp.Db_Actions.DBListener;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
-import com.srapp.Db_Actions.URL;
 import com.srapp.Model.OrderDetailsModel;
 import com.srapp.Util.Parent;
 import com.tanvir.BasicFun.BasicFunction;
@@ -78,7 +77,6 @@ import static com.srapp.TempData.BPSelected_bonus;
 import static com.srapp.TempData.BPSelected_product;
 import static com.srapp.TempData.MEMO_EDIT;
 import static com.srapp.TempData.ORDER_TO_MEMO;
-import static com.srapp.TempData.OldBPSelected_policy_type;
 import static com.srapp.TempData.combination_idMap;
 import static com.srapp.TempData.discountmap;
 import static com.srapp.TempData.discountoffer;
@@ -379,7 +377,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
             public void onClick(View v) {
                 //  SavePrintButton.setEnabled(false);
                 SaveBtn.setEnabled(false);
-                Cursor c1 = db.rawQuery("SELECT * FROM memos where from_app='1' order by _id DESC limit 1");
+                Cursor c1 = db.rawQueryCoustom("SELECT * FROM memos where from_app='1' order by _id DESC limit 1");
                 c1.moveToFirst();
                 if (c1.getCount() > 0) {
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
@@ -408,7 +406,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
                     }
                 }
 
-                Cursor c2 = db.rawQuery("SELECT * FROM product ORDER BY product_order ASC");
+                Cursor c2 = db.rawQueryCoustom("SELECT * FROM product ORDER BY product_order ASC");
                 if (c2 != null) {
                     if (c2.moveToFirst()) {
                         do {
@@ -473,7 +471,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
         for (int i = current_salesWeek; i <= weekid.length; i++) {
 
 
-            Cursor c = db.rawQuery("select * from visit_list where route_id='" + bf.getPreference("thanaID") + "' and week_id='" + (i) + "'");
+            Cursor c = db.rawQueryCoustom("select * from visit_list where route_id='" + bf.getPreference("thanaID") + "' and week_id='" + (i) + "'");
             Log.e("Queryt" + i, "select * from visit_list where route_id='" + bf.getPreference("thanaID") + "' and week_id='" + (i) + "' " + c.getCount());
             c.moveToFirst();
             if (c != null && c.getCount() > 0) {
@@ -531,7 +529,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
     void orderdata() {
         Calendar cal = Calendar.getInstance();
         cal.get(Calendar.DAY_OF_WEEK);
-        Cursor c = db.rawQuery("select * from visit_list where route_id='" + bf.getPreference("thanaID") + "' and week_id='" + getWeekId() + "'");
+        Cursor c = db.rawQueryCoustom("select * from visit_list where route_id='" + bf.getPreference("thanaID") + "' and week_id='" + getWeekId() + "'");
         c.moveToFirst();
         Log.e("datofweek", cal.get(Calendar.DAY_OF_WEEK) + "  " + "select * from visit_list where route_id='" + bf.getPreference("thanaID") + "' and week_id='" + getWeekId() + "'");
         if (c != null & c.getCount() > 0) {
@@ -726,7 +724,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
         }
 
         try {
-            Cursor c1 = db.rawQuery("SELECT * FROM temp_memos  WHERE " + MEMOS_memo_number + "='" + TempData.memoNumber + "'");
+            Cursor c1 = db.rawQueryCoustom("SELECT * FROM temp_memos  WHERE " + MEMOS_memo_number + "='" + TempData.memoNumber + "'");
             Log.e("query__saveMemos", "SELECT * FROM temp_memos  WHERE " + MEMOS_memo_number + "='" + TempData.memoNumber + "'");
             c1.moveToFirst();
             if (c1 != null && c1.getCount() > 0) {
@@ -742,7 +740,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
 
             }
 
-            Cursor c2 = db.rawQuery(" SELECT * FROM temp_memo_details  WHERE " + MEMOS_memo_number + "='" + TempData.memoNumber + "'");
+            Cursor c2 = db.rawQueryCoustom(" SELECT * FROM temp_memo_details  WHERE " + MEMOS_memo_number + "='" + TempData.memoNumber + "'");
 
             c2.moveToFirst();
             if (c2 != null && c2.getCount() > 0) {
@@ -781,7 +779,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
         double MemoQuantity = 0.0;
 
         String query = "SELECT product_id, quantity FROM product_boolean WHERE outlet_id='" + getPreference("OutletID") + "' AND boolean='true'";
-        Cursor c = db.rawQuery(query);
+        Cursor c = db.rawQueryCoustom(query);
         int count = c.getCount();
         int VanQtyCheckFlag = 1;
         Log.e("QUERY COUNT:", "..............." + count);
@@ -797,7 +795,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
                     Log.e("orderNumber: ", "" + TempData.orderNumber);
 
                     String Memoquery = "SELECT SUM(quantity) FROM memo_details WHERE product_id='" + productId + "' and " + Tables.MEMOS_memo_number + "='" + TempData.orderNumber + "'";
-                    Cursor c3 = db.rawQuery(Memoquery);
+                    Cursor c3 = db.rawQueryCoustom(Memoquery);
                     int count3 = c3.getCount();
 
                     if (c3 != null) {
@@ -1587,7 +1585,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
 
         ItemListFromDB.clear();
 
-        Cursor c = db.rawQuery("SELECT DISTINCT * FROM product_boolean where boolean=" + "'" + "true" + "'" + " AND outlet_id='" + getPreference("OutletID") + "'");
+        Cursor c = db.rawQueryCoustom("SELECT DISTINCT * FROM product_boolean where boolean=" + "'" + "true" + "'" + " AND outlet_id='" + getPreference("OutletID") + "'");
         if (c != null) {
             if (c.moveToFirst()) {
                 do {
@@ -1596,7 +1594,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
                     String is_bonus = "";
                     String products_query = "SELECT * FROM product_history WHERE start_date<=" + "'" + memodate + "'" + " and end_date>=" + "'" + memodate + "' and product_id='" + product_id + "'";
                     Log.e("products_query", products_query);
-                    Cursor c5 = db.rawQuery(products_query);
+                    Cursor c5 = db.rawQueryCoustom(products_query);
                     Log.e("QUERY COUNT:", "..............." + products_query);
                     if (c5 != null) {
                         if (c5.moveToFirst()) {
@@ -1608,7 +1606,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
                                     String Unitprice = "";
                                     Log.e("is it edit?", "YES");
                                     Log.e("salesrrrr", "SELECT * FROM " + TABLE_NAME_ORDER_DETAILS + " where product_id='" + product_id_ + "' and " + Tables.ORDER_order_number + "='" + TempData.orderNumber + "' and is_bonus='0'");
-                                    Cursor c2 = db.rawQuery("SELECT * FROM " + TABLE_NAME_ORDER_DETAILS + " where product_id='" + product_id_ + "' and " + Tables.ORDER_order_number + "='" + TempData.orderNumber + "' and is_bonus='0'");
+                                    Cursor c2 = db.rawQueryCoustom("SELECT * FROM " + TABLE_NAME_ORDER_DETAILS + " where product_id='" + product_id_ + "' and " + Tables.ORDER_order_number + "='" + TempData.orderNumber + "' and is_bonus='0'");
                                     if (c2 != null) {
                                         if (c2.moveToFirst()) {
                                             do {
@@ -1632,7 +1630,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
 
                     String product_name = "";
                     String query1 = "SELECT product_name FROM product WHERE product_id='" + product_id + "'";
-                    Cursor c2 = db.rawQuery(query1);
+                    Cursor c2 = db.rawQueryCoustom(query1);
                     if (c2 != null) {
                         if (c2.moveToFirst()) {
                             do {
@@ -1704,7 +1702,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
     private double vatCalculation(String product_id, Double quantity) {
 
         Double vatprice = 0.0, vatofvat = 0.0, price = 0.0, vat = 0.0;
-        Cursor c = db.rawQuery("select vat from product_price where product_id='" + product_id + "' and vat!='null'");
+        Cursor c = db.rawQueryCoustom("select vat from product_price where product_id='" + product_id + "' and vat!='null'");
         c.moveToFirst();
         if (c != null && c.getCount() > 0) {
 
@@ -1787,7 +1785,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
         db.excQuery("DELETE FROM product_boolean WHERE outlet_id ='" + TempData
                 .OutletID + "'");
 
-        Cursor cd = db.rawQuery(" DELETE FROM product_boolean where strftime('%Y/%m/%d', updated_at) < ( strftime('%Y/%m/%d', date('now','-2 day')))");
+        Cursor cd = db.rawQueryCoustom(" DELETE FROM product_boolean where strftime('%Y/%m/%d', updated_at) < ( strftime('%Y/%m/%d', date('now','-2 day')))");
 
 
         if (memo_no1.length() > 1) {
@@ -1797,7 +1795,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
 //				Cursor c6 =db.rawQuery("SELECT memo_no FROM memos where outlet_id ='"+TempData.OutletID+"' and memo_date<=date('"+OrderDate+"') "+not_in_condition);
             String QRY = "SELECT memo_no FROM memos where outlet_id ='" + TempData.OutletID + "' and memo_date < (SELECT DATETIME('now', '-3  day')) " + not_in_condition + " and isPushed=1";
             Log.e("QRY ", "QRY " + QRY);
-            Cursor c6 = db.rawQuery(QRY);
+            Cursor c6 = db.rawQueryCoustom(QRY);
             if (c6 != null) {
                 if (c6.moveToFirst()) {
                     do {
@@ -1816,7 +1814,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
         } else {
             String QRY = "SELECT " + Tables.ORDER_order_number + " FROM order_table where outlet_id ='" + TempData.OutletID + "' and order_date < (SELECT DATETIME('now', '-3  day'))" + " and is_Pushed=1";
             Log.e("QRY ", "QRY " + QRY);
-            Cursor c6 = db.rawQuery(QRY);
+            Cursor c6 = db.rawQueryCoustom(QRY);
             if (c6 != null) {
                 if (c6.moveToFirst()) {
                     do {
@@ -1890,7 +1888,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
         ArrayList<HashMap<String, String>> BonusItemListFromDB = new ArrayList<HashMap<String, String>>();
         BonusItemListFromDB.clear();
         Cursor c2 = null;
-        c2 = db.rawQuery("SELECT product_id FROM product_history WHERE start_date<=" + "'" + memodate + "'" + " and end_date>=" + "'" + memodate + "' AND is_bonus=1");
+        c2 = db.rawQueryCoustom("SELECT product_id FROM product_history WHERE start_date<=" + "'" + memodate + "'" + " and end_date>=" + "'" + memodate + "' AND is_bonus=1");
         if (c2 != null) {
             if (c2.moveToFirst()) {
                 do {
@@ -1920,7 +1918,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
         Log.d("outlete", outlet);
 
         String query2 = "SELECT product_id FROM product_boolean WHERE outlet_id='" + getPreference("OutletID") + "' AND boolean='true'";
-        Cursor c23 = db.rawQuery(query2);
+        Cursor c23 = db.rawQueryCoustom(query2);
         int count22 = c23.getCount();
         Log.e("QUERY COUNT:", "..............." + count22);
         if (c23 != null) {
@@ -1929,7 +1927,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
                     String productId = c23.getString(0);
                     String query = "SELECT is_injectable FROM product WHERE product_id='" + productId + "'";
                     Log.e("QUERY:", "..............." + query);
-                    Cursor c = db.rawQuery(query);
+                    Cursor c = db.rawQueryCoustom(query);
                     int count23 = c.getCount();
                     Log.e("QUERY COUNT:", "..............." + count23);
 

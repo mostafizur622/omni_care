@@ -1,6 +1,5 @@
 package com.srapp.Adapter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -173,7 +172,7 @@ public class AdapterForSalesReport extends BaseAdapter {
 				TempData.MarketID="";
 				TempData.From_App="";
 				TempData.DayCloseMemoEditable="";
-				Cursor c =db.rawQuery("SELECT _id,"+ ORDER_order_number+comma+ORDER_is_pushed+comma+ORDER_outlet_id+comma+ORDER_order_date+comma+ORDER_market_id+comma+ORDER_from_app+comma+ORDER_order_date_time+comma+ORDER_editable+comma+ORDER_gross_value+comma+ORDER_for_order_delete+comma+ORDER_STATUS+"  FROM "+TABLE_NAME_ORDER+" where "+ORDER_order_number+"='"+orderNo+"'");
+				Cursor c =db.rawQueryCoustom("SELECT _id,"+ ORDER_order_number+comma+ORDER_is_pushed+comma+ORDER_outlet_id+comma+ORDER_order_date+comma+ORDER_market_id+comma+ORDER_from_app+comma+ORDER_order_date_time+comma+ORDER_editable+comma+ORDER_gross_value+comma+ORDER_for_order_delete+comma+ORDER_STATUS+"  FROM "+TABLE_NAME_ORDER+" where "+ORDER_order_number+"='"+orderNo+"'");
 				if(c!=null)
 				{
 					
@@ -200,7 +199,7 @@ public class AdapterForSalesReport extends BaseAdapter {
 					}
 				}
 
-				Cursor c3 = db.rawQuery("SELECT * FROM outlets  WHERE outlet_id='"+TempData.OutletID+"'");
+				Cursor c3 = db.rawQueryCoustom("SELECT * FROM outlets  WHERE outlet_id='"+TempData.OutletID+"'");
 				  if (c3 != null) {
 						if (c3.moveToFirst()) {
 							do {

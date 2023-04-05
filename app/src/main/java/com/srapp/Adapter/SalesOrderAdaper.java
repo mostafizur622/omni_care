@@ -11,37 +11,27 @@ import com.srapp.Util.AppManager;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.sax.StartElementListener;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.InputMethodManager;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
 import android.widget.TextView;
 import android.widget.Toast;
-
-import static android.content.Context.INPUT_METHOD_SERVICE;
 
 public class SalesOrderAdaper extends BaseAdapter {
 
@@ -123,7 +113,7 @@ public class SalesOrderAdaper extends BaseAdapter {
             QuantityEd.setVisibility(View.VISIBLE);
             Log.e("product_id", _product_id);
             Log.e("Edited Products From Memo Details Should Go Here", "SELECT * FROM "+Tables.TABLE_NAME_PRODUCT_BOOLEAN+" where product_id = " + _product_id + " and outlet_id=" + "'" + OutletID + "'");
-            Cursor c = db.rawQuery("SELECT * FROM "+Tables.TABLE_NAME_PRODUCT_BOOLEAN+" where product_id = " + _product_id + " and outlet_id=" + "'" + OutletID + "'");
+            Cursor c = db.rawQueryCoustom("SELECT * FROM "+Tables.TABLE_NAME_PRODUCT_BOOLEAN+" where product_id = " + _product_id + " and outlet_id=" + "'" + OutletID + "'");
             if (c != null) {
                 if (c.moveToFirst()) {
                     do {
@@ -166,7 +156,7 @@ public class SalesOrderAdaper extends BaseAdapter {
                     //QuantityEd.setFocusableInTouchMode(true);
                    QuantityEd.requestFocus();
 
-                    Cursor c = db.rawQuery("SELECT * FROM "+Tables.TABLE_NAME_PRODUCT_BOOLEAN+" where product_id = " + "'" + _product_id + "'" + " and outlet_id=" + "'" + OutletID + "'");
+                    Cursor c = db.rawQueryCoustom("SELECT * FROM "+Tables.TABLE_NAME_PRODUCT_BOOLEAN+" where product_id = " + "'" + _product_id + "'" + " and outlet_id=" + "'" + OutletID + "'");
                     if (c != null) {
                         if (c.moveToFirst()) {
                             do {
@@ -251,7 +241,7 @@ public class SalesOrderAdaper extends BaseAdapter {
                     itemListContent.get(position).put("boolean", "false");
                     savePreference(itemListContent.get(position).get("product_id"), "0.0");
 
-                    Cursor c = db.rawQuery("SELECT * FROM "+Tables.TABLE_NAME_PRODUCT_BOOLEAN+" where product_id = " + "'" + _product_id + "'" + " and outlet_id=" + "'" + OutletID + "'");
+                    Cursor c = db.rawQueryCoustom("SELECT * FROM "+Tables.TABLE_NAME_PRODUCT_BOOLEAN+" where product_id = " + "'" + _product_id + "'" + " and outlet_id=" + "'" + OutletID + "'");
                     if (c != null) {
                         if (c.moveToFirst()) {
                             do {
@@ -335,7 +325,7 @@ public class SalesOrderAdaper extends BaseAdapter {
 
     private void showLimitExeednotification(double giventQty, String product_id) {
 
-       Cursor  c = db.rawQuery("SELECT quantity-booking_quantity>"+giventQty+" as p from stock_info WHERE  product_id = '"+product_id+"'");
+       Cursor  c = db.rawQueryCoustom("SELECT quantity-booking_quantity>"+giventQty+" as p from stock_info WHERE  product_id = '"+product_id+"'");
         Log.e("SalesMemo","SELECT quantity-booking_quantity>"+giventQty+" as p from stock_info WHERE  product_id = '"+product_id+"'");
        c.moveToFirst();
         if (c != null && c.getCount() > 0) {

@@ -33,10 +33,7 @@ import com.srapp.Adapter.SpinnerAdapter;
 import com.srapp.Db_Actions.DBListener;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
-import com.srapp.Db_Actions.URL;
 import com.srapp.print.PrintAllMemosActivity;
-import com.srapp.print.PrintSelectedOrdersActivity;
-import com.srapp.print.huawei.PrintAllMemosActivityP;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
@@ -348,7 +345,7 @@ public class DeliveryReport extends AppCompatActivity implements BasicFunctionLi
         ThanaName.clear();
         ThanaID.add("0");
         ThanaName.add("ALL");
-        Cursor c = ds.rawQuery("SELECT * FROM route ORDER BY route_name ASC");
+        Cursor c = ds.rawQueryCoustom("SELECT * FROM route ORDER BY route_name ASC");
         if (c != null) {
             if (c.moveToFirst()) {
                 do {
