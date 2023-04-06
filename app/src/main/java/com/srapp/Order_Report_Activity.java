@@ -404,17 +404,19 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 Log.e("data",  listview.getCount()+" "+THREAT_SHOT +" "+listview.getLastVisiblePosition()+" "+isLoading);
                 if (!isLoading && listview.getCount()- THREAT_SHOT== listview.getLastVisiblePosition()){
-                    Log.e("entr scrolled..0n 402", "onScrolled: "+"On Scroll.." );
+
                     pageIndex++;
                    // loadMoreData(initialPageIndex);
                     ArrayList<HashMap<String, String>> chanck_list = db.getNotPushedOrder(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id"),bf.getPreference("outlet_category_id_report"),pageIndex);
-
+                    Log.e("entr scrolled..0n 402", "onScrolled: "+"On Scroll.."+chanck_list.size() );
                     if(chanck_list.size()>0) {
                         list.addAll(chanck_list);
                         adapter.notifyDataSetChanged();
 
-                    } else
+                    } else {
                         isLoading = true;
+
+                    }
                     //  Toast.makeText(MarketList.this," "+initialPageIndex,Toast.LENGTH_SHORT).show();
 
                     Log.e("last position", "onScrolled: "+listview.getLastVisiblePosition() );

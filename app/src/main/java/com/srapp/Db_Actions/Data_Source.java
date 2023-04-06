@@ -125,7 +125,7 @@ public class Data_Source extends Parent {
 
     public void close() {
 
-        sqLiteDatabase.close();
+        //sqLiteDatabase.close();
     }
 
     public void excQuery(String Query) {
@@ -1728,6 +1728,7 @@ public class Data_Source extends Parent {
         }
         if (code==6){
             progressDialog.dismiss();
+            if (dbListener!=null)
             dbListener.OnLocalDBdataRetrive(code+"");
         }
 
@@ -2346,6 +2347,7 @@ public class Data_Source extends Parent {
     }
 
     private JSONObject gethelper(JSONObject jsonObject, String market_id) {
+      open();
         Cursor c = sqLiteDatabase.rawQuery("Select thana_id , route_id from markets where market_id='" + market_id + "'", null);
         c.moveToFirst();
         if (c != null && c.getCount() > 0) {
@@ -2360,7 +2362,8 @@ public class Data_Source extends Parent {
 
 
         }
-
+        c.close();
+        close();
 
         return jsonObject;
 
@@ -3853,6 +3856,7 @@ public class Data_Source extends Parent {
 
                     }
                     String[] operationin = ORDER_DETAILS;
+                    open();
                     Cursor cursorin = sqLiteDatabase.rawQuery("select * from " + operationin[0] + " where " + Tables.ORDER_order_number + " ='" + cursor.getString(cursor.getColumnIndex(operation[2])) + "'", null);
                     cursorin.moveToFirst();
 
@@ -3986,6 +3990,7 @@ public class Data_Source extends Parent {
 
                     }
                     String[] operationin = ORDER_DETAILS;
+                    open();
                     Cursor cursorin = sqLiteDatabase.rawQuery("select * from " + operationin[0] + " where " + Tables.ORDER_order_number + " ='" + cursor.getString(cursor.getColumnIndex(operation[2])) + "'", null);
                     cursorin.moveToFirst();
 
@@ -4021,7 +4026,7 @@ public class Data_Source extends Parent {
 
 
                     }
-
+                    close();
                     try {
                         jsonObject.put("order_details", jsonArrayin);
                     } catch (JSONException e) {
