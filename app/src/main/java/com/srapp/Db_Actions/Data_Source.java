@@ -2252,7 +2252,7 @@ public class Data_Source extends Parent {
 
 
         String[] operation = GIFT_ISSUE;
-
+        open();
         Cursor cursor = sqLiteDatabase.rawQuery("select * from " + operation[0] + " where " + Tables.ORDER_is_pushed + " ='0' and " + ORDER_order_number + " = '" + order_number + "'", null);
         cursor.moveToFirst();
 
@@ -2334,7 +2334,7 @@ public class Data_Source extends Parent {
 
 
             // progressDialog.dismiss();
-
+                close();
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -4200,9 +4200,9 @@ public class Data_Source extends Parent {
 
             runOnUiThread(new Runnable() {
                 public void run() {
-                    progressDialog = new ProgressDialog(context);
+                    /*progressDialog = new ProgressDialog(context);
                     progressDialog.setMessage("Getting Ready For Push...");
-                    progressDialog.show();
+                    progressDialog.show();*/
                 }
             });
 
@@ -4290,8 +4290,8 @@ public class Data_Source extends Parent {
                         jsonObject.put("memo_details", jsonArrayin);
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        if (progressDialog != null)
-                            progressDialog.dismiss();
+                       /* if (progressDialog != null)
+                            progressDialog.dismiss();*/
 
                         Toast.makeText(context,"Can't get Order From DB",Toast.LENGTH_LONG).show();
                     }
@@ -4308,8 +4308,8 @@ public class Data_Source extends Parent {
                 finaljsonObject.put("mac", basicFunction.getPreference("mac"));
                 finaljsonObject.put(Tables.SR_ID, basicFunction.getPreference(Tables.SR_ID));
                 finaljsonObject = getGiftIssue(finaljsonObject, Order_NUMBER);
-                if (progressDialog != null)
-                    progressDialog.dismiss();
+                /*if (progressDialog != null)
+                    progressDialog.dismiss();*/
                 dbListener.OnLocalDBdataRetrive(finaljsonObject.toString());
 
             } catch (JSONException e) {
