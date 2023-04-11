@@ -121,8 +121,10 @@ public class Outlet_wise_sales_report extends Parent implements BasicFunctionLis
                 // TODO Auto-generated method stub
 
                 TextView textView = (TextView) arg0.getChildAt(0);
-                textView.setTextColor(getResources().getColor(R.color.background_card));
-                textView.setPadding(0, 0, 0, 0);
+                if (textView!=null) {
+                    textView.setTextColor(getResources().getColor(R.color.background_card));
+                    textView.setPadding(0, 0, 0, 0);
+                }
 
                 arg1.animate();
                 routeID = routeList.get(arg2);

@@ -148,7 +148,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
         setDateTimeField();
 
         bf.savePreference("outlet_id_OrderReport", "0");
-        bf.savePreference("outlet_category_id_mreport", "0");
+        bf.savePreference("outlet_category_id_report", "0");
 
         startdate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,7 +183,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
                 outlate.get(OUTLETS[2]).add(0, "0");
                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(MemoReport.this, R.layout.spinner_item, outlate.get(OUTLETS[3]));
                 outlatesp.setAdapter(arrayAdapter);
-                bf.savePreference("outlet_category_id_mreport",outlet_catagary.get(OUTLETS_CATAGORY_ID).get(position));
+                bf.savePreference("outlet_category_id_report",outlet_catagary.get(OUTLETS_CATAGORY_ID).get(position));
 
             }
 
@@ -317,7 +317,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
             Toast.makeText(this,"Cannot select date more than 7 days Interval",Toast.LENGTH_LONG).show();
             return;
         }
-
+        isLoading = false;
         Log.e("DataView", "DataView");
 
         if (bf.isInternetOn()) {
@@ -327,7 +327,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
                 jsonObject.put("start_date", bf.getPreference("start_Date"));
                 jsonObject.put("end_date", bf.getPreference("end_date"));
                 jsonObject.put("outlet_id", bf.getPreference("outlet_id_OrderReport"));
-                jsonObject.put("outlet_category_id", bf.getPreference("outlet_category_id_mreport"));
+                jsonObject.put("outlet_category_id", bf.getPreference("outlet_category_id_report"));
                 jsonObject.put(SR_ID, bf.getPreference(SR_ID));
                 jsonObject.put("mac", bf.getPreference("mac"));
             } catch (JSONException e) {
@@ -381,7 +381,7 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
 
         }else {
             setEC();
-            list = db.getMemos(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id_OrderReport"), bf.getPreference("outlet_category_id_mreport"),0);
+            list = db.getMemos(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id_OrderReport"), bf.getPreference("outlet_category_id_report"),0);
              adapter = new AdapterForMemoReport(this, list);
             listview.setAdapter(adapter);
         }
@@ -396,15 +396,15 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 Log.e("data",  listview.getCount()+" "+THREAT_SHOT +" "+listview.getLastVisiblePosition()+" "+isLoading);
                 if (!isLoading && listview.getCount()- THREAT_SHOT== listview.getLastVisiblePosition()){
-
+                    isLoading = true;
                     pageIndex++;
 
-                    ArrayList<HashMap<String, String>> chanck_list =db.getMemos(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id_OrderReport"), bf.getPreference("outlet_category_id_mreport"),pageIndex);
+                    ArrayList<HashMap<String, String>> chanck_list =db.getMemos(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id_OrderReport"), bf.getPreference("outlet_category_id_report"),pageIndex);
 
                     if(chanck_list.size()>0) {
                         list.addAll(chanck_list);
                         adapter.notifyDataSetChanged();
-
+                        isLoading = false;
                     } else
                         isLoading = true;
                     //  Toast.makeText(MarketList.this," "+initialPageIndex,Toast.LENGTH_SHORT).show();
@@ -461,8 +461,8 @@ public class MemoReport extends AppCompatActivity implements View.OnClickListene
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
-                    list = db.getMemos(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id_OrderReport"), bf.getPreference("outlet_category_id_mreport"), 0);
+                    pageIndex=0;
+                    list = db.getMemos(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id_OrderReport"), bf.getPreference("outlet_category_id_report"), 0);
                     adapter = new AdapterForMemoReport(MemoReport.this, list);
                     listview.setAdapter(adapter);
 

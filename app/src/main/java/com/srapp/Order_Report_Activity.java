@@ -75,7 +75,7 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
     ListView listview;
     Boolean isLoading = false;
     int pageIndex=0;
-    private final int THREAT_SHOT = 2;
+    private final int THREAT_SHOT = 1;
     Button startdate, enddate,search;
     HashMap<String, ArrayList<String>> outlate = new HashMap<>();
     HashMap<String, ArrayList<String>> outlet_catagary = new HashMap<>();
@@ -330,11 +330,11 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
 
     private void  DataView() {
 
-
         if (checkDuration()){
             Toast.makeText(this,"Cannot select date more than 7 days Interval",Toast.LENGTH_LONG).show();
             return;
         }
+        isLoading = false;
 
         Log.e("DataView1", "DataView");
         pageIndex=0;
@@ -404,7 +404,7 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 Log.e("data",  listview.getCount()+" "+THREAT_SHOT +" "+listview.getLastVisiblePosition()+" "+isLoading);
                 if (!isLoading && listview.getCount()- THREAT_SHOT== listview.getLastVisiblePosition()){
-
+                    isLoading = true;
                     pageIndex++;
                    // loadMoreData(initialPageIndex);
                     ArrayList<HashMap<String, String>> chanck_list = db.getNotPushedOrder(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id"),bf.getPreference("outlet_category_id_report"),pageIndex);
@@ -412,7 +412,7 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
                     if(chanck_list.size()>0) {
                         list.addAll(chanck_list);
                         adapter.notifyDataSetChanged();
-
+                        isLoading = false;
                     } else {
                         isLoading = true;
 
@@ -491,7 +491,7 @@ public class Order_Report_Activity extends AppCompatActivity implements View.OnC
                 @Override
                 public void run() {
                     setEC();
-
+                    pageIndex=0;
                     list = db.getNotPushedOrder(bf.getPreference("start_Date"), bf.getPreference("end_date"), bf.getPreference("outlet_id"), bf.getPreference("outlet_category_id_report"), pageIndex);
                     adapter = new AdapterForSalesReport(Order_Report_Activity.this, list);
                     listview.setAdapter(adapter);

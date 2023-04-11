@@ -1932,7 +1932,7 @@ public class Data_Source extends Parent {
         //Loge("DataView2", Query);
         Query+= " LIMIT "+ (offset*25)+" , 25";
         Cursor c = sqLiteDatabase.rawQuery(Query, null);
-        Log.e("getNotPushedOrder", "getNotPushedOrder: "+Query);
+        Log.e("query_order_report", "getNotPushedOrder: "+Query);
         c.moveToFirst();
         if (c != null && c.getCount() > 0) {
 
