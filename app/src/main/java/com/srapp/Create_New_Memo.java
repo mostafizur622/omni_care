@@ -38,6 +38,7 @@ import android.widget.Spinner;
 
 import androidx.annotation.RequiresApi;
 
+import static com.srapp.Db_Actions.Tables.SR_ID;
 import static com.srapp.TempData.BPSelected_bonus;
 import static com.srapp.TempData.BPSelected_option_id;
 import static com.srapp.TempData.BPSelected_policy_type;
@@ -129,7 +130,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
         titleTV = findViewById(R.id.title_tv);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String value = prefs.getString(Tables.SR_ID, "0");
+        String value = prefs.getString(SR_ID, "0");
         userIdTV.setText(value);
 
         homeBtn.setOnClickListener(new View.OnClickListener() {
@@ -543,6 +544,10 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
 
                     if (itemName.equals("Sales Order")) {
 
+                        if(getPreference(SR_ID).equalsIgnoreCase("null")){
+                            Toast.makeText(Create_New_Memo.this,"First Make Online Login And then Try again",Toast.LENGTH_LONG).show();
+                            return;
+                        }
                         BPSelected_bonus.clear();
                         BPSelected_product.clear();
                         BPSelected_set.clear();

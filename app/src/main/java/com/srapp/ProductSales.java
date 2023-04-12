@@ -1099,7 +1099,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
             map1.put(Tables.MEMOS_memo_number, memoNo);
             map1.put(Tables.MEMOS_memo_date, getCurrentDate());
             map1.put(Tables.MEMOS_memo_date_time, getCurrentDateTime());
-            map1.put(Tables.SR_ID, getPreference(SR_ID));
+            map1.put(Tables.SR_ID, bf.getPreference(SR_ID));
             map1.put(Tables.MEMOS_sales_to, "0");
             map1.put(Tables.OUTLETS_ID, TempData.OutletID);
             map1.put(Tables.MARKET_ID, TempData.MarketID);
@@ -1141,7 +1141,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
             map1.put(Tables.ORDER_order_number, orderNo);
             map1.put(Tables.ORDER_order_date, OrderDate);
             map1.put(Tables.ORDER_order_date_time, orderdateTime);
-            map1.put(Tables.SR_ID, getPreference(SR_ID));
+            map1.put(Tables.SR_ID, bf.getPreference(SR_ID));
             map1.put(Tables.ORDER_sales_to, "0");
             map1.put(Tables.OUTLETS_ID, TempData.OutletID);
             map1.put(Tables.MARKET_ID, TempData.MarketID);
@@ -1204,7 +1204,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
             map1.put(Tables.MEMOS_memo_number, memoNo);
             map1.put(Tables.MEMOS_memo_date, TempData.MemoDate);
             map1.put(Tables.MEMOS_memo_date_time, TempData.MemoDateTime);
-            map1.put(Tables.SR_ID, getPreference(SR_ID));
+            map1.put(Tables.SR_ID, bf.getPreference(SR_ID));
             map1.put(Tables.MEMOS_sales_to, "0");
             map1.put(Tables.OUTLETS_ID, TempData.OutletID);
             map1.put(Tables.MARKET_ID, TempData.MarketID);
@@ -1527,7 +1527,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
         Log.e("SECOND", "" + c.get(Calendar.SECOND));
 
         if (createMemo) {
-            orderNo = "O" + getPreference(SR_ID) + year + day + month + getCurrentTime24ForMemo();
+            orderNo = "O" + bf.getPreference(SR_ID) + year + day + month + getCurrentTime24ForMemo();
         }
     }
 

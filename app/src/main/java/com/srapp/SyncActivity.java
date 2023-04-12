@@ -192,7 +192,7 @@
              Toast.makeText(this, "Please Wait "+ TimeUnit.MILLISECONDS.toMinutes(timeRem)+" Minute TO Sync Again", Toast.LENGTH_SHORT).show();
          }
 
-         return false;
+         return true;
      }
 
      @Override
