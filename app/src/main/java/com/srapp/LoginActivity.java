@@ -1,5 +1,6 @@
 package com.srapp;
 
+import static com.srapp.Db_Actions.Tables.SR_ID;
 import static com.srapp.Db_Actions.URL.CheckConnection;
 import static com.srapp.Db_Actions.URL.convertTORequestdata;
 
@@ -203,14 +204,14 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
 
                                     JSONObject jsonObject=new JSONObject(response.body());
                                     if (jsonObject.getJSONArray("response").getJSONObject(0).getString("status").equalsIgnoreCase("1")) {
-
+                                        basicFunction.savePreference(SR_ID,jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("sales_person_id"));
                                         basicFunction.savePreference("sr_uname",editUsername.getText().toString().trim());
                                         FirebaseCrashlytics.getInstance().setUserId(editUsername.getText().toString().trim());
                                         basicFunction.savePreference("password",editPassword.getText().toString().trim());
                                         basicFunction.savePreference("office_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("office_id"));
                                         basicFunction.savePreference("territory_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("territory_id"));
                                         basicFunction.savePreference("store_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("store_id"));
-                                        basicFunction.savePreference("sales_person_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("sales_person_id"));
+                                        basicFunction.savePreference(SR_ID,jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("sales_person_id"));
                                         basicFunction.savePreference("office_name",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("office_name"));
                                         basicFunction.savePreference("office_address",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("office_address"));
                                         basicFunction.savePreference("office_phone",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("office_phone"));

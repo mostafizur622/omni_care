@@ -544,7 +544,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
 
                     if (itemName.equals("Sales Order")) {
 
-                        if(getPreference(SR_ID).equalsIgnoreCase("null")){
+                        if(getPreference(SR_ID).equalsIgnoreCase("0")){
                             Toast.makeText(Create_New_Memo.this,"First Make Online Login And then Try again",Toast.LENGTH_LONG).show();
                             return;
                         }

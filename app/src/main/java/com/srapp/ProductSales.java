@@ -1065,6 +1065,11 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void Memo() {
 
+        if ( bf.getPreference(SR_ID).equalsIgnoreCase("null")){
+            Toast.makeText(this,"Please Do online Login and try again",Toast.LENGTH_LONG).show();
+            return;
+        }
+
         if (TempData.editMemo.equalsIgnoreCase("true") && ORDER_TO_MEMO == 0 && !MEMO_EDIT) {
             orderNo = TempData.orderNumber;
             db.excQuery("DELETE FROM " + TABLE_NAME_ORDER + " WHERE " + ORDER_order_number + "='" + TempData.orderNumber + "'");
