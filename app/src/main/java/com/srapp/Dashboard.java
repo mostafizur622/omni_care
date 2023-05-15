@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Util.Parent;
@@ -29,7 +30,7 @@ public class Dashboard extends Parent implements BasicFunctionListener {
     Button reportBtn, stockBtn, accountBtn, syncBtn, toolsBtn, deliveryBtn;
     ImageView backBtn, homeBtn;
     LinearLayout order_or_delivery;
-    TextView cash_number, oc_value, userIdTV, titleTV;
+    TextView cash_number, oc_value, userIdTV, titleTV,oc;
     Data_Source ds;
     BasicFunction basicFunction;
 
@@ -75,11 +76,13 @@ public class Dashboard extends Parent implements BasicFunctionListener {
         titleTV = findViewById(R.id.title_tv);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String value = prefs.getString(Tables.SR_ID, "0");
+        FirebaseCrashlytics.getInstance().setUserId(basicFunction.getPreference("sr_uname"));
         userIdTV.setText(value);
         ds = new Data_Source(this);
         reportBtn = findViewById(R.id.reportBtn);
         cash_number = findViewById(R.id.cash_number);
         oc_value = findViewById(R.id.oc_value);
+        oc = findViewById(R.id.oc);
         stockBtn = findViewById(R.id.stockBtn);
         accountBtn = findViewById(R.id.accountBtn);
         syncBtn = findViewById(R.id.sync_btn);
@@ -87,6 +90,7 @@ public class Dashboard extends Parent implements BasicFunctionListener {
         deliveryBtn = findViewById(R.id.deliveryBtn);
         backBtn = findViewById(R.id.back);
         homeBtn = findViewById(R.id.home);
+
 
         order_or_delivery = findViewById(R.id.logo);
         reportBtn.setOnClickListener(new View.OnClickListener() {
@@ -197,8 +201,17 @@ public class Dashboard extends Parent implements BasicFunctionListener {
 
         cash_number.setText(ds.getTotalCashOfCurrentDay());
         oc_value.setText(ds.getTotalOCofCurrentDay());
+        oc.setText(ds.getOc());
 
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cash_number.setText(ds.getTotalCashOfCurrentDay());
+        oc_value.setText(ds.getTotalOCofCurrentDay());
+        oc.setText(ds.getOc());
     }
 
     @Override

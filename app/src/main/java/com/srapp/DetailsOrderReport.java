@@ -82,6 +82,7 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.srapp.Adapter.AdapterForMemoDetails;
 import com.srapp.Db_Actions.DBListener;
@@ -148,6 +149,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
         title = findViewById(R.id.title);
         user_txt_view = findViewById(R.id.user_txt_view);
         user_txt_view.setText(bf.getPreference(SR_ID));
+        FirebaseCrashlytics.getInstance().setUserId(getPreference("sr_uname"));
         if (MEMO_EDIT) {
             title.setText("Invoice Details");
             btnEdit.setText("Edit Invoice");

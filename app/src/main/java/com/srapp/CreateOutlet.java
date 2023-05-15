@@ -41,6 +41,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 import com.srapp.Adapter.SpinnerAdapter;
@@ -129,7 +130,7 @@ public class CreateOutlet extends AppCompatActivity implements BasicFunctionList
         user_txt_view.setText(basicFunction.getPreference(SR_ID));
         territoryId = basicFunction.getPreference("territory_id");
         salePersonId = basicFunction.getPreference("sales_person_id");
-
+        FirebaseCrashlytics.getInstance().setUserId(basicFunction.getPreference("sr_uname"));
 
         //...........location permission check ............//
         if (ActivityCompat.checkSelfPermission(CreateOutlet.this,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(CreateOutlet.this,

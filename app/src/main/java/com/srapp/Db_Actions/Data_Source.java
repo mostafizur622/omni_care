@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.srapp.TempData;
 import com.srapp.Util.Parent;
 import com.srapp.bonusPolicy.ExclusionProduct;
@@ -96,7 +97,7 @@ public class Data_Source extends Parent {
     BasicFunction basicFunction;
     ProgressDialog progressDialog;
     private final DB_Helper dBhelper;
-    private SQLiteDatabase sqLiteDatabase;
+    public SQLiteDatabase sqLiteDatabase;
     private final Context context;
 
     public Data_Source(Context context, DBListener dbListener, BasicFunctionListener basicFunctionListener) {
@@ -104,6 +105,7 @@ public class Data_Source extends Parent {
         this.dbListener = dbListener;
         dBhelper = new DB_Helper(context);
         basicFunction = new BasicFunction(basicFunctionListener, context);
+        FirebaseCrashlytics.getInstance().setUserId(getPreference("sr_uname"));
     }
 
     public Data_Source(Context context, DBListener dbListener) {
@@ -426,24 +428,24 @@ public class Data_Source extends Parent {
 
     public String getProductName(String product_id, String product_name) {
 
-        Cursor virtual_cursor = rawQueryCoustom("select is_virtual,parent_id from product where product_id="+product_id);
+        Cursor virtual_cursor = sqLiteDatabase.rawQuery("select is_virtual,parent_id from product where product_id="+product_id,null);
         //Loge("virtual_cursor", "select is_virtual,parent_id from products where product_id="+product_id);
         virtual_cursor.moveToFirst();
         if (virtual_cursor!=null && virtual_cursor.getCount()>0){
 
             if (virtual_cursor.getInt(0)==1){
                 //Loge("cname", "SELECT quantity-booking_quantity as quantity from stock_info where product_id="+virtual_cursor.getString(1));
-                Cursor cname = rawQueryCoustom("SELECT quantity-booking_quantity as quantity from stock_info where product_id="+virtual_cursor.getString(1));
+                Cursor cname = sqLiteDatabase.rawQuery("SELECT quantity-booking_quantity as quantity from stock_info where product_id="+virtual_cursor.getString(1),null);
                 cname.moveToFirst();
 
                 if (cname!=null && cname.getCount()>0) {
                     //Loge("cname", cname.getCount()+" "+cname.getDouble(0));
                     if (cname.getDouble(0)<=0) {
                         //Loge("childCount", "SELECT count(p._id) from Product as p INNER JOIN stock_info as vs on p.product_id=vs.product_id WHERE vs.quantity>0 and p.parent_id=" + virtual_cursor.getString(1));
-                        Cursor childCount = rawQueryCoustom("SELECT count(p._id) from Product as p INNER JOIN stock_info as vs on p.product_id=vs.product_id WHERE vs.quantity>0 and p.parent_id=" + virtual_cursor.getString(1));
+                        Cursor childCount = sqLiteDatabase.rawQuery("SELECT count(p._id) from Product as p INNER JOIN stock_info as vs on p.product_id=vs.product_id WHERE vs.quantity>0 and p.parent_id=" + virtual_cursor.getString(1),null);
                         childCount.moveToFirst();
                         if (childCount.getInt(0) == 1) {
-                            Cursor pro_name = rawQueryCoustom("select product_name from product where product_id=" + virtual_cursor.getString(1));
+                            Cursor pro_name = sqLiteDatabase.rawQuery("select product_name from product where product_id=" + virtual_cursor.getString(1),null);
                             pro_name.moveToFirst();
                             product_name = pro_name.getString(0);
                         }
@@ -1750,7 +1752,7 @@ public class Data_Source extends Parent {
         try {
             list = new ArrayList<>();
 
-            Cursor cursor = rawQueryCoustom("select policy_id from policy_root_product where root_product_id='" + product_id + "'");
+            Cursor cursor = sqLiteDatabase.rawQuery("select policy_id from policy_root_product where root_product_id='" + product_id + "'",null);
             //Loge("DataPrint0", DatabaseUtils.dumpCursorToString(cursor));
 
             cursor.moveToFirst();
@@ -1758,7 +1760,7 @@ public class Data_Source extends Parent {
             if (cursor != null && cursor.getCount() > 0) {
                 do {
 
-                    Cursor cursor1 = rawQueryCoustom("select * from policy_product_option where policy_id='" + cursor.getString(0) + "'");
+                    Cursor cursor1 = sqLiteDatabase.rawQuery("select * from policy_product_option where policy_id='" + cursor.getString(0) + "'",null);
                     //Loge("DataPrint", DatabaseUtils.dumpCursorToString(cursor1));
                     cursor1.moveToFirst();
                     if (cursor1 != null && cursor1.getCount() > 0) {
@@ -1772,7 +1774,7 @@ public class Data_Source extends Parent {
                                 map.put("condition", "only");
                                 map.put("price", "------");
 
-                                Cursor cursor2 = rawQueryCoustom("select * from policy_bonus_product where policy_id='" + cursor1.getString(cursor1.getColumnIndex("policy_id")) + "' and option_id='" + cursor1.getString(cursor1.getColumnIndex("option_id")) + "'");
+                                Cursor cursor2 = sqLiteDatabase.rawQuery("select * from policy_bonus_product where policy_id='" + cursor1.getString(cursor1.getColumnIndex("policy_id")) + "' and option_id='" + cursor1.getString(cursor1.getColumnIndex("option_id")) + "'",null);
                                 //Loge("DataPrint", DatabaseUtils.dumpCursorToString(cursor2));
 
                                 cursor2.moveToFirst();
@@ -1802,7 +1804,7 @@ public class Data_Source extends Parent {
                             }
 
                             else if (cursor1.getInt(cursor1.getColumnIndex("policy_type")) == 0) {
-                                Cursor cursor2 = rawQueryCoustom("select * from policy_bonus_product where policy_id='" + cursor1.getString(cursor1.getColumnIndex("policy_id")) + "' and option_id='" + cursor1.getString(cursor1.getColumnIndex("option_id")) + "'");
+                                Cursor cursor2 = sqLiteDatabase.rawQuery("select * from policy_bonus_product where policy_id='" + cursor1.getString(cursor1.getColumnIndex("policy_id")) + "' and option_id='" + cursor1.getString(cursor1.getColumnIndex("option_id")) + "'",null);
                                 cursor2.moveToFirst();
                                 if (cursor2 != null && cursor2.getCount() > 0) {
                                     do {
@@ -1826,7 +1828,7 @@ public class Data_Source extends Parent {
 
 
                             } else if (cursor1.getInt(cursor1.getColumnIndex("policy_type")) == 3) {
-                                Cursor cursor2 = rawQueryCoustom("select * from policy_bonus_product where policy_id='" + cursor1.getString(cursor1.getColumnIndex("policy_id")) + "' and option_id='" + cursor1.getString(cursor1.getColumnIndex("option_id")) + "'");
+                                Cursor cursor2 = sqLiteDatabase.rawQuery("select * from policy_bonus_product where policy_id='" + cursor1.getString(cursor1.getColumnIndex("policy_id")) + "' and option_id='" + cursor1.getString(cursor1.getColumnIndex("option_id")) + "'",null);
                                 cursor2.moveToFirst();
                                 if (cursor2 != null && cursor2.getCount() > 0) {
                                     do {
@@ -1838,6 +1840,7 @@ public class Data_Source extends Parent {
                                     } while (cursor2.moveToNext());
 
                                 }
+                                cursor2.close();
                                 map.put("condition", "OR");
 
                                 if (cursor1.getInt(cursor1.getColumnIndex("discount_type")) == 0)
@@ -1855,10 +1858,13 @@ public class Data_Source extends Parent {
                             list.add(map);
                         } while (cursor1.moveToNext());
 
+                        cursor1.close();
                     }
 
 
                 } while (cursor.moveToNext());
+
+                cursor.close();
 
             }
         } catch (Exception e) {
@@ -2181,6 +2187,21 @@ public class Data_Source extends Parent {
 
         open();
         Cursor c = sqLiteDatabase.rawQuery("SELECT count(DISTINCT(outlet_id)) FROM ORDER_table  where order_date>='" + getCurrentDate() + "'  and order_date <='" + getCurrentDate() + "' ORDER BY _id DESC", null);
+        //Loge("Query", "SELECT count(_id) FROM ORDER_table  where order_date>='" + getCurrentDate() + "'  and order_date <='" + getCurrentDate() + "' ORDER BY _id DESC");
+        c.moveToFirst();
+        if (c != null && c.getCount() > 0) {
+
+            return c.getString(0);
+
+        }
+
+        return "0";
+    }
+
+    public String getOc() {
+
+        open();
+        Cursor c = sqLiteDatabase.rawQuery("SELECT count(DISTINCT(outlet_id)) FROM outlet_visit  where created_at>='" + getCurrentDate() + "'  and created_at <='" + getCurrentDate() + "' ORDER BY _id DESC", null);
         //Loge("Query", "SELECT count(_id) FROM ORDER_table  where order_date>='" + getCurrentDate() + "'  and order_date <='" + getCurrentDate() + "' ORDER BY _id DESC");
         c.moveToFirst();
         if (c != null && c.getCount() > 0) {
@@ -3752,7 +3773,7 @@ public class Data_Source extends Parent {
         protected String doInBackground(String... strings) {
 
 
-            Cursor c2 = rawQueryCoustom("SELECT\n" +
+            Cursor c2 = sqLiteDatabase.rawQuery("SELECT\n" +
                     "  P.product_id,\n" +
                     "  P.product_name,\n" +
                     "  P.product_category_id,\n" +
@@ -3764,7 +3785,7 @@ public class Data_Source extends Parent {
                     "         P.product_name,\n" +
                     "         P.product_category_id,\n" +
                     "         P.product_type_id\n" +
-                    "ORDER BY P.product_order ASC");
+                    "ORDER BY P.product_order ASC",null);
             //   Cursor c2 = rawQuery("SELECT P.product_id,P.product_name,P.product_category_id,P.product_type_id FROM product as P INNER Join product_price as pp on p.product_id=pp.product_id INNER JOIN product_combinations as pc on  p.product_id=pc.product_id group by P.product_id,P.product_name,P.product_category_id,P.product_type_id ORDER BY P.product_order ASC");
             if (c2 != null) {
                 if (c2.moveToFirst()) {
@@ -3785,7 +3806,7 @@ public class Data_Source extends Parent {
 
                         String query = "SELECT * FROM " + Tables.TABLE_NAME_PRODUCT_BOOLEAN + " WHERE product_id='" + product_id + "' AND outlet_id='" + _OutletID + "'";
                         //Loge("ProductInsertCheckQuery", query);
-                        Cursor c1 = rawQueryCoustom(query);
+                        Cursor c1 = sqLiteDatabase.rawQuery(query,null);
                         //Loge("lkog", c1.getCount() + "");
                         if (c1.getCount() == 0) {
                             HashMap<String, String> map = new HashMap<String, String>();

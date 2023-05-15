@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.dantsu.escposprinter.connection.usb.UsbConnection;
 import com.dantsu.escposprinter.connection.usb.UsbPrintersConnections;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.srapp.Adapter.AdapterForOrderReadyForDalivery;
 import com.srapp.Adapter.SpinnerAdapter;
 import com.srapp.Db_Actions.DBListener;
@@ -118,7 +119,7 @@ public class DeliveryReport extends AppCompatActivity implements BasicFunctionLi
         bf = new BasicFunction(this,this);
         ds = new Data_Source(this,this);
         bf.savePreference("data","coustom");
-
+        FirebaseCrashlytics.getInstance().setUserId(bf.getPreference("sr_uname"));
         routeSpinnerSetup();
 
         setDateTimeField();

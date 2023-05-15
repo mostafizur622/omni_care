@@ -172,6 +172,8 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                 startActivity(new Intent(LoginActivity.this, Dashboard.class));
                 finish();*/
 
+
+
                 if (basicFunction.getPreference("sales_person_id").equalsIgnoreCase("null") || basicFunction.isInternetOn()){
                 JSONObject jsonObject = new JSONObject();
                 try {
@@ -206,7 +208,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                                     if (jsonObject.getJSONArray("response").getJSONObject(0).getString("status").equalsIgnoreCase("1")) {
                                         basicFunction.savePreference(SR_ID,jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("sales_person_id"));
                                         basicFunction.savePreference("sr_uname",editUsername.getText().toString().trim());
-                                        FirebaseCrashlytics.getInstance().setUserId(editUsername.getText().toString().trim());
+                                        FirebaseCrashlytics.getInstance().setUserId(basicFunction.getPreference("sr_uname"));
                                         basicFunction.savePreference("password",editPassword.getText().toString().trim());
                                         basicFunction.savePreference("office_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("office_id"));
                                         basicFunction.savePreference("territory_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("territory_id"));

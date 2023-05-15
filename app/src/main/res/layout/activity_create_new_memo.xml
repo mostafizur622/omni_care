@@ -124,7 +124,7 @@
             <LinearLayout
                 android:id="@+id/logo"
                 android:layout_width="match_parent"
-                android:layout_height="120dp"
+                android:layout_height="180dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="-50dp"
                 android:elevation="8dp"
@@ -133,7 +133,7 @@
                 android:paddingRight="10dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:weightSum="3"
+                android:weightSum="4"
                 android:background="@drawable/layout_bg"
                 android:orientation="vertical">
 
@@ -226,6 +226,38 @@
 
 
                 </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.2dp"
+                    android:background="@android:color/darker_gray"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.7"
+                        android:textSize="16sp"
+                        android:textColor="@color/text_color"
+                        android:text="Outlet Visit"></TextView>
+
+                    <CheckBox
+                        android:id="@+id/outlet_visit"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:button="@drawable/custom_checkbox"
+                        android:scaleX="0.8"
+                        android:scaleY="0.8"
+                        android:layout_weight="0.3"></CheckBox>
+
+
+                </LinearLayout>
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.2dp"

@@ -28,6 +28,7 @@
  import android.widget.Toast;
  import androidx.annotation.RequiresApi;
 
+ import com.google.firebase.crashlytics.FirebaseCrashlytics;
  import com.srapp.Adapter.AdapterForSyncSummery;
  import com.srapp.Db_Actions.DBListener;
  import com.srapp.Db_Actions.Data_Source;
@@ -89,7 +90,7 @@
 
         pendingMemo.setText(ds.getPendingOrderCount());
         viewSummery.setVisibility(View.GONE);
-
+         FirebaseCrashlytics.getInstance().setUserId(getPreference("sr_uname"));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String value = prefs.getString(Tables.SR_ID, "0");
         userIdTV.setText(value);
@@ -350,7 +351,7 @@
         return false;
     }
 
-    private void updateMarket(JSONObject jsonObject) {
+    private void updateMarket(JSONObject jsonObject) throws JSONException {
         JSONArray jsonArray = null;
         try {
             jsonArray = jsonObject.getJSONObject("market").getJSONArray("replaced_relation");
@@ -368,10 +369,109 @@
             Log.e("marketjsx",e.getMessage());
             e.printStackTrace();
         }
-        generateOutletJson();
+
+        UpdateLocation();
+
+
     }
 
-    private void updateOutlet(JSONObject jsonObject) {
+     private void UpdateLocation() throws JSONException {
+
+         JSONObject marketObj = new JSONObject();
+         JSONArray jsonArray = new JSONArray();
+         Cursor c = ds.sqLiteDatabase.rawQuery("select * from gps_tracker where is_pushed='0'",null);
+         c.moveToFirst();
+         if (c != null && c.getCount() > 0) {
+             do {
+                 JSONObject jsonObject = new JSONObject();
+
+                 jsonObject.put(Tables.GPS_TRACKER_latitude, c.getString(c.getColumnIndex(Tables.GPS_TRACKER_latitude)));
+                 jsonObject.put(Tables.GPS_TRACKER_longitude, c.getString(c.getColumnIndex(Tables.GPS_TRACKER_longitude)));
+                 jsonObject.put(Tables.GPS_TRACKER_created_at, c.getString(c.getColumnIndex(Tables.GPS_TRACKER_created_at)));
+
+
+                 jsonArray.put(jsonObject);
+             } while (c.moveToNext());
+         }
+
+         marketObj.put("mac", bf.getPreference("mac"));
+         marketObj.put("sales_person_id", bf.getPreference(SR_ID));
+         marketObj.put("coordinates", jsonArray);
+         ProgressDialog dailog = CheckConnection(SyncActivity.this,"Checking...");
+         if (dailog==null)
+             return;
+         getJAPi().pushLocation(convertTORequestdata(marketObj)).enqueue(new Callback<String>() {
+             @Override
+             public void onResponse(Call<String> call, Response<String> response) {
+                 try {
+                     JSONObject jsonObject = new JSONObject(response.body());
+                     dailog.dismiss();
+
+                     updateOutletVisit();
+                 } catch (JSONException e) {
+                     throw new RuntimeException(e);
+                 }
+             }
+
+             @Override
+             public void onFailure(Call<String> call, Throwable t) {
+                 dailog.dismiss();
+             }
+         });
+
+
+
+
+     }
+
+     private void updateOutletVisit() throws JSONException {
+         JSONObject marketObj = new JSONObject();
+         JSONArray jsonArray = new JSONArray();
+         Cursor c = ds.sqLiteDatabase.rawQuery("select * from outlet_visit where isPushed='0'",null);
+         c.moveToFirst();
+         if (c != null && c.getCount() > 0) {
+             do {
+                 JSONObject jsonObject = new JSONObject();
+                 jsonObject.put(Tables.OUTLET_VISIT_OUTLET_ID, c.getString(c.getColumnIndex(Tables.OUTLET_VISIT_OUTLET_ID)));
+                 jsonObject.put(Tables.OUTLET_VISIT_LATITUTEDE, c.getString(c.getColumnIndex(Tables.OUTLET_VISIT_LATITUTEDE)));
+                 jsonObject.put(Tables.OUTLET_VISIT_LONGITUD, c.getString(c.getColumnIndex(Tables.OUTLET_VISIT_LONGITUD)));
+                 jsonObject.put(Tables.OUTLET_VISIT_DATE, c.getString(c.getColumnIndex(Tables.OUTLET_VISIT_DATE)));
+
+                 jsonArray.put(jsonObject);
+             } while (c.moveToNext());
+         }
+
+         marketObj.put("mac", bf.getPreference("mac"));
+         marketObj.put("sales_person_id", bf.getPreference(SR_ID));
+         marketObj.put("outlet_visits", jsonArray);
+
+         ProgressDialog dailog = CheckConnection(SyncActivity.this,"Checking...");
+         if (dailog==null)
+             return;
+         getJAPi().pushOutletVisit(convertTORequestdata(marketObj)).enqueue(new Callback<String>() {
+             @Override
+             public void onResponse(Call<String> call, Response<String> response) {
+                 try {
+                     JSONObject jsonObject = new JSONObject(response.body());
+                     dailog.dismiss();
+
+                     generateOutletJson();
+                 } catch (JSONException e) {
+                     throw new RuntimeException(e);
+                 }
+             }
+
+             @Override
+             public void onFailure(Call<String> call, Throwable t) {
+                 dailog.dismiss();
+             }
+         });
+
+
+
+     }
+
+     private void updateOutlet(JSONObject jsonObject) {
         try {
 
 

@@ -94,24 +94,61 @@
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_weight="50"
+                    android:layout_weight="40"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/castTxt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:maxLines="1"
+                        android:text="O.Amount"
+                        android:layout_alignParentLeft="true"
+                        android:textColor="#F77B60"
+                        android:textSize="22sp"
+                        />
+
+                    <TextView
+                        android:id="@+id/cash_number"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@+id/castTxt"
+                        android:text="8896"
+                        android:textAlignment="center"
+                        android:textColor="#FEFFFF"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="3dp"
+                    android:layout_alignLeft="@+id/castTxt"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="8"
+
+                    android:background="@drawable/dashline" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="21"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/castTxt"
+                    android:id="@+id/ectxt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:maxLines="1"
-                    android:text="Ordered Amount"
+                    android:text="OC"
                     android:layout_alignParentLeft="true"
                     android:textColor="#F77B60"
                     android:textSize="22sp"
                     />
 
                 <TextView
-                    android:id="@+id/cash_number"
+                    android:id="@+id/oc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignBottom="@+id/castTxt"
@@ -120,17 +157,18 @@
                     android:textColor="#FEFFFF"
                     android:textSize="18sp" />
                 </LinearLayout>
+
                 <View
                     android:layout_width="0dp"
-                    android:layout_weight="30"
-                    android:layout_marginTop="20dp"
                     android:layout_height="2dp"
                     android:layout_alignLeft="@+id/castTxt"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="8"
 
                     android:background="@drawable/dashline" />
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_weight="19"
+                    android:layout_weight="21"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                 <TextView
@@ -139,7 +177,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:maxLines="1"
-                    android:text="OC"
+                    android:text="EC"
                     android:textColor="#F77B60"
                     android:textSize="22sp"
                     android:layout_alignParentRight="true"

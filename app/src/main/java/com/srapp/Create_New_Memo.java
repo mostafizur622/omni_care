@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.srapp.Db_Actions.DBListener;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
+import com.srapp.Util.GPSTracker;
 import com.srapp.Util.Parent;
 
 import android.content.Context;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.content.Intent;
@@ -102,7 +105,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
     TextView userIdTV, titleTV;
     Button OuletlinkBtn, MarketLinkBtn;
 
-    CheckBox radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_CreditCollection, radio_CollectedList, radio_ProductReturn;
+    CheckBox radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_CreditCollection, radio_CollectedList, radio_ProductReturn,outlet_visit;
 
     Data_Source db;
     TextView title;
@@ -125,6 +128,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
         backBtn = findViewById(R.id.back);
         addoutlet = findViewById(R.id.addoutlet);
         marketAddBtn = findViewById(R.id.marketAddBtn);
+        outlet_visit = findViewById(R.id.outlet_visit);
 
         userIdTV = findViewById(R.id.user_txt_view);
         titleTV = findViewById(R.id.title_tv);
@@ -164,7 +168,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
         radio_SalesMemo = findViewById(R.id.salesMemoChk);
         lastmemo = findViewById(R.id.lastmemo);
         radio_ProductReturn = findViewById(R.id.outletReturnChk);
-
+        FirebaseCrashlytics.getInstance().setUserId(getPreference("sr_uname"));
         radio_SalesMemo.setChecked(true);
         outltateauto.setOnClickListener(new OnClickListener() {
             @Override
@@ -196,7 +200,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
                 itemName = radio_GPSUpdate.getText().toString();
                 itemName = "GPS Update";
                 title.setText(itemName);
-                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn}, 0);
+                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn,outlet_visit}, 0);
             }
         });
         radio_ViewLastMemo.setOnClickListener(new OnClickListener() {
@@ -206,7 +210,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
 
                 itemName = "View Last Memo";
                 title.setText(itemName);
-                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn}, 1);
+                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn,outlet_visit}, 1);
             }
         });
         radio_SalesMemo.setOnClickListener(new OnClickListener() {
@@ -216,7 +220,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
 
                 itemName = "Sales Order";
                 title.setText(itemName);
-                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn}, 2);
+                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn,outlet_visit}, 2);
             }
         });
         radio_ProductReturn.setOnClickListener(new OnClickListener() {
@@ -226,11 +230,21 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
 
                 itemName = "Collect Ncp";
                 title.setText(itemName);
-                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn}, 3);
+                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn,outlet_visit}, 3);
             }
         });
 
+        outlet_visit.setOnClickListener(new OnClickListener() {
 
+            @Override
+            public void onClick(View v) {
+
+                itemName = outlet_visit.getText().toString();
+                itemName = "Outlet Visit";
+                title.setText(itemName);
+                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn,outlet_visit}, 4);
+            }
+        });
         MarketLinkBtn.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -582,6 +596,9 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
                         startActivity(idn);
                         finish();
                     }
+                    else if (itemName.equalsIgnoreCase("Outlet Visit")) {
+                        visitAOutlet();
+                    }
                   /*  if(itemName.equalsIgnoreCase("Collected List"))
                     {
                         Intent idn = new Intent(OutletAccountActivity.this, CollectedListActivity.class);
@@ -617,6 +634,38 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
             savePreference("OutletID", "0") ;
             outltateauto.setText("");
         }
+    }
+
+    private void visitAOutlet() {
+
+        GPSTracker gps = new GPSTracker();
+        Location location = null;
+        String lat = "";
+        String lang = "";
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+
+
+            location = gps.getLocationonetime(this);
+            if (location!=null){
+                lat = location.getLatitude()+"";
+                lang = location.getLongitude()+"";
+            }
+            HashMap<String,String> visit =  new HashMap<String,String>();
+            visit.put("latitude",lat);
+            visit.put("outlet_id",_OutletID);
+            visit.put("longitude",lang);
+            visit.put("longitude",lang);
+            visit.put("visit_date",getCurrentDateTime());
+            visit.put("created_at",getCurrentDate());
+            visit.put("isPushed","0");
+            db.InsertTable(visit,"outlet_visit");
+            Toast.makeText(this,"Successfully visited",Toast.LENGTH_LONG).show();
+
+        }
+
+        buttonLogin.setEnabled(true);
+
+
     }
 
     private void settallfalse(CheckBox[] checkBoxes, int i) {

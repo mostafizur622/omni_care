@@ -26,13 +26,14 @@ interface ApiInterfaceForJava {
     fun UpdatePushTime(@Body JSONObject: RequestBody): Call<String>
 
 
-    @Headers( "Content-Type: application/json; charset=utf-8")
+    @Headers("Content-Type: application/json; charset=utf-8")
     @POST("dist_user_login.json")
     fun Login(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("create_outlet.json")
     fun Push(@Body JSONObject: RequestBody): Call<String>
+
     @Headers("Content-Type: application/json")
     @POST("dist_data_pull.json")
     fun PULL(@Body JSONObject: RequestBody): Call<String>
@@ -143,6 +144,13 @@ interface ApiInterfaceForJava {
     fun CreateMarket(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
+    @POST("map_sales_tracking.json")
+    fun pushLocation(@Body JSONObject: RequestBody): Call<String>
+ @Headers("Content-Type: application/json")
+    @POST("create_outlet_visit.json")
+    fun pushOutletVisit(@Body JSONObject: RequestBody): Call<String>
+
+    @Headers("Content-Type: application/json")
     @POST("dist_market_list.json")
     fun MarketList(@Body JSONObject: RequestBody): Call<String>
 
@@ -209,34 +217,14 @@ interface ApiInterfaceForJava {
     @Headers("Content-Type: application/json")
     @POST("dist_sales_targets.json")
     fun ProductTarget(@Body JSONObject: RequestBody): Call<String>
+
     @Headers("Content-Type: application/json")
     @POST("dist_last_memo_details.json")
     fun LAST_MEMO(@Body JSONObject: RequestBody): Call<String>
+
     @Headers("Content-Type: application/json")
     @POST("dist_create_out_of_plan_visit.json")
     fun OUT_OF_PLAN_VISIT(@Body JSONObject: RequestBody): Call<String>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }
