@@ -151,8 +151,10 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
         if (TempData.editMemo.equalsIgnoreCase("true")) {
             date = TempData.MemoDate;
+            Log.e("DateM:", String.valueOf(date));
         } else {
             date = getCurrentDate();
+            Log.e("DateM1:", String.valueOf(date));
         }
 
         Log.e("Date:", String.valueOf(date));
