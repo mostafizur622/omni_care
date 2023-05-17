@@ -1,6 +1,7 @@
 package com.srapp.apiService
 
 import com.google.gson.JsonObject
+import com.srapp.Outlet_wise_Product_report
 import com.srapp.kotlin.*
 import okhttp3.RequestBody
 import org.json.JSONObject
@@ -61,6 +62,10 @@ interface ApiInterfaceForJava {
     @Headers("Content-Type: application/json")
     @POST("dist_outlet_wise_sales_report.json")
     fun OUTLET_WISE_SALES_REPORT(@Body JSONObject: RequestBody): Call<String>
+
+ @Headers("Content-Type: application/json")
+    @POST("dist_outlet_wise_sales_report.json")
+    fun Outlet_wise_Product_report(@Body JSONObject: RequestBody): Call<String>
 
 
     @Headers("Content-Type: application/json")
@@ -144,9 +149,9 @@ interface ApiInterfaceForJava {
     fun CreateMarket(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
-    @POST("map_sales_tracking.json")
+    @POST("dist_map_sales_tracking.json")
     fun pushLocation(@Body JSONObject: RequestBody): Call<String>
- @Headers("Content-Type: application/json")
+    @Headers("Content-Type: application/json")
     @POST("create_outlet_visit.json")
     fun pushOutletVisit(@Body JSONObject: RequestBody): Call<String>
 

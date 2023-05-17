@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="40"
+    android:orientation="vertical"
+    android:background="@color/background_color_outlet_report"
+    tools:context=".UnProcessOrder">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/secondary_color"
+        android:weightSum="2"
+        android:orientation="horizontal"
+        android:layout_weight="4">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:weightSum="1"
+            android:orientation="horizontal"
+            android:gravity="left"
+            android:layout_weight="1">
+            <ImageView
+                android:id="@+id/back"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:src="@drawable/backicon"
+                android:layout_margin="15dp"></ImageView>
+            <TextView
+                android:id="@+id/title_tv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.7"
+                android:gravity="center|left"
+                android:textColor="@color/white"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="12sp"
+                android:autoSizeMaxTextSize="20sp"
+                android:autoSizeStepGranularity="2sp"
+                android:text="Outlet Wise Sales Report">
+
+            </TextView>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:weightSum="1"
+            android:gravity="right"
+            android:orientation="horizontal"
+            android:layout_weight="1">
+            <TextView
+                android:id="@+id/user_txt_view"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.7"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="15dp"
+                android:background="@drawable/login_id_bg_shade"
+                android:text="273638"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="12sp"
+                android:autoSizeMaxTextSize="20sp"
+                android:autoSizeStepGranularity="2sp"
+                android:textColor="@color/background_white"
+                android:textAlignment="center"
+                android:gravity="center"></TextView>
+            <ImageView
+                android:id="@+id/home"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.3"
+                android:src="@drawable/home"
+                android:layout_margin="15dp">
+
+            </ImageView>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical"
+        android:weightSum="6.5"
+        android:layout_weight="12">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+
+
+            android:layout_marginLeft="0dp"
+            android:orientation="horizontal"
+            android:weightSum="5"
+            android:layout_weight="1.5">
+
+            <Button
+                android:id="@+id/date"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:drawableLeft="@drawable/calx"
+                android:drawablePadding="5dp"
+                android:paddingLeft="10dp"
+                android:textColor="@color/white"
+                android:text="Start Date"
+                android:background="@drawable/rounded_transparent_bg"/>
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+            <Button
+                android:id="@+id/edate"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:drawableLeft="@drawable/calx"
+                android:drawablePadding="5dp"
+                android:paddingLeft="10dp"
+                android:textColor="@color/white"
+                android:text="End Date"
+                android:background="@drawable/rounded_transparent_bg"/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+
+            android:orientation="horizontal"
+            android:weightSum="5"
+            android:layout_weight="1.2">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1.2"
+                android:text="Rout/Beat"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:layout_height="match_parent"/>
+
+            <Spinner
+                android:id="@+id/route"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3.8"
+                android:background="@drawable/spinner2"
+                android:theme="@style/MatchSpinnerTheme"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            android:weightSum="5"
+            android:layout_weight="1.2">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1.2"
+                android:text="Market"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:layout_height="match_parent"/>
+
+            <Spinner
+                android:id="@+id/market"
+                android:layout_width="0dp"
+                android:layout_weight="3.8"
+                android:layout_height="match_parent"
+                android:background="@drawable/spinner2"
+                android:theme="@style/MatchSpinnerTheme"/>
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            android:weightSum="5"
+            android:layout_weight="1.2">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1.2"
+                android:text="Outlet"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:layout_height="match_parent"/>
+
+            <Spinner
+                android:id="@+id/outlet"
+                android:layout_width="0dp"
+                android:layout_weight="3.8"
+                android:layout_height="match_parent"
+                android:background="@drawable/spinner2"
+                android:theme="@style/MatchSpinnerTheme"/>
+
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/search"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.5"
+            android:textColor="@color/white"
+            android:text="Search"
+            android:background="@drawable/red_button"/>
+
+
+
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="24"
+        android:background="@drawable/top_corner_bg"
+        android:orientation="vertical"
+        android:weightSum="3"
+
+
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="3"
+            android:weightSum="5"
+            android:orientation="vertical"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp">
+
+            <ListView
+                android:id="@+id/order_list"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="5"
+                android:layout_marginTop="10dp"
+                >
+
+            </ListView>
+
+
+        </LinearLayout>
+
+
+
+
+
+    </LinearLayout>
+
+
+
+
+
+
+
+
+
+</LinearLayout>

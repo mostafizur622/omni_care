@@ -197,7 +197,7 @@ public class AdapterForProductCatalog extends BaseAdapter {
 
     private Bitmap getimage(String s) {
 
-        File filepath = Environment.getExternalStorageDirectory();
+        File filepath =context.getFilesDir();
         File imgFile = new File(filepath.getAbsolutePath()
                 + "/SMC_image/");
 

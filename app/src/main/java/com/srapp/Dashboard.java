@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +20,7 @@ import androidx.annotation.RequiresApi;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
+import com.srapp.Util.GPSTracker;
 import com.srapp.Util.Parent;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
@@ -202,6 +204,7 @@ public class Dashboard extends Parent implements BasicFunctionListener {
         cash_number.setText(ds.getTotalCashOfCurrentDay());
         oc_value.setText(ds.getTotalOCofCurrentDay());
         oc.setText(ds.getOc());
+        Log.e("text","Location Service");
 
 
     }
@@ -212,6 +215,19 @@ public class Dashboard extends Parent implements BasicFunctionListener {
         cash_number.setText(ds.getTotalCashOfCurrentDay());
         oc_value.setText(ds.getTotalOCofCurrentDay());
         oc.setText(ds.getOc());
+
+        try{
+            startService(new Intent(Dashboard.this, GPSTracker.class));
+        }catch (Exception e){
+            Log.e("text",e.getLocalizedMessage());
+            try{
+                startService(new Intent(Dashboard.this, GPSTracker.class));
+            }catch (Exception et){
+
+                Log.e("text",et.getLocalizedMessage());
+            }
+
+        }
     }
 
     @Override

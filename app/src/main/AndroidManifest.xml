@@ -2,42 +2,63 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.srapp">
+
     <uses-feature android:name="android.hardware.usb.host" />
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
-<!--
-    android:usesCleartextTraffic="true"
--->
 
+    <uses-feature android:name="android.hardware.location.gps" />
+    <uses-feature
+        android:name="android.hardware.bluetooth"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission
+        android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".print.newprint.App"
         android:allowBackup="true"
-        android:name="com.srapp.print.newprint.App"
         android:icon="@drawable/logo_icon"
         android:label="@string/app_name"
         android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@drawable/logo_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:requestLegacyExternalStorage="true"
-        tools:ignore="GoogleAppIndexingWarning"
         android:usesCleartextTraffic="true"
+        tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:icon">
-
+        <activity
+            android:name=".Outlet_wise_Product_report"
+            android:exported="false" />
         <activity
             android:name=".SplashActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-
-        <activity android:name=".Attendance_history"></activity>
+        <activity android:name=".Attendance_history" />
         <activity android:name=".ReportBonusPartyReport" />
         <activity android:name=".GiftIssueActivity" />
         <activity android:name=".Product_policy_Details" />
@@ -45,16 +66,10 @@
         <activity android:name=".Outlet_wise_sales_report" />
         <activity android:name=".SR_Attendance" />
         <activity android:name=".OutletVisitReport" />
-
-        <activity
-            android:name="com.srapp.kotlin.CurrentOfferProductActivity" />
-        <activity
-            android:name="com.srapp.kotlin.OfferDetailsActivity1" />
-
-        <activity
-            android:name="com.srapp.kotlin.BonusCampaignActivity" />
-        <activity
-            android:name="com.srapp.kotlin.BonusDetailsActivity" />
+        <activity android:name=".kotlin.CurrentOfferProductActivity" />
+        <activity android:name=".kotlin.OfferDetailsActivity1" />
+        <activity android:name=".kotlin.BonusCampaignActivity" />
+        <activity android:name=".kotlin.BonusDetailsActivity" />
         <activity
             android:name=".MakePDF"
             android:screenOrientation="portrait" />
@@ -215,7 +230,6 @@
             android:name=".policy_set_for_dis_or_bonus"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />
-
         <activity
             android:name=".print.PrintActivity"
             android:screenOrientation="portrait"
@@ -276,15 +290,13 @@
         <activity
             android:name=".SR_Account_Activity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".Printer_connected"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Translucent"
             android:windowSoftInputMode="adjustPan">
-
             <intent-filter android:priority="1000">
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
             </intent-filter>
@@ -292,14 +304,11 @@
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
-
         </activity>
-
         <activity
             android:name=".LoginActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />
-
         <activity
             android:name=".print.huawei.PrintActivityP"
             android:screenOrientation="portrait"
@@ -314,31 +323,7 @@
             android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
             android:resource="@xml/device_filter" />
 
+        <service android:name=".Util.GPSTracker" />
     </application>
-
-    <uses-feature android:name="android.hardware.location.gps" />
-    <uses-feature
-        android:name="android.hardware.bluetooth"
-        android:required="false" />
-
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-
-    <uses-permission
-        android:name="android.permission.WRITE_SETTINGS"
-        tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
-    <uses-permission android:name="android.permission.INTERNET" />
-
 
 </manifest>

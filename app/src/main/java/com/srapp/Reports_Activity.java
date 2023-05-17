@@ -105,6 +105,9 @@ public class Reports_Activity extends AppCompatActivity {
                 }else if (position == 10) {
                     startActivity(new Intent(Reports_Activity.this, ReportBonusPartyReport.class));
                     finish();
+                }else if (position == 11) {
+                    startActivity(new Intent(Reports_Activity.this, Outlet_wise_Product_report.class));
+                    finish();
                 }
             }
 
@@ -129,6 +132,7 @@ public class Reports_Activity extends AppCompatActivity {
         report_List.add(new Reports("Outlet Visit Report", null));
         report_List.add(new Reports("Outlet Wise Sales Report", null));
         report_List.add(new Reports("Incentive Party report", null));
+        report_List.add(new Reports("Outlet Wise Product Report", null));
 
         return report_List;
     }

@@ -9,6 +9,7 @@ import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -26,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
@@ -74,7 +76,9 @@ import retrofit2.Response;
 
 public class LoginActivity extends Parent implements BasicFunctionListener, DBListener {
 
-   private BasicFunction basicFunction;
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 10;
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION_FINE =11 ;
+    private BasicFunction basicFunction;
 
     TextView textDummyHintUsername;
     TextView textDummyHintPassword;
@@ -229,6 +233,9 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                             basicFunction.savePreference("db_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("db_id"));
                             basicFunction.savePreference("sr_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("sr_id"));
                             basicFunction.savePreference("sr_code",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("sr_code"));
+                            basicFunction.savePreference("start_time",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("start_time"));
+                            basicFunction.savePreference("end_time",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("end_time"));
+                            basicFunction.savePreference("interval",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("interval"));
 
                                         Log.e("office_name",getPreference("office_name"));
                                         ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
@@ -257,6 +264,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                     Log.e("ServiceHandlerOutlets", e.getMessage());
                 }
              }else {
+                  ///  basicFunction.savePreference("end_time","20:00:00");
                     if (basicFunction.getPreference("password").equalsIgnoreCase(editPassword.getText().toString())) {
                         startActivity(new Intent(LoginActivity.this, Dashboard.class));
                         finish();
@@ -311,6 +319,10 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                 }
             }
         });
+
+
+
+
     }
 
     @Override
@@ -326,6 +338,35 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
     public void OnConnetivityError() {
         Toast.makeText(this,"NO Internet Connection",Toast.LENGTH_SHORT);
         login_button.setEnabled(true);
+
+    }
+
+
+
+
+    private void requestBackgroundLocationPermission() {
+
+
+
+
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{
+                            Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                    },
+                    MY_PERMISSIONS_REQUEST_LOCATION
+            );
+        } else {
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_LOCATION_FINE
+            );
+        }
+
 
     }
 
@@ -575,6 +616,62 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
     }
 
 
+    private void checkLocationPermission() {
+
+        Toast.makeText(this,"NO Internet Connection",Toast.LENGTH_SHORT);
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    this,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            )
+            ) {
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                new AlertDialog.Builder(this)
+                        .setTitle("Location Permission Needed")
+                        .setMessage("This app needs the Location permission, please accept to use location functionality")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                requestLocationPermission();
+                            }
+                        });
+            } else {
+                // No explanation needed, we can request the permission.
+                requestLocationPermission();
+            }
+        } else {
+            checkBackgroundLocation();
+        }
+    }
+
+    private void checkBackgroundLocation() {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestBackgroundLocationPermission();
+        }
+    }
+
+    private void requestLocationPermission() {
+        ActivityCompat.requestPermissions(
+                this,
+                new String[]{
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                },
+                MY_PERMISSIONS_REQUEST_LOCATION_FINE
+        );
+    }
+
+
     private boolean checkForPermission() {
         //  Log.e("tag", "Permission");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -591,11 +688,20 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
             }
             return false;
         } else {
+            checkLocationPermission();
             return true;
         }
 
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode==1 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
+            checkLocationPermission();
+        }
+    }
 
     public class advertizingId extends AsyncTask<Void,Void,Void> {
 

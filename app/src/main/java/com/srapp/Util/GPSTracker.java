@@ -6,14 +6,18 @@ import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 
@@ -21,13 +25,17 @@ import androidx.annotation.RequiresApi;
 
 import com.srapp.Db_Actions.Data_Source;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class GPSTracker extends Service implements LocationListener {
 
-    private final Context mContext = getBaseContext();
+    private  Context mContext = getBaseContext();
 
     // flag for GPS status
     boolean isGPSEnabled = false;
@@ -55,21 +63,90 @@ public class GPSTracker extends Service implements LocationListener {
     Timer timer = new Timer();
 
 
+
+
     @Override
     public void onCreate() {
         super.onCreate();
-
+        mContext = this;
+        Log.e("text","Location Service2");
+      //  Handler mainHandler = new Handler(getApplicationContext().getMainLooper());
 
         timerTask = new TimerTask() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void run() {
-                getLocation();
+
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                       // getApplicationContext().getMainLooper();
+                        if (CheckTime_date()){
+                            getLocation();
+                        }else {
+                         stopSelf();
+                         timerTask.cancel();
+                         timer.cancel();
+                        }
+
+                    }
+                });
+
 
             }
         };
 
-        timer.schedule(timerTask, 8000, 20000);
+        timer.schedule(timerTask,Long.parseLong(getPreference("interval")) , 20000);
+    }
+
+    private boolean CheckTime_date()  {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+        Date starttimme = null;
+        try {
+            starttimme = df.parse("1995-01-18 "+getPreference("start_time"));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+
+
+        Date endtime = null;
+        try {
+            endtime = df.parse("1995-01-18 "+getPreference("end_time"));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        Calendar c = Calendar.getInstance();
+
+
+        Date currennttime = null;
+        try {
+            currennttime = df.parse("1995-01-18 "+c.get(Calendar.HOUR_OF_DAY)+":"+c.get(Calendar.MINUTE)+":"+c.get(Calendar.SECOND));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+
+
+
+
+        long current_time = currennttime.getTime();
+
+        Log.e("Time","current_time= "+currennttime+" start_time_milis= "+starttimme.getTime()+" end_time_milis= "+ endtime.getTime());
+
+        if (current_time>starttimme.getTime() && current_time<endtime.getTime()){
+            Log.e("Time","true");
+            return true;
+        }else {
+            Log.e("Time","false");
+            return false;
+        }
+
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -150,7 +227,11 @@ public class GPSTracker extends Service implements LocationListener {
         }
         Log.e("getLocation", "getLocation: " + location);
 
-        Data_Source data_source = new Data_Source(getApplicationContext());
+
+
+
+
+        Data_Source data_source = new Data_Source(mContext);
 
 
         HashMap<String, String> map = new HashMap<String, String>();
@@ -338,6 +419,16 @@ public class GPSTracker extends Service implements LocationListener {
     @Override
     public IBinder onBind(Intent arg0) {
         return null;
+    }
+
+    public String getPreference(String key)
+    {
+        String value="";
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        value = prefs.getString(key, "0");
+
+        return value;
+
     }
 
 }

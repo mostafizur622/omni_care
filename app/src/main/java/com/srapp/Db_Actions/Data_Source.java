@@ -112,11 +112,13 @@ public class Data_Source extends Parent {
         this.context = context;
         this.dbListener = dbListener;
         dBhelper = new DB_Helper(context);
+        FirebaseCrashlytics.getInstance().setUserId(getPreference("sr_uname"));
     }
 
     public Data_Source(Context context) {
         this.dBhelper = new DB_Helper(context);
         this.context = context;
+        FirebaseCrashlytics.getInstance().setUserId(getPreference("sr_uname"));
     }
 
 
@@ -2664,7 +2666,7 @@ public class Data_Source extends Parent {
         in.close();
         byte[] response = out.toByteArray();
 
-        File filepath = Environment.getExternalStorageDirectory();
+        File filepath = context.getFilesDir();
         File dir = new File(filepath.getAbsolutePath()
                 + "/SMC_image/");
 
@@ -2672,7 +2674,7 @@ public class Data_Source extends Parent {
             dir.mkdir();
         }
 
-
+        Log.e("FilePath",dir.getPath());
         File file = new File(dir, product_name + ".png");
         //Loge("saveimagepath", file.getAbsolutePath());
         FileOutputStream fos = new FileOutputStream(file);
