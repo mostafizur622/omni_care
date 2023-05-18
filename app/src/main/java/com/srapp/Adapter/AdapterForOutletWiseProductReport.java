@@ -30,13 +30,7 @@ public class AdapterForOutletWiseProductReport extends BaseAdapter {
         this.context = context;
         BonusItemList = arraylistContent;
 
-        for (int i = 0 ; i<BonusItemList.size(); i++){
-            HashMap<String, String> mapContent = new HashMap<String, String>();
-            mapContent = BonusItemList.get(i);
-            tec += Integer.parseInt(mapContent.get("EC"));
-            toc += Integer.parseInt(mapContent.get("OC"));
-            tqty += Double.parseDouble(mapContent.get("qty"));
-        }
+
     }
 
     @Override
@@ -71,9 +65,9 @@ public class AdapterForOutletWiseProductReport extends BaseAdapter {
 
         product_name.setText(mapContent.get(PRODUCT_PRODUCT_NAME));
 
-        EC.setText(mapContent.get("EC"));
-        OC.setText(mapContent.get("OC"));
-        sale_quntity.setText(mapContent.get("qty"));
+        EC.setText(mapContent.get("sales_qty"));
+        OC.setText(mapContent.get("bonus_qty"));
+        sale_quntity.setText(mapContent.get("total_value"));
 
 
       /*  tectxt.setText(tec+"");

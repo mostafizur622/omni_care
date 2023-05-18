@@ -18,6 +18,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.srapp.Adapter.AdapterForOutletWiseProductReport;
 import com.srapp.Adapter.AdapterForOutletWiseSalesReport;
 import com.srapp.Adapter.SpinnerAdapter;
 import com.srapp.Db_Actions.Data_Source;
@@ -291,36 +292,26 @@ public class Outlet_wise_Product_report extends Parent implements BasicFunctionL
                         JSONObject jsonObject = new JSONObject(response.body());
                         dailog.dismiss();
 
+                        Log.e("responce",response.body());
 
 
                         ArrayList<HashMap<String, String>> list = new ArrayList<>();
-                        ArrayList< ArrayList<HashMap<String, String>>> details = new ArrayList<>();
                         JSONArray jsonArray = jsonObject.getJSONArray("res");
                         for (int i = 0; i < jsonArray.length(); i++) {
                             HashMap<String, String> map = new HashMap<>();
-                            map.put("memo_no", jsonArray.getJSONObject(i).getString("memo_no"));
-                            map.put("memo_date", jsonArray.getJSONObject(i).getString("memo_date"));
-                            ArrayList<HashMap<String, String>> sublish = new ArrayList<>();
+                            map.put("product_id", jsonArray.getJSONObject(i).getString("product_id"));
+                            map.put("sales_qty", jsonArray.getJSONObject(i).getString("sales_qty"));
+                            map.put("total_value", jsonArray.getJSONObject(i).getString("total_value"));
+                            map.put("bonus_qty", jsonArray.getJSONObject(i).getString("bonus_qty"));
+                            map.put("product_name", jsonArray.getJSONObject(i).getString("product_name"));
 
-                            JSONArray jsonArray1 = jsonArray.getJSONObject(i).getJSONArray("details");
-                            Double Total = 0.00;
-                            for (int j = 0; j < jsonArray1.length(); j++) {
-                                HashMap<String, String> map1 = new HashMap<>();
-                                map1.put("product_name", jsonArray1.getJSONObject(j).getString("product_name"));
-                                map1.put("sales_qty", jsonArray1.getJSONObject(j).getString("sales_qty"));
-                                map1.put("bonus_qty", jsonArray1.getJSONObject(j).getString("bonus_qty"));
-                                map1.put("value", jsonArray1.getJSONObject(j).getString("total_value"));
-                                Total = Total+Double.parseDouble(jsonArray1.getJSONObject(j).getString("total_value"));
-                                sublish.add(map1);
 
-                            }
-                            map.put("total", Total+"");
                             list.add(map);
-                            details.add(sublish);
+
                         }
 
 
-                        AdapterForOutletWiseSalesReport adapterForOutletWiseSalesReport = new AdapterForOutletWiseSalesReport(Outlet_wise_Product_report.this,list,details);
+                        AdapterForOutletWiseProductReport adapterForOutletWiseSalesReport = new AdapterForOutletWiseProductReport(Outlet_wise_Product_report.this,list);
                         order_list.setAdapter(adapterForOutletWiseSalesReport);
 
 
