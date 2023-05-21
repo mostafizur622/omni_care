@@ -654,12 +654,15 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
             visit.put("latitude",lat);
             visit.put("outlet_id",_OutletID);
             visit.put("longitude",lang);
-            visit.put("longitude",lang);
             visit.put("visit_date",getCurrentDateTime());
             visit.put("created_at",getCurrentDate());
             visit.put("isPushed","0");
-            db.InsertTable(visit,"outlet_visit");
-            Toast.makeText(this,"Successfully visited",Toast.LENGTH_LONG).show();
+            if (!alreadvisited(getCurrentDate(),_OutletID)) {
+                db.InsertTable(visit, "outlet_visit");
+                Toast.makeText(this,"Successfully visited",Toast.LENGTH_LONG).show();
+            }
+            else
+            Toast.makeText(this,"Outlet Already visited",Toast.LENGTH_LONG).show();
 
         }
 
@@ -667,6 +670,18 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
 
 
     }
+
+    private boolean alreadvisited(String currentDate, String outletID) {
+
+       Cursor c = db.sqLiteDatabase.rawQuery("select * from outlet_visit where outlet_id='"+outletID+"' and created_at='"+currentDate+"'",null);
+
+       if (c.getCount()>0){
+           return true;
+       }else {
+           return false;
+       }
+    }
+
 
     private void settallfalse(CheckBox[] checkBoxes, int i) {
 
