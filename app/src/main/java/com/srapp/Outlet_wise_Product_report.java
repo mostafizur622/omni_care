@@ -189,7 +189,13 @@ public class Outlet_wise_Product_report extends Parent implements BasicFunctionL
 
         }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
 
-        fromDatePickerDialog.getDatePicker().setMinDate(newCalendar.getTimeInMillis()-5184000000l);
+
+
+
+
+
+
+        fromDatePickerDialog.getDatePicker().setMinDate(1654020000000l);
         fromDatePickerDialog.getDatePicker().setMaxDate(newCalendar.getTimeInMillis());
         toDatepickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
 
@@ -205,7 +211,7 @@ public class Outlet_wise_Product_report extends Parent implements BasicFunctionL
 
         }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
 
-        toDatepickerDialog.getDatePicker().setMinDate(newCalendar.getTimeInMillis()-5184000000l);
+        toDatepickerDialog.getDatePicker().setMinDate(1654020000000l);
         toDatepickerDialog.getDatePicker().setMaxDate(newCalendar.getTimeInMillis());
 
         MarketSp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
