@@ -132,7 +132,7 @@ public class Reports_Activity extends AppCompatActivity {
         report_List.add(new Reports("Outlet Visit Report", null));
         report_List.add(new Reports("Outlet Wise Sales Report", null));
         report_List.add(new Reports("Incentive Party report", null));
-        report_List.add(new Reports("Outlet Wise Product Report", null));
+        report_List.add(new Reports("Outlet Wise Product Summery Report", null));
 
         return report_List;
     }

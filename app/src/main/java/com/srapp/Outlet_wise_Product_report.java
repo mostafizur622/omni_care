@@ -78,6 +78,7 @@ public class Outlet_wise_Product_report extends Parent implements BasicFunctionL
         userIdTV = findViewById(R.id.user_txt_view);
         titleTV = findViewById(R.id.title_tv);
 
+        titleTV.setText("Outlet Wise Product Summery Report");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String value = prefs.getString(Tables.SR_ID, "0");
         userIdTV.setText(value);
@@ -93,7 +94,7 @@ public class Outlet_wise_Product_report extends Parent implements BasicFunctionL
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(Outlet_wise_Product_report.this, Tools.class));
+                startActivity(new Intent(Outlet_wise_Product_report.this, Reports_Activity.class));
                 finish();
             }
         });
@@ -134,8 +135,8 @@ public class Outlet_wise_Product_report extends Parent implements BasicFunctionL
                 bf.savePreference("prouteId", routeID);
                 MarketParse(routeID);
 
-                bf.savePreference("start_date", dateFormatter.format(Calendar.getInstance().getTime()));
-                bf.savePreference("end_date", dateFormatter.format(Calendar.getInstance().getTime()));
+                //bf.savePreference("start_date", dateFormatter.format(Calendar.getInstance().getTime()));
+               // bf.savePreference("end_date", dateFormatter.format(Calendar.getInstance().getTime()));
                 Log.e("****************", "&&&&&&&&&&&&&&&&&&&&&&" + routeID + "     " + name);
                 if (!routeList.equals("00")) {
 
@@ -340,6 +341,13 @@ public class Outlet_wise_Product_report extends Parent implements BasicFunctionL
             e.printStackTrace();
         }
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(Outlet_wise_Product_report.this, Reports_Activity.class));
+        finish();
     }
 
     private void ThanaParse() {

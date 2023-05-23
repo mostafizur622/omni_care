@@ -92,7 +92,7 @@ public class Outlet_wise_sales_report extends Parent implements BasicFunctionLis
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(Outlet_wise_sales_report.this, Tools.class));
+                startActivity(new Intent(Outlet_wise_sales_report.this, Reports_Activity.class));
                 finish();
             }
         });
@@ -133,8 +133,7 @@ public class Outlet_wise_sales_report extends Parent implements BasicFunctionLis
                 bf.savePreference("prouteId", routeID);
                 MarketParse(routeID);
 
-                bf.savePreference("start_date", dateFormatter.format(Calendar.getInstance().getTime()));
-                bf.savePreference("end_date", dateFormatter.format(Calendar.getInstance().getTime()));
+
                 Log.e("****************", "&&&&&&&&&&&&&&&&&&&&&&" + routeID + "     " + name);
                 if (!routeList.equals("00")) {
 
@@ -263,7 +262,16 @@ public class Outlet_wise_sales_report extends Parent implements BasicFunctionLis
 
             }
         });
+        bf.savePreference("start_date", dateFormatter.format(Calendar.getInstance().getTime()));
+        bf.savePreference("end_date", dateFormatter.format(Calendar.getInstance().getTime()));
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        startActivity(new Intent(Outlet_wise_sales_report.this, Reports_Activity.class));
+        finish();
 
     }
 
