@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
+import com.srapp.Adapter.AutoCompeleteTextAdapter;
 import com.srapp.Db_Actions.DBListener;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
@@ -85,6 +86,10 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
     ArrayList<String> BonusPartyType = new ArrayList<String>();
     ArrayList<String> IsWithinGroup = new ArrayList<String>();
     AutoCompleteTextView outltateauto , marketauto;
+
+    AutoCompeleteTextAdapter outlet_adapter, market_adapter;
+
+    ArrayList<HashMap<String,String>> outlet_list = new ArrayList<>();
 
     String _OutletID, _InstituteID, _ProjectID, OUTLET_ID = "", _Is_Pharma_Type = "", _is_group_within_group;
 
@@ -432,15 +437,16 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int arg2, long id) {
 
-                autoPos=OutletName.indexOf(dataAdapter.getItem(arg2));
-
-                _OutletID = OutletID.get(autoPos);
+               // autoPos=OutletName.indexOf(dataAdapter.getItem(arg2));
 
 
 
-                Log.e("UUUUUUUUUUUUUUUUUU","UUUUUUUUUUU  _OutletID  UUUUUUUUUUUUU "+_OutletID);
-                String _OutletCode = OutletCode.get(autoPos);
-                String _OutletName = OutletName.get(autoPos);
+              HashMap<String,String> map = outlet_adapter.getItem(arg2);
+
+                Log.e("UUUUUUUUUUUUUUUUUU","UUUUUUUUUUU  _OutletID  UUUUUUUUUUUUU "+outlet_adapter.getItem(arg2).toString());
+                _OutletID =map.get("Outlet_id");
+                String _OutletCode = map.get("outlet_name");
+                String _OutletName = map.get("outlet_name");
                 String ins = InstituteID.get(autoPos);
                 String ngo = ProjectID.get(autoPos);
                 String is_withinGroup = IsWithinGroup.get(autoPos);
@@ -896,6 +902,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
         InstituteID.clear();
         IsWithinGroup.clear();
         BonusPartyType.clear();
+        outlet_list.clear();
 
         Cursor c;
         String Query;
@@ -929,6 +936,10 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
                     ProjectID.add(project_id);
                     InstituteID.add(institute_id);
                     IsWithinGroup.add(is_within_group);
+                    HashMap<String,String> map = new HashMap<String,String>();
+                    map.put("outlet_name",outlet_name);
+                    map.put("Outlet_id",outlet_id);
+                    outlet_list.add(map);
 
                 } while (c.moveToNext());
             }
@@ -940,12 +951,13 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
             }*/
 
 
-            dataAdapter = new ArrayAdapter<String>(Create_New_Memo.this, R.layout.outlet_dw, OutletName);
-            dataAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
-            OutletSp.setAdapter(dataAdapter);
-            outltateauto.setAdapter(dataAdapter);
+           // dataAdapter = new ArrayAdapter<String>(Create_New_Memo.this, R.layout.outlet_dw, OutletName);
+            outlet_adapter = new AutoCompeleteTextAdapter(Create_New_Memo.this,R.layout.outlet_dw,R.id.outlet_name,outlet_list);
+            outlet_adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+            //OutletSp.setAdapter(dataAdapter);
+            outltateauto.setAdapter(outlet_adapter);
             outltateauto.setThreshold(1);
-
+            Log.e("constraint",outlet_list.size()+"");
             if (!getPreference("OutletID").equalsIgnoreCase("NO PREFERENCE") && !getPreference("OutletID").equalsIgnoreCase("")) {
                 int SelectedPos = OutletID.indexOf(getPreference("OutletID").trim());
                 if (SelectedPos >= 0) {
