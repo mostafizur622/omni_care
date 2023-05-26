@@ -437,7 +437,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int arg2, long id) {
 
-               // autoPos=OutletName.indexOf(dataAdapter.getItem(arg2));
+
 
 
 
@@ -445,8 +445,10 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
 
                 Log.e("UUUUUUUUUUUUUUUUUU","UUUUUUUUUUU  _OutletID  UUUUUUUUUUUUU "+outlet_adapter.getItem(arg2).toString());
                 _OutletID =map.get("Outlet_id");
-                String _OutletCode = map.get("outlet_name");
+                autoPos=OutletID.indexOf(_OutletID);
+                String _OutletCode =  OutletCode.get(autoPos);;
                 String _OutletName = map.get("outlet_name");
+
                 String ins = InstituteID.get(autoPos);
                 String ngo = ProjectID.get(autoPos);
                 String is_withinGroup = IsWithinGroup.get(autoPos);
@@ -931,6 +933,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
                     BonusPartyType.add(bonusPartyType);
                     OutletID.add(outlet_id);
                     Log.e("outlateID", outlet_id+"");
+                   // OutletID.add(outlet_id);
                     OutletCode.add(outlet_code);
                     OutletName.add(outlet_name);
                     ProjectID.add(project_id);
