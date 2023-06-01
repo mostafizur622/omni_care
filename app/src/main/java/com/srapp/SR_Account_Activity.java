@@ -108,6 +108,9 @@ public class SR_Account_Activity extends Parent {
                 }else if(position == 8){
                     startActivity(new Intent(SR_Account_Activity.this,SR_Attendance.class));
                     finish();
+                }else if(position == 9){
+                    startActivity(new Intent(SR_Account_Activity.this,SR_NCP_Activity.class));
+                    finish();
                 }
             }
 
@@ -171,6 +174,7 @@ public class SR_Account_Activity extends Parent {
         sr_targetList.add(new SR_Account("About",null));
         sr_targetList.add(new SR_Account("FAQ",null));
         sr_targetList.add(new SR_Account("Attendance",null));
+        sr_targetList.add(new SR_Account("NCP",null));
 
 
         return sr_targetList;

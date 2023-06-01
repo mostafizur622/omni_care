@@ -428,6 +428,47 @@ public class Data_Source extends Parent {
         return ItemListFromDB;
     }
 
+
+    public ArrayList<HashMap<String, String>> GetproductlistbyCategory(String CategoryID) {
+
+
+        ArrayList<HashMap<String, String>> ItemListFromDB = new ArrayList<>();
+        open();
+        String query = "";
+        if (!CategoryID.equalsIgnoreCase("0"))
+            query = "SELECT DISTINCT * FROM " + TABLE_NAME_PRODUCT + " WHERE product_category_id=" + "'" + CategoryID + "'" ;
+        else
+            query = "SELECT DISTINCT * FROM " + TABLE_NAME_PRODUCT ;
+
+        ItemListFromDB.clear();
+        Cursor c = sqLiteDatabase.rawQuery(query, null);
+
+        if (c != null) {
+            if (c.moveToFirst()) {
+                do {
+
+
+                    String product_id = c.getString(c.getColumnIndex(PRODUCT_PRODUCT_ID));
+                    String product_name = c.getString(c.getColumnIndex("product_name"));
+
+
+
+                    HashMap<String, String> product_list_map = new HashMap<String, String>();
+                    product_list_map.put("product_id", product_id);
+                    product_list_map.put("product_name", getProductName(product_id,product_name));
+
+                    ItemListFromDB.add(product_list_map);
+
+                } while (c.moveToNext());
+            }
+            c.close();
+
+
+        }
+        close();
+        return ItemListFromDB;
+    }
+
     public String getProductName(String product_id, String product_name) {
 
         Cursor virtual_cursor = sqLiteDatabase.rawQuery("select is_virtual,parent_id from product where product_id="+product_id,null);
@@ -1187,7 +1228,8 @@ public class Data_Source extends Parent {
 
             /*productCategoryIdList.add("0");
             producttCategoryNameList.add("");*/
-
+            productCategoryIdList.add("0");
+            producttCategoryNameList.add("All");
             for (int i = 0; i < cursor.getCount(); i++) {
 
                 productCategoryIdList.add(cursor.getString(cursor.getColumnIndex(Tables.PPRODUCT_CATEGORY_C_id)));

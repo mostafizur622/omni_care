@@ -24,7 +24,7 @@ import java.util.HashMap;
 public class NcpProductCollection extends AppCompatActivity {
 
     NcpProductCollectionAdapter adapter;
-    ArrayList<String> products;
+    ArrayList<String> Selected_products;
     RecyclerView recyclerView;
     Button nextBtn;
     Spinner rouuteSpinner, marketSpinner, outletSpinner, productCategorySpinner;
@@ -53,7 +53,7 @@ public class NcpProductCollection extends AppCompatActivity {
         productCategorySpinner = findViewById(R.id.product_category_spinner);
 
         recyclerView = findViewById(R.id.ncp_collection_rec);
-
+        Selected_products = new ArrayList<>();
 
         routeData = new HashMap<>();
         marketData = new HashMap<>();
@@ -139,7 +139,9 @@ public class NcpProductCollection extends AppCompatActivity {
                 TextView textView = (TextView)parent.getChildAt(0);
                 textView.setTextColor(getResources().getColor(R.color.background_card));
 
-             //   productCategoryId = productCategoryData.get(Tables.PRODUCT_CATAGORY_ID).get(position);
+               productCategoryId = productCategoryData.get(Tables.PPRODUCT_CATEGORY_C_id).get(position);
+
+                getProductList(productCategoryId);
 
 
             }
@@ -152,18 +154,40 @@ public class NcpProductCollection extends AppCompatActivity {
 
 
 
-        products = new ArrayList<>();
-        for (int i = 0; i< 50; i++){
-            products.add("Product"+i);
-        }
 
-        adapter = new NcpProductCollectionAdapter(products);
+
+        getProductList("0");
+       
+
+
+    }
+
+    public void addproduct(String product_id){
+
+        Selected_products.add(product_id);
+    }
+
+    public void remove_product(String product_id){
+
+        Selected_products.remove(product_id);
+    }
+
+    public boolean isproduct_selected(String product_id){
+
+        return Selected_products.contains(product_id);
+    }
+
+    private void getProductList(String catagotyid) {
+
+
+
+        
+        
+        adapter = new NcpProductCollectionAdapter(ds.GetproductlistbyCategory(catagotyid),this);
         //adapter.setData(products);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
-
-
     }
 
     private void setAdapterToOutletSpinner() {

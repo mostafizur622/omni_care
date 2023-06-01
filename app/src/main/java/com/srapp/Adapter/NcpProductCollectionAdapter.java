@@ -1,5 +1,6 @@
 package com.srapp.Adapter;
 
+import android.app.Activity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,22 +10,27 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.srapp.NcpProductCollection;
 import com.srapp.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class NcpProductCollectionAdapter extends RecyclerView.Adapter<NcpProductCollectionAdapter.Holder> {
 
-    ArrayList<String>products;
+    ArrayList<HashMap<String,String>>products;
     private final boolean[] checkBoxState;
 
+    NcpProductCollection ncp ;
 
-    public NcpProductCollectionAdapter(ArrayList<String>products) {
+
+    public NcpProductCollectionAdapter(ArrayList<HashMap<String,String>> products, Activity activity) {
         this.products = products;
         this.checkBoxState = new boolean[products.size()];
+        this.ncp = (NcpProductCollection)activity;
 
 
        // Log.e("initial check", "NcpProductCollectionAdapter: "+checkBoxState );
@@ -43,18 +49,23 @@ public class NcpProductCollectionAdapter extends RecyclerView.Adapter<NcpProduct
 
     @Override
     public void onBindViewHolder(@NonNull final Holder holder, final int position) {
-        holder.productName.setText(products.get(position));
+        holder.productName.setText(products.get(position).get("product_name"));
 
         holder.cb.setOnCheckedChangeListener(null);
 
-        holder.cb.setChecked(checkBoxState[position]);
+        holder.cb.setChecked(ncp.isproduct_selected(products.get(holder.getBindingAdapterPosition()).get("product_id")));
         Log.e("position check", "onBindViewHolder: position"+position+"--"+checkBoxState[position] );
 
 
         holder.cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                checkBoxState[position]=isChecked;
+
+                if (isChecked){
+                    ncp.addproduct(products.get(holder.getBindingAdapterPosition()).get("product_id"));
+                }else {
+                    ncp.remove_product(products.get(holder.getBindingAdapterPosition()).get("product_id"));
+                }
             }
         });
 

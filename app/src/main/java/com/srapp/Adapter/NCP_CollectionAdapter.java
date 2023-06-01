@@ -53,6 +53,7 @@ public class NCP_CollectionAdapter extends RecyclerView.Adapter<NCP_CollectionAd
             super(itemView);
             sr_account = itemView.findViewById(R.id.ncp_collection_text);
             image = itemView.findViewById(R.id.ncp_collection_image);
+
         }
     }
 }

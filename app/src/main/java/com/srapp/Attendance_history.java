@@ -48,6 +48,8 @@ import retrofit2.Response;
 public class Attendance_history extends AppCompatActivity implements BasicFunctionListener {
 
     ImageView img;
+
+    AdapterForAttendanceHistory history;
     private DatePickerDialog fromDatePickerDialog;
     private DatePickerDialog toDatePickerDialog;
     private SimpleDateFormat dateFormatter;
