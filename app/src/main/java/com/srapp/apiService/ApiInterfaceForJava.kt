@@ -229,6 +229,10 @@ interface ApiInterfaceForJava {
     @POST("save_ncp_collection.json")
     fun SAVE_NCP(@Body JSONObject: RequestBody): Call<String>
 
+ @Headers("Content-Type: application/json")
+    @POST("update_ncp.json")
+    fun Update_NCP(@Body JSONObject: RequestBody): Call<String>
+
     @Headers("Content-Type: application/json")
     @POST("dist_sales_targets.json")
     fun ProductTarget(@Body JSONObject: RequestBody): Call<String>

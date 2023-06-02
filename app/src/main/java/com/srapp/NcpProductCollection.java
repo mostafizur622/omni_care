@@ -91,7 +91,7 @@ public class NcpProductCollection extends AppCompatActivity {
             public void onClick(View view) {
                 if (Selected_products.size()>0) {
                     if (!outlet_id.equalsIgnoreCase("0")) {
-                        Intent i = new Intent(NcpProductCollection.this, NcpCollection.class);
+                            Intent i = new Intent(NcpProductCollection.this, NcpCollection.class);
                         i.putExtra("products", Selected_products);
                         i.putExtra("outlet_id", outlet_id);
                         startActivity(i);

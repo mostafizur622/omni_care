@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.srapp.Adapter.AdapterForAttendanceHistory;
+import com.srapp.Adapter.NcpCollectionListAdapter;
 import com.srapp.Adapter.SpinnerAdapter;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
@@ -69,6 +70,8 @@ public class NcpCollectionList extends AppCompatActivity implements BasicFunctio
     Button startdate, enddate;
 
     ListView collectionlist;
+
+    NcpCollectionListAdapter adapter;
 
 
     @Override
@@ -281,7 +284,8 @@ public class NcpCollectionList extends AppCompatActivity implements BasicFunctio
 
                         }
 
-
+                        adapter = new NcpCollectionListAdapter(NcpCollectionList.this,collections);
+                        collectionlist.setAdapter(adapter);
 
 
 

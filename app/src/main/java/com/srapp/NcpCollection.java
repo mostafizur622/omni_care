@@ -53,10 +53,11 @@ public class NcpCollection extends AppCompatActivity {
     Button save;
     EditText remarks;
     String outlet_id;
+    boolean is_edit;
 
     ImageView homeBtn,backBtn;
     TextView userIdTV,titleTV ;
-
+    HashMap<String,String> map;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +65,8 @@ public class NcpCollection extends AppCompatActivity {
 
         products=getIntent().getStringArrayListExtra("products");
         outlet_id = getIntent().getStringExtra("outlet_id");
+        is_edit = getIntent().getBooleanExtra("is_edit",false);
+        map = (HashMap<String, String>)  getIntent().getSerializableExtra("map");
         data=new ArrayList<>();
         ds=new Data_Source(this);
         homeBtn = findViewById(R.id.home);
@@ -104,7 +107,10 @@ public class NcpCollection extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
+                    if (!is_edit)
                     saveData();
+                    else 
+                        updateData();
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
@@ -112,6 +118,65 @@ public class NcpCollection extends AppCompatActivity {
         });
 
         setdata();
+    }
+
+    private void updateData() throws JSONException {
+
+        ArrayList<HashMap<String, String>> batch_list = adapter.getAlldata();
+        if (batch_list.size()>0) {
+            JSONObject mainjsonObject = new JSONObject();
+            JSONArray jsonArray = new JSONArray();
+
+            for (int i = 0; i < batch_list.size(); i++) {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("product_id", batch_list.get(i).get("product_id"));
+                jsonObject.put("quantity", batch_list.get(i).get("qty"));
+                jsonObject.put("expiredate", batch_list.get(i).get("exp"));
+                jsonObject.put("batch_id",batch_list.get(i).get("batch"));
+                jsonObject.put("remarks", "");
+                jsonArray.put(jsonObject);
+            }
+            mainjsonObject.put("products", jsonArray);
+            mainjsonObject.put("outlet_id", map.get("outlet_id"));
+            mainjsonObject.put("collection", map.get("collection"));
+
+            ProgressDialog dailog = CheckConnection(NcpCollection.this,"Update Ncp...");
+            if (dailog==null)
+                return;
+            getJAPi().Update_NCP(convertTORequestdata(mainjsonObject)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body()).getJSONObject("res");
+                        dailog.dismiss();
+
+                        if (jsonObject.getString("status").equalsIgnoreCase("1")){
+                            startActivity(new Intent(NcpCollection.this, NcpCollectionList.class));
+                            finish();
+                        }
+                        Toast.makeText(NcpCollection.this, jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+
+
+
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    dailog.dismiss();
+                }
+            });
+
+
+        }
+
+
+
+
+
     }
 
     private void saveData() throws JSONException {
@@ -125,6 +190,7 @@ public class NcpCollection extends AppCompatActivity {
                 jsonObject.put("product_id",batch_list.get(i).get("product_id"));
                 jsonObject.put("quantity",batch_list.get(i).get("qty"));
                 jsonObject.put("expiredate",batch_list.get(i).get("exp"));
+                jsonObject.put("batch_id",batch_list.get(i).get("batch"));
                 jsonObject.put("remarks","");
                 jsonArray.put(jsonObject);
             }
@@ -169,7 +235,11 @@ public class NcpCollection extends AppCompatActivity {
         data.clear();
         Log.e("data",data.size()+"");
 
-        data.addAll(ds.getproductListWithbatch(products));
+        if (is_edit)
+            data.add(map);
+            else
+          data.addAll(ds.getproductListWithbatch(products));
+
         adapter = new NCPAdapterForProductReturnDetails(this,data);
         recyclerView.setAdapter(adapter);
 
