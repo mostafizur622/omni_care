@@ -5,13 +5,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.srapp.Adapter.NcpProductCollectionAdapter;
 import com.srapp.Adapter.SpinnerAdapter;
@@ -37,7 +43,11 @@ public class NcpProductCollection extends AppCompatActivity {
     Data_Source ds;
     String routeId;
     String marketId;
+    String outlet_id="0";
     String productCategoryId;
+
+    ImageView homeBtn,backBtn;
+    TextView userIdTV,titleTV ;
 
 
     @Override
@@ -51,6 +61,13 @@ public class NcpProductCollection extends AppCompatActivity {
         marketSpinner = findViewById(R.id.market_spinner);
         outletSpinner = findViewById(R.id.outlet_spinner);
         productCategorySpinner = findViewById(R.id.product_category_spinner);
+        nextBtn = findViewById(R.id.nextBtn);
+        userIdTV = findViewById(R.id.user_txt_view);
+        titleTV = findViewById(R.id.title_tv);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String value = prefs.getString(Tables.SR_ID, "0");
+        userIdTV.setText(value);
+        titleTV.setText("NCP Collection");
 
         recyclerView = findViewById(R.id.ncp_collection_rec);
         Selected_products = new ArrayList<>();
@@ -69,6 +86,23 @@ public class NcpProductCollection extends AppCompatActivity {
 
         Log.e("mkt data test", "onCreate: "+marketData );
 
+        nextBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (Selected_products.size()>0) {
+                    if (!outlet_id.equalsIgnoreCase("0")) {
+                        Intent i = new Intent(NcpProductCollection.this, NcpCollection.class);
+                        i.putExtra("products", Selected_products);
+                        i.putExtra("outlet_id", outlet_id);
+                        startActivity(i);
+                    }else {
+                        Toast.makeText(NcpProductCollection.this, "Please select a Outlet", Toast.LENGTH_SHORT).show();
+                    }
+                }else {
+                    Toast.makeText(NcpProductCollection.this, "Please select Product", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
 
         rouuteSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -76,6 +110,7 @@ public class NcpProductCollection extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 TextView textView = (TextView)parent.getChildAt(0);
+                if (textView!=null)
                 textView.setTextColor(getResources().getColor(R.color.background_card));
 
                 routeId = routeData.get(Tables.ROUTE_ID).get(position);
@@ -97,6 +132,7 @@ public class NcpProductCollection extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 TextView textView = (TextView)parent.getChildAt(0);
+                if (textView!=null)
                 textView.setTextColor(getResources().getColor(R.color.background_card));
 
                 marketId = marketData.get(Tables.MARKETS_market_id).get(position);
@@ -115,9 +151,10 @@ public class NcpProductCollection extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 TextView textView = (TextView)parent.getChildAt(0);
+                if (textView!=null)
                 textView.setTextColor(getResources().getColor(R.color.background_card));
 
-                routeId = outletData.get(Tables.OUTLETS_ID).get(position);
+                outlet_id = outletData.get(Tables.OUTLETS_ID).get(position);
 
 
             }
@@ -137,6 +174,7 @@ public class NcpProductCollection extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 TextView textView = (TextView)parent.getChildAt(0);
+                if (textView!=null)
                 textView.setTextColor(getResources().getColor(R.color.background_card));
 
                productCategoryId = productCategoryData.get(Tables.PPRODUCT_CATEGORY_C_id).get(position);
@@ -160,6 +198,18 @@ public class NcpProductCollection extends AppCompatActivity {
        
 
 
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // TODO Auto-generated method stub
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            startActivity(new Intent(NcpProductCollection.this, SR_NCP_Activity.class));
+            finish();
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
     }
 
     public void addproduct(String product_id){

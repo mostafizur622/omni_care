@@ -29,6 +29,20 @@
                 android:layout_weight="0.3"
                 android:src="@drawable/backicon"
                 android:layout_margin="15dp"></ImageView>
+            <TextView
+                android:id="@+id/title_tv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.7"
+                android:gravity="center|left"
+                android:textColor="@color/white"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="12sp"
+                android:autoSizeMaxTextSize="20sp"
+                android:autoSizeStepGranularity="2sp"
+                android:text="Product Target">
+
+            </TextView>
 
         </LinearLayout>
         <LinearLayout
@@ -240,6 +254,7 @@
 
                     </TextView>
                     <Button
+                        android:id="@+id/start_date"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1.2"
@@ -279,6 +294,7 @@
 
                     </TextView>
                     <Button
+                        android:id="@+id/end_date"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1.2"
@@ -400,7 +416,7 @@
                     </TextView>
 
                 </LinearLayout>
-                <androidx.recyclerview.widget.RecyclerView
+                <ListView
                     android:id="@+id/ncp_collection_rec"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -408,7 +424,7 @@
                     android:layout_marginTop="10dp"
                     >
 
-                </androidx.recyclerview.widget.RecyclerView>
+                </ListView>
 
 
             </LinearLayout>

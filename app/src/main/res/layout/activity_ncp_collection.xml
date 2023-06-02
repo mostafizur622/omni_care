@@ -29,6 +29,20 @@
                 android:layout_weight="0.3"
                 android:src="@drawable/backicon"
                 android:layout_margin="15dp"></ImageView>
+            <TextView
+                android:id="@+id/title_tv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.7"
+                android:gravity="center|left"
+                android:textColor="@color/white"
+                android:autoSizeTextType="uniform"
+                android:autoSizeMinTextSize="12sp"
+                android:autoSizeMaxTextSize="20sp"
+                android:autoSizeStepGranularity="2sp"
+                android:text="Product Target">
+
+            </TextView>
 
         </LinearLayout>
         <LinearLayout
@@ -79,62 +93,7 @@
         android:weightSum="4"
         android:orientation="vertical">
         // text Title = 0.6
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.6"
-            android:layout_marginTop="15dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginBottom="10dp"
-            android:orientation="vertical"
-            android:weightSum="2"
-            >
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.9"
-                android:text="NCP Collection"
-                android:textStyle="bold"
-                android:textColor="@color/background_white"
-                android:textSize="22sp"
-                android:gravity="left|center"
-                >
 
-            </TextView>
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.8"
-                android:text="NCP Unit Should be in Base Unit"
-                android:textStyle="italic"
-                android:textColor="@color/text_focus_orng_color"
-                android:textSize="18sp"
-                android:gravity="left|center"
-                >
-
-            </TextView>
-            <!--<LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="0.8"
-                android:gravity="center|right">
-                <TextView
-                    android:id="@+id/button_with_icon"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/rounded_et_tv_bg"
-                    android:textStyle="bold"
-                    android:textSize="18sp"
-                    android:textColor="@color/background"
-                    android:textAllCaps="false"
-                    android:gravity="center"
-                    android:textAlignment="center"
-                    android:text="12-13-2019" />
-
-            </LinearLayout>-->
-
-        </LinearLayout>
 
 
 
@@ -142,7 +101,7 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="2.5"
+            android:layout_weight="3.1"
             app:cardCornerRadius="35dp"
 
 
@@ -168,10 +127,6 @@
                         android:gravity="left|center"
                         android:textAlignment="gravity"
                         android:textStyle="bold"
-                        android:autoSizeTextType="uniform"
-                        android:autoSizeMinTextSize="12sp"
-                        android:autoSizeMaxTextSize="20sp"
-                        android:autoSizeStepGranularity="2sp"
                         android:text="Product"
 
                         >
@@ -184,10 +139,6 @@
                         android:textAlignment="center"
                         android:gravity="center"
                         android:textStyle="bold"
-                        android:autoSizeTextType="uniform"
-                        android:autoSizeMinTextSize="12sp"
-                        android:autoSizeMaxTextSize="20sp"
-                        android:autoSizeStepGranularity="2sp"
                         android:text="Batch">
 
                     </TextView>
@@ -198,44 +149,32 @@
                         android:textAlignment="center"
                         android:gravity="center"
                         android:textStyle="bold"
-                        android:autoSizeTextType="uniform"
-                        android:autoSizeMinTextSize="12sp"
-                        android:autoSizeMaxTextSize="20sp"
-                        android:autoSizeStepGranularity="2sp"
-                        android:text="Quantity">
+                        android:text="Exp">
 
                     </TextView>
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:gravity="center|right"
+                        android:gravity="center"
                         android:textAlignment="gravity"
                         android:textStyle="bold"
-                        android:autoSizeTextType="uniform"
-                        android:autoSizeMinTextSize="12sp"
-                        android:autoSizeMaxTextSize="20sp"
-                        android:autoSizeStepGranularity="2sp"
-                        android:text="T. Price">
+                        android:text="Qty">
 
                     </TextView>
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:gravity="center|right"
+                        android:gravity="center"
                         android:textAlignment="gravity"
                         android:textStyle="bold"
-                        android:autoSizeTextType="uniform"
-                        android:autoSizeMinTextSize="12sp"
-                        android:autoSizeMaxTextSize="20sp"
-                        android:autoSizeStepGranularity="2sp"
                         android:text="Action">
 
                     </TextView>
 
                 </LinearLayout>
-                <androidx.recyclerview.widget.RecyclerView
+                <ListView
                     android:id="@+id/ncp_collection_rec"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -243,7 +182,7 @@
                     android:layout_marginTop="10dp"
                     >
 
-                </androidx.recyclerview.widget.RecyclerView>
+                </ListView>
 
 
             </LinearLayout>
@@ -276,7 +215,9 @@
 
             </TextView>
             <EditText
+                android:id="@+id/remarks"
                 android:layout_width="0dp"
+                android:hint="Remark"
                 android:layout_height="match_parent"
                 android:layout_weight="1.3"
                 android:padding="15dp"
@@ -298,6 +239,7 @@
             android:layout_weight=".5">
 
             <Button
+                android:id="@+id/save"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:gravity="center"

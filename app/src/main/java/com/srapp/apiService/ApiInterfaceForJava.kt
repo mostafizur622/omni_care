@@ -213,12 +213,21 @@ interface ApiInterfaceForJava {
     fun ATTENDANCE_HISTORY(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
+    @POST("get_ncp_collection_list.json")
+    fun GET_NCP_Collection(@Body JSONObject: RequestBody): Call<String>
+
+    @Headers("Content-Type: application/json")
     @POST("dist_product_processed_order_report.json")
     fun PRODUCT_WISE_SALES_SUMMERY_Invoece(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_product_sales_report.json")
     fun PRODUCT_WISE_SALES_SUMMERY_DELIVERy(@Body JSONObject: RequestBody): Call<String>
+
+
+    @Headers("Content-Type: application/json")
+    @POST("save_ncp_collection.json")
+    fun SAVE_NCP(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_sales_targets.json")

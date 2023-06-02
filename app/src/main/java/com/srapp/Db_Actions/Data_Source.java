@@ -3530,6 +3530,27 @@ public class Data_Source extends Parent {
         return map ;
     }
 
+    public ArrayList<HashMap<String,String>> getproductListWithbatch(ArrayList<String> products) {
+
+        ArrayList<HashMap<String,String>> list = new ArrayList<>();
+        for (int i = 0 ; i < products.size() ; i++) {
+            HashMap<String,String> map = new HashMap<>();
+
+            String product_name = getProductName(products.get(i),getProductName(products.get(i)));
+            Log.e("name",product_name);
+            map.put("product_name",product_name);
+            map.put("product_id",products.get(i));
+            map.put("qty","");
+            map.put("batch","");
+            map.put("exp","");
+
+            list.add(map);
+        }
+        return list;
+
+
+    }
+
 
     private class updateorderWithServer extends AsyncTask<String, String, String> {
         JSONObject jsonObject = new JSONObject();
