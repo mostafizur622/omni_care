@@ -882,7 +882,7 @@ public class PrintAllMemosActivity extends ParentActivity {
 
                     String Bonus1 = "", Bonus = "";
                     String Bonus1_BN = "", Bonus_BN = "";
-                    String MemoDetailsForBonus = "SELECT MD.product_id,P.product_name ,MD.quantity , MD.measurement_unit_id  FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='2'";
+                    String MemoDetailsForBonus = "SELECT MD.product_id,P.product_name ,MD.quantity , MD.measurement_unit_id,p.product_name_bangla  FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='2'";
                     Log.e("MemoDetailsForBonus", "MemoDetailsForBonus: " + MemoDetailsForBonus);
                     Cursor cur = db.rawQueryCoustom(MemoDetailsForBonus);
                     if (cur != null) {
@@ -890,13 +890,14 @@ public class PrintAllMemosActivity extends ParentActivity {
                             do {
                                 String product_id = cur.getString(0);
                                 String product_name = cur.getString(1);
+                                String product_name_BN = cur.getString(4);
                                 String quantity = cur.getString(2);
                                 String Bonus2 = product_name + "(" + quantity + " " + getMeasurementUnitName(cur.getString(3),"unit_name") + ")";
                                 Bonus1 = Bonus1 + "," + Bonus2;
                                 Bonus = Bonus1.substring(1);
 
 
-                                String Bonus2BN = product_name + "(" + quantity + " " + getMeasurementUnitName(cur.getString(3),"unit_name_bangla") + ")";
+                                String Bonus2BN = product_name_BN + "(" + quantity + " " + getMeasurementUnitName(cur.getString(3),"unit_name_bangla") + ")";
                                 Bonus1_BN = Bonus1_BN + "," + Bonus2BN;
                                 Bonus_BN = Bonus1_BN.substring(1);
                                 TempData.TempBonus_BN = Bonus_BN;
