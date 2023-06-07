@@ -600,7 +600,7 @@ public class PrintAllMemosActivityP extends ParentActivity
     public void MakeText()
     {
         TempData.TempGift="";
-        TempData.TempBonus="";
+        TempData.TempBonus_EN ="";
         String AllPrint="";
         Data_Source db=new Data_Source(PrintAllMemosActivityP.this);
         Cursor c=db.rawQueryCoustom("SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_date>="+"'"+FromDate+"'"+" and order_date <="+"'"+ToDate+"' and status='1' ORDER BY _id DESC");
@@ -777,12 +777,12 @@ public class PrintAllMemosActivityP extends ParentActivity
                                 String Bonus2= product_name+"("+quantity+")";
                                 Bonus1 = Bonus1+","+Bonus2;
                                 Bonus = Bonus1.substring(1,Bonus1.length());
-                                TempData.TempBonus = Bonus;
+                                TempData.TempBonus_EN = Bonus;
 
                             }while(cur.moveToNext());
                         }
                     }
-                    if((TempData.TempGift !="Nill"&& TempData.TempGift!="")|| TempData.TempBonus!="")
+                    if((TempData.TempGift !="Nill"&& TempData.TempGift!="")|| TempData.TempBonus_EN !="")
                         receiptHeadBuffer.append("\n................................................................");
 
 
@@ -795,8 +795,8 @@ public class PrintAllMemosActivityP extends ParentActivity
                     {
                         receiptHeadBuffer.append("\n\n"+String.format("%1$-38s", "Discount:"+ discount_info));
                     }
-                    if(TempData.TempBonus!="")
-                        receiptHeadBuffer.append("\n"+String.format("%1$-38s", "Bonus:"+ TempData.TempBonus));
+                    if(TempData.TempBonus_EN !="")
+                        receiptHeadBuffer.append("\n"+String.format("%1$-38s", "Bonus:"+ TempData.TempBonus_EN));
 
                     Log.e("BUFFER1 AFTER APPEND:", ""+receiptHeadBuffer.toString());
 
@@ -847,7 +847,7 @@ public class PrintAllMemosActivityP extends ParentActivity
 
 //                    TempData.INVOICE_DETAILS.clear();
                     TempData.TempGift="";
-                    TempData.TempBonus="";
+                    TempData.TempBonus_EN ="";
                     TempData.TempExtraBonus="";
 
                 }while(c.moveToNext());

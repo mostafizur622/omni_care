@@ -336,7 +336,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
 
                 //  TempData.TempBonus=txtBonus.getText().toString();
                 TempData.TempExtraBonus = txtBonus.getText().toString();
-                Log.e("++++++", "TempData.TempBonus: " + TempData.TempBonus);
+                Log.e("++++++", "TempData.TempBonus: " + TempData.TempBonus_EN);
                 Log.e("++++++", "TempData.TempExtraBonus: " + TempData.TempExtraBonus);
                 Log.e("++++++", "TempData.BonusShowList " + TempData.BonusShowList);
 
@@ -984,7 +984,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
 
 
                 TempData.TempGift = txtGift.getText().toString();
-                TempData.TempBonus = txtBonus.getText().toString();
+                TempData.TempBonus_EN = txtBonus.getText().toString();
                 TempData.TempExtraBonus = txtBonusExtra.getText().toString();
                 TempData.TempGift = txtGift.getText().toString();
 
@@ -1014,7 +1014,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
                     TempData.TotalBonusProductList.clear();
                     TempData.BonusChxSelected.clear();
                     TempData.BonusProductQuantity.clear();
-                    TempData.TempBonus = "";
+                    TempData.TempBonus_EN = "";
                     TempData.TempExtraBonus = "";
                     TempData.editMemo = "";
                     //db.deleteRowOFDraft("bonus_items", TempData.OutletID);
@@ -1029,7 +1029,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
                     TempData.TotalBonusProductList.clear();
                     TempData.BonusChxSelected.clear();
                     TempData.BonusProductQuantity.clear();
-                    TempData.TempBonus = "";
+                    TempData.TempBonus_EN = "";
                     TempData.TempExtraBonus = "";
                     // db.deleteRowOFDraft("bonus_items", TempData.OutletID);
                     startActivity(new Intent(ProductSales.this, Create_New_Memo.class));
@@ -1737,7 +1737,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
 
             fos = new FileOutputStream(myFile);
 
-            String data = TempData.INVOICE_DETAILS.toString() + TempData.TempGift + TempData.TempBonus;
+            String data = TempData.INVOICE_DETAILS.toString() + TempData.TempGift + TempData.TempBonus_EN;
             String hexDump = hexDump(data.getBytes(), data);
             Log.e(" hext dump:", "..." + hexDump);
             fos.write(hexDump.getBytes());

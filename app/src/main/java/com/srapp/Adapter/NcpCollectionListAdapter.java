@@ -77,7 +77,7 @@ public class NcpCollectionListAdapter extends BaseAdapter {
 	public View getView(final int position, View convertView, final ViewGroup parent) {
 
 		TextView product;
-		EditText batch, quantity;
+		TextView batch, quantity;
 		TextView outlet;
 		ImageView action;
 		View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_ncp_collection, null);
@@ -85,7 +85,7 @@ public class NcpCollectionListAdapter extends BaseAdapter {
 		batch = itemView.findViewById(R.id.batch);
 		outlet = itemView.findViewById(R.id.outlet);
 		quantity = itemView.findViewById(R.id.qty);
-		action = itemView.findViewById(R.id.dlt_product_sales_item);
+		action = itemView.findViewById(R.id.edit);
 
 	
 		
@@ -108,6 +108,7 @@ public class NcpCollectionListAdapter extends BaseAdapter {
 				i.putExtra("map", finalMapContent);
 				i.putExtra("is_edit", true);
 				context.startActivity(i);
+
 
 			}
 		});

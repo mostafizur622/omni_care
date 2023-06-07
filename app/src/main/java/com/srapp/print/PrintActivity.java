@@ -1,5 +1,6 @@
 package com.srapp.print;
 
+import static com.srapp.TempData.ConvertTOBangla;
 import static com.srapp.TempData.MEMO_EDIT;
 import static com.srapp.print.newprint.Constant.CONN_STATE_DISCONN;
 import static com.srapp.print.newprint.Constant.Connect_cuccess;
@@ -719,24 +720,27 @@ public class PrintActivity<BarcodeFormat> extends ParentActivity {
         //  if (TempData.INVOICE_DETAILS.size() == 1) {
 
 
-        area_office.setText("Area Office: " + getPreference("office_name") +", "+ getPreference("office_address") + ", " + getPreference("office_phone"));
+        area_office.setText("এরিয়া অফিস: " + getPreference("office_name_bn") +", "+ getPreference("office_address_bn") + ", " + getPreference("office_phone"));
 
-        outlet_name_category_address.setText(TempData.OutletName + " " + "(" + getPreference("OutletCategoryName") + ") ");
+        outlet_name_category_address.setText(TempData.OutletName + " " + "(" + getPreference("OutletCategoryNameBN") + ") ");
 
         outlet_address_phone.setText(getPreference("Outletaddress") + ", " + getPreference("OutletMobile"));
 
         market_thana.setText(TempData.tempMarket + ", " + TempData.tempThana);
 
         if (MEMO_EDIT)
-            order_memo_no_date.setText("Memo# " + TempData.memoNumber + ", " + date);
+            order_memo_no_date.setText("মেমো# " + ConvertTOBangla(TempData.memoNumber) + ", " + ConvertTOBangla(date));
         else
-            order_memo_no_date.setText("Order# " + TempData.orderNumber + ", " + date);
+            order_memo_no_date.setText("ওর্ডার# " + ConvertTOBangla(TempData.orderNumber) + ", " + ConvertTOBangla(date));
 
         sr_db_name.setText(getPreference("sr_name") + "  DB:(" + getPreference("db_name") + ")");
-        total_bill.setText("Total Bill:   " + String.valueOf(roundTwoDecimals(Double.parseDouble(TempData.InvoiceTotal))));
-        discount.setText("Discount:   " + roundTwoDecimals(TempData.DISCOUNT));
-        vatCal.setText("Vat:   " + roundTwoDecimals(TempData.VAT));
-        net_payable.setText("Net-Payable:   " + roundTwoDecimals(Double.parseDouble(total) - TempData.DISCOUNT));
+        total_bill.setText("মোট বিলের পরিমাণ :" + ConvertTOBangla(String.valueOf(roundTwoDecimals(Double.parseDouble(TempData.InvoiceTotal)))));
+        if (TempData.DISCOUNT!=0) {
+            discount.setVisibility(View.VISIBLE);
+            discount.setText("ছাড় :   " + ConvertTOBangla(roundTwoDecimals(TempData.DISCOUNT)));
+        }
+        vatCal.setText("ভ্যাট :   " + ConvertTOBangla(roundTwoDecimals(TempData.VAT)));
+        net_payable.setText("সর্বমোট প্রদান :   " + ConvertTOBangla(roundTwoDecimals(Double.parseDouble(total) - TempData.DISCOUNT)));
 
         //  if ((TempData.TempGift != "Nill" && TempData.TempGift != "") || TempData.TempBonus != "" || TempData.TempExtraBonus != "")
 
@@ -746,286 +750,29 @@ public class PrintActivity<BarcodeFormat> extends ParentActivity {
             extra.setVisibility(View.VISIBLE);
 
         }
-        if (TempData.TempBonus != "" && TempData.TempExtraBonus.equals("")) {
-            bonus.setText("Bonus:" + TempData.TempBonus);
+        if (TempData.TempBonus_EN != "" && TempData.TempExtraBonus.equals("")) {
+            bonus.setText("বোনাস:" + TempData.TempBonus_BN);
             extra.setVisibility(View.VISIBLE);
         }
 
 
-        if (TempData.TempBonus.equals("") && TempData.TempExtraBonus != "") {
-            bonus.setText("Bonus:" + TempData.TempExtraBonus);
+        if (TempData.TempBonus_EN.equals("") && TempData.TempExtraBonus != "") {
+            bonus.setText("বোনাস:" + TempData.TempExtraBonus);
             extra.setVisibility(View.VISIBLE);
         }
         if (!DetailsOrderReport.discount_info.equals("") && DetailsOrderReport.discount_info.length() > 0) {
-            discountTxt.setText("Discount:" + DetailsOrderReport.discount_info);
+            discountTxt.setText("ডিস্কাউন্ট:" + DetailsOrderReport.discount_info_BN);
             extra.setVisibility(View.VISIBLE);
         }
 
       /*  if (!discount_data.equals("") && discount_data.length() > 0)
             discountTxt.setText("Discount:" + discount_data);*/
 
-        if (TempData.TempBonus != "" && TempData.TempExtraBonus != "") {
-            bonus.setText("Bonus:" + TempData.TempBonus + "," + TempData.TempExtraBonus);
+        if (TempData.TempBonus_EN != "" && TempData.TempExtraBonus != "") {
+            bonus.setText("বোনাস:" + TempData.TempBonus_BN + "," + TempData.TempExtraBonus);
             extra.setVisibility(View.VISIBLE);
         }
 
-        // }
-
-       /* else {
-
-        }*/
-
-
-
-       /* SpannableStringBuilder receiptHeadBuffer56 = new SpannableStringBuilder();
-        receiptHeadBuffer56.append(" ");
-
-        SpannableStringBuilder receiptHeadBuffer = new SpannableStringBuilder();
-        receiptHeadBuffer.append("\n");
-        String value3 = String.format("%1$-11s %2$10s %3$11s  %4$20s"," "," "," ","Mushak - 6.3");
-        receiptHeadBuffer.append(value3);
-        receiptHeadBuffer.append("\n");
-        receiptHeadBuffer.append(Util.center("Government of the People's Republic of", 64));
-        receiptHeadBuffer.append(Util.center("Bangladesh.", 64));
-        receiptHeadBuffer.append(Util.center("National Board of Revenue",64));
-        receiptHeadBuffer.append(Util.center("VAT Challan Patra",64));
-        receiptHeadBuffer.append(Util.center("SMC Enterprise Ltd.",64));
-        receiptHeadBuffer.append(Util.center("Central BIN: 000049992-0101.",64));
-        receiptHeadBuffer.append("\nArea Office: " + getPreference("office_name"));
-        receiptHeadBuffer.append("\n");
-        receiptHeadBuffer.append(getPreference("office_address") + ", " + getPreference("office_phone"));
-
-
-        receiptHeadBuffer.append("\n");
-        SpannableStringBuilder receiptHeadBufferOutlate = new SpannableStringBuilder();
-        receiptHeadBufferOutlate.append(TempData.OutletName + " " + "(" + getPreference("OutletCategoryName") + ") ,"+getPreference("Outletaddress  "));
-
-        receiptHeadBufferOutlate.append("\n");
-        SpannableStringBuilder receiptHeadBufferBody = new SpannableStringBuilder();
-        receiptHeadBufferBody.append(TempData.tempMarket + ", " + TempData.tempThana);
-        receiptHeadBufferBody.append("\n");
-        if (MEMO_EDIT)
-            receiptHeadBufferBody.append("Memo# " + TempData.memoNumber + ", " + date);
-        else
-            receiptHeadBufferBody.append("Order# " + TempData.orderNumber + ", " + date);
-        receiptHeadBufferBody.append("\n................................................................");
-        //receiptHeadBuffer.append("\n");
-
-        String value = String.format("%1$-21s %2$7s %3$10s %4$8s  %5$13s", "Items","vat", "Price", "Qty", "Total");
-        receiptHeadBufferBody.append(value);
-        Log.e("txtvalue",value);
-        receiptHeadBufferBody.append("\n................................................................");
-
-        Log.e("-----------", "----TempData.INVOICE_DETAILS.size()------" + TempData.INVOICE_DETAILS.size());
-
-
-        if (TempData.INVOICE_DETAILS.size() == 1) {
-            int i;
-            for (i = 0; i < TempData.INVOICE_DETAILS.size(); i++) {
-                HashMap<String, String> map = TempData.INVOICE_DETAILS.get(i);
-
-                String price = String.valueOf(roundTwoDecimals(Double.parseDouble(map.get("price"))));
-                String total_price = String.valueOf(roundTwoDecimals(Double.parseDouble(map.get("price")) * Double.parseDouble(map.get("quantity"))));
-
-                if (map.get("product_name").length() <= 21) {
-                    String value1 = String.format("%1$-21s %2$7s %3$10s %4$8s  %5$13s", map.get("product_name"), map.get("vat"), price, map.get("quantity"), total_price);
-                    receiptHeadBufferBody.append(value1);
-                } else {
-                    String firstPart = map.get("product_name").substring(0, 21);
-                    String secondPart = map.get("product_name").substring(21, map.get("product_name").length());
-                    String value1 = String.format("%1$-21s %2$7s %3$10s %4$8s  %5$13s", firstPart,map.get("vat"), price, map.get("quantity"), total_price);
-                    receiptHeadBufferBody.append(value1);
-
-                    String value2 = String.format("%1$-21s %2$7s %3$10s %4$8s  %5$13s", secondPart, "","", "", "");
-                    receiptHeadBufferBody.append(value2);
-                }
-
-
-                if (TempData.INVOICE_DETAILS.size() - 1 != i)
-                    receiptHeadBufferBody.append("\n");
-
-
-            }
-
-
-            if ((TempData.TempGift != "Nill" && TempData.TempGift != "") || TempData.TempBonus != "" || TempData.TempExtraBonus != "")
-                receiptHeadBufferBody.append("\n................................................................");
-
-
-            if (TempData.TempGift != "Nill" && TempData.TempGift != "") {
-                receiptHeadBufferBody.append("\n" + String.format("%1$-38s", "Gift:" + TempData.TempGift));
-            }
-            if (TempData.TempBonus != "" && TempData.TempExtraBonus.equals(""))
-                receiptHeadBufferBody.append("\n" + String.format("%1$-38s", "Bonus:" + TempData.TempBonus));
-
-            if (TempData.TempBonus.equals("") && TempData.TempExtraBonus != "")
-                receiptHeadBufferBody.append("\n" + String.format("%1$-38s", "Bonus:" + TempData.TempExtraBonus));
-            if (!DetailsOrderReport.discount_info.equals("") && DetailsOrderReport.discount_info.length()>0)
-                receiptHeadBufferBody.append("\n\n" + String.format("%1$-38s", "Discount:" + DetailsOrderReport.discount_info));
-
-            if (TempData.TempBonus != "" && TempData.TempExtraBonus != "")
-                receiptHeadBufferBody.append("\n" + String.format("%1$-38s", "Bonus:" + TempData.TempBonus + "," + TempData.TempExtraBonus));
-
-            Log.e("BUFFER1 AFTER APPEND:", "" + receiptHeadBuffer.toString());
-
-
-            receiptHeadBufferBody.append("\n................................................................");
-
-
-            SpannableStringBuilder receiptHeadBuffer1 = new SpannableStringBuilder();
-
-            String total = String.valueOf(roundTwoDecimals(Double.parseDouble(TempData.InvoiceTotal)));
-
-
-            receiptHeadBuffer1.append(""+String.format("%1$-30s %2$4s %3$12s  %4$10s", "","","Total Bill:",String.valueOf(roundTwoDecimals(Double.parseDouble(total)))));
-
-
-            receiptHeadBuffer1.append("\n" + String.format("%1$-30s %2$4s %3$12s  %4$10s", "", "",
-                    "Discount:", roundTwoDecimals(TempData.DISCOUNT)));
-            receiptHeadBuffer1.append("\n" + String.format("%1$-30s %2$4s %3$12s  %4$10s", "", "",
-                    "Vat:", roundTwoDecimals(TempData.VAT)));
-            receiptHeadBuffer1.append("\n" + String.format("%1$-30s %2$4s %3$12s  %4$10s", "", "",
-                    "Net-Payable:", roundTwoDecimals(Double.parseDouble(total)- TempData.DISCOUNT)));
-
-            receiptHeadBuffer1.append("\n\n"+getPreference("sr_name")+"  DB:("+getPreference("db_name")+")");
-            receiptHeadBuffer1.append("\n"+"Sales Officer");
-            receiptHeadBuffer1.append("\n"+"* Product(s) price are SD free & including VAT");
-            receiptHeadBuffer1.append("\n"+"Thank You!");
-            receiptHeadBuffer1.append("\n\n\n");
-
-
-
-            initialContent = receiptHeadBuffer56.toString();
-            appContent = receiptHeadBuffer.toString();
-            bottomContent = receiptHeadBuffer1.toString();
-            //boldthanku = receiptHeadBuffer3.toString();
-            OutlateBold = receiptHeadBufferOutlate.toString();
-            body = receiptHeadBufferBody.toString();
-            TextView txtText = (TextView) findViewById(R.id.txtText);
-            txtText.setText(initialContent + appContent + OutlateBold + body + bottomContent + boldthanku);
-
-            TempData.printBlankContent = initialContent;
-            TempData.printTopContent = appContent;
-            TempData.PrintOutlate = OutlateBold;
-            TempData.PrintBody = body;
-            TempData.printBottomContent = bottomContent;
-            TempData.printName = "memo";
-            TempData.AllprintName = "memo";
-            TempData.printboldthank = "thanku";
-            TempData.printThanku = boldthanku;
-            Log.e("Tetst", TempData.TempBonus);
-            TempData.INVOICE_DETAILS.clear();
-            TempData.TempGift = "";
-            TempData.TempBonus = "";
-            TempData.TempExtraBonus = "";
-            Log.e("length", TempData.printThanku.getBytes().length + "");
-
-
-        } else {
-            int i;
-            for (i = 0; i < TempData.INVOICE_DETAILS.size(); i++) {
-                HashMap<String, String> map = TempData.INVOICE_DETAILS.get(i);
-
-                String price = String.valueOf(roundTwoDecimals(Double.parseDouble(map.get("price"))));
-                String total_price = String.valueOf(roundTwoDecimals(Double.parseDouble(map.get("price")) * Double.parseDouble(map.get("quantity"))));
-                Log.e("productname",map.get("product_name"));
-                if (map.get("product_name").length() <= 21) {
-                    String value1 = String.format("%1$-21s %2$7s %3$10s %4$8s  %5$13s", map.get("product_name"), map.get("vat"), price, map.get("quantity"), total_price);
-                    receiptHeadBufferBody.append(value1);
-                } else {
-                    String firstPart = map.get("product_name").substring(0, 21);
-                    String secondPart = map.get("product_name").substring(21, map.get("product_name").length());
-                    String value1 = String.format("%1$-21s %2$7s %3$10s %4$8s  %5$13s", firstPart,map.get("vat"), price, map.get("quantity"), total_price);
-                    receiptHeadBufferBody.append(value1);
-
-                    String value2 = String.format("%1$-21s %2$7s %3$10s %4$8s  %5$13s", secondPart, "","", "", "");
-                    receiptHeadBufferBody.append(value2);
-
-
-                }
-
-
-                if (TempData.INVOICE_DETAILS.size() - 1 != i)
-                    receiptHeadBufferBody.append("\n");
-
-            }
-
-            if ((TempData.TempGift != "Nill" && TempData.TempGift != "") || TempData.TempBonus != "" || TempData.TempExtraBonus != "")
-                receiptHeadBufferBody.append("\n................................................................");
-
-
-            Log.e("Tetst", TempData.TempBonus + "no data");
-            if (TempData.TempGift != "Nill" && TempData.TempGift != "") {
-                receiptHeadBufferBody.append("\n" + String.format("%1$-38s", "Gift:" + TempData.TempGift));
-            }
-            if (TempData.TempBonus != "" && TempData.TempExtraBonus.equals("")) {
-                receiptHeadBufferBody.append("\n" + String.format("%1$-38s", "Bonus:" + TempData.TempBonus));
-                TempData.TempBonus = "";
-            }
-            if (!DetailsOrderReport.discount_info.equals("") && DetailsOrderReport.discount_info.length()>0)
-                receiptHeadBufferBody.append("\n\n" + String.format("%1$-38s", "Discount:" + DetailsOrderReport.discount_info));
-
-            if (TempData.TempBonus.equals("") && TempData.TempExtraBonus != "")
-                receiptHeadBufferBody.append("\n" + String.format("%1$-38s", "Bonus:" + TempData.TempExtraBonus));
-
-            if (TempData.TempBonus != "" && TempData.TempExtraBonus != "") {
-                receiptHeadBufferBody.append("\n" + String.format("%1$-38s", "Bonus:" + TempData.TempBonus + "," + TempData.TempExtraBonus));
-                TempData.TempBonus = "";
-
-            }
-
-            Log.e("BUFFER12 AFTER APPEND:", "" + receiptHeadBufferBody.toString());
-
-
-            receiptHeadBufferBody.append("\n................................................................");
-
-
-            SpannableStringBuilder receiptHeadBuffer1 = new SpannableStringBuilder();
-
-            String total1 = String.valueOf(roundTwoDecimals(Double.parseDouble(TempData.InvoiceTotal)));
-
-            receiptHeadBuffer1.append("\n" + String.format("%1$-30s %2$4s %3$12s  %4$10s", "", "",
-                    "Total Bill:", total1));
-            receiptHeadBuffer1.append("\n" + String.format("%1$-30s %2$4s %3$12s  %4$10s", "", "",
-                    "Discount:", roundTwoDecimals(TempData.DISCOUNT)));
-            receiptHeadBuffer1.append("\n" + String.format("%1$-30s %2$4s %3$12s  %4$10s", "", "",
-                    "Vat:", roundTwoDecimals(TempData.VAT)));
-            receiptHeadBuffer1.append("\n" + String.format("%1$-30s %2$4s %3$12s  %4$10s", "", "",
-                    "Net-Payable:", roundTwoDecimals(Double.parseDouble(total1)- TempData.DISCOUNT)));
-
-
-            SpannableStringBuilder receiptHeadBuffer3 = new SpannableStringBuilder();
-            receiptHeadBuffer3.append("\n\n"+getPreference("sr_name")+"  DB:("+getPreference("db_name")+")");
-            receiptHeadBuffer3.append("\n"+"Sales Officer");
-            receiptHeadBuffer3.append("\n"+"* Product(s) price are SD free & including VAT");
-            receiptHeadBuffer3.append("\n\n" + "Thank You!\n\n");
-            receiptHeadBuffer3.append("\n\n\n\n\n");
-
-            initialContent = receiptHeadBuffer56.toString();
-            appContent = receiptHeadBuffer.toString();
-            bottomContent = receiptHeadBuffer1.toString();
-            boldthanku = receiptHeadBuffer3.toString();
-            OutlateBold = receiptHeadBufferOutlate.toString();
-            body = receiptHeadBufferBody.toString();
-            TextView txtText = (TextView) findViewById(R.id.txtText);
-            txtText.setText(initialContent + appContent + OutlateBold + body + bottomContent + boldthanku);
-
-            TempData.printBlankContent = initialContent;
-            TempData.printTopContent = appContent;
-            TempData.printBottomContent = bottomContent;
-            TempData.PrintOutlate = OutlateBold;
-            TempData.PrintBody = body;
-            TempData.printName = "memo";
-            TempData.AllprintName = "memo";
-            TempData.printboldthank = "thanku";
-            TempData.printThanku = boldthanku;
-            Log.e("Tetst", receiptHeadBuffer.toString());
-            TempData.INVOICE_DETAILS.clear();
-            TempData.TempGift = "";
-            TempData.TempBonus = "";
-            TempData.TempExtraBonus = "";
-            Log.e("Tetst", TempData.TempBonus + "no data");
-        }*/
 
 
     }

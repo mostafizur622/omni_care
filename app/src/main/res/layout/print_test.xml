@@ -38,16 +38,22 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="10dp"
-                        android:text="Mushak - 6.3"
+                        android:text="মূসক-৬.৩"
                         android:gravity="end"
                         android:textColor="#000"
                         android:textSize="@dimen/_12sdp"
                         android:textStyle="bold" />
 
+                    <ImageView
+                        android:layout_width="@dimen/_50sdp"
+                        android:src="@drawable/smclogo"
+                        android:layout_gravity="center"
+                        android:layout_height="@dimen/_35sdp"/>
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Government of the People's Republic of Bangladesh"
+                        android:text="গণপ্রজাতন্ত্রী বাংলাদেশ সরকার"
                         android:gravity="center_horizontal"
                         android:textColor="#000000"
                         android:textSize="@dimen/_9sdp"
@@ -56,7 +62,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="National Board of Revenue"
+                        android:text="জাতীয় রাজস্ব বোর্ড"
                         android:gravity="center_horizontal"
                         android:textColor="#000000"
                         android:textSize="@dimen/_9sdp"
@@ -65,7 +71,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="VAT Challan Patra"
+                        android:text="ভ্যাট চালানপত্র"
                         android:gravity="center_horizontal"
                         android:textColor="#000000"
                         android:textSize="@dimen/_9sdp"
@@ -73,7 +79,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="SMC Enterprise Ltd."
+                        android:text="এসএমসি এন্টারপ্রাইজ লিমিটেড"
                         android:gravity="center_horizontal"
                         android:textColor="#000000"
                         android:textSize="@dimen/_9sdp"
@@ -83,7 +89,7 @@
 
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Central BIN: 000049992-0101."
+                        android:text="কেন্দ্রীয় বি আই এন: ০০০০৩৯৯২-০১০১"
                         android:gravity="center_horizontal"
                         android:textColor="#000000"
                         android:textSize="@dimen/_9sdp"
@@ -165,7 +171,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="start"
-                            android:text="Items"
+                            android:text="পণ্য"
                             android:textColor="#000"
                             android:textSize="@dimen/_9sdp"
                             android:textStyle="bold" />
@@ -183,7 +189,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="start"
-                            android:text="Vat"
+                            android:text="ভ্যাট"
                             android:textColor="#000"
                             android:textSize="@dimen/_9sdp"
                             android:textStyle="bold" />
@@ -201,7 +207,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="start"
-                            android:text="Price"
+                            android:text="মূল্য"
                             android:textColor="#000"
                             android:textSize="@dimen/_9sdp"
                             android:textStyle="bold" />
@@ -220,7 +226,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="start"
-                            android:text="Qty"
+                            android:text="পরিমাণ"
                             android:textColor="#000"
                             android:textSize="@dimen/_9sdp"
                             android:textStyle="bold" />
@@ -240,7 +246,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="start"
-                            android:text="Total"
+                            android:text="মোট"
                             android:textColor="#000"
                             android:textSize="@dimen/_9sdp"
                             android:textStyle="bold" />
@@ -262,7 +268,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:nestedScrollingEnabled="false"
-                        tools:itemCount="40"
+                        tools:itemCount="4"
                         tools:listitem="@layout/print_item">
 
                     </androidx.recyclerview.widget.RecyclerView>
@@ -330,6 +336,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:visibility="gone"
                     android:id="@+id/discount"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"

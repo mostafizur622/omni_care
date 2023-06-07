@@ -27,6 +27,7 @@ import com.srapp.Adapter.NCPAdapterForProductReturnDetails;
 import com.srapp.Adapter.NcpCollectionAdapter;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
+import com.srapp.Util.ParentActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,7 +40,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class NcpCollection extends AppCompatActivity {
+public class NcpCollection extends ParentActivity {
 
     NCPAdapterForProductReturnDetails adapter;
     ListView recyclerView;
@@ -196,6 +197,9 @@ public class NcpCollection extends AppCompatActivity {
             }
             mainjsonObject.put("products",jsonArray);
             mainjsonObject.put("outlet_id",outlet_id);
+            mainjsonObject.put("collection_date",getCurrentDate());
+            mainjsonObject.put("remarks",remarks.getText().toString());
+
 
             ProgressDialog dailog = CheckConnection(NcpCollection.this,"Save Ncp...");
             if (dailog==null)

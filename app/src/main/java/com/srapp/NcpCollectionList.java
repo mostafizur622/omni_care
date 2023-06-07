@@ -259,27 +259,39 @@ public class NcpCollectionList extends AppCompatActivity implements BasicFunctio
                         for (int i=0 ; i<jsonarray.length() ; i++){
                             HashMap<String,String> map = new HashMap<>();
 
-                            String collection_date = jsonarray.getJSONObject(i).getJSONObject("DistNcpCollection").getString("collection_date");
-                            String quantity = jsonarray.getJSONObject(i).getJSONObject("DistNcpCollectionDetail").getString("quantity");
-                            String batch_id = jsonarray.getJSONObject(i).getJSONObject("DistNcpCollectionDetail").getString("batch_id");
-                            String product_name = jsonarray.getJSONObject(i).getJSONObject("Product").getString("name");
-                            String product_id = jsonarray.getJSONObject(i).getJSONObject("Product").getString("id");
-                            String outlet_id = jsonarray.getJSONObject(i).getJSONObject("DistOutlet").getString("id");
-                            String outlet_name = jsonarray.getJSONObject(i).getJSONObject("DistOutlet").getString("name");
-                            String expire_date = (jsonarray.getJSONObject(i).has("expire_date")) ?jsonarray.getJSONObject(i).getString("expire_date"):"no Ex date in api ";
-                            String remarks = (jsonarray.getJSONObject(i).has("remarks")) ?jsonarray.getJSONObject(i).getString("remarks"):"no remarks in api ";
+                            String collection_date = jsonarray.getJSONObject(i).getJSONObject("NcpCollection").getString("collection_date");
+                            String status = jsonarray.getJSONObject(i).getJSONObject("NcpCollection").getString("status");
+                            String outlet_name = jsonarray.getJSONObject(i).getJSONObject("NcpCollection").getString("Outlet");
 
 
-                            map.put("product_name",product_name);
-                            map.put("product_id",product_id);
-                            map.put("qty",quantity);
-                            map.put("batch",batch_id);
-                            map.put("exp",expire_date);
-                            map.put("outlet_id",outlet_id);
-                            map.put("outlet_name",outlet_name);
-                            map.put("collection",collection_date);
-                            map.put("remarks",collection_date);
-                            collections.add(map);
+                            JSONArray products = jsonarray.getJSONObject(i).getJSONArray("products");
+                            for (int j=0 ; j<products.length() ; j++){
+
+                                JSONObject product = products.getJSONObject(j);
+                                String quantity = product.getString("quantity");
+                                String batch_id = product.getString("batch_id");
+                                String remarks = product.getString("remarks");
+                                String product_name = product.getString("name");
+                                String product_id = product.getString("product_id");
+                                String expire_date = (product.has("expire_date")) ?jsonarray.getJSONObject(i).getString("expire_date"):"no Ex date in api ";
+
+
+                                map.put("product_name",product_name);
+                                map.put("product_id",product_id);
+                                map.put("qty",quantity);
+                                map.put("batch",batch_id);
+                                map.put("exp",expire_date);
+                                map.put("outlet_name",outlet_name);
+                                map.put("collection",collection_date);
+                                map.put("remarks",remarks);
+                                map.put("status",status);
+                                collections.add(map);
+
+                            }
+
+
+
+
 
 
                         }

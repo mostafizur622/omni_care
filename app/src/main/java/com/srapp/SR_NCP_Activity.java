@@ -2,6 +2,7 @@ package com.srapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 
 import com.srapp.Adapter.NCP_CollectionAdapter;
@@ -51,6 +52,19 @@ public class SR_NCP_Activity extends AppCompatActivity {
             }
         }));
 
+
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // TODO Auto-generated method stub
+        if(keyCode== KeyEvent.KEYCODE_BACK)
+        {
+            startActivity(new Intent( SR_NCP_Activity.this, SR_Account_Activity.class));
+            finish();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
 
     }
 

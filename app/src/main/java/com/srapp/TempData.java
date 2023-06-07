@@ -1,14 +1,12 @@
 package com.srapp;
 
+import android.util.Log;
+
 import com.srapp.bonusPolicy.PolicyBonusProduct;
 import com.srapp.bonusPolicy.PolicyID;
 
-import java.security.Provider;
-import java.util.AbstractCollection;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Vector;
 
 public class TempData {
 
@@ -44,7 +42,8 @@ public class TempData {
     public static String tempMarket="";
     public static boolean policyClear=true;
 
-    public static String TempBonus="";
+    public static String TempBonus_EN ="";
+    public static String TempBonus_BN ="";
     public static String TempExtraBonus="";
     public static String From_App="";
     public static String for_memo_delete="";
@@ -139,6 +138,12 @@ public class TempData {
     public static String summeryStartDate = "";
     public static String summeryEndDate = "";
     public static String summeryReportName = "";
+
+    public static String ConvertTOBangla(String input){
+
+
+        return input.replaceAll("0","০").replaceAll("1","১").replaceAll("2","২").replaceAll("3","৩").replaceAll("4","৪").replaceAll("5","৫").replaceAll("6","৬").replaceAll("7","৭").replaceAll("8","৮").replaceAll("9","৯");
+    }
 
 
 }

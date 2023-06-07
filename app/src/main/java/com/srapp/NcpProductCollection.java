@@ -61,6 +61,8 @@ public class NcpProductCollection extends AppCompatActivity {
         marketSpinner = findViewById(R.id.market_spinner);
         outletSpinner = findViewById(R.id.outlet_spinner);
         productCategorySpinner = findViewById(R.id.product_category_spinner);
+        homeBtn = findViewById(R.id.home);
+        backBtn = findViewById(R.id.back);
         nextBtn = findViewById(R.id.nextBtn);
         userIdTV = findViewById(R.id.user_txt_view);
         titleTV = findViewById(R.id.title_tv);

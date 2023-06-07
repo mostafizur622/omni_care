@@ -639,21 +639,21 @@ public class PrintActivity_For_Memo extends ParentActivity {
             }
 
 
-            if ((TempData.TempGift != "Nill" && TempData.TempGift != "") || TempData.TempBonus != "" || TempData.TempExtraBonus != "")
+            if ((TempData.TempGift != "Nill" && TempData.TempGift != "") || TempData.TempBonus_EN != "" || TempData.TempExtraBonus != "")
                 receiptHeadBufferBody.append("\n..........................................");
 
 
             if (TempData.TempGift != "Nill" && TempData.TempGift != "") {
                 receiptHeadBufferBody.append("\n" + String.format("%1$-38s", "Gift:" + TempData.TempGift));
             }
-            if (TempData.TempBonus != "" && TempData.TempExtraBonus.equals(""))
-                receiptHeadBufferBody.append("\n" + String.format("%1$-38s", "Bonus:" + TempData.TempBonus));
+            if (TempData.TempBonus_EN != "" && TempData.TempExtraBonus.equals(""))
+                receiptHeadBufferBody.append("\n" + String.format("%1$-38s", "Bonus:" + TempData.TempBonus_EN));
 
-            if (TempData.TempBonus.equals("") && TempData.TempExtraBonus != "")
+            if (TempData.TempBonus_EN.equals("") && TempData.TempExtraBonus != "")
                 receiptHeadBufferBody.append("\n" + String.format("%1$-38s", "Bonus:" + TempData.TempExtraBonus));
 
-            if (TempData.TempBonus != "" && TempData.TempExtraBonus != "")
-                receiptHeadBufferBody.append("\n" + String.format("%1$-38s", "Bonus:" + TempData.TempBonus + "," + TempData.TempExtraBonus));
+            if (TempData.TempBonus_EN != "" && TempData.TempExtraBonus != "")
+                receiptHeadBufferBody.append("\n" + String.format("%1$-38s", "Bonus:" + TempData.TempBonus_EN + "," + TempData.TempExtraBonus));
 
             Log.e("BUFFER1 AFTER APPEND:", "" + receiptHeadBuffer.toString());
 
@@ -699,10 +699,10 @@ public class PrintActivity_For_Memo extends ParentActivity {
             TempData.AllprintName = "memo";
             TempData.printboldthank = "thanku";
             TempData.printThanku = boldthanku;
-            Log.e("Tetst", TempData.TempBonus);
+            Log.e("Tetst", TempData.TempBonus_EN);
             TempData.INVOICE_DETAILS.clear();
             TempData.TempGift = "";
-            TempData.TempBonus = "";
+            TempData.TempBonus_EN = "";
             TempData.TempExtraBonus = "";
             Log.e("length", TempData.printThanku.getBytes().length + "");
 
@@ -734,26 +734,26 @@ public class PrintActivity_For_Memo extends ParentActivity {
 
             }
 
-            if ((TempData.TempGift != "Nill" && TempData.TempGift != "") || TempData.TempBonus != "" || TempData.TempExtraBonus != "")
+            if ((TempData.TempGift != "Nill" && TempData.TempGift != "") || TempData.TempBonus_EN != "" || TempData.TempExtraBonus != "")
                 receiptHeadBufferBody.append("\n..........................................");
 
 
-            Log.e("Tetst", TempData.TempBonus + "no data");
+            Log.e("Tetst", TempData.TempBonus_EN + "no data");
             if (TempData.TempGift != "Nill" && TempData.TempGift != "") {
                 receiptHeadBufferBody.append("\n" + String.format("%1$-38s", "Gift:" + TempData.TempGift));
             }
-            if (TempData.TempBonus != "" && TempData.TempExtraBonus.equals("")) {
-                receiptHeadBufferBody.append("\n" + String.format("%1$-38s", "Bonus:" + TempData.TempBonus));
-                TempData.TempBonus = "";
+            if (TempData.TempBonus_EN != "" && TempData.TempExtraBonus.equals("")) {
+                receiptHeadBufferBody.append("\n" + String.format("%1$-38s", "Bonus:" + TempData.TempBonus_EN));
+                TempData.TempBonus_EN = "";
             }
 
 
-            if (TempData.TempBonus.equals("") && TempData.TempExtraBonus != "")
+            if (TempData.TempBonus_EN.equals("") && TempData.TempExtraBonus != "")
                 receiptHeadBufferBody.append("\n" + String.format("%1$-38s", "Bonus:" + TempData.TempExtraBonus));
 
-            if (TempData.TempBonus != "" && TempData.TempExtraBonus != "") {
-                receiptHeadBufferBody.append("\n" + String.format("%1$-38s", "Bonus:" + TempData.TempBonus + "," + TempData.TempExtraBonus));
-                TempData.TempBonus = "";
+            if (TempData.TempBonus_EN != "" && TempData.TempExtraBonus != "") {
+                receiptHeadBufferBody.append("\n" + String.format("%1$-38s", "Bonus:" + TempData.TempBonus_EN + "," + TempData.TempExtraBonus));
+                TempData.TempBonus_EN = "";
             }
 
             Log.e("BUFFER12 AFTER APPEND:", "" + receiptHeadBufferBody.toString());
@@ -799,9 +799,9 @@ public class PrintActivity_For_Memo extends ParentActivity {
             Log.e("Tetst", receiptHeadBuffer.toString());
             TempData.INVOICE_DETAILS.clear();
             TempData.TempGift = "";
-            TempData.TempBonus = "";
+            TempData.TempBonus_EN = "";
             TempData.TempExtraBonus = "";
-            Log.e("Tetst", TempData.TempBonus + "no data");
+            Log.e("Tetst", TempData.TempBonus_EN + "no data");
         }
     }
 

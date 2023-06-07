@@ -257,8 +257,8 @@ LinearLayout temp;
 
     }
     private void Bonus() {
-        Log.e("T1",TempData.TempBonus+"no data");
-        TempData.TempBonus="";
+        Log.e("T1",TempData.TempBonus_EN +"no data");
+        TempData.TempBonus_EN ="";
         // TODO Auto-generated method stub
         ArrayList<HashMap<String,String>> bonusList=new ArrayList<HashMap<String,String>>();
 
@@ -324,9 +324,9 @@ LinearLayout temp;
         }
         if(bonus.length()>0)
         {
-            TempData.TempBonus="";
+            TempData.TempBonus_EN ="";
             txtBonus.setText(bonus);
-            TempData.TempBonus=bonus;
+            TempData.TempBonus_EN =bonus;
         }
         else
         {
@@ -336,7 +336,7 @@ LinearLayout temp;
         //txtBonus.setText("Nill");
         BonusArrayList=bonusList;
 
-        Log.e("T",TempData.TempBonus+"no data");
+        Log.e("T",TempData.TempBonus_EN +"no data");
     }
 
 

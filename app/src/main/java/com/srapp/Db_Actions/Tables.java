@@ -1488,18 +1488,20 @@ public class Tables extends Parent {
     public static final String OUTLET_CATEGORY_id = "_id";
     public static final String OUTLET_CATEGORY_CATEGORY_ID = "outlet_category_id";
     public static final String OUTLET_CATEGORY_NAME = "outlet_category_name";
+    public static final String OUTLET_CATEGORY_NAME_BN = "outlet_category_name_bangla";
     public static final String OUTLET_CATEGORY_IS_ACTIVE = "is_active";
     public static final String OUTLET_CATEGORY_UPDATED_AT = "updated_at";
     public static final String OUTLET_CATEGORY_CREATED_AT = "created_at";
 
     public static final String OUTLET_CATAGORY[] = {TABLE_NAME_OUTLET_CATEGORY,OUTLET_CATEGORY_id, OUTLET_CATEGORY_CATEGORY_ID,
-            OUTLET_CATEGORY_NAME, OUTLET_CATEGORY_IS_ACTIVE, OUTLET_CATEGORY_UPDATED_AT, OUTLET_CATEGORY_CREATED_AT};
+            OUTLET_CATEGORY_NAME,OUTLET_CATEGORY_NAME_BN, OUTLET_CATEGORY_IS_ACTIVE, OUTLET_CATEGORY_UPDATED_AT, OUTLET_CATEGORY_CREATED_AT};
 
 
     public static final String CREATE_OUTLET_CATEGORY_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME_OUTLET_CATEGORY + "("
             + OUTLET_CATEGORY_id + " INTEGER PRIMARY KEY," +
             OUTLET_CATEGORY_CATEGORY_ID + " INTEGER," +
             OUTLET_CATEGORY_NAME + " TEXT," +
+            OUTLET_CATEGORY_NAME_BN + " TEXT," +
             OUTLET_CATEGORY_IS_ACTIVE + " INTEGER," +
             OUTLET_CATEGORY_CREATED_AT + " DATETIME," +
             OUTLET_CATEGORY_UPDATED_AT + " DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME'))" +
@@ -1868,6 +1870,7 @@ public class Tables extends Parent {
     public static final String PRODUCT_P_id = "_id";
     public static final String PRODUCT_PRODUCT_ID = "product_id";
     public static final String PRODUCT_PRODUCT_NAME = "product_name";
+    public static final String PRODUCT_PRODUCT_NAME_BN = "product_name_bangla";
     public static final String PRODUCT_CATAGORY_ID = "product_category_id";
     public static final String PRODUCT_TYPE_ID = "product_type_id";
     public static final String PRODUCT_ORDER = "product_order";
@@ -1880,13 +1883,14 @@ public class Tables extends Parent {
 
 
     public static final String PPRODCUT[] = {TABLE_NAME_PRODUCT,PRODUCT_P_id,
-            PRODUCT_PRODUCT_ID, PRODUCT_PRODUCT_NAME, PRODUCT_CATAGORY_ID, PRODUCT_TYPE_ID, PRODUCT_ORDER,PRODUCT_PARENT_ID,PRODUCT_IS_VIRTUAL, PRODUCT_IS_INJECTABLE,PRODUCT_IMAGE_URL, PRODUCT_UPDATED_AT, PRODUCT_CREATED_AT};
+            PRODUCT_PRODUCT_ID, PRODUCT_PRODUCT_NAME,PRODUCT_PRODUCT_NAME_BN, PRODUCT_CATAGORY_ID, PRODUCT_TYPE_ID, PRODUCT_ORDER,PRODUCT_PARENT_ID,PRODUCT_IS_VIRTUAL, PRODUCT_IS_INJECTABLE,PRODUCT_IMAGE_URL, PRODUCT_UPDATED_AT, PRODUCT_CREATED_AT};
 
 
     public static final String CREATE_PRODUCT_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME_PRODUCT + "("
             + PRODUCT_P_id + " INTEGER PRIMARY KEY," +
             PRODUCT_PRODUCT_ID + " INTEGER," +
             PRODUCT_PRODUCT_NAME + " VARCHAR," +
+            PRODUCT_PRODUCT_NAME_BN + " VARCHAR," +
             PRODUCT_CATAGORY_ID + " INTEGER," +
             PRODUCT_TYPE_ID + " INTEGER," +
             PRODUCT_ORDER + " INTEGER," +
@@ -2071,18 +2075,20 @@ public class Tables extends Parent {
     public static final String UNIT_P_id = "_id";
     public static final String UNIT_U_ID = "unit_id";
     public static final String UNIT_UNAME = "unit_name";
+    public static final String UNIT_UNAME_BN = "unit_name_bangla";
     public static final String UNIT_UPDATED_AT = "updated_at";
     public static final String UNIT_CREATED_AT = "created_at";
 
 
     public static final String UNIT[] = {TABLE_NAME_UNIT,UNIT_P_id,
-            UNIT_U_ID,UNIT_UNAME,UNIT_UPDATED_AT,UNIT_CREATED_AT};
+            UNIT_U_ID,UNIT_UNAME,UNIT_UNAME_BN,UNIT_UPDATED_AT,UNIT_CREATED_AT};
 
 
     public static final String CREATE_UNIT_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME_UNIT + "("
             + UNIT_P_id + " INTEGER PRIMARY KEY," +
             UNIT_U_ID + " INTEGER," +
             UNIT_UNAME + " VARCHAR," +
+            UNIT_UNAME_BN + " VARCHAR," +
             UNIT_CREATED_AT + " DATETIME," +
             UNIT_UPDATED_AT + " DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME'))" +
             ")";

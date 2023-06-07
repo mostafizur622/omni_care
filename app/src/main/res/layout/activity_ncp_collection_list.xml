@@ -345,14 +345,10 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="1.2"
+                        android:layout_weight="1.5"
                         android:gravity="left|center"
                         android:textAlignment="gravity"
                         android:textStyle="bold"
-                        android:autoSizeTextType="uniform"
-                        android:autoSizeMinTextSize="12sp"
-                        android:autoSizeMaxTextSize="20sp"
-                        android:autoSizeStepGranularity="2sp"
                         android:text="Product"
 
                         >
@@ -365,10 +361,6 @@
                         android:textAlignment="center"
                         android:gravity="center"
                         android:textStyle="bold"
-                        android:autoSizeTextType="uniform"
-                        android:autoSizeMinTextSize="12sp"
-                        android:autoSizeMaxTextSize="20sp"
-                        android:autoSizeStepGranularity="2sp"
                         android:text="Batch">
 
                     </TextView>
@@ -379,10 +371,6 @@
                         android:textAlignment="center"
                         android:gravity="center"
                         android:textStyle="bold"
-                        android:autoSizeTextType="uniform"
-                        android:autoSizeMinTextSize="12sp"
-                        android:autoSizeMaxTextSize="20sp"
-                        android:autoSizeStepGranularity="2sp"
                         android:text="Quantity">
 
                     </TextView>
@@ -393,24 +381,16 @@
                         android:gravity="center"
                         android:textAlignment="gravity"
                         android:textStyle="bold"
-                        android:autoSizeTextType="uniform"
-                        android:autoSizeMinTextSize="12sp"
-                        android:autoSizeMaxTextSize="20sp"
-                        android:autoSizeStepGranularity="2sp"
                         android:text="Outlet">
 
                     </TextView>
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
+                        android:layout_weight="0.7"
                         android:gravity="center|right"
                         android:textAlignment="gravity"
                         android:textStyle="bold"
-                        android:autoSizeTextType="uniform"
-                        android:autoSizeMinTextSize="12sp"
-                        android:autoSizeMaxTextSize="20sp"
-                        android:autoSizeStepGranularity="2sp"
                         android:text="Action">
 
                     </TextView>

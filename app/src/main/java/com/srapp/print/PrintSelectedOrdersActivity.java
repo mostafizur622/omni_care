@@ -4,7 +4,10 @@ import static com.srapp.Db_Actions.Tables.PRODUCT_BOOLEAN_QUANTITY;
 import static com.srapp.Db_Actions.Tables.PRODUCT_ID;
 import static com.srapp.Db_Actions.Tables.PRODUCT_PRICE_PRICE;
 import static com.srapp.Db_Actions.Tables.PRODUCT_PRODUCT_NAME;
+import static com.srapp.Db_Actions.Tables.PRODUCT_PRODUCT_NAME_BN;
 import static com.srapp.DetailsOrderReport.discount_info;
+import static com.srapp.DetailsOrderReport.discount_info_BN;
+import static com.srapp.TempData.ConvertTOBangla;
 import static com.srapp.print.newprint.Constant.CONN_STATE_DISCONN;
 import static com.srapp.print.newprint.Constant.Connect_cuccess;
 import static com.srapp.print.newprint.Constant.Connect_fail;
@@ -715,257 +718,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
         return a;
     }
 
-    private void MakeText() {
-        TempData.TempGift = "";
-        TempData.TempBonus = "";
-        String AllPrint = "";
-        Data_Source db = new Data_Source(PrintSelectedOrdersActivity.this);
 
-        for (int i = 0; i < orderList.size(); i++) {
-
-            Cursor c = db.rawQueryCoustom("SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_number=" + "'" + orderList.get(i) + "'");
-            Log.e("Query", "SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_number=" + "'" + orderList.get(i) + "'");
-            String memo_no = "";
-            if (c != null && c.getCount() > 0) {
-                if (c.moveToFirst()) {
-                    do {
-
-                        memo_no = c.getString(0);
-                        String date = c.getString(1);
-                        String outlet_id = c.getString(2);
-                        Double gross_value = c.getDouble(3);
-                        Double cash_received = c.getDouble(4);
-                        Double credit_amount = c.getDouble(5);
-                        String market_id = c.getString(6);
-                        TempData.DISCOUNT = c.getDouble(7);
-                        TempData.VAT = c.getDouble(8);
-
-                        Cursor c2 = db.rawQueryCoustom("SELECT O.outlet_name, M.market_name,O.address FROM outlets O LEFT JOIN markets M ON(O.market_id=M.market_id) WHERE O.outlet_id='" + outlet_id + "'");
-                        if (c2 != null) {
-                            if (c2.moveToFirst()) {
-                                do {
-
-                                    TempData.OutletName = c2.getString(0);
-                                    TempData.tempMarket = c2.getString(1);
-                                    TempData.Outlet_Address = c2.getString(2);
-
-                                } while (c2.moveToNext());
-                            }
-                        }
-
-                        Cursor c3 = db.rawQueryCoustom("SELECT T.thana_name FROM markets M LEFT JOIN thana T ON(M.thana_id=T.thana_id) WHERE M.market_id='" + market_id + "'");
-                        if (c3 != null) {
-                            if (c3.moveToFirst()) {
-                                do {
-
-                                    TempData.tempThana = c3.getString(0);
-
-                                } while (c3.moveToNext());
-                            }
-                        }
-
-                        Cursor c4 = db.rawQueryCoustom("SELECT OC.outlet_category_name FROM outlets O LEFT JOIN outlet_categories OC ON (O.outlet_category_id = OC.outlet_category_id) where O.outlet_id='" + outlet_id + "'");
-                        if (c4.getCount() > 0) {
-                            if (c4.moveToFirst()) {
-                                do {
-
-                                    String outlet_category_name = c4.getString(0);
-                                    savePreference("OutletCategoryName", outlet_category_name);
-
-
-                                } while (c4.moveToNext());
-                            }
-                        }
-
-                        date = date.substring(0, date.length() - 3);
-
-
-                        StringBuffer receiptHeadBuffer = new StringBuffer();
-                        receiptHeadBuffer.append("\n");
-
-                        receiptHeadBuffer.append("\n");
-                        receiptHeadBuffer.append(Util.center("Government of the People's Republic of", 64));
-                        receiptHeadBuffer.append(Util.center("Bangladesh.", 64));
-                        receiptHeadBuffer.append(Util.center("National Board of Revenue", 64));
-                        receiptHeadBuffer.append(Util.center("VAT Challan Patra", 64));
-                        receiptHeadBuffer.append(Util.center("SMC Enterprise Ltd.", 64));
-                        receiptHeadBuffer.append(Util.center("Central BIN: 000049992-0101.", 64));
-                        receiptHeadBuffer.append("\nArea Office: " + getPreference("office_name"));
-                        receiptHeadBuffer.append("\n");
-                        receiptHeadBuffer.append(getPreference("office_address") + ", " + getPreference("office_phone"));
-
-
-                        receiptHeadBuffer.append("\n");
-                        SpannableStringBuilder receiptHeadBufferOutlate = new SpannableStringBuilder();
-                        receiptHeadBuffer.append(TempData.OutletName + " " + "(" + getPreference("OutletCategoryName") + ") , " + TempData.Outlet_Address);
-
-                        receiptHeadBuffer.append("\n");
-                        SpannableStringBuilder receiptHeadBufferBody = new SpannableStringBuilder();
-                        receiptHeadBuffer.append(TempData.tempMarket + ", " + TempData.tempThana);
-                        receiptHeadBuffer.append("\n");
-
-                        receiptHeadBuffer.append("Order# " + memo_no + ", " + date);
-                        receiptHeadBuffer.append("\n................................................................");
-                        //receiptHeadBuffer.append("\n");
-
-                        String value = String.format("%1$-21s %2$7s %3$10s %4$8s  %5$13s", "Items", "vat", "Price", "Qty", "Total");
-                        receiptHeadBuffer.append(value);
-                        receiptHeadBuffer.append("\n................................................................");
-
-
-//                    String  MemoDetails="SELECT product_id, quantity, price FROM memo_details WHERE memo_no='"+memo_no+"'";
-
-                        String MemoDetails = "SELECT MD.product_id,P.product_name ,MD.quantity, MD.price,MD.vat,MD.discount_type,MD.discount_amount FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='0'";
-//                    Cursor c3 = db.rawQuery("SELECT T.thana_name FROM markets M LEFT JOIN thana T ON(M.market_id=T.market_id) WHERE market_id='"+market_id+"'");
-                        Log.e("MemoDetails", "MemoDetails: " + MemoDetails);
-                        discount_info = "";
-                        Cursor cursor = db.rawQueryCoustom(MemoDetails);
-                        if (cursor != null) {
-                            if (cursor.moveToFirst()) {
-                                do {
-                                    discount_info = discount_info + getdiscount(cursor.getDouble(2), cursor.getDouble(3), cursor.getInt(5), cursor.getDouble(6), cursor.getString(1));
-
-                                    String product_id = cursor.getString(0);
-                                    String product_name = cursor.getString(1);
-                                    String quantity = cursor.getString(2);
-                                    String price = cursor.getString(3);
-                                    String vat = cursor.getString(4);
-                                    if (TextUtils.isEmpty(vat)) {
-                                        vat = "0.0%";
-                                    }
-                                    String total_price = roundTwoDecimals(cursor.getDouble(2) * cursor.getDouble(3));
-
-                                    Log.e("productname22", product_name);
-                                    if (product_name.length() <= 21) {
-                                        String value1 = String.format("%1$-21s %2$7s %3$10s %4$8s  %5$13s", product_name, vat, price, quantity, total_price);
-                                        receiptHeadBuffer.append(value1);
-                                    } else {
-                                        String firstPart = product_name.substring(0, 21);
-                                        String secondPart = product_name.substring(21);
-                                        String value1 = String.format("%1$-21s %2$7s %3$10s %4$8s  %5$13s", firstPart, vat, price, quantity, total_price);
-                                        receiptHeadBuffer.append(value1);
-
-                                        String value2 = String.format("%1$-21s %2$7s %3$10s %4$8s  %5$13s", secondPart, "", "", "", "");
-                                        receiptHeadBuffer.append(value2);
-                                    }
-                                    if (!cursor.isLast())
-                                        receiptHeadBuffer.append("\n");
-
-                                } while (cursor.moveToNext());
-                            }
-                        }
-
-                        String Gift1 = "";
-                        String MemoDetailsForGift = "SELECT MD.product_id,P.product_name ,MD.quantity FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='1'";
-                        Log.e("MemoDetailsForGift", "MemoDetailsForGift: " + MemoDetailsForGift);
-                        Cursor cur2 = db.rawQueryCoustom(MemoDetailsForGift);
-                        if (cur2 != null) {
-                            if (cur2.moveToFirst()) {
-                                do {
-                                    String product_id = cur2.getString(0);
-                                    String product_name = cur2.getString(1);
-                                    String quantity = cur2.getString(2);
-                                    String Gift2 = product_name + "(" + quantity + ")";
-                                    Gift1 = Gift1 + "," + Gift2;
-                                    String Gift = Gift1.substring(1);
-                                    TempData.TempGift = Gift;
-
-                                } while (cur2.moveToNext());
-                            }
-                        }
-
-
-                        String Bonus1 = "", Bonus = "";
-                        String MemoDetailsForBonus = "SELECT MD.product_id,P.product_name ,MD.quantity , MD.measurement_unit_id  FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='2'";
-                        Log.e("MemoDetailsForBonus", "MemoDetailsForBonus: " + MemoDetailsForBonus);
-                        Cursor cur = db.rawQueryCoustom(MemoDetailsForBonus);
-                        if (cur != null) {
-                            if (cur.moveToFirst()) {
-                                do {
-                                    String product_id = cur.getString(0);
-                                    String product_name = cur.getString(1);
-                                    String quantity = cur.getString(2);
-                                    String Bonus2 = product_name + "(" + quantity + " " + getMeasurementUnitName(cur.getString(3)) + ")";
-                                    Bonus1 = Bonus1 + "," + Bonus2;
-                                    Bonus = Bonus1.substring(1);
-                                    TempData.TempBonus = Bonus;
-
-                                } while (cur.moveToNext());
-                            }
-                        }
-                        if ((TempData.TempGift != "Nill" && TempData.TempGift != "") || TempData.TempBonus != "")
-                            receiptHeadBuffer.append("\n................................................................");
-
-
-                        if (TempData.TempGift != "Nill" && TempData.TempGift != "") {
-                            receiptHeadBuffer.append("\n" + String.format("%1$-38s", "Gift:" + TempData.TempGift));
-                        }
-                        if (!discount_info.equalsIgnoreCase("") && discount_info.length() > 0) {
-                            receiptHeadBuffer.append("\n\n" + String.format("%1$-38s", "Discount:" + discount_info));
-                        }
-                        if (TempData.TempBonus != "")
-                            receiptHeadBuffer.append("\n" + String.format("%1$-38s", "Bonus:" + TempData.TempBonus));
-
-                        Log.e("BUFFER1 AFTER APPEND:", "" + receiptHeadBuffer.toString());
-
-                        receiptHeadBuffer.append("\n................................................................");
-
-
-                        StringBuffer receiptHeadBuffer1 = new StringBuffer();
-
-                        receiptHeadBuffer1.append("" + String.format("%1$-30s %2$4s %3$12s  %4$10s", "", "", "Total Bill:", roundTwoDecimals(gross_value)));
-
-
-                        receiptHeadBuffer1.append("\n" + String.format("%1$-30s %2$4s %3$12s  %4$10s", "", "",
-                                "Discount:", roundTwoDecimals(TempData.DISCOUNT)));
-                        receiptHeadBuffer1.append("\n" + String.format("%1$-30s %2$4s %3$12s  %4$10s", "", "",
-                                "Vat:", roundTwoDecimals(TempData.VAT)));
-                        receiptHeadBuffer1.append("\n" + String.format("%1$-30s %2$4s %3$15s  %4$12s", "", "",
-                                "Net-Payable:", ESCAPE_CHARACTERS + "bC" + roundTwoDecimals(gross_value - TempData.DISCOUNT) + ESCAPE_CHARACTERS + "!bC"));
-
-
-                        receiptHeadBuffer1.append("\n\n" + "Sales Representative");
-                        receiptHeadBuffer1.append("\n" + getPreference("sr_name") + "  DB:(" + getPreference("db_name") + ")");
-                        receiptHeadBuffer1.append("\nAddress: " + getPreference("db_address"));
-                        receiptHeadBuffer1.append("\nMobile No: " + getPreference("db_mobile"));
-                        receiptHeadBuffer1.append("\n" + "* Product(s) price are SD free & including VAT");
-                        receiptHeadBuffer1.append("\n" + "Thank You!");
-                        receiptHeadBuffer1.append("\n\n\n");
-
-
-                        appContent = receiptHeadBuffer.toString();
-                        bottomContent = receiptHeadBuffer1.toString();
-                        String value3 = String.format("%1$-11s %2$10s %3$18s  %4$28s", "Office Copy", " ", " ", ESCAPE_CHARACTERS + "bC" + "Mushak - 6.3" + ESCAPE_CHARACTERS + "!bC");
-                        String value4 = String.format("%1$-11s %2$10s %3$18s  %4$28s", "Outlet Copy", " ", " ", ESCAPE_CHARACTERS + "bC" + "Mushak - 6.3" + ESCAPE_CHARACTERS + "!bC");
-
-                        String AllPrint2 = value3 + appContent + receiptHeadBufferOutlate.toString() + receiptHeadBufferBody.toString() + bottomContent;
-                        String AllPrint3 = value4 + appContent + receiptHeadBufferOutlate.toString() + receiptHeadBufferBody.toString() + bottomContent;
-
-                        arrayList.add(AllPrint2);
-                        arrayList.add(AllPrint3);
-                        AllPrint = AllPrint + AllPrint2;
-                        Log.e("print", print + "");
-
-                        TextView txtText = findViewById(R.id.txtText);
-                        //                    txtText.setText(printcontent+bottomContent);
-                        txtText.setText(AllPrint);
-
-                       /*TempData.printTopContent=printcontent;
-                        TempData.printBottomContent=bottomContent;*/
-                        TempData.AllprintName = "AllprintName";
-                        TempData.AllprintValue = AllPrint;
-
-                        //TempData.INVOICE_DETAILS.clear();
-                        TempData.TempGift = "";
-                        TempData.TempBonus = "";
-                        TempData.TempExtraBonus = "";
-
-                    } while (c.moveToNext());
-                }
-            }
-        }
-
-    }
 
     public void MakeNewLayoutText() {
         System.gc();
@@ -975,7 +728,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
         pd.show();
 
         TempData.TempGift = "";
-        TempData.TempBonus = "";
+        TempData.TempBonus_EN = "";
         String AllPrint = "";
         Data_Source db = new Data_Source(PrintSelectedOrdersActivity.this);
 
@@ -1029,7 +782,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
             View contentLayout;
             TextView area_office, outlet_name_category_address, market_thana, order_memo_no_date, outlet_address_phone;
             TextView discountTxt, bonus, gift = null, total_bill, discount, vatCal, net_payable, sr_db_name, mobile_no, sr_address, office_copy;
-
+            LinearLayout  layout_save_image,extra;
             Cursor c = db.rawQueryCoustom("SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_number=" + "'" + orderList.get(i) + "'");
             Log.e("Query", "SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_number=" + "'" + orderList.get(i) + "'");
             String memo_no = "";
@@ -1057,6 +810,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
             bonus = (TextView) contentLayout.findViewById(R.id.bonus);
             total_bill = (TextView) contentLayout.findViewById(R.id.total_bill);
             discount = (TextView) contentLayout.findViewById(R.id.discount);
+            extra = contentLayout.findViewById(R.id.extra);
             vatCal = (TextView) contentLayout.findViewById(R.id.vatCal);
             net_payable = (TextView) contentLayout.findViewById(R.id.net_payable);
             sr_db_name = (TextView) contentLayout.findViewById(R.id.sr_db_name);
@@ -1103,13 +857,14 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
                             }
                         }
 
-                        Cursor c4 = db.rawQueryCoustom("SELECT OC.outlet_category_name FROM outlets O LEFT JOIN outlet_categories OC ON (O.outlet_category_id = OC.outlet_category_id) where O.outlet_id='" + outlet_id + "'");
+                        Cursor c4 = db.rawQueryCoustom("SELECT OC.outlet_category_name,OC.outlet_category_name_bangla FROM outlets O LEFT JOIN outlet_categories OC ON (O.outlet_category_id = OC.outlet_category_id) where O.outlet_id='" + outlet_id + "'");
                         if (c4.getCount() > 0) {
                             if (c4.moveToFirst()) {
                                 do {
 
                                     String outlet_category_name = c4.getString(0);
                                     savePreference("OutletCategoryName", outlet_category_name);
+                                    savePreference("OutletCategoryName", c4.getString(1));
 
                                 } while (c4.moveToNext());
                             }
@@ -1118,7 +873,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
                         date = date.substring(0, date.length() - 3);
 
 
-                        String MemoDetails = "SELECT MD.product_id,P.product_name ,MD.quantity, MD.price,MD.vat,MD.discount_type,MD.discount_amount FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='0'";
+                        String MemoDetails = "SELECT MD.product_id,P.product_name ,MD.quantity, MD.price,MD.vat,MD.discount_type,MD.discount_amount,P.product_name_bangla FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='0'";
                         Log.e("MemoDetails", "MemoDetails: " + MemoDetails);
                         discount_info = "";
                         Cursor cursor = db.rawQueryCoustom(MemoDetails);
@@ -1128,6 +883,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
                             if (cursor.moveToFirst()) {
                                 do {
                                     discount_info = discount_info + getdiscount(cursor.getDouble(2), cursor.getDouble(3), cursor.getInt(5), cursor.getDouble(6), cursor.getString(1));
+                                    discount_info_BN = discount_info_BN + getdiscountBN(cursor.getDouble(2), cursor.getDouble(3), cursor.getInt(5), cursor.getDouble(6), cursor.getString(7));
 
                                     String product_id = cursor.getString(0);
                                     String product_name = cursor.getString(1);
@@ -1149,6 +905,19 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
                                     map.put("total_price", String.valueOf(total_price));
                                     map.put("vat", roundTwoDecimals(cursor.getDouble(4)) + "%");
                                     map.put(PRODUCT_ID, product_id);
+                                    /////////////////////////
+
+                                    map = new HashMap<String, String>();
+                                    map.put(PRODUCT_PRODUCT_NAME, product_name);
+                                    map.put(PRODUCT_PRODUCT_NAME_BN, cursor.getString(7));
+                                    map.put(PRODUCT_BOOLEAN_QUANTITY, quantity);
+                                    map.put("quantity_bn", ConvertTOBangla(String.valueOf(cursor.getDouble(1))));
+                                    map.put(PRODUCT_PRICE_PRICE, price);
+                                    map.put("price_bn", ConvertTOBangla(price));
+                                    map.put("total_price_bn", ConvertTOBangla(String.valueOf(total_price)));
+                                    map.put("total_price", String.valueOf(total_price));
+                                    map.put("vat_bn", ConvertTOBangla(roundTwoDecimals(cursor.getDouble(4))) + "%");
+                                    map.put("vat", roundTwoDecimals(cursor.getDouble(4)) + "%");
                                     TempData.INVOICE_DETAILS_PRINT.add(map);
 
 
@@ -1178,6 +947,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
 
 
                         String Bonus1 = "", Bonus = "";
+                        String Bonus1_BN = "", Bonus_BN = "";
                         String MemoDetailsForBonus = "SELECT MD.product_id,P.product_name ,MD.quantity , MD.measurement_unit_id  FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='2'";
                         Log.e("MemoDetailsForBonus", "MemoDetailsForBonus: " + MemoDetailsForBonus);
                         Cursor cur = db.rawQueryCoustom(MemoDetailsForBonus);
@@ -1187,10 +957,16 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
                                     String product_id = cur.getString(0);
                                     String product_name = cur.getString(1);
                                     String quantity = cur.getString(2);
-                                    String Bonus2 = product_name + "(" + quantity + " " + getMeasurementUnitName(cur.getString(3)) + ")";
+                                    String Bonus2 = product_name + "(" + quantity + " " + getMeasurementUnitName(cur.getString(3),"unit_name") + ")";
                                     Bonus1 = Bonus1 + "," + Bonus2;
                                     Bonus = Bonus1.substring(1);
-                                    TempData.TempBonus = Bonus;
+
+
+                                    String Bonus2BN = product_name + "(" + quantity + " " + getMeasurementUnitName(cur.getString(3),"unit_name_bangla") + ")";
+                                    Bonus1_BN = Bonus1_BN + "," + Bonus2BN;
+                                    Bonus_BN = Bonus1_BN.substring(1);
+                                    TempData.TempBonus_BN = Bonus_BN;
+                                    TempData.TempBonus_EN = Bonus;
 
                                 } while (cur.moveToNext());
                             }
@@ -1202,10 +978,10 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
                         printRecylerview.setLayoutManager(mLayoutManager);
                         printRecylerview.setAdapter(mAdapter);
 
-                        office_copy.setText("Office Copy");
-                        area_office.setText("Area Office: " + getPreference("office_name") +", "+ getPreference("office_address") + ", " + getPreference("office_phone"));
+                        office_copy.setText("অফিস কপি");
+                        area_office.setText("এরিয়া অফিস: " + getPreference("office_name_bn") +", "+ getPreference("office_address_bn") + ", " + getPreference("office_phone"));
 
-                        outlet_name_category_address.setText(TempData.OutletName + " " + "(" + getPreference("OutletCategoryName") + ") ");
+                        outlet_name_category_address.setText(TempData.OutletName + " " + "(" + getPreference("OutletCategoryNameBN") + ") ");
 
                         try {
                             outlet_address_phone.setText(TempData.Outlet_Address + ", " + TempData.Outlet_Mobile_DE);
@@ -1217,40 +993,67 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
                        /* if (MEMO_EDIT)
                             order_memo_no_date.setText("Memo# " + memo_no + ", " + date);
                         else*/
-                        order_memo_no_date.setText("Order# " + memo_no + ", " + date);
+                        order_memo_no_date.setText("ওর্ডার# " + ConvertTOBangla(memo_no) + ", " + ConvertTOBangla(date));
 
                         sr_db_name.setText(getPreference("sr_name") + "  DB:(" + getPreference("db_name") + ")");
                         mobile_no.setText("Mobile No: " + getPreference("db_mobile"));
                         sr_address.setText("Address: " + getPreference("db_address"));
 
-                        total_bill.setText("Total Bill:   " + roundTwoDecimals(gross_value));
-                        discount.setText("Discount:   " + roundTwoDecimals(TempData.DISCOUNT));
-                        vatCal.setText("Vat:   " + roundTwoDecimals(TempData.VAT));
-                        net_payable.setText("Net-Payable:   " + roundTwoDecimals(gross_value - TempData.DISCOUNT));
+
+
+                        total_bill.setText("মোট বিলের পরিমাণ :" + ConvertTOBangla(String.valueOf(roundTwoDecimals(gross_value))));
+                        if (TempData.DISCOUNT!=0) {
+                            discount.setVisibility(View.VISIBLE);
+                            discount.setText("ছাড় :   " + ConvertTOBangla(roundTwoDecimals(TempData.DISCOUNT)));
+                        }
+                        vatCal.setText("ভ্যাট :   " + ConvertTOBangla(roundTwoDecimals(TempData.VAT)));
+                        net_payable.setText("সর্বমোট প্রদান :   " + ConvertTOBangla(roundTwoDecimals(gross_value - TempData.DISCOUNT)));
+
+
+
+
 
                         if (TempData.TempGift != "Nill" && TempData.TempGift != "") {
                             gift.setText("Gift:" + TempData.TempGift);
+                            extra.setVisibility(View.VISIBLE);
+
                         }
-                        if (TempData.TempBonus != "" && TempData.TempExtraBonus.equals(""))
-                            bonus.setText("Bonus:" + TempData.TempBonus);
 
-                        if (TempData.TempBonus.equals("") && TempData.TempExtraBonus != "")
-                            bonus.setText("Bonus:" + TempData.TempExtraBonus);
+                        if (TempData.TempBonus_EN != "" && TempData.TempExtraBonus.equals("")) {
+                            bonus.setText("বোনাস:" + TempData.TempBonus_BN);
+                            extra.setVisibility(View.VISIBLE);
+                        }
 
-                        if (!DetailsOrderReport.discount_info.equals("") && DetailsOrderReport.discount_info.length() > 0)
-                            discountTxt.setText("Discount:" + DetailsOrderReport.discount_info);
-                       /* if (!discount_data.equals("") && discount_data.length() > 0)
-                            discountTxt.setText("Discount:" + discount_data);*/
 
-                        if (TempData.TempBonus != "" && TempData.TempExtraBonus != "")
-                            bonus.setText("Bonus:" + TempData.TempBonus + "," + TempData.TempExtraBonus);
+                        if (TempData.TempBonus_EN.equals("") && TempData.TempExtraBonus != "") {
+                            bonus.setText("বোনাস:" + TempData.TempExtraBonus);
+                            extra.setVisibility(View.VISIBLE);
+                        }
+
+
+
+                    /*if (!discount_data.equals("") && discount_data.length() > 0)
+                        discountTxt.setText("Discount:" + discount_data);*/
+
+                        if (!DetailsOrderReport.discount_info.equals("") && DetailsOrderReport.discount_info.length() > 0) {
+                            discountTxt.setText("ডিস্কাউন্ট:" + DetailsOrderReport.discount_info_BN);
+                            extra.setVisibility(View.VISIBLE);
+                        }
+                        if (TempData.TempBonus_EN != "" && TempData.TempExtraBonus != "") {
+                            bonus.setText("বোনাস:" + TempData.TempBonus_BN + "," + TempData.TempExtraBonus);
+                            extra.setVisibility(View.VISIBLE);
+                        }
+
+
+
+
 
 
                         TempData.AllprintName = "AllprintName";
                         TempData.AllprintValue = AllPrint;
 
                         TempData.TempGift = "";
-                        TempData.TempBonus = "";
+                        TempData.TempBonus_EN = "";
                         TempData.TempExtraBonus = "";
 
 
@@ -1345,9 +1148,9 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
         printRecylerview.setAdapter(mAdapter);*/
     }
 
-    private String getMeasurementUnitName(String mesurement_unit_id) {
+    private String getMeasurementUnitName(String mesurement_unit_id,String column) {
         Data_Source db = new Data_Source(PrintSelectedOrdersActivity.this);
-        Cursor c = db.rawQueryCoustom("select unit_name from unit where unit_id='" + mesurement_unit_id + "'");
+        Cursor c = db.rawQueryCoustom("select "+column+" from unit where unit_id='" + mesurement_unit_id + "'");
         c.moveToFirst();
         if (c.getCount() > 0) {
             return c.getString(0);
@@ -1388,6 +1191,20 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
         }*/
 
         return product_name + "(" + (roundTwoDecimals(disamount * qty)) + ")";
+
+    }
+
+    private String getdiscountBN(double qty, double price, int distype, double disamount, String product_name) {
+
+        if (disamount <= 0) {
+            return "";
+        }
+
+        Double discount = 0.0;
+
+        Log.e("discount_type", distype + "");
+
+        return product_name + "(" + ConvertTOBangla(roundTwoDecimals(disamount * qty)) + ")";
 
     }
 

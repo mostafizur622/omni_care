@@ -32,14 +32,14 @@ public class PrintRecyclerAdapter extends RecyclerView.Adapter<PrintRecyclerAdap
     @Override
     public void onBindViewHolder(SingleItemRowHolder holder, int i) {
 
-        String price = String.valueOf(roundTwoDecimals(Double.parseDouble(itemsList.get(i).get("price"))));
-        String total_price = String.valueOf(roundTwoDecimals(Double.parseDouble(itemsList.get(i).get("price")) * Double.parseDouble(itemsList.get(i).get("quantity"))));
+        String price = String.valueOf(itemsList.get(i).get("price_bn"));
+        //String total_price = String.valueOf(roundTwoDecimals(Double.parseDouble(itemsList.get(i).get("price")) * Double.parseDouble(itemsList.get(i).get("quantity"))));
 
-        holder.itemName.setText(itemsList.get(i).get("product_name"));
-        holder.vat.setText(itemsList.get(i).get("vat"));
+        holder.itemName.setText(itemsList.get(i).get("product_name_bangla"));
+        holder.vat.setText(itemsList.get(i).get("vat_bn"));
         holder.price.setText(price);
-        holder.qty.setText(itemsList.get(i).get("quantity"));
-        holder.total.setText(total_price);
+        holder.qty.setText(itemsList.get(i).get("quantity_bn"));
+        holder.total.setText(itemsList.get(i).get("total_price_bn"));
     }
 
     @Override

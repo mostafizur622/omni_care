@@ -219,7 +219,9 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                                         basicFunction.savePreference("store_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("store_id"));
                                         basicFunction.savePreference(SR_ID,jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("sales_person_id"));
                                         basicFunction.savePreference("office_name",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("office_name"));
+                                        basicFunction.savePreference("office_name_bn",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("name_bangla"));
                                         basicFunction.savePreference("office_address",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("office_address"));
+                                        basicFunction.savePreference("office_address_bn",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("office_address_bangla"));
                                         basicFunction.savePreference("office_phone",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("office_phone"));
                                         basicFunction.savePreference("sr_name",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("sr_name"));
                                         basicFunction.savePreference("db_name",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("db_name"));
