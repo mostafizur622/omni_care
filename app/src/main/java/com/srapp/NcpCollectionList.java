@@ -15,6 +15,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -260,11 +261,11 @@ public class NcpCollectionList extends AppCompatActivity implements BasicFunctio
                             HashMap<String,String> map = new HashMap<>();
 
                             String collection_date = jsonarray.getJSONObject(i).getJSONObject("NcpCollection").getString("collection_date");
-                            String status = jsonarray.getJSONObject(i).getJSONObject("NcpCollection").getString("status");
+                            String collection_id = jsonarray.getJSONObject(i).getJSONObject("NcpCollection").getString("id");
                             String outlet_name = jsonarray.getJSONObject(i).getJSONObject("NcpCollection").getString("Outlet");
 
 
-                            JSONArray products = jsonarray.getJSONObject(i).getJSONArray("products");
+                            JSONArray products = jsonarray.getJSONObject(i).getJSONObject("NcpCollection").getJSONArray("products");
                             for (int j=0 ; j<products.length() ; j++){
 
                                 JSONObject product = products.getJSONObject(j);
@@ -273,7 +274,8 @@ public class NcpCollectionList extends AppCompatActivity implements BasicFunctio
                                 String remarks = product.getString("remarks");
                                 String product_name = product.getString("name");
                                 String product_id = product.getString("product_id");
-                                String expire_date = (product.has("expire_date")) ?jsonarray.getJSONObject(i).getString("expire_date"):"no Ex date in api ";
+                                String status = product.getString("status");
+                                String expire_date = (product.has("expire_date")) ?product.getString("expire_date"):"no Ex date in api ";
 
 
                                 map.put("product_name",product_name);
@@ -282,7 +284,8 @@ public class NcpCollectionList extends AppCompatActivity implements BasicFunctio
                                 map.put("batch",batch_id);
                                 map.put("exp",expire_date);
                                 map.put("outlet_name",outlet_name);
-                                map.put("collection",collection_date);
+                                map.put("collection_date",collection_date);
+                                map.put("collection_id",collection_id);
                                 map.put("remarks",remarks);
                                 map.put("status",status);
                                 collections.add(map);
@@ -361,5 +364,17 @@ public class NcpCollectionList extends AppCompatActivity implements BasicFunctio
     @Override
     public void OnConnetivityError() {
 
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // TODO Auto-generated method stub
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            startActivity(new Intent(NcpCollectionList.this, SR_NCP_Activity.class));
+            finish();
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
     }
 }

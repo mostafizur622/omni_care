@@ -126,20 +126,19 @@ public class NcpCollection extends ParentActivity {
         ArrayList<HashMap<String, String>> batch_list = adapter.getAlldata();
         if (batch_list.size()>0) {
             JSONObject mainjsonObject = new JSONObject();
-            JSONArray jsonArray = new JSONArray();
 
-            for (int i = 0; i < batch_list.size(); i++) {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("product_id", batch_list.get(i).get("product_id"));
-                jsonObject.put("quantity", batch_list.get(i).get("qty"));
-                jsonObject.put("expiredate", batch_list.get(i).get("exp"));
-                jsonObject.put("batch_id",batch_list.get(i).get("batch"));
-                jsonObject.put("remarks", "");
-                jsonArray.put(jsonObject);
-            }
-            mainjsonObject.put("products", jsonArray);
+                jsonObject.put("product_id", batch_list.get(0).get("product_id"));
+                jsonObject.put("quantity", batch_list.get(0).get("qty"));
+                jsonObject.put("expiredate", batch_list.get(0).get("exp"));
+                jsonObject.put("batch_id",batch_list.get(0).get("batch"));
+                jsonObject.put("remarks", remarks.getText().toString());
+
+
+            mainjsonObject.put("product", jsonObject);
             mainjsonObject.put("outlet_id", map.get("outlet_id"));
-            mainjsonObject.put("collection", map.get("collection"));
+            mainjsonObject.put("collection_date", map.get("collection_date"));
+            mainjsonObject.put("collection_id", map.get("collection_id"));
 
             ProgressDialog dailog = CheckConnection(NcpCollection.this,"Update Ncp...");
             if (dailog==null)
@@ -239,9 +238,10 @@ public class NcpCollection extends ParentActivity {
         data.clear();
         Log.e("data",data.size()+"");
 
-        if (is_edit)
+        if (is_edit) {
             data.add(map);
-            else
+            remarks.setText(map.get("remarks"));
+        }else
           data.addAll(ds.getproductListWithbatch(products));
 
         adapter = new NCPAdapterForProductReturnDetails(this,data);

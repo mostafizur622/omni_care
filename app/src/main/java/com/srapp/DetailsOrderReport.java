@@ -1070,7 +1070,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
             HashMap<String, String> map = bonusList.get(i);
             bonus_bn = bonus_bn + map.get("product_name_bn") + "(" + map.get("quantity_bn") + getUnitname(map.get("Unit_id"),"unit_name_bangla") + ")";
-            bonus_en = bonus_bn + map.get("product_name") + "(" + map.get("quantity") + getUnitname(map.get("Unit_id"),"unit_name") + ")";
+            bonus_en = bonus_en + map.get("product_name") + "(" + map.get("quantity") + getUnitname(map.get("Unit_id"),"unit_name") + ")";
 
             HashMap<String, String> product_map = new HashMap<String, String>();
 

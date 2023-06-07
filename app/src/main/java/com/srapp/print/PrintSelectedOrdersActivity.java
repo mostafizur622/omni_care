@@ -1087,7 +1087,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
 
             contentLayout.layout(0, 0, contentLayout.getMeasuredWidth(), contentLayout.getMeasuredHeight());
 
-            office_copy.setText("Office Copy");
+//            office_copy.setText("Office Copy");
 
             SaveClick(contentLayout, "office_" + i);
 
@@ -1098,7 +1098,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
             }
             savingLayout.addView(contentLayout);
 
-            office_copy.setText("Outlet Copy");
+//            office_copy.setText("Outlet Copy");
 
             SaveClick(contentLayout, "outlet_" + i);
 

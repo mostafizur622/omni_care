@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.srapp.NCP_replacemnt;
 import com.srapp.NcpCollection;
 import com.srapp.NcpProductCollection;
 import com.srapp.R;
@@ -101,13 +102,40 @@ public class NcpCollectionListAdapter extends BaseAdapter {
 		outlet.setText(String.valueOf(mapContent.get("exp")));
 
 		HashMap<String, String> finalMapContent = mapContent;
+
+		if (finalMapContent.get("status")!="1") {
+
+			action.setVisibility(View.GONE);
+		}
+		if (finalMapContent.get("status")=="5") {
+
+			action.setVisibility(View.VISIBLE);
+			action.setImageResource(R.drawable.process);
+		}
+
 		action.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				Intent i = new Intent(context, NcpCollection.class);
-				i.putExtra("map", finalMapContent);
-				i.putExtra("is_edit", true);
-				context.startActivity(i);
+
+				if (finalMapContent.get("status")=="1") {
+
+					Intent i = new Intent(context, NcpCollection.class);
+					i.putExtra("map", finalMapContent);
+					i.putExtra("is_edit", true);
+					context.startActivity(i);
+				}
+				if (finalMapContent.get("status")=="5") {
+
+					Intent i = new Intent(context, NCP_replacemnt.class);
+					i.putExtra("map", finalMapContent);
+					i.putExtra("is_edit", true);
+					context.startActivity(i);
+				}
+
+
+
+
+
 
 
 			}
