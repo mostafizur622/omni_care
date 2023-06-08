@@ -172,38 +172,20 @@ public class BonusReport extends Parent implements BasicFunctionListener {
         productNameList.clear();
 
 
-        String query1 = "SELECT DISTINCT(ph.product_id) FROM product_history as ph  WHERE  is_bonus=1";
-       Cursor c2 = db.rawQueryCoustom(query1);
-        Log.e("query", query1 + " " + c2.getCount());
-        if (c2 != null) {
-            if (c2.moveToFirst()) {
+        String query = "SELECT product_name, product_id FROM product order by product_order";
+        Cursor c12 = db.rawQueryCoustom(query);
+        Log.e("Query", query);
+        if (c12 != null) {
+            if (c12.moveToFirst()) {
                 do {
+                    Log.e("c12.getString(1)",c12.getString(1));
+                    productIdList.add(c12.getString(1));
+                    productNameList.add(c12.getString(0
+                    ));
 
-                    String product_id = c2.getString(0);
-
-
-
-                    String query = "SELECT product_name, product_id FROM product WHERE product_id='" + product_id + "'";
-                    Cursor c12 = db.rawQueryCoustom(query);
-                    Log.e("Query", query);
-                    if (c12 != null) {
-                        if (c12.moveToFirst()) {
-                            do {
-                                Log.e("c12.getString(1)",c12.getString(1));
-                                productIdList.add(c12.getString(1));
-                                productNameList.add(c12.getString(0
-                                ));
-
-                            } while (c12.moveToNext());
-                        }
-                    }
-
-                } while (c2.moveToNext());
+                } while (c12.moveToNext());
             }
-
-
         }
-
 
 
         /*Cursor c = db.rawQuery("select product_id, product_name from product");

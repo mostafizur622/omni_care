@@ -739,37 +739,6 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
         int mScreenWidth = metric.widthPixels; // screen width (pixels)
         int mScreenHeight = metric.heightPixels; // screen height (pixels)
 
-        if (TempData.INVOICE_DETAILS_PRINT.size() > 0 && TempData.INVOICE_DETAILS_PRINT.size() <= 5) {
-            mScreenHeight=350;
-        }
-
-        else if (TempData.INVOICE_DETAILS_PRINT.size() > 5 && TempData.INVOICE_DETAILS_PRINT.size() <= 10) {
-            mScreenHeight = 700;
-        }
-
-        else if (TempData.INVOICE_DETAILS_PRINT.size() > 10 && TempData.INVOICE_DETAILS_PRINT.size() <= 23) {
-            mScreenHeight = 1100;
-        }
-
-        else if (TempData.INVOICE_DETAILS_PRINT.size() > 23 && TempData.INVOICE_DETAILS_PRINT.size() <= 30) {
-            mScreenHeight = 1300;
-        }
-        else if (TempData.INVOICE_DETAILS_PRINT.size() > 30 && TempData.INVOICE_DETAILS_PRINT.size() <= 40) {
-            mScreenHeight = 1500;
-        } else if (TempData.INVOICE_DETAILS_PRINT.size() > 40 && TempData.INVOICE_DETAILS_PRINT.size() <= 45) {
-            mScreenHeight = 2000;
-        } else if (TempData.INVOICE_DETAILS_PRINT.size() > 45 && TempData.INVOICE_DETAILS_PRINT.size() <= 55) {
-            mScreenHeight = 2500;
-        } else if (TempData.INVOICE_DETAILS_PRINT.size() > 55 && TempData.INVOICE_DETAILS_PRINT.size() <= 65) {
-            mScreenHeight = 3000;
-        }
-        else if (TempData.INVOICE_DETAILS_PRINT.size() > 65 &&  TempData.INVOICE_DETAILS_PRINT.size() <=80) {
-            mScreenHeight= 4000;
-        }
-        else {
-            mScreenHeight = 6000;
-        }
-
 
         for (int i = 0; i < orderList.size(); i++) {
 
@@ -779,7 +748,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
 
             PrintRecyclerAdapter mAdapter;
 
-            View contentLayout;
+
             TextView area_office, outlet_name_category_address, market_thana, order_memo_no_date, outlet_address_phone;
             TextView discountTxt, bonus, gift = null, total_bill, discount, vatCal, net_payable, sr_db_name, mobile_no, sr_address, office_copy;
             LinearLayout  layout_save_image,extra;
@@ -791,7 +760,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
 
             mLinearLayout = (ViewGroup) findViewById(R.id.layout_save_image);
 
-            contentLayout = LayoutInflater.from(this).inflate(R.layout.content_add_layout, mLinearLayout, false);
+            View  contentLayout = LayoutInflater.from(this).inflate(R.layout.content_add_layout, null, false);
 
             Log.e("activity_height", contentLayout.getHeight() + "-" + contentLayout.getWidth());
 
@@ -816,7 +785,8 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
             sr_db_name = (TextView) contentLayout.findViewById(R.id.sr_db_name);
             sr_address = (TextView) contentLayout.findViewById(R.id.sales_officer_address);
             mobile_no = (TextView) contentLayout.findViewById(R.id.sales_officer_phone);
-            office_copy = (TextView) contentLayout.findViewById(R.id.office_copy);
+
+
 
             if (c != null && c.getCount() > 0) {
                 if (c.moveToFirst()) {
@@ -975,11 +945,12 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
 
                         mAdapter = new PrintRecyclerAdapter(this, TempData.INVOICE_DETAILS_PRINT);
                         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
-
                         printRecylerview.setLayoutManager(mLayoutManager);
                         printRecylerview.setAdapter(mAdapter);
 
-                        office_copy.setText("অফিস কপি");
+                        Log.e("layout", "layout");
+
+                        //office_copy.setText("অফিস কপি");
                         area_office.setText("এরিয়া অফিস: " + getPreference("office_name_bn") +", "+ getPreference("office_address_bn") + ", " + getPreference("office_phone"));
 
                         outlet_name_category_address.setText(TempData.OutletName + " " + "(" + getPreference("OutletCategoryNameBN") + ") ");
@@ -1055,7 +1026,10 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
 
                         TempData.TempGift = "";
                         TempData.TempBonus_EN = "";
+                        TempData.TempBonus_BN = "";
                         TempData.TempExtraBonus = "";
+
+
 
 
                     } while (c.moveToNext());
@@ -1087,7 +1061,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
 
             contentLayout.layout(0, 0, contentLayout.getMeasuredWidth(), contentLayout.getMeasuredHeight());
 
-//            office_copy.setText("Office Copy");
+
 
             SaveClick(contentLayout, "office_" + i);
 
@@ -1106,6 +1080,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
             if(contentLayout.getParent() != null) {
                 ((ViewGroup)contentLayout.getParent()).removeView(contentLayout); // <- fix
             }
+            //office_copy.setText("দোকান কপি");
             savingLayout.addView(contentLayout);
 
 /*

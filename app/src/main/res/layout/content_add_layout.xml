@@ -26,7 +26,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
-
+                    <TextView
+                        android:id="@+id/office_copy"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="0dp"
+                        android:text=""
+                        android:gravity="start"
+                        android:textColor="#000"
+                        android:textSize="@dimen/_10sdp"
+                        android:textStyle="bold" />
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -38,9 +47,11 @@
                         android:textStyle="bold" />
 
                     <ImageView
-                        android:layout_width="@dimen/_50sdp"
+                        android:layout_width="match_parent"
                         android:src="@drawable/smclogo"
+                        android:padding="@dimen/_6sdp"
                         android:layout_gravity="center"
+                        android:scaleType="fitCenter"
                         android:layout_height="@dimen/_35sdp"/>
 
                     <TextView
@@ -335,6 +346,7 @@
                     android:layout_height="match_parent"
                     android:text="Discount: 0.00"
                     android:gravity="end"
+                    android:visibility="gone"
                     android:textColor="#000"
                     android:textSize="@dimen/_9sdp"
                     android:textStyle="bold" />

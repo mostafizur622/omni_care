@@ -681,6 +681,7 @@ public class PrintAllMemosActivity extends ParentActivity {
 
         TempData.TempGift = "";
         TempData.TempBonus_EN = "";
+        TempData.TempBonus_EN = "";
 
         DisplayMetrics metric = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metric);
@@ -758,6 +759,7 @@ public class PrintAllMemosActivity extends ParentActivity {
                     String market_id = c.getString(6);
                     TempData.DISCOUNT = c.getDouble(7);
                     TempData.VAT = c.getDouble(8);
+                    TempData.orderNumber=c.getString(0);
 
                     Cursor c2 = db.rawQueryCoustom("SELECT O.outlet_name, M.market_name,O.address, O.mobile FROM outlets O LEFT JOIN markets M ON(O.market_id=M.market_id) WHERE O.outlet_id='" + outlet_id + "'");
                     if (c2 != null) {
@@ -979,17 +981,21 @@ public class PrintAllMemosActivity extends ParentActivity {
 
                     TempData.TempGift = "";
                     TempData.TempBonus_EN = "";
+                    TempData.TempBonus_BN = "";
                     TempData.TempExtraBonus = "";
 
                     contentLayout.measure(View.MeasureSpec.makeMeasureSpec(mScreenWidth, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(mScreenHeight, View.MeasureSpec.AT_MOST));
 
                     contentLayout.layout(0, 0, contentLayout.getMeasuredWidth(), contentLayout.getMeasuredHeight());
+
                     if(layout_save_image.getParent() != null) {
                         ((ViewGroup)layout_save_image.getParent()).removeView(layout_save_image); // <- fix
                     }
                     savingLayout.addView(layout_save_image);
                     Log.e("Net-Payable", "getBitmapFromView: ");
+
                     memoList.add(getBitmapFromView(layout_save_image));
+                    Log.e("memoList.size",memoList.size()+"");
                     arrayListPrintImage.add("office_" + i);
 
                     office_copy.setText("দোকান কপি");
@@ -997,7 +1003,10 @@ public class PrintAllMemosActivity extends ParentActivity {
                         ((ViewGroup)layout_save_image.getParent()).removeView(layout_save_image); // <- fix
                     }
                     savingLayout.addView(layout_save_image);
+
                     memoList.add(getBitmapFromView(layout_save_image));
+
+                    Log.e("memoList.size",memoList.size()+"");
 
                     arrayListPrintImage.add("outlet_" + i);
 

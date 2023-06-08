@@ -203,7 +203,19 @@ public class AdapterForMultiOrderPrint extends BaseAdapter implements BasicFunct
             public void onClick(View v) {
 
 
-                if (button.getText().toString().equalsIgnoreCase("Print")) {
+                if (list.size() >= 1) {
+                    Log.e("list_size", list.size() + "");
+                    Intent idn = new Intent(context, PrintSelectedOrdersActivity.class);
+                    idn.putExtra("FromDate", list);
+                    context.startActivity(idn);
+                    context.finish();
+
+                    Log.e("ListData", Arrays.deepToString(list.toArray()));
+
+                } else {
+                    Toast.makeText(context, "Please select At least 1 order", Toast.LENGTH_LONG).show();
+                }
+                /*if (button.getText().toString().equalsIgnoreCase("Print")) {
                     button.setText("OK");
 
                     UsbConnection usbConnection = UsbPrintersConnections.selectFirstConnected(context);
@@ -216,24 +228,13 @@ public class AdapterForMultiOrderPrint extends BaseAdapter implements BasicFunct
                                 .show();
                     }
                     else {
-                        if (list.size() >= 1) {
-                            Log.e("list_size", list.size() + "");
-                            Intent idn = new Intent(context, PrintSelectedOrdersActivity.class);
-                            idn.putExtra("FromDate", list);
-                            context.startActivity(idn);
-                            context.finish();
 
-                            Log.e("ListData", Arrays.deepToString(list.toArray()));
-
-                        } else {
-                            Toast.makeText(context, "Please select At least 1 order", Toast.LENGTH_LONG).show();
-                        }
                     }
 
                 } else {
                     context.startActivity(new Intent(context, Dashboard.class));
                     button.setText("cancel");
-                }
+                }*/
             }
         });
 

@@ -1111,7 +1111,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
 
     private String getUnitname(String unit_id,String column) {
-
+        Log.e("getUnitname:", "..........." + unit_id+"  "+column);
         if (unit_id == null) {
             return "";
         }
