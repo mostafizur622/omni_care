@@ -1041,11 +1041,13 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                         if (c1.moveToFirst()) {
                             do {
                                 product_name = c1.getString(0);
-                                product_name_bn = cursor.getString(1);
+                                product_name_bn = c1.getString(1);
                             } while (c1.moveToNext());
                         }
 
                     }
+
+                    Log.e("product_name_bn",product_name_bn);
 
                     HashMap<String, String> map = new HashMap<String, String>();
                     map.put("product_id", swapProductID(cursor.getString(0),cursor.getString(3)));

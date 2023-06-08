@@ -155,7 +155,7 @@ public class Data_Source extends Parent {
         ArrayList<ArrayList<String>> slapQtyList = new ArrayList<>();
 
         //String query = "SELECT DISTINCT(product_id) FROM "+ TABLE_NAME_PRODUCT_PRICE+" where price > 0 and effective_date<='"+getCurrentDate()+"'";
-        String query = "SELECT DISTINCT(product_id) FROM " + TABLE_NAME_PRODUCT_PRICE + " where effective_date<='" + getCurrentDate() + "'";
+        String query = "SELECT DISTINCT(pp.product_id) FROM " + TABLE_NAME_PRODUCT_PRICE + " as pp inner join product as p on p.product_id=pp.product_id where pp.effective_date<='" + getCurrentDate() + "' order by p.product_order ASC";
         Cursor csr = sqLiteDatabase.rawQuery(query, null);
         csr.moveToFirst();
         if (csr != null && csr.getCount() > 0) {

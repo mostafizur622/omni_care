@@ -103,11 +103,10 @@ public class NcpCollectionListAdapter extends BaseAdapter {
 
 		HashMap<String, String> finalMapContent = mapContent;
 
-		if (finalMapContent.get("status")!="1") {
+		if (finalMapContent.get("status")=="1") {
 
-			action.setVisibility(View.GONE);
-		}
-		if (finalMapContent.get("status")=="5") {
+			action.setVisibility(View.VISIBLE);
+		}else if (finalMapContent.get("status")=="5") {
 
 			action.setVisibility(View.VISIBLE);
 			action.setImageResource(R.drawable.process);
