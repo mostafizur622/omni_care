@@ -171,7 +171,7 @@ public class NcpCollectionList extends AppCompatActivity implements BasicFunctio
         });
 
 
-
+        DataView();
 
 
 
@@ -257,18 +257,22 @@ public class NcpCollectionList extends AppCompatActivity implements BasicFunctio
                         ArrayList<HashMap<String,String>> collections = new ArrayList<>();
                         JSONArray jsonarray = new JSONObject(response.body()).getJSONArray("res");
                         dailog.dismiss();
+                        Log.e("object",jsonarray.toString());
                         for (int i=0 ; i<jsonarray.length() ; i++){
                             HashMap<String,String> map = new HashMap<>();
 
-                            String collection_date = jsonarray.getJSONObject(i).getJSONObject("NcpCollection").getString("collection_date");
-                            String collection_id = jsonarray.getJSONObject(i).getJSONObject("NcpCollection").getString("id");
-                            String outlet_name = jsonarray.getJSONObject(i).getJSONObject("NcpCollection").getString("Outlet");
+                            JSONObject obj = jsonarray.getJSONObject(i).getJSONObject("NcpCollection");
+                            String collection_date = obj.getString("collection_date");
+                            String collection_id = obj.getString("id");
+                            String outlet_name = obj.getString("Outlet");
 
 
-                            JSONArray products = jsonarray.getJSONObject(i).getJSONObject("NcpCollection").getJSONArray("products");
+                            JSONArray products =obj.getJSONArray("products");
+                            Log.e("object",obj.toString()+" "+i);
                             for (int j=0 ; j<products.length() ; j++){
 
                                 JSONObject product = products.getJSONObject(j);
+                            //    Log.e("inobject",product.toString());
                                 String quantity = product.getString("quantity");
                                 String batch_id = product.getString("batch_id");
                                 String remarks = product.getString("remarks");
@@ -288,14 +292,10 @@ public class NcpCollectionList extends AppCompatActivity implements BasicFunctio
                                 map.put("collection_id",collection_id);
                                 map.put("remarks",remarks);
                                 map.put("status",status);
+                                Log.e("inobject",map.toString());
                                 collections.add(map);
 
                             }
-
-
-
-
-
 
                         }
 

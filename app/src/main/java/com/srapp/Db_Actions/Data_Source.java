@@ -983,8 +983,8 @@ public class Data_Source extends Parent {
         cursor.moveToFirst();
         if (cursor != null && cursor.getCount() > 0) {
 
-            /*outletIdList.add("0");
-            outletNameList.add("");*/
+            outletIdList.add("0");
+            outletNameList.add("Select a Outlet");
 
             for (int i = 0; i < cursor.getCount(); i++) {
 

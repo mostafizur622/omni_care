@@ -99,14 +99,15 @@ public class NcpCollectionListAdapter extends BaseAdapter {
 		product.setText(String.valueOf(mapContent.get("product_name")));
 		batch.setText(String.valueOf(mapContent.get("batch")));
 		quantity.setText(String.valueOf(mapContent.get("qty")));
-		outlet.setText(String.valueOf(mapContent.get("exp")));
+		outlet.setText(String.valueOf(mapContent.get("outlet_name")));
 
 		HashMap<String, String> finalMapContent = mapContent;
 
-		if (finalMapContent.get("status")=="1") {
+
+		if (finalMapContent.get("status").equalsIgnoreCase("1")) {
 
 			action.setVisibility(View.VISIBLE);
-		}else if (finalMapContent.get("status")=="5") {
+		}else if (finalMapContent.get("status").equalsIgnoreCase("5")) {
 
 			action.setVisibility(View.VISIBLE);
 			action.setImageResource(R.drawable.process);
@@ -115,15 +116,15 @@ public class NcpCollectionListAdapter extends BaseAdapter {
 		action.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
-
-				if (finalMapContent.get("status")=="1") {
+				Log.e("status",finalMapContent.get("status"));
+				if (finalMapContent.get("status").equalsIgnoreCase("1")) {
 
 					Intent i = new Intent(context, NcpCollection.class);
 					i.putExtra("map", finalMapContent);
 					i.putExtra("is_edit", true);
 					context.startActivity(i);
 				}
-				if (finalMapContent.get("status")=="5") {
+				if (finalMapContent.get("status").equalsIgnoreCase("5")) {
 
 					Intent i = new Intent(context, NCP_replacemnt.class);
 					i.putExtra("map", finalMapContent);
