@@ -83,25 +83,77 @@
         </LinearLayout>
 
     </LinearLayout>
-    /*toolbar = 0.4 now main layout = 3.6*/
 
-    //mail layout = 3.6
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="3.6"
         android:weightSum="4"
         android:orientation="vertical">
-        // text Title = 0.6
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:padding="10dp"
+            android:weightSum="4"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:orientation="vertical"
+                android:layout_marginRight="5dp"
+                android:weightSum="2">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Select Product"
+                    android:textSize="15sp"
+                    android:textColor="@color/text_color_hint">
+
+                </TextView>
+                <Spinner
+                    android:id="@+id/productsp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/spinner2"
+                    >
+                </Spinner>
+                <TextView
+
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/spinner_line"
+                    android:alpha="50"></TextView>
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/add_product"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:layout_gravity="center|right"
+                android:text="Add"
+                android:textSize="18dp"
+                android:textColor="@color/white"
+                android:textAllCaps="false"
+                android:background="@drawable/button_shadow">
+
+            </Button>
+
+        </LinearLayout>
 
 
 
-
-        //white form cardview =2.2
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="3.1"
+            android:layout_weight="2.6"
             app:cardCornerRadius="35dp"
 
 

@@ -77,15 +77,12 @@ public class NcpCollectionListAdapter extends BaseAdapter {
 
 	public View getView(final int position, View convertView, final ViewGroup parent) {
 
-		TextView product;
-		TextView batch, quantity;
+		TextView date;
 		TextView outlet;
 		ImageView action;
 		View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_ncp_collection, null);
-		product = itemView.findViewById(R.id.product_name);
-		batch = itemView.findViewById(R.id.batch);
+		date = itemView.findViewById(R.id.date);
 		outlet = itemView.findViewById(R.id.outlet);
-		quantity = itemView.findViewById(R.id.qty);
 		action = itemView.findViewById(R.id.edit);
 
 	
@@ -96,9 +93,8 @@ public class NcpCollectionListAdapter extends BaseAdapter {
 		HashMap<String, String> mapContent = new HashMap<String, String>();
 		mapContent = itemListContent.get(position);
 
-		product.setText(String.valueOf(mapContent.get("product_name")));
-		batch.setText(String.valueOf(mapContent.get("batch")));
-		quantity.setText(String.valueOf(mapContent.get("qty")));
+		date.setText(String.valueOf(mapContent.get("collection_date")));
+
 		outlet.setText(String.valueOf(mapContent.get("outlet_name")));
 
 		HashMap<String, String> finalMapContent = mapContent;

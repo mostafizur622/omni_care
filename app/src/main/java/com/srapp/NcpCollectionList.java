@@ -85,6 +85,8 @@ public class NcpCollectionList extends AppCompatActivity implements BasicFunctio
         outletSpinner = findViewById(R.id.outlet_spinner);
         startdate = findViewById(R.id.start_date);
         enddate = findViewById(R.id.end_date);
+        homeBtn = findViewById(R.id.home);
+        backBtn = findViewById(R.id.back);
         bf = new BasicFunction(this,this);
         collectionlist = findViewById(R.id.ncp_collection_rec);
         userIdTV = findViewById(R.id.user_txt_view);
@@ -130,7 +132,21 @@ public class NcpCollectionList extends AppCompatActivity implements BasicFunctio
             }
         });
 
+        homeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent( NcpCollectionList.this, Dashboard.class));
+                finish();
+            }
+        });
 
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent( NcpCollectionList.this, SR_NCP_Activity.class));
+                finish();
+            }
+        });
 
         marketSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @SuppressLint("ResourceAsColor")
@@ -265,37 +281,23 @@ public class NcpCollectionList extends AppCompatActivity implements BasicFunctio
                             String collection_date = obj.getString("collection_date");
                             String collection_id = obj.getString("id");
                             String outlet_name = obj.getString("Outlet");
+                            String outlet_id = obj.getString("Outlet_id");
+                            String status = obj.getString("status");
 
 
                             JSONArray products =obj.getJSONArray("products");
-                            Log.e("object",obj.toString()+" "+i);
-                            for (int j=0 ; j<products.length() ; j++){
-
-                                JSONObject product = products.getJSONObject(j);
-                            //    Log.e("inobject",product.toString());
-                                String quantity = product.getString("quantity");
-                                String batch_id = product.getString("batch_id");
-                                String remarks = product.getString("remarks");
-                                String product_name = product.getString("name");
-                                String product_id = product.getString("product_id");
-                                String status = product.getString("status");
-                                String expire_date = (product.has("expire_date")) ?product.getString("expire_date"):"no Ex date in api ";
 
 
-                                map.put("product_name",product_name);
-                                map.put("product_id",product_id);
-                                map.put("qty",quantity);
-                                map.put("batch",batch_id);
-                                map.put("exp",expire_date);
-                                map.put("outlet_name",outlet_name);
-                                map.put("collection_date",collection_date);
-                                map.put("collection_id",collection_id);
-                                map.put("remarks",remarks);
-                                map.put("status",status);
-                                Log.e("inobject",map.toString());
-                                collections.add(map);
+                            map.put("outlet_name",outlet_name);
+                            map.put("outlet_id",outlet_id);
+                            map.put("collection_date",collection_date);
+                            map.put("collection_id",collection_id);
+                            map.put("products",products.toString());
+                            map.put("status",status);
+                            Log.e("inobject",map.toString());
+                            collections.add(map);
 
-                            }
+
 
                         }
 
