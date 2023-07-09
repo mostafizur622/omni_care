@@ -1,9 +1,12 @@
 package com.srapp;
 
+import static com.srapp.TempData.editMemo;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.srapp.Adapter.NCP_CollectionAdapter;
 import com.srapp.Model.NCP_Collection;
@@ -19,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class SR_NCP_Activity extends AppCompatActivity {
 
     RecyclerView recyclerView;
+    ImageView homeBtn,backBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +34,19 @@ public class SR_NCP_Activity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
+        homeBtn = findViewById(R.id.home);
+        backBtn = findViewById(R.id.back);
+        homeBtn.setOnClickListener(v -> {
+            startActivity(new Intent( SR_NCP_Activity.this, Dashboard.class));
+            finish();
+        });
+
+        backBtn.setOnClickListener(v -> {
+
+                startActivity(new Intent( SR_NCP_Activity.this, SR_Account_Activity.class));
+                finish();
+
+        });
 
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(this, recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
@@ -40,10 +57,10 @@ public class SR_NCP_Activity extends AppCompatActivity {
                 } else if (position == 1) {
                     startActivity(new Intent(SR_NCP_Activity.this, NcpCollectionList.class));
                     finish();
-                } else if (position == 2) {
+                } /*else if (position == 2) {
                     startActivity(new Intent(SR_NCP_Activity.this, NCP_replacemnt.class));
                     finish();
-                }
+                }*/
             }
 
             @Override
@@ -73,7 +90,7 @@ public class SR_NCP_Activity extends AppCompatActivity {
         // src Wikipedia
         ncp_List.add(new NCP_Collection("Add NCP Collection",null));
         ncp_List.add(new NCP_Collection("NCP Collection List",null));
-        ncp_List.add(new NCP_Collection("Replacement to Outlet",null));
+       // ncp_List.add(new NCP_Collection("Replacement to Outlet",null));
 
         return ncp_List;
     }

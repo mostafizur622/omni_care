@@ -1074,7 +1074,7 @@ public class PrintActivity<BarcodeFormat> extends ParentActivity {
             return;
         }
         threadPool = ThreadPool.getInstantiation();
-        threadPool.addSerialTask(new Runnable() {
+            threadPool.addSerialTask(new Runnable() {
             @Override
             public void run() {
                 try {

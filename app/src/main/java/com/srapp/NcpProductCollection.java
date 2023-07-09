@@ -82,6 +82,18 @@ public class NcpProductCollection extends AppCompatActivity {
         routeData = ds.getRouteList();
         productCategoryData = ds.getProductCategories();
 
+        homeBtn.setOnClickListener(v -> {
+            startActivity(new Intent( NcpProductCollection.this, Dashboard.class));
+            finish();
+        });
+
+        backBtn.setOnClickListener(v -> {
+
+            startActivity(new Intent( NcpProductCollection.this, SR_NCP_Activity.class));
+            finish();
+
+        });
+
         SpinnerAdapter routeSpinnerAdapter = new SpinnerAdapter(this, R.layout
                 .spinner_item, routeData.get(Tables.ROUTE_NAME));
         rouuteSpinner.setAdapter(routeSpinnerAdapter);
