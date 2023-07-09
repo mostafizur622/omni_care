@@ -20,12 +20,14 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.srapp.Adapter.AdapterForAttendanceHistory;
+import com.srapp.Adapter.NCPAdapterForProductReplacment;
 import com.srapp.Adapter.NCPAdapterForProductReturnDetails;
 import com.srapp.Adapter.NcpCollectionAdapter;
 import com.srapp.Adapter.SpinnerAdapter;
@@ -47,6 +49,8 @@ import retrofit2.Response;
 public class NcpCollection extends ParentActivity {
 
     NCPAdapterForProductReturnDetails adapter;
+
+    NCPAdapterForProductReplacment repadapter;
     ListView recyclerView;
     ArrayList<HashMap<String,String>> data;
     ImageView img;
@@ -63,6 +67,10 @@ public class NcpCollection extends ParentActivity {
     ImageView homeBtn,backBtn;
     TextView userIdTV,titleTV ;
     HashMap<String,String> map;
+
+    LinearLayout add_product_lay;
+
+    int status =0 ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,9 +80,11 @@ public class NcpCollection extends ParentActivity {
         outlet_id = getIntent().getStringExtra("outlet_id");
         is_edit = getIntent().getBooleanExtra("is_edit",false);
         map = (HashMap<String, String>)  getIntent().getSerializableExtra("map");
+        status= Integer.parseInt(map.get("status"));
         data=new ArrayList<>();
         ds=new Data_Source(this);
         homeBtn = findViewById(R.id.home);
+        add_product_lay = findViewById(R.id.add_product_lay);
         backBtn = findViewById(R.id.back);
         add_product = findViewById(R.id.add_product);
         productsp = findViewById(R.id.productsp);
@@ -91,7 +101,7 @@ public class NcpCollection extends ParentActivity {
         remarks = findViewById(R.id.remarks);
 
 
-        if (is_edit)
+        if (status==1)
         setUpProducts();
 
 
@@ -122,10 +132,13 @@ public class NcpCollection extends ParentActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    if (!is_edit)
+                    if (status==0)
                     saveData();
-                    else 
+                    else if (status==1)
                         updateData();
+                    else if (status==6){
+                        replacement();
+                    }
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
@@ -139,7 +152,71 @@ public class NcpCollection extends ParentActivity {
         }
     }
 
+    private void replacement() throws JSONException {
+
+        ArrayList<HashMap<String, String>> batch_list = repadapter.getAlldata();
+        if (batch_list.size()>0) {
+            JSONObject mainjsonObject = new JSONObject();
+
+            JSONArray products = new JSONArray();
+            for (HashMap<String,String> item:batch_list) {
+
+
+                JSONObject jsonObject = new JSONObject();
+                if (item.containsKey("id"))
+                    jsonObject.put("id",item.get("id"));
+                jsonObject.put("product_id",item.get("product_id"));
+                jsonObject.put("quantity",item.get("qty"));
+                jsonObject.put("replc_uantity",item.get("replacement_qty"));
+                jsonObject.put("expiredate",item.get("exp"));
+                jsonObject.put("batch_id",batch_list.get(0).get("batch"));
+                jsonObject.put("remarks", remarks.getText().toString());
+                products.put(jsonObject);
+            }
+
+
+            mainjsonObject.put("products", products);
+            mainjsonObject.put("outlet_id", map.get("outlet_id"));
+            mainjsonObject.put("collection_date", map.get("collection_date"));
+            mainjsonObject.put("ncp_id", map.get("collection_id"));
+
+            ProgressDialog dailog = CheckConnection(NcpCollection.this,"Update Ncp...");
+            if (dailog==null)
+                return;
+            getJAPi().Update_NCP(convertTORequestdata(mainjsonObject)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response.body()).getJSONObject("res");
+                        dailog.dismiss();
+
+                        if (jsonObject.getString("status").equalsIgnoreCase("1")){
+                            startActivity(new Intent(NcpCollection.this, NcpCollectionList.class));
+                            finish();
+                        }
+                        Toast.makeText(NcpCollection.this, jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+
+
+
+
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    dailog.dismiss();
+                }
+            });
+
+
+        }
+
+    }
+
     private void setUpProducts() {
+        add_product_lay.setVisibility(View.VISIBLE);
         ArrayList<HashMap<String, String>> products = ds.GetproductlistbyCategory("0");
         ArrayList<String> product_name = new ArrayList<>();
 
@@ -356,6 +433,7 @@ public class NcpCollection extends ParentActivity {
                 map.put("batch", batch_id);
                 map.put("exp", expire_date);
                 map.put("remarks", remarks);
+                map.put("replacement_qty", "0");
                 Log.e("inobject", map.toString());
 
 
@@ -366,8 +444,17 @@ public class NcpCollection extends ParentActivity {
         }else
           data.addAll(ds.getproductListWithbatch(products));
 
-        adapter = new NCPAdapterForProductReturnDetails(this,data);
-        recyclerView.setAdapter(adapter);
+
+          if (status==6){
+              repadapter = new NCPAdapterForProductReplacment(this,data);
+              recyclerView.setAdapter(repadapter);
+
+          }else {
+              adapter = new NCPAdapterForProductReturnDetails(this,data);
+              recyclerView.setAdapter(adapter);
+          }
+
+
 
     }
 

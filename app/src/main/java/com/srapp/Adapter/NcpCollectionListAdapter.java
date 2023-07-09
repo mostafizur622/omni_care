@@ -103,7 +103,7 @@ public class NcpCollectionListAdapter extends BaseAdapter {
 		if (finalMapContent.get("status").equalsIgnoreCase("1")) {
 
 			action.setVisibility(View.VISIBLE);
-		}else if (finalMapContent.get("status").equalsIgnoreCase("5")) {
+		}else if (finalMapContent.get("status").equalsIgnoreCase("6")) {
 
 			action.setVisibility(View.VISIBLE);
 			action.setImageResource(R.drawable.process);
@@ -113,20 +113,14 @@ public class NcpCollectionListAdapter extends BaseAdapter {
 			@Override
 			public void onClick(View view) {
 				Log.e("status",finalMapContent.get("status"));
-				if (finalMapContent.get("status").equalsIgnoreCase("1")) {
+
 
 					Intent i = new Intent(context, NcpCollection.class);
 					i.putExtra("map", finalMapContent);
 					i.putExtra("is_edit", true);
 					context.startActivity(i);
-				}
-				if (finalMapContent.get("status").equalsIgnoreCase("5")) {
 
-					Intent i = new Intent(context, NCP_replacemnt.class);
-					i.putExtra("map", finalMapContent);
-					i.putExtra("is_edit", true);
-					context.startActivity(i);
-				}
+
 
 
 
