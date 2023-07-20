@@ -27,9 +27,7 @@ public class SR_NCP_Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sr__ncp_);
-
         recyclerView = (RecyclerView) findViewById(R.id.NCP_Collection_recycleView);
-
         NCP_CollectionAdapter adapter = new NCP_CollectionAdapter(getList());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -42,10 +40,8 @@ public class SR_NCP_Activity extends AppCompatActivity {
         });
 
         backBtn.setOnClickListener(v -> {
-
                 startActivity(new Intent( SR_NCP_Activity.this, SR_Account_Activity.class));
                 finish();
-
         });
 
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(this, recyclerView, new RecyclerTouchListener.ClickListener() {
