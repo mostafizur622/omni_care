@@ -245,6 +245,7 @@ public class Attendance_history extends AppCompatActivity implements BasicFuncti
                                     map.put("date",jsonObject.getJSONArray("report").getJSONObject(i).getString("date"));
                                     map.put("check_in_time",jsonObject.getJSONArray("report").getJSONObject(i).getString("check_in_time"));
                                     map.put("check_out_time",jsonObject.getJSONArray("report").getJSONObject(i).getString("check_out_time"));
+                                    map.put("status",jsonObject.getJSONArray("report").getJSONObject(i).getString("status"));
                                     list.add(map);
                                 }
                             }catch (Exception e){

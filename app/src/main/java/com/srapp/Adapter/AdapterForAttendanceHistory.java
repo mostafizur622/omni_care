@@ -1,10 +1,12 @@
 package com.srapp.Adapter;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.srapp.R;
@@ -52,6 +54,12 @@ public class AdapterForAttendanceHistory extends BaseAdapter {
         TextView date = (TextView)view2.findViewById(R.id.date);
         TextView check_in_time = (TextView)view2.findViewById(R.id.check_in_time);
         TextView check_out_time = (TextView)view2.findViewById(R.id.check_out_time);
+
+        LinearLayout lay = (LinearLayout) view2.findViewById(R.id.lay);
+
+        if (mapContent.get("status").equalsIgnoreCase("1")){
+            lay.setBackgroundColor(Color.parseColor("#383A87"));
+        }
 
         date.setText(mapContent.get("date"));
         check_in_time.setText(mapContent.get("check_in_time"));

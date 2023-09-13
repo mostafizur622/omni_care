@@ -79,8 +79,10 @@ public class NcpCollection extends ParentActivity {
         products=getIntent().getStringArrayListExtra("products");
         outlet_id = getIntent().getStringExtra("outlet_id");
         is_edit = getIntent().getBooleanExtra("is_edit",false);
-        map = (HashMap<String, String>)  getIntent().getSerializableExtra("map");
-        status= Integer.parseInt(map.get("status"));
+        if (getIntent().hasExtra("map")) {
+            map = (HashMap<String, String>) getIntent().getSerializableExtra("map");
+            status = Integer.parseInt(map.get("status"));
+        }
         data=new ArrayList<>();
         ds=new Data_Source(this);
         homeBtn = findViewById(R.id.home);
