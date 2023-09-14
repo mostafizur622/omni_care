@@ -59,6 +59,8 @@ public class AdapterForAttendanceHistory extends BaseAdapter {
 
         if (mapContent.get("status").equalsIgnoreCase("1")){
             lay.setBackgroundColor(Color.parseColor("#383A87"));
+        }else {
+            lay.setBackgroundColor(Color.parseColor("#D81B60"));
         }
 
         date.setText(mapContent.get("date"));
