@@ -143,7 +143,7 @@ public class PrintActivityEN<BarcodeFormat> extends ParentActivity {
 
     private RecyclerView printRecylerview;
 
-    private PrintRecyclerAdapter mAdapter;
+    private PrintRecyclerAdapterEN mAdapter;
 
     private int flag = 0;
 
@@ -192,7 +192,7 @@ public class PrintActivityEN<BarcodeFormat> extends ParentActivity {
 
         printRecylerview = (RecyclerView) findViewById(R.id.product_list_recycler_view);
         printRecylerview.setNestedScrollingEnabled(false);
-        mAdapter = new PrintRecyclerAdapter(this, TempData.INVOICE_DETAILS);
+        mAdapter = new PrintRecyclerAdapterEN(this, TempData.INVOICE_DETAILS);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
 
