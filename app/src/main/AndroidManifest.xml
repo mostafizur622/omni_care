@@ -90,6 +90,9 @@
         <activity
             android:name=".print.huawei.PrintAllMemosActivityP"
             android:screenOrientation="portrait" />
+         <activity
+            android:name=".print.PrintAllMemosActivityEn"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Product_Wise_Order_Summery"
             android:screenOrientation="portrait" />

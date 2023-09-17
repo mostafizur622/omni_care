@@ -35,6 +35,7 @@ import com.srapp.Db_Actions.DBListener;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.print.PrintAllMemosActivity;
+import com.srapp.print.PrintAllMemosActivityEn;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
@@ -205,7 +206,7 @@ public class DeliveryReport extends AppCompatActivity implements BasicFunctionLi
                 }
 
                 else {
-                    Intent idn = new Intent(DeliveryReport.this, PrintAllMemosActivity.class);
+                    Intent idn = new Intent(DeliveryReport.this, PrintAllMemosActivityEn.class);
                     idn.putExtra("FromDate",start_date.getText().toString());
                     idn.putExtra("ToDate",end_date.getText().toString());
                     startActivity(idn);
