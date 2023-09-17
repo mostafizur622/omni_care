@@ -174,7 +174,7 @@ public class SR_Account_Activity extends Parent {
         sr_targetList.add(new SR_Account("About",null));
         sr_targetList.add(new SR_Account("FAQ",null));
         sr_targetList.add(new SR_Account("Attendance",null));
-        sr_targetList.add(new SR_Account("NCP",null));
+       // sr_targetList.add(new SR_Account("NCP",null));
 
 
         return sr_targetList;
