@@ -106,6 +106,7 @@ public class Data_Source extends Parent {
         dBhelper = new DB_Helper(context);
         basicFunction = new BasicFunction(basicFunctionListener, context);
         FirebaseCrashlytics.getInstance().setUserId(getPreference("sr_uname"));
+        open();
     }
 
     public Data_Source(Context context, DBListener dbListener) {
@@ -113,12 +114,14 @@ public class Data_Source extends Parent {
         this.dbListener = dbListener;
         dBhelper = new DB_Helper(context);
         FirebaseCrashlytics.getInstance().setUserId(getPreference("sr_uname"));
+        open();
     }
 
     public Data_Source(Context context) {
         this.dBhelper = new DB_Helper(context);
         this.context = context;
         FirebaseCrashlytics.getInstance().setUserId(getPreference("sr_uname"));
+        open();
     }
 
 

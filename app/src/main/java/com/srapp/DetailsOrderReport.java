@@ -92,7 +92,7 @@ import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Model.OrderDetailsModel;
 import com.srapp.Util.Parent;
-import com.srapp.print.PrintActivity;
+import com.srapp.print.PrintActivityEN;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
@@ -335,12 +335,12 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
                 //TempData.TempBonus="";
                 if (MEMO_EDIT) {
-                    Intent idn = new Intent(DetailsOrderReport.this, PrintActivity.class);
+                    Intent idn = new Intent(DetailsOrderReport.this, PrintActivityEN.class);
                     idn.putExtra("From", "MemoDetails");
                     startActivity(idn);
                     finish();
                 } else if (ORDER_TO_MEMO == 1) {
-                    Intent idn = new Intent(DetailsOrderReport.this, PrintActivity.class);
+                    Intent idn = new Intent(DetailsOrderReport.this, PrintActivityEN.class);
                     idn.putExtra("From", "delivery");
                     startActivity(idn);
                     finish();
@@ -360,7 +360,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                         idn = new Intent(DetailsOrderReport.this, PrintActivity.class);
                     }*/
 
-                    idn = new Intent(DetailsOrderReport.this, PrintActivity.class);
+                    idn = new Intent(DetailsOrderReport.this, PrintActivityEN.class);
                     idn.putExtra("From", "MemoDetails");
                     startActivity(idn);
 
