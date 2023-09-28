@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.srapp.Db_Actions.URL;
 import com.srapp.Util.Parent;
 import com.srapp.print.PrintActivity;
 import com.srapp.thermalprint.async.usbdevice.UsbDataBinder;
@@ -95,7 +96,11 @@ public class SplashActivity extends Parent implements BasicFunctionListener {
             try{
                 advertId = idInfo.getId();
                 Log.e("advertId",advertId);
-                basicFunction.savePreference("mac",advertId);
+                //d07e9cab-ec01-4b0e-9dd0-4b754073e16b
+                if (URL.Domain.contains("202.126.123.157"))
+                basicFunction.savePreference("mac","tanvir");
+                else
+                    basicFunction.savePreference("mac",advertId);
             }catch (NullPointerException e){
                 e.printStackTrace();
                 Log.e("advertId",e.getMessage());

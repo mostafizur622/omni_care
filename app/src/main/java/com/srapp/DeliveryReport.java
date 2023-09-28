@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -34,6 +35,8 @@ import com.srapp.Adapter.SpinnerAdapter;
 import com.srapp.Db_Actions.DBListener;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
+import com.srapp.print.PrintActivity;
+import com.srapp.print.PrintActivityEN;
 import com.srapp.print.PrintAllMemosActivity;
 import com.srapp.print.PrintAllMemosActivityEn;
 import com.tanvir.BasicFun.BasicFunction;
@@ -206,11 +209,9 @@ public class DeliveryReport extends AppCompatActivity implements BasicFunctionLi
                 }
 
                 else {
-                    Intent idn = new Intent(DeliveryReport.this, PrintAllMemosActivityEn.class);
-                    idn.putExtra("FromDate",start_date.getText().toString());
-                    idn.putExtra("ToDate",end_date.getText().toString());
-                    startActivity(idn);
-                    finish();
+
+                    showPrintDailog();
+
                 }
 
             }
@@ -303,6 +304,34 @@ public class DeliveryReport extends AppCompatActivity implements BasicFunctionLi
 
     }
 
+    private void showPrintDailog() {
+
+        new AlertDialog.Builder(this)
+                .setIcon(R.drawable.alert)
+                .setTitle("Select Print Language")
+                .setMessage("Which Language You want to print?")
+                .setPositiveButton("BN", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent idn = new Intent(DeliveryReport.this, PrintAllMemosActivity.class);
+                        idn.putExtra("FromDate",start_date.getText().toString());
+                        idn.putExtra("ToDate",end_date.getText().toString());
+                        startActivity(idn);
+                        finish();
+                    }
+                })
+                .setNegativeButton("EN",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent idn = new Intent(DeliveryReport.this, PrintAllMemosActivityEn.class);
+                        idn.putExtra("FromDate",start_date.getText().toString());
+                        idn.putExtra("ToDate",end_date.getText().toString());
+                        startActivity(idn);
+                        finish();
+                    }
+                })
+                .show();
+    }
     private void getdata2(JSONObject jsonObject) {
 
         ProgressDialog dailog = CheckConnection(DeliveryReport.this,"Getting Order List...");

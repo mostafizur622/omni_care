@@ -263,6 +263,12 @@ public class PriceList extends AppCompatActivity implements BasicFunctionListene
 
         }else  if(json.equalsIgnoreCase("done")){
 
+            try {
+               Thread.sleep(5000);
+            }catch (Exception e){
+
+            }
+
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

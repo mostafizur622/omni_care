@@ -3311,6 +3311,57 @@ public class Data_Source extends Parent {
         return policyWiseSlabsArrayList;
     }
 
+    public ArrayList<PolicyWiseSlab> getPolicy_Wise_Slab_ListForproductWiseMin(String policyId, String minvalue) {
+
+        ArrayList<PolicyWiseSlab> policyWiseSlabsArrayList = new ArrayList<PolicyWiseSlab>();
+        String query2 = "select \n" +
+                "policy_id,\n" +
+                "option_id,\n" +
+                "min_qty,\n" +
+                "policy_type,\n" +
+                "discount_amount,\n" +
+                "discount_type,\n" +
+                "min_memo_val,\n" +
+                "formula,\n" +
+                "min_value,\n" +
+                "deduct_from_value,\n" +
+                "qty_value_flag\n" +
+                "from policy_product_Option\n" +
+                "where \n" +
+                "policy_id=" + policyId + "\n" + "\n" +
+                "and " +
+                " min_value <=" + minvalue + "\n" + "\n" +
+                "order by min_value desc";
+
+        Log.e("getPolicy_Wise_Slab_ListForproductWiseMin:", query2);
+        Cursor cursor =  sqLiteDatabase.rawQuery(query2,null);
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                PolicyWiseSlab policyWiseSlab = new PolicyWiseSlab();
+                policyWiseSlab.setPolicy_id(cursor.getString(0));
+                policyWiseSlab.setOption_id(cursor.getString(1));
+                policyWiseSlab.setMin_qty(cursor.getString(2));
+                policyWiseSlab.setPolicy_type(cursor.getString(3));
+                policyWiseSlab.setDiscount_amt(cursor.getString(4));
+                policyWiseSlab.setDiscount_type(cursor.getString(5));
+                policyWiseSlab.setMin_memo_val(cursor.getString(6));
+                policyWiseSlab.setFormula(cursor.getString(7));
+                policyWiseSlab.setMin_value(cursor.getString(8));
+                policyWiseSlab.setDeduct_from_value(cursor.getString(9));
+                policyWiseSlab.setQty_value_flag(cursor.getString(10));
+
+                Log.e("root_product_slab_cur", policyWiseSlab.getPolicy_id());
+
+                // Adding policy wise slab to list
+                policyWiseSlabsArrayList.add(policyWiseSlab);
+            } while (cursor.moveToNext());
+        }
+        // return policy product list
+        return policyWiseSlabsArrayList;
+    }
+
     public ArrayList<ExclusionProduct> getExclusion_Product_List(String policyId) {
 
         ArrayList<ExclusionProduct> exclusionProductsArrayList = new ArrayList<ExclusionProduct>();

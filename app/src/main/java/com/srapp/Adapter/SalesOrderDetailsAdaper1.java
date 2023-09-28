@@ -993,6 +993,19 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
             policyWiseSlabArrayList = db.getPolicy_Wise_Slab_List(policyIdsArrayList.get(i).getPolicy_id(), String.valueOf(CartProductQtysum), cart_policy_value + "");
             Log.i(TAG, "policyWiseSlabArrayList: " + new Gson().toJson(policyWiseSlabArrayList));
 
+
+            for (int ar = 0; ar < policyProductsIdArray.length; ar++) {
+                Double productTotal = 0.0;
+                Integer product_id = Integer.valueOf(policyProductsIdArray[ar]);
+                String quentity = getPreference(String.valueOf(product_id));
+                Log.e("quentiry_product_id", quentity + "---" + product_id+"  "+priceMap.toString());
+                CartProductQtysum += ParseDouble(quentity);
+                if (priceMap.get(product_id + "")!=null)
+                    productTotal += (Double.parseDouble(quentity) * Double.parseDouble(priceMap.get(product_id + "")));
+                policyWiseSlabArrayList.addAll(db.getPolicy_Wise_Slab_ListForproductWiseMin(policyIdsArrayList.get(i).getPolicy_id(), productTotal + ""));
+
+            }
+
               /*
                   Po ==policy slab
              */

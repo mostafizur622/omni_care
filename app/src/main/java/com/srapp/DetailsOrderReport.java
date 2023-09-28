@@ -65,7 +65,9 @@ import static com.srapp.TempData.PROCESSING_ON_SERVER;
 import static com.srapp.TempData.PolicySetRelation;
 import static com.srapp.TempData.policyArrayList;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -92,6 +94,7 @@ import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Model.OrderDetailsModel;
 import com.srapp.Util.Parent;
+import com.srapp.print.PrintActivity;
 import com.srapp.print.PrintActivityEN;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
@@ -346,7 +349,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                     finish();
 
                 } else {
-                   Intent idn;
+
 
                    /*  if (Build.BRAND.equals("HUAWEI")){
                         idn = new Intent(DetailsOrderReport.this, PrintActivityP.class);
@@ -359,12 +362,9 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                     else {
                         idn = new Intent(DetailsOrderReport.this, PrintActivity.class);
                     }*/
+                    
+                    showPrintDailog();
 
-                    idn = new Intent(DetailsOrderReport.this, PrintActivityEN.class);
-                    idn.putExtra("From", "MemoDetails");
-                    startActivity(idn);
-
-                    finish();
 
                 }
             }
@@ -563,6 +563,37 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
      /*   productList = new ArrayList<>();
         oAdapter = new OderDetailsAdapter();
         oAdapter.setOrders(productList);*/
+    }
+
+    private void showPrintDailog() {
+
+        new AlertDialog.Builder(this)
+                .setIcon(R.drawable.alert)
+                .setTitle("Select Print Language")
+                .setMessage("Which Language You want to print?")
+                .setPositiveButton("BN", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent idn;
+                        idn = new Intent(DetailsOrderReport.this, PrintActivity.class);
+                        idn.putExtra("From", "MemoDetails");
+                        startActivity(idn);
+
+                        finish();
+                    }
+                })
+                .setNegativeButton("EN",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent idn;
+                        idn = new Intent(DetailsOrderReport.this, PrintActivityEN.class);
+                        idn.putExtra("From", "MemoDetails");
+                        startActivity(idn);
+
+                        finish();
+                    }
+                })
+                .show();
     }
 
     private void exiting_policy_map_createdOrder(String order_no) {
