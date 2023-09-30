@@ -338,15 +338,10 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
                 //TempData.TempBonus="";
                 if (MEMO_EDIT) {
-                    Intent idn = new Intent(DetailsOrderReport.this, PrintActivityEN.class);
-                    idn.putExtra("From", "MemoDetails");
-                    startActivity(idn);
-                    finish();
+                    showPrintDailog("MemoDetails");
+
                 } else if (ORDER_TO_MEMO == 1) {
-                    Intent idn = new Intent(DetailsOrderReport.this, PrintActivityEN.class);
-                    idn.putExtra("From", "delivery");
-                    startActivity(idn);
-                    finish();
+                    showPrintDailog("delivery");
 
                 } else {
 
@@ -363,7 +358,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                         idn = new Intent(DetailsOrderReport.this, PrintActivity.class);
                     }*/
                     
-                    showPrintDailog();
+                    showPrintDailog("MemoDetails");
 
 
                 }
@@ -565,7 +560,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
         oAdapter.setOrders(productList);*/
     }
 
-    private void showPrintDailog() {
+    private void showPrintDailog(String from) {
 
         new AlertDialog.Builder(this)
                 .setIcon(R.drawable.alert)
@@ -576,7 +571,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                     public void onClick(DialogInterface dialog, int which) {
                         Intent idn;
                         idn = new Intent(DetailsOrderReport.this, PrintActivity.class);
-                        idn.putExtra("From", "MemoDetails");
+                        idn.putExtra("From", from);
                         startActivity(idn);
 
                         finish();
@@ -587,7 +582,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                     public void onClick(DialogInterface dialog, int which) {
                         Intent idn;
                         idn = new Intent(DetailsOrderReport.this, PrintActivityEN.class);
-                        idn.putExtra("From", "MemoDetails");
+                        idn.putExtra("From", from);
                         startActivity(idn);
 
                         finish();
