@@ -172,16 +172,17 @@ public class Data_Source extends Parent {
                 String productId = csr.getString(csr.getColumnIndex(Tables.PRODUCT_PRODUCT_ID));
                 preIdList.add(productId);
                 productIdList.add(preIdList);
-                if (getQtyAndPriceByProductId(productId, date).get(Tables.ProductName).get(0) != null) {
+                HashMap<String, ArrayList<ArrayList<String>>> qtyandPrice = getQtyAndPriceByProductId(productId, date);
+                if (qtyandPrice.get(Tables.ProductName).get(0) != null) {
 
                     try {
-                        productNameList.add(getQtyAndPriceByProductId(productId, date).get(Tables.ProductName).get(0));
+                        productNameList.add(qtyandPrice.get(Tables.ProductName).get(0));
                         //Loge("---", "getSlapWisePriceList: --------->" + productIdList);
 
-                        mainPriceList.add(getQtyAndPriceByProductId(productId, date).get("Main_Price").get(0));
+                        mainPriceList.add(qtyandPrice.get("Main_Price").get(0));
                         //Loge("--------->", "getSlapWisePriceList:-----> main price " + mainPriceList);
-                        slapPriceList.add(getQtyAndPriceByProductId(productId, date).get(Tables.MinPrice).get(0));
-                        slapQtyList.add(getQtyAndPriceByProductId(productId, date).get(Tables.MinQty).get(0));
+                        slapPriceList.add(qtyandPrice.get(Tables.MinPrice).get(0));
+                        slapQtyList.add(qtyandPrice.get(Tables.MinQty).get(0));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -286,7 +287,7 @@ public class Data_Source extends Parent {
 
         //Loge("test---->", "getQtyAndPriceByProductId:--------> " + qtyAndPriceHashMap);
 
-        this.close();
+        sqLiteDatabase.close();
         return qtyAndPriceHashMap;
 
 
