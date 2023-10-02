@@ -1,0 +1,1936 @@
+package com.srapp.print;
+
+import static com.srapp.Db_Actions.Tables.PRODUCT_BOOLEAN_QUANTITY;
+import static com.srapp.Db_Actions.Tables.PRODUCT_ID;
+import static com.srapp.Db_Actions.Tables.PRODUCT_PRICE_PRICE;
+import static com.srapp.Db_Actions.Tables.PRODUCT_PRODUCT_NAME;
+import static com.srapp.DetailsOrderReport.discount_info;
+import static com.srapp.print.newprint.Constant.CONN_STATE_DISCONN;
+import static com.srapp.print.newprint.Constant.Connect_cuccess;
+import static com.srapp.print.newprint.Constant.Connect_fail;
+import static NewPrint.EscapeSequence.ESCAPE_CHARACTERS;
+
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
+import android.media.MediaScannerConnection;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.bxl.config.editor.BXLConfigLoader;
+import com.dantsu.escposprinter.connection.DeviceConnection;
+import com.dantsu.escposprinter.connection.usb.UsbConnection;
+import com.dantsu.escposprinter.connection.usb.UsbPrintersConnections;
+import com.google.gson.Gson;
+import com.gprinter.io.PortManager;
+import com.gprinter.io.UsbPort;
+import com.gprinter.utils.Command;
+import com.srapp.Db_Actions.Data_Source;
+import com.srapp.DetailsOrderReport;
+import com.srapp.Multiple_Invoice_print;
+import com.srapp.R;
+import com.srapp.TempData;
+import com.srapp.Util.PrintedListener;
+import com.srapp.print.newprint.Constant;
+import com.srapp.print.newprint.PrintContent;
+import com.srapp.print.newprint.ThreadPool;
+import com.srapp.print.newprint.Utils;
+import com.srapp.thermalprint.async.AsyncEscPosPrinter;
+import com.srapp.thermalprint.async.AsyncUsbEscPosPrint;
+import com.srapp.thermalprint.async.PrinterTextParserImg;
+
+import org.json.JSONArray;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Set;
+
+import NewPrint.BixolonPrinter;
+
+public class PrintSelectedOrdersActivityEN extends ParentActivity {
+     BixolonPrinter printer;
+    static AsyncEscPosPrinter printer1;
+    private final int portType = BXLConfigLoader.DEVICE_BUS_USB;
+    private final String logicalName = "SRP-E302";
+    private final String address = "";
+    String JSONResponse_Route = "";
+    BluetoothDevice mmDevice;
+    BluetoothSocket mmSocket;
+    ProgressDialog pDialog;
+    JSONArray OrderList = null;
+    JSONArray details = null;
+    String invoice_no = "", shop_code = "", total_priceMain = "", date12 = "";
+    ArrayList<String> arrayList;
+    ArrayList<String> arrayListPrintImage;
+    String appName = "";
+    String appContent = "";
+    String bottomContent = "";
+    ArrayList<String> orderList = new ArrayList<String>();
+    ArrayList<String> quantityList = new ArrayList<String>();
+    ArrayList<String> PriceList = new ArrayList<String>();
+    String FromDate = "", ToDate = "";
+    boolean print = false;
+    int flag = 0;
+
+    ArrayList<Bitmap> memoList = new ArrayList<Bitmap>();
+
+
+    // Create image-----------------------
+    ProgressDialog pd;
+    Button saveButton;
+    LinearLayout savingLayout;
+    private ViewGroup mLinearLayout;
+
+    HashMap<String, String> map;
+    private Button mConnectBtn;
+    private Button mEnableBtn;
+    private Button mPrintDemoBtn;
+    private Spinner mDeviceSp;
+    private ProgressDialog mProgressDlg;
+    private ProgressDialog mConnectingDlg;
+    private BluetoothAdapter mBluetoothAdapter;
+    private P25Connector mConnector;
+    private ArrayList<BluetoothDevice> mDeviceList = new ArrayList<BluetoothDevice>();
+
+    private DeviceConnection deviceConnection;
+
+
+    private  UsbDevice mUsbDevice =null;
+    private ThreadPool threadPool;
+    PortManager portManager=null;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.print_selected_order_list); //previous layout name = print_main
+
+        System.gc();
+
+        Runtime.getRuntime().gc();
+
+        savingLayout = (LinearLayout) findViewById(R.id.layout_save_image);
+
+        //Start--Create image for print android ---------------------------------
+        ActivityCompat.requestPermissions(PrintSelectedOrdersActivityEN.this,
+                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                1);
+        pd = new ProgressDialog(PrintSelectedOrdersActivityEN.this);
+        saveButton = findViewById(R.id.btnSave);
+
+        saveButton.setOnClickListener(view -> {
+            // SaveClick(view);
+
+            //  new Handler().post(() -> MakeNewLayoutText());
+
+        });
+
+//      printer = new BixolonPrinter(this);
+
+        Bundle b = getIntent().getExtras();
+
+        orderList = ((ArrayList<String>) b.getSerializable("FromDate"));
+
+        arrayListPrintImage = new ArrayList<>();
+
+        new Handler().post(() -> MakeNewLayoutText());
+
+        // new MakeData().execute();+
+
+        arrayList = new ArrayList<>();
+
+        Button btnLastMemo = findViewById(R.id.btnLastMemo);
+
+        btnLastMemo.setOnClickListener(v -> {
+            // TODO Auto-generated method stub
+
+            TempData.INVOICE_DETAILS_PRINT.clear();
+
+            DeletePOzipFile();
+
+            startActivity(new Intent(PrintSelectedOrdersActivityEN.this, Multiple_Invoice_print.class));
+
+            finish();
+
+        });
+
+
+      /*  printRecylerview = findViewById(R.id.product_list_recycler_view);
+
+        area_office = findViewById(R.id.area_office);
+        outlet_name_category_address = findViewById(R.id.outlet_name_category_address);
+        market_thana = findViewById(R.id.market_thana);
+        order_memo_no_date = findViewById(R.id.order_memo_no_date);
+
+        discountTxt = findViewById(R.id.discountTxt);
+        bonus = findViewById(R.id.bonus);
+        total_bill = findViewById(R.id.total_bill);
+        discount = findViewById(R.id.discount);
+        vatCal = findViewById(R.id.vatCal);
+        net_payable = findViewById(R.id.net_payable);
+        sr_db_name = findViewById(R.id.sr_db_name);
+        sr_address = findViewById(R.id.sales_officer_address);
+        mobile_no = findViewById(R.id.sales_officer_phone);
+        office_copy = findViewById(R.id.office_copy);*/
+
+         /*MakeText();
+         MakePrintData();*/
+
+        printer = new BixolonPrinter(this);
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        mConnectBtn = findViewById(R.id.btn_connect);
+        mEnableBtn = findViewById(R.id.btn_enable);
+        mPrintDemoBtn = findViewById(R.id.btn_print_demo);
+
+		/*mPrintBarcodeBtn 	= (Button) findViewById(R.id.btn_print_barcode);
+		mPrintImageBtn 		= (Button) findViewById(R.id.btn_print_image);
+		mPrintReceiptBtn 	= (Button) findViewById(R.id.btn_print_receipt);
+		mPrintTextBtn		= (Button) findViewById(R.id.btn_print_text);*/
+
+        mDeviceSp = findViewById(R.id.sp_device);
+
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        if (mBluetoothAdapter == null) {
+            showUnsupported();
+        } else {
+            if (!mBluetoothAdapter.isEnabled()) {
+                showDisabled();
+            } else {
+                showEnabled();
+                Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+
+                if (pairedDevices != null) {
+                    mDeviceList.addAll(pairedDevices);
+
+                    updateDeviceLis();
+                }
+            }
+
+            mProgressDlg = new ProgressDialog(this);
+
+            mProgressDlg.setMessage("Scanning...");
+            mProgressDlg.setCancelable(false);
+            mProgressDlg.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+
+                    mBluetoothAdapter.cancelDiscovery();
+                }
+            });
+
+            mConnectingDlg = new ProgressDialog(this);
+
+            mConnectingDlg.setMessage("Connecting...");
+            mConnectingDlg.setCancelable(false);
+
+            mConnector = new P25Connector(new P25Connector.P25ConnectionListener() {
+
+                @Override
+                public void onStartConnecting() {
+                    mConnectingDlg.show();
+                }
+
+                @Override
+                public void onConnectionSuccess() {
+                    mConnectingDlg.dismiss();
+
+                    showConnected();
+                }
+
+                @Override
+                public void onConnectionFailed(String error) {
+                    mConnectingDlg.dismiss();
+                }
+
+                @Override
+                public void onConnectionCancelled() {
+                    mConnectingDlg.dismiss();
+                }
+
+                @Override
+                public void onDisconnected() {
+                    showDisonnected();
+                }
+            });
+
+            //enable bluetooth
+            mEnableBtn.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    try {
+
+                        Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        startActivityForResult(intent, 1000);
+
+                    } catch (Exception e) {
+                        Toast.makeText(PrintSelectedOrdersActivityEN.this, "Please enable bluetooth!", Toast.LENGTH_LONG).show();
+                    }
+
+                }
+            });
+
+           /* //connect/disconnect
+            mConnectBtn.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View arg0) {
+
+                    MakeNewLayoutText();
+
+                   // printUsb();
+
+
+                new Handler().obtainMessage(0).sendToTarget();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // TODO Auto-generated method stub
+                           // print = printer.printerOpen(portType, logicalName, address, true);
+                            Intent intent=new Intent();
+                            UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+                            UsbDevice usbDevice = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+
+                            AsyncEscPosPrinter printer = new AsyncEscPosPrinter(new UsbConnection(usbManager, usbDevice), 188, 78, 32);
+
+
+                            Log.e("print", print + "");
+                            for (int i = 0; i < arrayListPrintImage.size(); i++) {
+
+
+                                    //-----------Image Print for Office Copy---------------------------------------------------------------------------------------
+                                    Bitmap fewlapsBitmap = BitmapFactory.decodeFile("/storage/emulated/0/Pictures/office_" + i + ".png");// print report as a image from storage for supporting all font like bangla arabic and so on
+
+                                    printer.setTextToPrint(
+                                            "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer, fewlapsBitmap) + "</img>\n \n \n \n  "
+                                    );
+
+                                    //-----------Image Print for Outlet Copy---------------------------------------------------------------------------------------
+
+                                    Bitmap fewlapsBitmap1 = BitmapFactory.decodeFile("/storage/emulated/0/Pictures/outlet_"+i+".png");// print report as a image from storage for supporting all font like bangla arabic and so on
+
+
+                                    printer.setTextToPrint(
+                                            "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer, fewlapsBitmap1) + "</img>\n \n \n \n  "
+                                    );
+
+
+                            }
+                        }
+                    }).start();
+
+                }
+            });
+*/
+
+            //connect/disconnect
+            mConnectBtn.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View arg0) {
+
+                    printUsb();
+                 /*   print =  printer.printerOpen(portType,logicalName,address,true);
+                    Log.e("print",print+"");
+                    for (int i=0; i<memoList.size(); i++) {
+                        if (print) {
+                            // printer.printText(initialContent + appContent + OutlateBold + body + bottomContent + boldthanku, 1, 0, (0 + 1));
+                            //printer.printText(initialContent + appContent + OutlateBold + body + bottomContent + boldthanku, 1, 1, (0 + 1));
+                            //   printer.printText(memoList.get(i), 1, 2, (0 + 1));
+                            printer.printImage(memoList.get(i),memoList.get(i).getWidth(),0,2);
+
+                        }
+                    }*/
+
+
+                   /* System.gc();
+                    Runtime.getRuntime().gc();
+
+                    printUsb();*/
+
+                    //SaveClick(arg0);
+
+            /* new Handler().obtainMessage(0).sendToTarget();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // TODO Auto-generated method stub
+                            print = printer.printerOpen(portType, logicalName, address, true);
+
+                            Log.e("print", print + "");
+                            for (int i = 0; i < arrayListPrintImage.size(); i++) {
+                            if (print) {
+
+                                //-----------Image Print for Office Copy---------------------------------------------------------------------------------------
+                                Bitmap fewlapsBitmap = BitmapFactory.decodeFile("/storage/emulated/0/Pictures/office_"+i+".png");// print report as a image from storage for supporting all font like bangla arabic and so on
+
+                                printer.printImage(fewlapsBitmap, 1200, 2, 300);
+
+                                //-----------Image Print for Outlet Copy---------------------------------------------------------------------------------------
+
+                                Bitmap fewlapsBitmap1 = BitmapFactory.decodeFile("/storage/emulated/0/Pictures/outlet_"+i+".png");// print report as a image from storage for supporting all font like bangla arabic and so on
+
+                                printer.printImage(fewlapsBitmap1, 1200, 2, 300);
+
+                            }
+
+                            }
+
+                        }
+                    }).start(); */
+
+                }
+            });
+
+            //print demo text
+            mPrintDemoBtn.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    printDemoContent();
+                }
+            });
+
+        }
+
+        IntentFilter filter = new IntentFilter();
+
+        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+        filter.addAction(BluetoothDevice.ACTION_FOUND);
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        filter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+
+        registerReceiver(mReceiver, filter);
+        registerReceiver(usbReceiver, filter);
+    }
+
+
+    @Override
+    public void onPause() {
+        if (mBluetoothAdapter != null) {
+            if (mBluetoothAdapter.isDiscovering()) {
+                mBluetoothAdapter.cancelDiscovery();
+            }
+        }
+
+        if (mConnector != null) {
+            try {
+                mConnector.disconnect();
+            } catch (P25ConnectionException e) {
+                e.printStackTrace();
+            }
+        }
+
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        unregisterReceiver(mReceiver);
+        unregisterReceiver(usbReceiver);
+
+        super.onDestroy();
+    }
+
+    private String[] getArra(ArrayList<BluetoothDevice> data) {
+        String[] list = new String[0];
+
+        if (data == null) return list;
+
+        int size = data.size();
+        list = new String[size];
+
+        for (int i = 0; i < size; i++) {
+            list[i] = data.get(i).getName();
+        }
+
+        return list;
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void updateDeviceLis() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.simple_spinner_dropdown_item, getArra(mDeviceList));
+        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+        mDeviceSp.setAdapter(adapter);
+        //mDeviceSp.setSelection(0);
+    }
+
+    private void showDisabled() {
+        showToast("Bluetooth disabled");
+        mEnableBtn.setVisibility(View.GONE);
+        mConnectBtn.setVisibility(View.VISIBLE);
+        mDeviceSp.setVisibility(View.GONE);
+    }
+
+    private void showEnabled() {
+        showToast("Bluetooth enabled");
+        mEnableBtn.setVisibility(View.GONE);
+        mConnectBtn.setVisibility(View.VISIBLE);
+        mDeviceSp.setVisibility(View.VISIBLE);
+    }
+
+    private void showUnsupported() {
+        showToast("Bluetooth is unsupported by this device");
+        mConnectBtn.setEnabled(false);
+        mPrintDemoBtn.setEnabled(false);
+
+        mDeviceSp.setEnabled(false);
+    }
+
+    private void showConnected() {
+        showToast("Connected");
+
+        mConnectBtn.setText("Disconnect");
+
+        mPrintDemoBtn.setEnabled(true);
+
+
+        mDeviceSp.setEnabled(false);
+    }
+
+    private void showDisonnected() {
+        showToast("Disconnected");
+
+        mConnectBtn.setText("Connect");
+
+        mPrintDemoBtn.setEnabled(false);
+
+        mDeviceSp.setEnabled(true);
+    }
+
+    private void connect() {
+
+		/*	if (mDeviceList == null || mDeviceList.size() == 0) {
+			return;
+		}*/
+        //"00:19:5D:25:3A:2A"
+
+        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter
+                .getBondedDevices();
+        BluetoothDevice device1 = null;
+
+        Log.e("NUmber of devices:", "" + pairedDevices.size());
+        if (pairedDevices.size() > 0) {
+            for (BluetoothDevice device : pairedDevices) {
+
+                Log.e("adnan", "Device :" + device.toString());
+
+                device1 = device;
+                Log.e("DEVICE NAME:", ".........." + device1.getName());
+
+
+                Log.e("DEVICE:", device1.toString());
+
+            }
+        }
+        //mmDevice = mBluetoothAdapter.getRemoteDevice("00:19:5D:25:3A:2A");
+        mmDevice = mBluetoothAdapter.getRemoteDevice(device1.toString());
+        //Log.e("Device", mmDevice.toString());
+        if (mmDevice.getBondState() == BluetoothDevice.BOND_NONE) {
+            try {
+                createBond(mmDevice);
+            } catch (Exception e) {
+                showToast("Failed to pair device");
+                return;
+            }
+        }
+
+        try {
+            if (!mConnector.isConnected()) {
+                mConnector.connect(mmDevice);
+            } else {
+                mConnector.disconnect();
+
+                showDisonnected();
+            }
+        } catch (P25ConnectionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void createBond(BluetoothDevice device) throws Exception {
+
+        try {
+            Class<?> cl = Class.forName("android.bluetooth.BluetoothDevice");
+
+            Class<?>[] par = {
+
+            };
+
+            Method method = cl.getMethod("createBond", par);
+
+            method.invoke(device);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    private void sendData(byte[] bytes) {
+        try {
+            //Log.d("adnan","Here bb "+bytes.toString());
+            mConnector.sendData(bytes);
+        } catch (P25ConnectionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void printDemoContent() {
+
+        byte[] top = Printer.printfont(appContent, FontDefine.FONT_24PX,
+                FontDefine.Align_CENTER, (byte) 0x1A, PocketPos.LANGUAGE_ENGLISH);
+        byte[] bottom = Printer.printfont(bottomContent, FontDefine.FONT_26PX, FontDefine.Align_CENTER, (byte) 0x1A, PocketPos.LANGUAGE_ENGLISH);
+
+        byte[] topText = Printer.printfont(appContent,
+                FontDefine.FONT_24PX, FontDefine.Align_CENTER, (byte) 0x1A, PocketPos.LANGUAGE_ENGLISH);
+        Log.e("TOP:", Arrays.toString(top));
+        Log.e("TOP(String):", new String(top));
+        Log.e("", "................................................");
+        Log.e("BOTTOM:", Arrays.toString(bottom));
+        Log.e("BOTTOM(String):", new String(bottom));
+        Log.e("", "................................................");
+
+        top = removeBytes(top, getByteIndex(top));
+        bottom = removeBytes(bottom, getByteIndex(bottom));
+
+        byte[] totladata = new byte[top.length + bottom.length];
+        int offset = 0;
+        System.arraycopy(top, 0, totladata, offset, top.length);
+        offset += top.length;
+
+        System.arraycopy(bottom, 0, totladata, offset, bottom.length);
+        offset += bottom.length;
+
+        byte[] senddata = PocketPos.FramePack(PocketPos.FRAME_TOF_PRINT, totladata, 0, totladata.length);
+
+
+        Log.e("TOP:", Arrays.toString(top));
+        Log.e("TOP(String):", new String(top));
+        Log.e("", "................................................");
+        Log.e("BOTTOM:", Arrays.toString(bottom));
+        Log.e("BOTTOM(String):", new String(bottom));
+        Log.e("", "................................................");
+        Log.e("SEND:", Arrays.toString(senddata));
+        Log.e("SEND(String):", new String(senddata));
+        Log.e("", "................................................");
+
+        senddata = removeBytes(senddata, getByteIndex(senddata));
+        senddata = Arrays.copyOfRange(senddata, 0, getByteIndex1(senddata));
+
+        Log.e("SEND:", Arrays.toString(senddata));
+        Log.e("SEND(String):", new String(senddata));
+        Log.e("", "................................................");
+
+        sendData(senddata);
+    }
+
+    public int getByteIndex(byte[] a) {
+        for (int i = 4; i < a.length; i++) {
+            if (a[i] == 27) {
+                return i;
+            }
+        }
+
+        return 0;
+
+    }
+
+    public int getByteIndex1(byte[] a) {
+        for (int i = 4; i < a.length; i++) {
+/*		       if(a[i]==10&&a[i+1]==10&&a[i+2]==10)
+		       {
+		    	   return i+2;
+		       }
+*/
+            if (a[i] == 90 && a[i + 1] == 88 && a[i + 2] == 90 && a[i + 3] == 88) {
+                return i - 1;
+            }
+        }
+
+        return 0;
+
+    }
+
+    public byte[] removeBytes(byte[] a, int n) {
+
+        for (int i = n; i < a.length - 1; i++) {
+            a[i - n] = a[i];
+        }
+
+        return a;
+    }
+
+    private void MakeText() {
+        TempData.TempGift = "";
+        TempData.TempBonus_EN = "";
+        String AllPrint = "";
+        Data_Source db = new Data_Source(PrintSelectedOrdersActivityEN.this);
+
+        for (int i = 0; i < orderList.size(); i++) {
+
+            Cursor c = db.sqLiteDatabase.rawQuery("SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_number=" + "'" + orderList.get(i) + "'",null);
+            Log.e("Query", "SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_number=" + "'" + orderList.get(i) + "'");
+            String memo_no = "";
+            if (c != null && c.getCount() > 0) {
+                if (c.moveToFirst()) {
+                    do {
+
+                        memo_no = c.getString(0);
+                        String date = c.getString(1);
+                        String outlet_id = c.getString(2);
+                        Double gross_value = c.getDouble(3);
+                        Double cash_received = c.getDouble(4);
+                        Double credit_amount = c.getDouble(5);
+                        String market_id = c.getString(6);
+                        TempData.DISCOUNT = c.getDouble(7);
+                        TempData.VAT = c.getDouble(8);
+
+                        Cursor c2 = db.sqLiteDatabase.rawQuery("SELECT O.outlet_name, M.market_name,O.address FROM outlets O LEFT JOIN markets M ON(O.market_id=M.market_id) WHERE O.outlet_id='" + outlet_id + "'",null);
+                        if (c2 != null) {
+                            if (c2.moveToFirst()) {
+                                do {
+
+                                    TempData.OutletName = c2.getString(0);
+                                    TempData.tempMarket = c2.getString(1);
+                                    TempData.Outlet_Address = c2.getString(2);
+
+                                } while (c2.moveToNext());
+                            }
+                        }
+
+                        Cursor c3 = db.sqLiteDatabase.rawQuery("SELECT T.thana_name FROM markets M LEFT JOIN thana T ON(M.thana_id=T.thana_id) WHERE M.market_id='" + market_id + "'",null);
+                        if (c3 != null) {
+                            if (c3.moveToFirst()) {
+                                do {
+
+                                    TempData.tempThana = c3.getString(0);
+
+                                } while (c3.moveToNext());
+                            }
+                        }
+
+                        Cursor c4 = db.sqLiteDatabase.rawQuery("SELECT OC.outlet_category_name FROM outlets O LEFT JOIN outlet_categories OC ON (O.outlet_category_id = OC.outlet_category_id) where O.outlet_id='" + outlet_id + "'",null);
+                        if (c4.getCount() > 0) {
+                            if (c4.moveToFirst()) {
+                                do {
+
+                                    String outlet_category_name = c4.getString(0);
+                                    savePreference("OutletCategoryName", outlet_category_name);
+
+
+                                } while (c4.moveToNext());
+                            }
+                        }
+
+                        date = date.substring(0, date.length() - 3);
+
+
+                        StringBuffer receiptHeadBuffer = new StringBuffer();
+                        receiptHeadBuffer.append("\n");
+
+                        receiptHeadBuffer.append("\n");
+                        receiptHeadBuffer.append(Util.center("Government of the People's Republic of", 64));
+                        receiptHeadBuffer.append(Util.center("Bangladesh.", 64));
+                        receiptHeadBuffer.append(Util.center("National Board of Revenue", 64));
+                        receiptHeadBuffer.append(Util.center("VAT Challan Patra", 64));
+                        receiptHeadBuffer.append(Util.center("SMC Enterprise Ltd.", 64));
+                        receiptHeadBuffer.append(Util.center("Central BIN: 000049992-0101.", 64));
+                        receiptHeadBuffer.append("\nArea Office: " + getPreference("office_name"));
+                        receiptHeadBuffer.append("\n");
+                        receiptHeadBuffer.append(getPreference("office_address") + ", " + getPreference("office_phone"));
+
+
+                        receiptHeadBuffer.append("\n");
+                        SpannableStringBuilder receiptHeadBufferOutlate = new SpannableStringBuilder();
+                        receiptHeadBuffer.append(TempData.OutletName + " " + "(" + getPreference("OutletCategoryName") + ") , " + TempData.Outlet_Address);
+
+                        receiptHeadBuffer.append("\n");
+                        SpannableStringBuilder receiptHeadBufferBody = new SpannableStringBuilder();
+                        receiptHeadBuffer.append(TempData.tempMarket + ", " + TempData.tempThana);
+                        receiptHeadBuffer.append("\n");
+
+                        receiptHeadBuffer.append("Order# " + memo_no + ", " + date);
+                        receiptHeadBuffer.append("\n................................................................");
+                        //receiptHeadBuffer.append("\n");
+
+                        String value = String.format("%1$-21s %2$7s %3$10s %4$8s  %5$13s", "Items", "vat", "Price", "Qty", "Total");
+                        receiptHeadBuffer.append(value);
+                        receiptHeadBuffer.append("\n................................................................");
+
+
+//                    String  MemoDetails="SELECT product_id, quantity, price FROM memo_details WHERE memo_no='"+memo_no+"'";
+
+                        String MemoDetails = "SELECT MD.product_id,P.product_name ,MD.quantity, MD.price,MD.vat,MD.discount_type,MD.discount_amount FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='0'";
+//                    Cursor c3 = db.rawQuery("SELECT T.thana_name FROM markets M LEFT JOIN thana T ON(M.market_id=T.market_id) WHERE market_id='"+market_id+"'");
+                        Log.e("MemoDetails", "MemoDetails: " + MemoDetails);
+                        discount_info = "";
+                        Cursor cursor = db.sqLiteDatabase.rawQuery(MemoDetails,null);
+                        if (cursor != null) {
+                            if (cursor.moveToFirst()) {
+                                do {
+                                    discount_info = discount_info + getdiscount(cursor.getDouble(2), cursor.getDouble(3), cursor.getInt(5), cursor.getDouble(6), cursor.getString(1));
+
+                                    String product_id = cursor.getString(0);
+                                    String product_name = cursor.getString(1);
+                                    String quantity = cursor.getString(2);
+                                    String price = cursor.getString(3);
+                                    String vat = cursor.getString(4);
+                                    if (TextUtils.isEmpty(vat)) {
+                                        vat = "0.0%";
+                                    }
+                                    String total_price = roundTwoDecimals(cursor.getDouble(2) * cursor.getDouble(3));
+
+                                    Log.e("productname22", product_name);
+                                    if (product_name.length() <= 21) {
+                                        String value1 = String.format("%1$-21s %2$7s %3$10s %4$8s  %5$13s", product_name, vat, price, quantity, total_price);
+                                        receiptHeadBuffer.append(value1);
+                                    } else {
+                                        String firstPart = product_name.substring(0, 21);
+                                        String secondPart = product_name.substring(21);
+                                        String value1 = String.format("%1$-21s %2$7s %3$10s %4$8s  %5$13s", firstPart, vat, price, quantity, total_price);
+                                        receiptHeadBuffer.append(value1);
+
+                                        String value2 = String.format("%1$-21s %2$7s %3$10s %4$8s  %5$13s", secondPart, "", "", "", "");
+                                        receiptHeadBuffer.append(value2);
+                                    }
+                                    if (!cursor.isLast())
+                                        receiptHeadBuffer.append("\n");
+
+                                } while (cursor.moveToNext());
+                            }
+                        }
+
+                        String Gift1 = "";
+                        String MemoDetailsForGift = "SELECT MD.product_id,P.product_name ,MD.quantity FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='1'";
+                        Log.e("MemoDetailsForGift", "MemoDetailsForGift: " + MemoDetailsForGift);
+                        Cursor cur2 = db.sqLiteDatabase.rawQuery(MemoDetailsForGift,null);
+                        if (cur2 != null) {
+                            if (cur2.moveToFirst()) {
+                                do {
+                                    String product_id = cur2.getString(0);
+                                    String product_name = cur2.getString(1);
+                                    String quantity = cur2.getString(2);
+                                    String Gift2 = product_name + "(" + quantity + ")";
+                                    Gift1 = Gift1 + "," + Gift2;
+                                    String Gift = Gift1.substring(1);
+                                    TempData.TempGift = Gift;
+
+                                } while (cur2.moveToNext());
+                            }
+                        }
+
+
+                        String Bonus1 = "", Bonus = "";
+                        String MemoDetailsForBonus = "SELECT MD.product_id,P.product_name ,MD.quantity , MD.measurement_unit_id  FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='2'";
+                        Log.e("MemoDetailsForBonus", "MemoDetailsForBonus: " + MemoDetailsForBonus);
+                        Cursor cur = db.sqLiteDatabase.rawQuery(MemoDetailsForBonus,null);
+                        if (cur != null) {
+                            if (cur.moveToFirst()) {
+                                do {
+                                    String product_id = cur.getString(0);
+                                    String product_name = cur.getString(1);
+                                    String quantity = cur.getString(2);
+                                    String Bonus2 = product_name + "(" + quantity + " " + getMeasurementUnitName(cur.getString(3)) + ")";
+                                    Bonus1 = Bonus1 + "," + Bonus2;
+                                    Bonus = Bonus1.substring(1);
+                                    TempData.TempBonus_EN = Bonus;
+
+                                } while (cur.moveToNext());
+                            }
+                        }
+                        if ((TempData.TempGift != "Nill" && TempData.TempGift != "") || TempData.TempBonus_EN != "")
+                            receiptHeadBuffer.append("\n................................................................");
+
+
+                        if (TempData.TempGift != "Nill" && TempData.TempGift != "") {
+                            receiptHeadBuffer.append("\n" + String.format("%1$-38s", "Gift:" + TempData.TempGift));
+                        }
+                        if (!discount_info.equalsIgnoreCase("") && discount_info.length() > 0) {
+                            receiptHeadBuffer.append("\n\n" + String.format("%1$-38s", "Discount:" + discount_info));
+                        }
+                        if (TempData.TempBonus_EN != "")
+                            receiptHeadBuffer.append("\n" + String.format("%1$-38s", "Bonus:" + TempData.TempBonus_EN));
+
+                        Log.e("BUFFER1 AFTER APPEND:", "" + receiptHeadBuffer.toString());
+
+                        receiptHeadBuffer.append("\n................................................................");
+
+
+                        StringBuffer receiptHeadBuffer1 = new StringBuffer();
+
+                        receiptHeadBuffer1.append("" + String.format("%1$-30s %2$4s %3$12s  %4$10s", "", "", "Total Bill:", roundTwoDecimals(gross_value)));
+
+
+                        receiptHeadBuffer1.append("\n" + String.format("%1$-30s %2$4s %3$12s  %4$10s", "", "",
+                                "Discount:", roundTwoDecimals(TempData.DISCOUNT)));
+                        receiptHeadBuffer1.append("\n" + String.format("%1$-30s %2$4s %3$12s  %4$10s", "", "",
+                                "Vat:", roundTwoDecimals(TempData.VAT)));
+                        receiptHeadBuffer1.append("\n" + String.format("%1$-30s %2$4s %3$15s  %4$12s", "", "",
+                                "Net-Payable:", ESCAPE_CHARACTERS + "bC" + roundTwoDecimals(gross_value - TempData.DISCOUNT) + ESCAPE_CHARACTERS + "!bC"));
+
+
+                        receiptHeadBuffer1.append("\n\n" + "Sales Representative");
+                        receiptHeadBuffer1.append("\n" + getPreference("sr_name") + "  DB:(" + getPreference("db_name") + ")");
+                        receiptHeadBuffer1.append("\nAddress: " + getPreference("db_address"));
+                        receiptHeadBuffer1.append("\nMobile No: " + getPreference("db_mobile"));
+                        receiptHeadBuffer1.append("\n" + "* Product(s) price are SD free & including VAT");
+                        receiptHeadBuffer1.append("\n" + "Thank You!");
+                        receiptHeadBuffer1.append("\n\n\n");
+
+
+                        appContent = receiptHeadBuffer.toString();
+                        bottomContent = receiptHeadBuffer1.toString();
+                        String value3 = String.format("%1$-11s %2$10s %3$18s  %4$28s", "Office Copy", " ", " ", ESCAPE_CHARACTERS + "bC" + "Mushak - 6.3" + ESCAPE_CHARACTERS + "!bC");
+                        String value4 = String.format("%1$-11s %2$10s %3$18s  %4$28s", "Outlet Copy", " ", " ", ESCAPE_CHARACTERS + "bC" + "Mushak - 6.3" + ESCAPE_CHARACTERS + "!bC");
+
+                        String AllPrint2 = value3 + appContent + receiptHeadBufferOutlate.toString() + receiptHeadBufferBody.toString() + bottomContent;
+                        String AllPrint3 = value4 + appContent + receiptHeadBufferOutlate.toString() + receiptHeadBufferBody.toString() + bottomContent;
+
+                        arrayList.add(AllPrint2);
+                        arrayList.add(AllPrint3);
+                        AllPrint = AllPrint + AllPrint2;
+                        Log.e("print", print + "");
+
+                        TextView txtText = findViewById(R.id.txtText);
+                        //                    txtText.setText(printcontent+bottomContent);
+                        txtText.setText(AllPrint);
+
+                       /*TempData.printTopContent=printcontent;
+                        TempData.printBottomContent=bottomContent;*/
+                        TempData.AllprintName = "AllprintName";
+                        TempData.AllprintValue = AllPrint;
+
+                        //TempData.INVOICE_DETAILS.clear();
+                        TempData.TempGift = "";
+                        TempData.TempBonus_EN = "";
+                        TempData.TempExtraBonus = "";
+
+                    } while (c.moveToNext());
+                }
+            }
+        }
+
+    }
+
+    public void MakeNewLayoutText() {
+        System.gc();
+        Runtime.getRuntime().gc();
+
+        pd.setMessage("Generating invoice...");
+        pd.show();
+
+        TempData.TempGift = "";
+        TempData.TempBonus_EN = "";
+        String AllPrint = "";
+        Data_Source db = new Data_Source(PrintSelectedOrdersActivityEN.this);
+
+        Log.e("orderList", new Gson().toJson(orderList));
+
+        DisplayMetrics metric = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metric);
+        int mScreenWidth = metric.widthPixels; // screen width (pixels)
+        int mScreenHeight = metric.heightPixels; // screen height (pixels)
+
+        if (TempData.INVOICE_DETAILS_PRINT.size() > 0 && TempData.INVOICE_DETAILS_PRINT.size() <= 5) {
+            mScreenHeight=350;
+        }
+
+        else if (TempData.INVOICE_DETAILS_PRINT.size() > 5 && TempData.INVOICE_DETAILS_PRINT.size() <= 10) {
+            mScreenHeight = 700;
+        }
+
+        else if (TempData.INVOICE_DETAILS_PRINT.size() > 10 && TempData.INVOICE_DETAILS_PRINT.size() <= 23) {
+            mScreenHeight = 1100;
+        }
+
+        else if (TempData.INVOICE_DETAILS_PRINT.size() > 23 && TempData.INVOICE_DETAILS_PRINT.size() <= 30) {
+            mScreenHeight = 1300;
+        }
+        else if (TempData.INVOICE_DETAILS_PRINT.size() > 30 && TempData.INVOICE_DETAILS_PRINT.size() <= 40) {
+            mScreenHeight = 1500;
+        } else if (TempData.INVOICE_DETAILS_PRINT.size() > 40 && TempData.INVOICE_DETAILS_PRINT.size() <= 45) {
+            mScreenHeight = 2000;
+        } else if (TempData.INVOICE_DETAILS_PRINT.size() > 45 && TempData.INVOICE_DETAILS_PRINT.size() <= 55) {
+            mScreenHeight = 2500;
+        } else if (TempData.INVOICE_DETAILS_PRINT.size() > 55 && TempData.INVOICE_DETAILS_PRINT.size() <= 65) {
+            mScreenHeight = 3000;
+        }
+        else if (TempData.INVOICE_DETAILS_PRINT.size() > 65 &&  TempData.INVOICE_DETAILS_PRINT.size() <=80) {
+            mScreenHeight= 4000;
+        }
+        else {
+            mScreenHeight = 6000;
+        }
+
+
+        for (int i = 0; i < orderList.size(); i++) {
+
+            TempData.INVOICE_DETAILS_PRINT.clear();
+
+            RecyclerView printRecylerview;
+
+            PrintRecyclerAdapter mAdapter;
+
+            View contentLayout;
+            TextView area_office, outlet_name_category_address, market_thana, order_memo_no_date, outlet_address_phone;
+            TextView discountTxt, bonus, gift = null, total_bill, discount, vatCal, net_payable, sr_db_name, mobile_no, sr_address, office_copy;
+
+            Cursor c = db.sqLiteDatabase.rawQuery("SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_number=" + "'" + orderList.get(i) + "'",null);
+            Log.e("Query", "SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_number=" + "'" + orderList.get(i) + "'");
+            String memo_no = "";
+
+            //test work-----------------start--------------------------------------------------------------------------
+
+            mLinearLayout = (ViewGroup) findViewById(R.id.layout_save_image);
+
+            contentLayout = LayoutInflater.from(this).inflate(R.layout.content_add_layout_en, mLinearLayout, false);
+
+            Log.e("activity_height", contentLayout.getHeight() + "-" + contentLayout.getWidth());
+
+            contentLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+            printRecylerview = (RecyclerView) contentLayout.findViewById(R.id.product_list_recycler_view);
+
+            area_office = (TextView) contentLayout.findViewById(R.id.area_office);
+            outlet_address_phone = (TextView) contentLayout.findViewById(R.id.outlet_address_phone);
+
+            office_copy = (TextView) contentLayout.findViewById(R.id.office_copy);
+            outlet_name_category_address = (TextView) contentLayout.findViewById(R.id.outlet_name_category_address);
+            market_thana = (TextView) contentLayout.findViewById(R.id.market_thana);
+            order_memo_no_date = (TextView) contentLayout.findViewById(R.id.order_memo_no_date);
+            discountTxt = (TextView) contentLayout.findViewById(R.id.discountTxt);
+            bonus = (TextView) contentLayout.findViewById(R.id.bonus);
+            total_bill = (TextView) contentLayout.findViewById(R.id.total_bill);
+            discount = (TextView) contentLayout.findViewById(R.id.discount);
+            vatCal = (TextView) contentLayout.findViewById(R.id.vatCal);
+            net_payable = (TextView) contentLayout.findViewById(R.id.net_payable);
+            sr_db_name = (TextView) contentLayout.findViewById(R.id.sr_db_name);
+            sr_address = (TextView) contentLayout.findViewById(R.id.sales_officer_address);
+            mobile_no = (TextView) contentLayout.findViewById(R.id.sales_officer_phone);
+            office_copy = (TextView) contentLayout.findViewById(R.id.office_copy);
+
+            if (c != null && c.getCount() > 0) {
+                if (c.moveToFirst()) {
+                    do {
+
+                        memo_no = c.getString(0);
+                        String date = c.getString(1);
+                        String outlet_id = c.getString(2);
+                        Double gross_value = c.getDouble(3)+ c.getDouble(7);
+                        Double cash_received = c.getDouble(4);
+                        Double credit_amount = c.getDouble(5);
+                        String market_id = c.getString(6);
+                        TempData.DISCOUNT = c.getDouble(7);
+                        TempData.VAT = c.getDouble(8);
+
+                        Cursor c2 = db.sqLiteDatabase.rawQuery("SELECT O.outlet_name, M.market_name,O.address,O.mobile FROM outlets O LEFT JOIN markets M ON(O.market_id=M.market_id) WHERE O.outlet_id='" + outlet_id + "'",null);
+                        if (c2 != null) {
+                            if (c2.moveToFirst()) {
+                                do {
+
+                                    TempData.OutletName = c2.getString(0);
+                                    TempData.tempMarket = c2.getString(1);
+                                    TempData.Outlet_Address = c2.getString(2);
+                                    TempData.Outlet_Mobile_DE = c2.getString(3);
+
+                                } while (c2.moveToNext());
+                            }
+                        }
+
+                        Cursor c3 = db.sqLiteDatabase.rawQuery("SELECT T.thana_name FROM markets M LEFT JOIN thana T ON(M.thana_id=T.thana_id) WHERE M.market_id='" + market_id + "'",null);
+                        if (c3 != null) {
+                            if (c3.moveToFirst()) {
+                                do {
+
+                                    TempData.tempThana = c3.getString(0);
+
+                                } while (c3.moveToNext());
+                            }
+                        }
+
+                        Cursor c4 = db.sqLiteDatabase.rawQuery("SELECT OC.outlet_category_name FROM outlets O LEFT JOIN outlet_categories OC ON (O.outlet_category_id = OC.outlet_category_id) where O.outlet_id='" + outlet_id + "'",null);
+                        if (c4.getCount() > 0) {
+                            if (c4.moveToFirst()) {
+                                do {
+
+                                    String outlet_category_name = c4.getString(0);
+                                    savePreference("OutletCategoryName", outlet_category_name);
+
+                                } while (c4.moveToNext());
+                            }
+                        }
+
+                        date = date.substring(0, date.length() - 3);
+
+
+                        String MemoDetails = "SELECT MD.product_id,P.product_name ,MD.quantity, MD.price,MD.vat,MD.discount_type,MD.discount_amount FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='0'";
+                        Log.e("MemoDetails", "MemoDetails: " + MemoDetails);
+                        discount_info = "";
+                        Cursor cursor = db.sqLiteDatabase.rawQuery(MemoDetails,null);
+
+
+                        if (cursor != null) {
+                            if (cursor.moveToFirst()) {
+                                do {
+                                    discount_info = discount_info + getdiscount(cursor.getDouble(2), cursor.getDouble(3), cursor.getInt(5), cursor.getDouble(6), cursor.getString(1));
+
+                                    String product_id = cursor.getString(0);
+                                    String product_name = cursor.getString(1);
+                                    String quantity = cursor.getString(2);
+                                    String price = cursor.getString(3);
+                                    String vat = cursor.getString(4);
+                                    if (TextUtils.isEmpty(vat)) {
+                                        vat = "0.0%";
+                                    }
+                                    String total_price = roundTwoDecimals(cursor.getDouble(2) * cursor.getDouble(3));
+
+                                    Log.e("productname22", product_name);
+
+                                    map = new HashMap<String, String>();
+                                    map.put(PRODUCT_PRODUCT_NAME, product_name);
+                                    map.put(PRODUCT_BOOLEAN_QUANTITY, quantity);
+                                    map.put(PRODUCT_PRICE_PRICE, price);
+
+                                    map.put("total_price", String.valueOf(total_price));
+                                    map.put("vat", roundTwoDecimals(cursor.getDouble(4)) + "%");
+                                    map.put(PRODUCT_ID, product_id);
+                                    TempData.INVOICE_DETAILS_PRINT.add(map);
+
+
+                                } while (cursor.moveToNext());
+                            }
+                        }
+
+
+                        String Gift1 = "";
+                        String MemoDetailsForGift = "SELECT MD.product_id,P.product_name ,MD.quantity FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='1'";
+                        Log.e("MemoDetailsForGift", "MemoDetailsForGift: " + MemoDetailsForGift);
+                        Cursor cur2 = db.sqLiteDatabase.rawQuery(MemoDetailsForGift,null);
+                        if (cur2 != null) {
+                            if (cur2.moveToFirst()) {
+                                do {
+                                    String product_id = cur2.getString(0);
+                                    String product_name = cur2.getString(1);
+                                    String quantity = cur2.getString(2);
+                                    String Gift2 = product_name + "(" + quantity + ")";
+                                    Gift1 = Gift1 + "," + Gift2;
+                                    String Gift = Gift1.substring(1);
+                                    TempData.TempGift = Gift;
+
+                                } while (cur2.moveToNext());
+                            }
+                        }
+
+
+                        String Bonus1 = "", Bonus = "";
+                        String MemoDetailsForBonus = "SELECT MD.product_id,P.product_name ,MD.quantity , MD.measurement_unit_id  FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='2'";
+                        Log.e("MemoDetailsForBonus", "MemoDetailsForBonus: " + MemoDetailsForBonus);
+                        Cursor cur = db.sqLiteDatabase.rawQuery(MemoDetailsForBonus,null);
+                        if (cur != null) {
+                            if (cur.moveToFirst()) {
+                                do {
+                                    String product_id = cur.getString(0);
+                                    String product_name = cur.getString(1);
+                                    String quantity = cur.getString(2);
+                                    String Bonus2 = product_name + "(" + quantity + " " + getMeasurementUnitName(cur.getString(3)) + ")";
+                                    Bonus1 = Bonus1 + "," + Bonus2;
+                                    Bonus = Bonus1.substring(1);
+                                    TempData.TempBonus_EN = Bonus;
+
+                                } while (cur.moveToNext());
+                            }
+                        }
+
+                        mAdapter = new PrintRecyclerAdapter(this, TempData.INVOICE_DETAILS_PRINT);
+                        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+
+                        printRecylerview.setLayoutManager(mLayoutManager);
+                        printRecylerview.setAdapter(mAdapter);
+
+                        office_copy.setText("Office Copy");
+                        area_office.setText("Area Office: " + getPreference("office_name") +", "+ getPreference("office_address") + ", " + getPreference("office_phone"));
+
+                        outlet_name_category_address.setText(TempData.OutletName + " " + "(" + getPreference("OutletCategoryName") + ") ");
+
+                        try {
+                            outlet_address_phone.setText(TempData.Outlet_Address + ", " + TempData.Outlet_Mobile_DE);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                        market_thana.setText(TempData.tempMarket + ", " + TempData.tempThana);
+                       /* if (MEMO_EDIT)
+                            order_memo_no_date.setText("Memo# " + memo_no + ", " + date);
+                        else*/
+                        order_memo_no_date.setText("Order# " + memo_no + ", " + date);
+
+                        sr_db_name.setText(getPreference("sr_name") + "  DB:(" + getPreference("db_name") + ")");
+                        mobile_no.setText("Mobile No: " + getPreference("db_mobile"));
+                        sr_address.setText("Address: " + getPreference("db_address"));
+
+                        total_bill.setText("Total Bill:   " + roundTwoDecimals(gross_value));
+                        discount.setText("Discount:   " + roundTwoDecimals(TempData.DISCOUNT));
+                        vatCal.setText("Vat:   " + roundTwoDecimals(TempData.VAT));
+                        net_payable.setText("Net-Payable:   " + roundTwoDecimals(gross_value - TempData.DISCOUNT));
+
+                        if (TempData.TempGift != "Nill" && TempData.TempGift != "") {
+                            gift.setText("Gift:" + TempData.TempGift);
+                        }
+                        if (TempData.TempBonus_EN != "" && TempData.TempExtraBonus.equals(""))
+                            bonus.setText("Bonus:" + TempData.TempBonus_EN);
+
+                        if (TempData.TempBonus_EN.equals("") && TempData.TempExtraBonus != "")
+                            bonus.setText("Bonus:" + TempData.TempExtraBonus);
+
+                        if (!DetailsOrderReport.discount_info.equals("") && DetailsOrderReport.discount_info.length() > 0)
+                            discountTxt.setText("Discount:" + DetailsOrderReport.discount_info);
+                       /* if (!discount_data.equals("") && discount_data.length() > 0)
+                            discountTxt.setText("Discount:" + discount_data);*/
+
+                        if (TempData.TempBonus_EN != "" && TempData.TempExtraBonus != "")
+                            bonus.setText("Bonus:" + TempData.TempBonus_EN + "," + TempData.TempExtraBonus);
+
+
+                        TempData.AllprintName = "AllprintName";
+                        TempData.AllprintValue = AllPrint;
+
+                        TempData.TempGift = "";
+                        TempData.TempBonus_EN = "";
+                        TempData.TempExtraBonus = "";
+
+
+                    } while (c.moveToNext());
+                }
+            }
+
+
+      /*         //contentLayout.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+
+                contentLayout.measure(contentLayout.getLayoutParams().MATCH_PARENT, contentLayout.getLayoutParams().MATCH_PARENT);
+
+               contentLayout.layout(0, 0, contentLayout.getMeasuredWidth(), contentLayout.getMeasuredHeight());
+*/
+          /*  LinearLayout LL = new LinearLayout(getApplicationContext());
+
+            LinearLayout.LayoutParams LLParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
+            LL.setLayoutParams(LLParams);
+            LL.setId(i);
+            LL.addView(contentLayout);*/
+
+
+            //mLinearLayout.addView(contentLayout);
+
+           /* LL.measure(LL.getLayoutParams().MATCH_PARENT, LL.getLayoutParams().MATCH_PARENT);
+            LL.layout(0, 0, LL.getMeasuredWidth(), LL.getMeasuredHeight());*/
+
+            contentLayout.measure(View.MeasureSpec.makeMeasureSpec(mScreenWidth, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(mScreenHeight, View.MeasureSpec.AT_MOST));
+
+            contentLayout.layout(0, 0, contentLayout.getMeasuredWidth(), contentLayout.getMeasuredHeight());
+
+            office_copy.setText("Office Copy");
+
+            SaveClick(contentLayout, "office_" + i);
+
+            arrayListPrintImage.add("office_" + i);
+
+            if(contentLayout.getParent() != null) {
+                ((ViewGroup)contentLayout.getParent()).removeView(contentLayout); // <- fix
+            }
+            savingLayout.addView(contentLayout);
+
+            office_copy.setText("Outlet Copy");
+
+            SaveClick(contentLayout, "outlet_" + i);
+
+            arrayListPrintImage.add("outlet_" + i);
+            if(contentLayout.getParent() != null) {
+                ((ViewGroup)contentLayout.getParent()).removeView(contentLayout); // <- fix
+            }
+            savingLayout.addView(contentLayout);
+
+/*
+            Log.e("contentLayoutWHeight1", i + String.valueOf(mLinearLayout.getHeight() + "," + mLinearLayout.getWidth()));
+            Log.e("contentLayoutWHeight2", i + String.valueOf(mLinearLayout.getMeasuredHeight() + "," + mLinearLayout.getMeasuredWidth()));
+            Log.e("contentLayoutWHeight3", i + String.valueOf(contentLayout.getMeasuredWidth() + "," + contentLayout.getMeasuredHeight()));
+
+            SaveClick(contentLayout, "office_"+i);
+
+            arrayListPrintImage.add("office_"+i);
+
+            office_copy.setText("Outlet Copy");
+
+            SaveClick(contentLayout, "outlet_"+i);
+
+            arrayListPrintImage.add("outlet_"+i);*/
+
+          /*  contentLayout.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
+                    MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+            contentLayout.layout(0, 0, contentLayout.getMeasuredWidth(),contentLayout.getMeasuredHeight());
+
+            final Bitmap clusterBitmap = Bitmap.createBitmap(contentLayout.getMeasuredWidth(),
+                    contentLayout.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+
+            Canvas canvas = new Canvas(clusterBitmap);
+            contentLayout.draw(canvas);
+
+            return clusterBitmap;*/
+
+
+        }
+
+        Log.e("arrayListPrintImage", new Gson().toJson(arrayListPrintImage));
+
+
+        pd.dismiss();
+
+        /*mAdapter = new PrintRecyclerAdapter(this, TempData.INVOICE_DETAILS_PRINT);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        printRecylerview.setLayoutManager(mLayoutManager);
+        printRecylerview.setAdapter(mAdapter);*/
+    }
+
+    private String getMeasurementUnitName(String mesurement_unit_id) {
+        Data_Source db = new Data_Source(PrintSelectedOrdersActivityEN.this);
+        Cursor c = db.sqLiteDatabase.rawQuery("select unit_name from unit where unit_id='" + mesurement_unit_id + "'",null);
+        c.moveToFirst();
+        if (c.getCount() > 0) {
+            return c.getString(0);
+        }
+        return "Not specified";
+    }
+
+    private String getOutletAddress(String string) {
+        Data_Source db = new Data_Source(PrintSelectedOrdersActivityEN.this);
+        Cursor c = db.sqLiteDatabase.rawQuery("select address from outlets where outlet_id='" + string + "'",null);
+
+        if (c != null && c.getCount() > 0) {
+            if (c.getString(0) != null && c.getString(0).equalsIgnoreCase("null"))
+                return c.getString(0);
+            else
+                return "";
+
+        }
+        return "";
+    }
+
+    private String getdiscount(double qty, double price, int distype, double disamount, String product_name) {
+
+        if (disamount <= 0) {
+            return "";
+        }
+        Double discount = 0.0;
+
+        Log.e("discount_type", distype + "");
+
+       /* if (distype == 0) {
+
+            discount = (price / 100.00) * disamount;
+
+        } else {
+            discount = disamount;
+
+        }*/
+
+        return product_name + "(" + (roundTwoDecimals(disamount * qty)) + ")";
+
+    }
+
+    public String roundTwoDecimals(double d) {
+
+        Log.e("Double:", String.valueOf(d));
+        Log.e("Modulus:", String.valueOf(d % 1));
+        return String.format("%.2f", d);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        // TODO Auto-generated method stub
+
+        TempData.INVOICE_DETAILS_PRINT.clear();
+
+        DeletePOzipFile();
+
+        startActivity(new Intent(PrintSelectedOrdersActivityEN.this, Multiple_Invoice_print.class));
+
+        finish();
+    }
+
+    private void LogoutDialog() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                PrintSelectedOrdersActivityEN.this);
+        alertDialogBuilder
+                .setMessage("Are you sure?")
+                .setCancelable(false)
+                .setNegativeButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //startActivity(new Intent(PrintActivity.this,Login.class));
+                        dialog.cancel();
+                        finish();
+                    }
+                });
+        alertDialogBuilder.setPositiveButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+
+        });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
+    public final boolean isInternetOn() {
+        ConnectivityManager connec = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED
+                || connec.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTING
+                || connec.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTING
+                || connec.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED) {
+            return true;
+        } else if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED
+                || connec.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED) {
+
+            return false;
+        }
+        return false;
+    }
+
+    public String getCurrentDateTime1() {
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+
+        Date date = new Date();
+
+        String CurrentDate = dateFormat.format(date);
+
+        return CurrentDate;
+
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK)
+            return false;
+        return false;
+    }
+
+    // Create image for printing Bangla----------------------------------------------------------------------------
+    public void SaveClick(View view, String fileName) {
+
+        /* for (int i = 0; i < orderList.size(); i++) {*/
+
+        Log.e("contentLayoutHeight_", String.valueOf(view.getMeasuredWidth() + "," + view.getMeasuredHeight()));
+
+        // pd.setMessage("saving your image");
+
+        // pd.show();
+
+        File file = saveBitMap(PrintSelectedOrdersActivityEN.this, view, fileName);
+        if (file != null) {
+            // pd.cancel();
+            Log.i("TAG", "Drawing saved to the gallery!");
+        } else {
+            //pd.cancel();
+            Log.i("TAG", "Oops! Image could not be saved.");
+        }
+
+    /*    File file1 = saveBitMap1(PrintSelectedOrdersActivityEN.this, savingLayout);
+
+        if (file1 != null) {
+            pd.cancel();
+            Log.i("TAG", "Drawing saved1 to the gallery!");
+
+
+        } else {
+            pd.cancel();
+            Log.i("TAG", "Oops! Image could not be saved1.");
+        }*/
+
+        //   }
+    }
+
+    private File saveBitMap(Context context, View drawView, String fileName) {
+
+        File pictureFileDir = new File(String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)));
+
+        Log.d("imagepath", String.valueOf(pictureFileDir));
+
+        if (!pictureFileDir.exists()) {
+            boolean isDirectoryCreated = pictureFileDir.mkdirs();
+            if (!isDirectoryCreated)
+                Log.i("TAG", "Can't create directory to save the image");
+            return null;
+        }
+
+        // String filename = pictureFileDir.getPath() +File.separator+ System.currentTimeMillis()+".png";
+        String filename = pictureFileDir.getPath() + File.separator + fileName + ".png";
+        Log.d("imagename", filename);
+
+        File pictureFile = new File(filename);
+        Bitmap bitmap = getBitmapFromView(drawView);
+
+        memoList.add(bitmap);
+
+    /*    try {
+            pictureFile.createNewFile();
+            FileOutputStream oStream = new FileOutputStream(pictureFile);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, oStream);
+            oStream.flush();
+            oStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.i("TAG", "There was an issue saving the image.");
+        }*/
+        scanGallery(context, pictureFile.getAbsolutePath());
+        return pictureFile;
+    }
+
+    //create bitmap from view and returns it
+    private Bitmap getBitmapFromView(View view) {
+        //Define a bitmap with the same size as the view
+        System.gc();
+        Runtime.getRuntime().gc();
+
+        Bitmap returnedBitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+        //Bind a canvas to it
+        Canvas canvas = new Canvas(returnedBitmap);
+        //Get the view's background
+        Drawable bgDrawable = view.getBackground();
+        if (bgDrawable != null) {
+            //has background drawable, then draw it on the canvas
+            bgDrawable.draw(canvas);
+        } else {
+            //does not have background drawable, then draw white background on the canvas
+            canvas.drawColor(Color.WHITE);
+        }
+        // draw the view on the canvas
+        view.draw(canvas);
+        //return the bitmap
+        return returnedBitmap;
+    }
+
+    // used for scanning gallery
+    private void scanGallery(Context cntx, String path) {
+        try {
+            MediaScannerConnection.scanFile(cntx, new String[]{path}, null, new MediaScannerConnection.OnScanCompletedListener() {
+                public void onScanCompleted(String path, Uri uri) {
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.i("TAG", "There was an issue scanning gallery.");
+        }
+    }
+
+    public void DeletePOzipFile() {
+
+        for (int i = 0; i < arrayListPrintImage.size(); i++) {
+
+            Uri officeCopy = Uri.parse("/storage/emulated/0/Pictures/office_" + i + ".png");
+            Uri outLetCopy = Uri.parse("/storage/emulated/0/Pictures/outlet_" + i + ".png");
+
+            File officeCopyDelete = new File(officeCopy.getPath());
+            File outletCopyDelete = new File(outLetCopy.getPath());
+
+            if (officeCopyDelete.exists()) {
+                if (officeCopyDelete.delete()) {
+                    Log.d(" Zip File:", "Deleted !");
+                } else {
+                    Log.d(" Zip File:", "Not Found !");
+                }
+            }
+
+            if (outletCopyDelete.exists()) {
+                if (outletCopyDelete.delete()) {
+                    Log.d(" Zip File:", "Deleted !");
+                } else {
+                    Log.d(" Zip File:", "Not Found !");
+                }
+            }
+        }
+
+    }
+
+    public static String rightPadding(String str, int num) {
+        return String.format("%1$-" + num + "s", str);
+    }
+
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+
+            String action = intent.getAction();
+
+            if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
+                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
+
+                if (state == BluetoothAdapter.STATE_ON) {
+                    showEnabled();
+                } else if (state == BluetoothAdapter.STATE_OFF) {
+                    showDisabled();
+                }
+            } else if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
+                mDeviceList = new ArrayList<BluetoothDevice>();
+
+                mProgressDlg.show();
+            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                mProgressDlg.dismiss();
+
+                //updateDeviceList();
+            } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+
+                mDeviceList.add(device);
+
+                showToast("Found device " + device.getName());
+            } else if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
+
+                final int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
+
+                if (state == BluetoothDevice.BOND_BONDED) {
+                    showToast("Paired");
+                    connect();
+                }
+            }
+        }
+    };
+
+
+      /*==============================================================================================
+    ===========================================USB PART=============================================
+    ==============================================================================================*/
+
+    private static final String ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION";
+    int i = 0;
+    private final BroadcastReceiver usbReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (PrintSelectedOrdersActivityEN.ACTION_USB_PERMISSION.equals(action)) {
+                synchronized (this) {
+                    UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+                    UsbDevice usbDevice = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                        if (usbManager != null && usbDevice != null) {
+                            Log.e("arrayListPrintImage", String.valueOf(arrayListPrintImage.size()));
+
+
+                            PrintedListener printedListener = new PrintedListener() {
+                                @Override
+                                public void PrinteCompeleted() {
+                                    if (i<memoList.size()) {
+                                        i++;
+                                        new AsyncUsbEscPosPrint(context, this).execute(getAsyncEscPosPrinter(new UsbConnection(usbManager, usbDevice), memoList.get(i)));
+                                        Log.e("memo",i+"");
+                                    }
+                                }
+
+                                @Override
+                                public void PrintFiled() {
+                                    if (i<memoList.size()) {
+                                        new AsyncUsbEscPosPrint(context, this).execute(getAsyncEscPosPrinter(new UsbConnection(usbManager, usbDevice), memoList.get(i)));
+                                    }
+                                }
+                            };
+
+
+                            new AsyncUsbEscPosPrint(context,printedListener).execute(getAsyncEscPosPrinter(new UsbConnection(usbManager, usbDevice), memoList.get(i)));
+                        }
+                    }
+                }
+            }
+
+        }
+    };
+
+/*    public void printUsb() {
+
+        UsbConnection usbConnection = UsbPrintersConnections.selectFirstConnected(this);
+        UsbManager usbManager = (UsbManager) this.getSystemService(Context.USB_SERVICE);
+
+        if (usbConnection == null || usbManager == null) {
+            new AlertDialog.Builder(this)
+                    .setTitle("USB Connection")
+                    .setMessage("No USB printer found.")
+                    .show();
+            return;
+        }
+
+        PendingIntent permissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(PrintSelectedOrdersActivityEN.ACTION_USB_PERMISSION), 0);
+        IntentFilter filter = new IntentFilter(PrintSelectedOrdersActivityEN.ACTION_USB_PERMISSION);
+        registerReceiver(this.usbReceiver, filter);
+        usbManager.requestPermission(usbConnection.getDevice(), permissionIntent);
+
+    }*/
+
+
+    public void printUsb() {
+        UsbConnection usbConnection = UsbPrintersConnections.selectFirstConnected(this);
+        UsbManager usbManager = (UsbManager) this.getSystemService(Context.USB_SERVICE);
+
+        if (usbConnection == null || usbManager == null) {
+            new AlertDialog.Builder(this)
+                    .setTitle("USB Connection")
+                    .setMessage("No USB printer found.")
+                    .show();
+            return;
+        }
+        mUsbDevice = usbConnection.getDevice();
+        threadPool= ThreadPool.getInstantiation();
+        threadPool.addSerialTask(new Runnable() {
+            @Override
+            public void run() {
+                portManager=new UsbPort(PrintSelectedOrdersActivityEN.this, mUsbDevice);//实例化对象
+                boolean result=portManager.openPort();//连接端口 成功返回true 失败返回 false
+                mHandler.obtainMessage(result? Constant.Connect_cuccess:Constant.Connect_fail).sendToTarget();
+            }
+        });
+        //btnPrinterState();
+
+       /* PendingIntent permissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(PrintActivity.ACTION_USB_PERMISSION), 0);
+        IntentFilter filter = new IntentFilter(PrintActivity.ACTION_USB_PERMISSION);
+        registerReceiver(this.usbReceiver, filter);
+        usbManager.requestPermission(usbConnection.getDevice(), permissionIntent);*/
+    }
+    public void btnPhotoTest(Bitmap bitmap) {
+        if (portManager== null) {
+            // Utils.toast(this, getString(R.string.str_cann_printer));
+            return;
+        }
+        threadPool = ThreadPool.getInstantiation();
+        threadPool.addSerialTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    boolean bool = portManager==null;
+
+                    Log.e("portManager",String.valueOf(bool));
+                    boolean success=portManager.writeDataImmediately(PrintContent.getPhoto(bitmap));
+                    portManager.writeDataImmediately(PrintContent.openCut());
+                    //  Log.e(TAG,"发送内容：\r\n"+Utils.bytesToHexString(Utils.convertVectorByteToBytes(PrintContent.get80Menu())));//成功返回true  失败返回false
+                    //  Log.e(TAG,"发送结果："+success);//成功返回true  失败返回false
+
+                    // btnCutTest();
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mHandler.obtainMessage(CONN_STATE_DISCONN).sendToTarget();
+                        }
+                    },1000);
+                } catch (IOException e) {
+                    mHandler.obtainMessage(Constant.CONN_STATE_DISCONN).sendToTarget();
+                }
+            }
+        });
+    }
+
+
+
+    public void btnPrinterState() {
+        //打印机状态查询
+        if (portManager == null ){
+            Utils.toast(this, "Port manager is null");
+            return;
+        }
+        ThreadPool.getInstantiation().addParallelTask(new Runnable() {
+            @Override
+            public void run() {
+                int stauts = 0;
+                try {
+                    stauts = portManager.getPrinterStatus(Command.ESC);
+                    sendStatus(stauts);
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mHandler.obtainMessage(CONN_STATE_DISCONN).sendToTarget();
+                        }
+                    },1000);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+    }
+    private void sendStatus(int status){
+        Message msg=new Message();
+        msg.what=Constant.PRINTER_STATUS;
+        msg.arg1=status;
+        mHandler.sendMessage(msg);
+    }
+
+
+    private Handler mHandler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case CONN_STATE_DISCONN:
+
+                    break;
+                case Connect_cuccess:
+                    Log.e("status","Connect");
+
+                    for (int i=0; i<memoList.size(); i++) {
+
+                        btnPhotoTest(memoList.get(i));
+
+                    }
+
+                    break;
+                case Connect_fail:
+                    Log.e("status","Connect_fail");
+                    break;
+                case Constant.tip:
+
+                    break;
+                case Constant.PRINTER_STATUS:
+
+                    break;
+                case Constant.MESSAGE_UPDATE_PARAMETER://wifi或以太网连接
+
+                    break;
+
+
+
+
+            }
+        }
+    };
+    public void btnCutTest() {
+        if (portManager== null) {
+            // Utils.toast(this, getString(R.string.str_cann_printer));
+            return;
+        }
+        threadPool = ThreadPool.getInstantiation();
+        threadPool.addSerialTask(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    boolean success=portManager.writeDataImmediately(PrintContent.openCut());
+                  /*  Log.e(TAG,"发送内容：\r\n"+Utils.bytesToHexString(Utils.convertVectorByteToBytes(PrintContent.openCut())));//成功返回true  失败返回false
+                    Log.e(TAG,"发送结果："+success);*///成功返回true  失败返回false
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mHandler.obtainMessage(CONN_STATE_DISCONN).sendToTarget();
+                        }
+                    },100);
+                } catch (IOException e) {
+                    mHandler.obtainMessage(Constant.CONN_STATE_DISCONN).sendToTarget();
+                }
+            }
+        });
+    }
+
+    //ESCPOSPrinter---------------------------------------------------------------------------------
+
+    /**
+     * Asynchronous printing
+     */
+
+    @SuppressLint("SimpleDateFormat")
+    public AsyncEscPosPrinter getAsyncEscPosPrinter(DeviceConnection printerConnection, Bitmap i) {
+
+        System.gc();
+
+        Runtime.getRuntime().gc();
+
+        AsyncEscPosPrinter printer = new AsyncEscPosPrinter(printerConnection, 188, 78, 32);
+
+        //-----------Image Print for Office Copy---------------------------------------------------------------------------------------
+        // Bitmap fewlapsBitmap = BitmapFactory.decodeFile("/storage/emulated/0/Pictures/office_" + i + ".png");// print report as a image from storage for supporting all font like bangla arabic and so on
+
+        printer.setTextToPrint(
+                "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer, i) + "</img>\n \n \n \n  "
+        );
+
+        return printer;
+    }
+
+    //ESCPOSPrinter---------------------------------------------------------------------------------
+
+    /**
+     * Asynchronous printing
+     */
+
+    @SuppressLint("SimpleDateFormat")
+    public AsyncEscPosPrinter getAsyncEscPosPrinter1(DeviceConnection printerConnection, int i) {
+
+        AsyncEscPosPrinter printer = new AsyncEscPosPrinter(printerConnection, 188, 78, 32);
+
+        //-----------Image Print for Outlet Copy---------------------------------------------------------------------------------------
+
+        Bitmap fewlapsBitmap1 = BitmapFactory.decodeFile("/storage/emulated/0/Pictures/outlet_" + i + ".png");// print report as a image from storage for supporting all font like bangla arabic and so on
+
+        printer.setTextToPrint(
+                "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer, fewlapsBitmap1) + "</img>\n \n \n \n  "
+        );
+
+        return printer;
+    }
+
+
+
+
+
+}
+
+
+
+

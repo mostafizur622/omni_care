@@ -130,6 +130,9 @@
             android:name=".print.PrintSelectedOrdersActivityBN"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".print.PrintSelectedOrdersActivityEN"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".Multiple_Invoice_print"
             android:screenOrientation="portrait" />
         <activity

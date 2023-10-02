@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -34,11 +35,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
 import com.srapp.Db_Actions.Data_Source;
+import com.srapp.DeliveryReport;
 import com.srapp.DetailsOrderReport;
 import com.srapp.R;
 import com.srapp.TempData;
+import com.srapp.print.PrintAllMemosActivity;
+import com.srapp.print.PrintAllMemosActivityEn;
 import com.srapp.print.PrintRecyclerAdapter;
 import com.srapp.print.PrintSelectedOrdersActivityBN;
+import com.srapp.print.PrintSelectedOrdersActivityEN;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
@@ -200,13 +205,7 @@ public class AdapterForMultiOrderPrint extends BaseAdapter implements BasicFunct
 
 
                 if (list.size() >= 1) {
-                    Log.e("list_size", list.size() + "");
-                    Intent idn = new Intent(context, PrintSelectedOrdersActivityBN.class);
-                    idn.putExtra("FromDate", list);
-                    context.startActivity(idn);
-                    context.finish();
-
-                    Log.e("ListData", Arrays.deepToString(list.toArray()));
+                    showPrintDailog();
 
                 } else {
                     Toast.makeText(context, "Please select At least 1 order", Toast.LENGTH_LONG).show();
@@ -259,6 +258,34 @@ public class AdapterForMultiOrderPrint extends BaseAdapter implements BasicFunct
         return view2;
     }
 
+    private void showPrintDailog() {
+
+        new AlertDialog.Builder(context)
+                .setIcon(R.drawable.alert)
+                .setTitle("Select Print Language")
+                .setMessage("Which Language You want to print?")
+                .setPositiveButton("BN", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.e("list_size", list.size() + "");
+                        Intent idn = new Intent(context, PrintSelectedOrdersActivityBN.class);
+                        idn.putExtra("FromDate", list);
+                        context.startActivity(idn);
+                        context.finish();
+                    }
+                })
+                .setNegativeButton("EN",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.e("list_size", list.size() + "");
+                        Intent idn = new Intent(context, PrintSelectedOrdersActivityEN.class);
+                        idn.putExtra("FromDate", list);
+                        context.startActivity(idn);
+                        context.finish();
+                    }
+                })
+                .show();
+    }
     private void showDetailsDailog(int position) {
         ditailslist.clear();
         LayoutInflater inflater = LayoutInflater.from(context);
