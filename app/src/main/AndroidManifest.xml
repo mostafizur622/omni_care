@@ -127,7 +127,7 @@
             android:name=".ViewLastRecord"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".print.PrintSelectedOrdersActivity"
+            android:name=".print.PrintSelectedOrdersActivityBN"
             android:screenOrientation="portrait" />
         <activity
             android:name=".Multiple_Invoice_print"

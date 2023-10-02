@@ -28,7 +28,7 @@ import com.srapp.Adapter.SpinnerAdapter;
 import com.srapp.Db_Actions.DBListener;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
-import com.srapp.print.PrintSelectedOrdersActivity;
+import com.srapp.print.PrintSelectedOrdersActivityBN;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
@@ -134,7 +134,7 @@ public class MakePDF extends AppCompatActivity implements  BasicFunctionListener
             @Override
             public void onClick(View v) {
 
-                Intent idn = new Intent(MakePDF.this, PrintSelectedOrdersActivity.class);
+                Intent idn = new Intent(MakePDF.this, PrintSelectedOrdersActivityBN.class);
                 idn.putExtra("FromDate",start_date.getText().toString());
                 idn.putExtra("ToDate",end_date.getText().toString());
                 startActivity(idn);

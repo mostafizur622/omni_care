@@ -11,7 +11,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.hardware.usb.UsbManager;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
@@ -33,16 +32,13 @@ import android.widget.Toast;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.dantsu.escposprinter.connection.usb.UsbConnection;
-import com.dantsu.escposprinter.connection.usb.UsbPrintersConnections;
 import com.google.gson.Gson;
-import com.srapp.Dashboard;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.DetailsOrderReport;
 import com.srapp.R;
 import com.srapp.TempData;
 import com.srapp.print.PrintRecyclerAdapter;
-import com.srapp.print.PrintSelectedOrdersActivity;
+import com.srapp.print.PrintSelectedOrdersActivityBN;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
@@ -205,7 +201,7 @@ public class AdapterForMultiOrderPrint extends BaseAdapter implements BasicFunct
 
                 if (list.size() >= 1) {
                     Log.e("list_size", list.size() + "");
-                    Intent idn = new Intent(context, PrintSelectedOrdersActivity.class);
+                    Intent idn = new Intent(context, PrintSelectedOrdersActivityBN.class);
                     idn.putExtra("FromDate", list);
                     context.startActivity(idn);
                     context.finish();

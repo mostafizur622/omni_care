@@ -845,7 +845,9 @@ public class PrintAllMemosActivity extends ParentActivity {
                                 map.put(PRODUCT_PRODUCT_NAME, product_name);
                                 map.put(PRODUCT_PRODUCT_NAME_BN, cursor.getString(7));
                                 map.put(PRODUCT_BOOLEAN_QUANTITY, quantity);
-                                map.put("quantity_bn", ConvertTOBangla(String.valueOf(cursor.getDouble(1))));
+
+                                Log.e("quantity_bn",cursor.getDouble(2)+"");
+                                map.put("quantity_bn", ConvertTOBangla(String.valueOf(cursor.getDouble(2))));
                                 map.put(PRODUCT_PRICE_PRICE, price);
                                 map.put("price_bn", ConvertTOBangla(price));
                                 map.put("total_price_bn", ConvertTOBangla(String.valueOf(total_price)));

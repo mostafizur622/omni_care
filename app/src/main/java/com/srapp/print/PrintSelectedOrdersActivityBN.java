@@ -11,7 +11,6 @@ import static com.srapp.TempData.ConvertTOBangla;
 import static com.srapp.print.newprint.Constant.CONN_STATE_DISCONN;
 import static com.srapp.print.newprint.Constant.Connect_cuccess;
 import static com.srapp.print.newprint.Constant.Connect_fail;
-import static NewPrint.EscapeSequence.ESCAPE_CHARACTERS;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -42,7 +41,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -99,7 +97,7 @@ import java.util.Set;
 
 import NewPrint.BixolonPrinter;
 
-public class PrintSelectedOrdersActivity extends ParentActivity {
+public class PrintSelectedOrdersActivityBN extends ParentActivity {
      BixolonPrinter printer;
     static AsyncEscPosPrinter printer1;
     private final int portType = BXLConfigLoader.DEVICE_BUS_USB;
@@ -165,10 +163,10 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
         savingLayout = (LinearLayout) findViewById(R.id.layout_save_image);
 
         //Start--Create image for print android ---------------------------------
-        ActivityCompat.requestPermissions(PrintSelectedOrdersActivity.this,
+        ActivityCompat.requestPermissions(PrintSelectedOrdersActivityBN.this,
                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 1);
-        pd = new ProgressDialog(PrintSelectedOrdersActivity.this);
+        pd = new ProgressDialog(PrintSelectedOrdersActivityBN.this);
         saveButton = findViewById(R.id.btnSave);
 
         saveButton.setOnClickListener(view -> {
@@ -201,7 +199,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
 
             DeletePOzipFile();
 
-            startActivity(new Intent(PrintSelectedOrdersActivity.this, Multiple_Invoice_print.class));
+            startActivity(new Intent(PrintSelectedOrdersActivityBN.this, Multiple_Invoice_print.class));
 
             finish();
 
@@ -319,7 +317,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
                         startActivityForResult(intent, 1000);
 
                     } catch (Exception e) {
-                        Toast.makeText(PrintSelectedOrdersActivity.this, "Please enable bluetooth!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(PrintSelectedOrdersActivityBN.this, "Please enable bluetooth!", Toast.LENGTH_LONG).show();
                     }
 
                 }
@@ -730,7 +728,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
         TempData.TempGift = "";
         TempData.TempBonus_EN = "";
         String AllPrint = "";
-        Data_Source db = new Data_Source(PrintSelectedOrdersActivity.this);
+        Data_Source db = new Data_Source(PrintSelectedOrdersActivityBN.this);
 
         Log.e("orderList", new Gson().toJson(orderList));
 
@@ -881,7 +879,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
                                     map.put(PRODUCT_PRODUCT_NAME, product_name);
                                     map.put(PRODUCT_PRODUCT_NAME_BN, cursor.getString(7));
                                     map.put(PRODUCT_BOOLEAN_QUANTITY, quantity);
-                                    map.put("quantity_bn", ConvertTOBangla(String.valueOf(cursor.getDouble(1))));
+                                    map.put("quantity_bn", ConvertTOBangla(String.valueOf(cursor.getDouble(2))));
                                     map.put(PRODUCT_PRICE_PRICE, price);
                                     map.put("price_bn", ConvertTOBangla(price));
                                     map.put("total_price_bn", ConvertTOBangla(String.valueOf(total_price)));
@@ -1125,7 +1123,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
     }
 
     private String getMeasurementUnitName(String mesurement_unit_id,String column) {
-        Data_Source db = new Data_Source(PrintSelectedOrdersActivity.this);
+        Data_Source db = new Data_Source(PrintSelectedOrdersActivityBN.this);
         Cursor c = db.rawQueryCoustom("select "+column+" from unit where unit_id='" + mesurement_unit_id + "'");
         c.moveToFirst();
         if (c.getCount() > 0) {
@@ -1135,7 +1133,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
     }
 
     private String getOutletAddress(String string) {
-        Data_Source db = new Data_Source(PrintSelectedOrdersActivity.this);
+        Data_Source db = new Data_Source(PrintSelectedOrdersActivityBN.this);
         Cursor c = db.rawQueryCoustom("select address from outlets where outlet_id='" + string + "'");
 
         if (c != null && c.getCount() > 0) {
@@ -1200,14 +1198,14 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
 
         DeletePOzipFile();
 
-        startActivity(new Intent(PrintSelectedOrdersActivity.this, Multiple_Invoice_print.class));
+        startActivity(new Intent(PrintSelectedOrdersActivityBN.this, Multiple_Invoice_print.class));
 
         finish();
     }
 
     private void LogoutDialog() {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                PrintSelectedOrdersActivity.this);
+                PrintSelectedOrdersActivityBN.this);
         alertDialogBuilder
                 .setMessage("Are you sure?")
                 .setCancelable(false)
@@ -1273,7 +1271,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
 
         // pd.show();
 
-        File file = saveBitMap(PrintSelectedOrdersActivity.this, view, fileName);
+        File file = saveBitMap(PrintSelectedOrdersActivityBN.this, view, fileName);
         if (file != null) {
             // pd.cancel();
             Log.i("TAG", "Drawing saved to the gallery!");
@@ -1452,7 +1450,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
     private final BroadcastReceiver usbReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (PrintSelectedOrdersActivity.ACTION_USB_PERMISSION.equals(action)) {
+            if (PrintSelectedOrdersActivityBN.ACTION_USB_PERMISSION.equals(action)) {
                 synchronized (this) {
                     UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
                     UsbDevice usbDevice = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
@@ -1526,7 +1524,7 @@ public class PrintSelectedOrdersActivity extends ParentActivity {
         threadPool.addSerialTask(new Runnable() {
             @Override
             public void run() {
-                portManager=new UsbPort(PrintSelectedOrdersActivity.this, mUsbDevice);//实例化对象
+                portManager=new UsbPort(PrintSelectedOrdersActivityBN.this, mUsbDevice);//实例化对象
                 boolean result=portManager.openPort();//连接端口 成功返回true 失败返回 false
                 mHandler.obtainMessage(result? Constant.Connect_cuccess:Constant.Connect_fail).sendToTarget();
             }

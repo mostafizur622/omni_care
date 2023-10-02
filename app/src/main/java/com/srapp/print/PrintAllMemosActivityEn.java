@@ -773,7 +773,7 @@ public class PrintAllMemosActivityEn extends ParentActivity {
                     TempData.INVOICE_DETAILS_PRINT.clear();
 
                     RecyclerView printRecylerview;
-                    PrintRecyclerAdapter mAdapter;
+                    PrintRecyclerAdapterEN mAdapter;
 
                     View contentLayout;
                     TextView area_office, outlet_name_category_address, market_thana, order_memo_no_date,outlet_address_phone;
@@ -784,7 +784,7 @@ public class PrintAllMemosActivityEn extends ParentActivity {
                     //test work-----------------start------------------------------------------------------------
                     mLinearLayout = (ViewGroup) findViewById(R.id.layout_save_image);
 
-                    contentLayout = LayoutInflater.from(this).inflate(R.layout.content_add_layout, mLinearLayout, false);
+                    contentLayout = LayoutInflater.from(this).inflate(R.layout.content_add_layout_en, mLinearLayout, false);
 
 
                     Log.e("activity_height", contentLayout.getHeight() + "-" + contentLayout.getWidth());
@@ -953,7 +953,7 @@ public class PrintAllMemosActivityEn extends ParentActivity {
                         }
                     }
 
-                    mAdapter = new PrintRecyclerAdapter(this, TempData.INVOICE_DETAILS_PRINT);
+                    mAdapter = new PrintRecyclerAdapterEN(this, TempData.INVOICE_DETAILS_PRINT);
                     RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
                     printRecylerview.setLayoutManager(mLayoutManager);
                     printRecylerview.setAdapter(mAdapter);

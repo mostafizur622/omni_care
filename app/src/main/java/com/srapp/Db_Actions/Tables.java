@@ -5,7 +5,7 @@ import com.srapp.Util.Parent;
 
 public class Tables extends Parent {
 
-    public static final String DATABASE_NAME = "SR_Database_"+URL.VERSION;
+    public static final String DATABASE_NAME = "SR_Database_"+URL.VERSION+".db";
     public static final int PROCESSING_PENDING = 0;
     public static final int PROCESSING_COMPELETE = 1;
     public static final int DALIVEERY_COMPELETE = 2;

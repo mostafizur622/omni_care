@@ -1073,7 +1073,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
                     }
 
-                    Log.e("product_name_bn",product_name_bn);
+                //    Log.e("product_name_bn",product_name_bn);
 
                     HashMap<String, String> map = new HashMap<String, String>();
                     map.put("product_id", swapProductID(cursor.getString(0),cursor.getString(3)));
