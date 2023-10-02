@@ -201,18 +201,18 @@ public class DeliveryReport extends AppCompatActivity implements BasicFunctionLi
                 UsbConnection usbConnection = UsbPrintersConnections.selectFirstConnected(DeliveryReport.this);
                 UsbManager usbManager = (UsbManager) DeliveryReport.this.getSystemService(Context.USB_SERVICE);
 
-//                if (usbConnection == null || usbManager == null) {
-//                    new AlertDialog.Builder(DeliveryReport.this)
-//                            .setTitle("USB Connection")
-//                            .setMessage("No USB printer found.")
-//                            .show();
-//                }
-//
-//                else {
+                if (usbConnection == null || usbManager == null) {
+                    new AlertDialog.Builder(DeliveryReport.this)
+                            .setTitle("USB Connection")
+                            .setMessage("No USB printer found.")
+                            .show();
+                }
+
+                else {
 
                     showPrintDailog();
 
-                //}
+                }
 
             }
         });

@@ -279,11 +279,17 @@
                     android:id="@+id/product_list_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    tools:itemCount="40"
+                    tools:itemCount="2"
                     tools:listitem="@layout/print_item">
 
                 </androidx.recyclerview.widget.RecyclerView>
 
+            <LinearLayout
+                android:id="@+id/extra"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
@@ -321,6 +327,7 @@
                     android:textColor="#000"
                     android:textSize="@dimen/_9sdp"
                     android:textStyle="bold" />
+            </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"

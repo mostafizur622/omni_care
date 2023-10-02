@@ -1026,11 +1026,12 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
 
             RecyclerView printRecylerview;
 
-            PrintRecyclerAdapter mAdapter;
+            PrintRecyclerAdapterEN mAdapter;
 
             View contentLayout;
             TextView area_office, outlet_name_category_address, market_thana, order_memo_no_date, outlet_address_phone;
             TextView discountTxt, bonus, gift = null, total_bill, discount, vatCal, net_payable, sr_db_name, mobile_no, sr_address, office_copy;
+            LinearLayout extra;
 
             Cursor c = db.sqLiteDatabase.rawQuery("SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_number=" + "'" + orderList.get(i) + "'",null);
             Log.e("Query", "SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_number=" + "'" + orderList.get(i) + "'");
@@ -1057,6 +1058,7 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
             order_memo_no_date = (TextView) contentLayout.findViewById(R.id.order_memo_no_date);
             discountTxt = (TextView) contentLayout.findViewById(R.id.discountTxt);
             bonus = (TextView) contentLayout.findViewById(R.id.bonus);
+            extra = contentLayout.findViewById(R.id.extra);
             total_bill = (TextView) contentLayout.findViewById(R.id.total_bill);
             discount = (TextView) contentLayout.findViewById(R.id.discount);
             vatCal = (TextView) contentLayout.findViewById(R.id.vatCal);
@@ -1198,7 +1200,7 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
                             }
                         }
 
-                        mAdapter = new PrintRecyclerAdapter(this, TempData.INVOICE_DETAILS_PRINT);
+                        mAdapter = new PrintRecyclerAdapterEN(this, TempData.INVOICE_DETAILS_PRINT);
                         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
 
                         printRecylerview.setLayoutManager(mLayoutManager);
@@ -1232,20 +1234,29 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
 
                         if (TempData.TempGift != "Nill" && TempData.TempGift != "") {
                             gift.setText("Gift:" + TempData.TempGift);
+                            extra.setVisibility(View.VISIBLE);
                         }
-                        if (TempData.TempBonus_EN != "" && TempData.TempExtraBonus.equals(""))
+                        if (TempData.TempBonus_EN != "" && TempData.TempExtraBonus.equals("")) {
                             bonus.setText("Bonus:" + TempData.TempBonus_EN);
+                            extra.setVisibility(View.VISIBLE);
+                        }
 
-                        if (TempData.TempBonus_EN.equals("") && TempData.TempExtraBonus != "")
+                        if (TempData.TempBonus_EN.equals("") && TempData.TempExtraBonus != "") {
                             bonus.setText("Bonus:" + TempData.TempExtraBonus);
+                            extra.setVisibility(View.VISIBLE);
+                        }
 
-                        if (!DetailsOrderReport.discount_info.equals("") && DetailsOrderReport.discount_info.length() > 0)
+                        if (!DetailsOrderReport.discount_info.equals("") && DetailsOrderReport.discount_info.length() > 0) {
                             discountTxt.setText("Discount:" + DetailsOrderReport.discount_info);
+                            extra.setVisibility(View.VISIBLE);
                        /* if (!discount_data.equals("") && discount_data.length() > 0)
                             discountTxt.setText("Discount:" + discount_data);*/
+                        }
 
-                        if (TempData.TempBonus_EN != "" && TempData.TempExtraBonus != "")
+                        if (TempData.TempBonus_EN != "" && TempData.TempExtraBonus != "") {
                             bonus.setText("Bonus:" + TempData.TempBonus_EN + "," + TempData.TempExtraBonus);
+                            extra.setVisibility(View.VISIBLE);
+                        }
 
 
                         TempData.AllprintName = "AllprintName";
