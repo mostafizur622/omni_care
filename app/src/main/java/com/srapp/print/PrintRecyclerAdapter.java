@@ -18,6 +18,7 @@ public class PrintRecyclerAdapter extends RecyclerView.Adapter<PrintRecyclerAdap
     private Context mContext;
 
     public PrintRecyclerAdapter(Context context, ArrayList<HashMap<String,String>> itemsList) {
+        Log.e("MemoDetails_list_inadapter",itemsList.toString());
         this.itemsList = itemsList;
         this.mContext = context;
     }
@@ -34,7 +35,7 @@ public class PrintRecyclerAdapter extends RecyclerView.Adapter<PrintRecyclerAdap
 
         String price = String.valueOf(itemsList.get(i).get("price_bn"));
         //String total_price = String.valueOf(roundTwoDecimals(Double.parseDouble(itemsList.get(i).get("price")) * Double.parseDouble(itemsList.get(i).get("quantity"))));
-
+        Log.e("MemoDetails_list_size",itemsList.size()+"");
         holder.itemName.setText(itemsList.get(i).get("product_name_bangla"));
         holder.vat.setText(itemsList.get(i).get("vat_bn"));
         holder.price.setText(price);

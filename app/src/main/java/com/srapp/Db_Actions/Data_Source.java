@@ -1600,7 +1600,12 @@ public class Data_Source extends Parent {
     public ArrayList<HashMap<String, String>> updateWithServer(JSONObject jsonObject,int code) throws JSONException {
 
         try {
-            JSONArray jsonArray = jsonObject.getJSONArray("orders");
+            JSONArray jsonArray;
+            if (jsonObject.has("orders"))
+             jsonArray = jsonObject.getJSONArray("orders");
+            else {
+                jsonArray = jsonObject.getJSONArray("order_table");
+            }
 
             for (int j = 0; j < jsonArray.length(); j++) {
 
@@ -4572,7 +4577,7 @@ public class Data_Source extends Parent {
 
                     for (int i = 0; i < Allfild.length; i++) {
 
-                        //Loge("Logfile", Allfild[i][0] + " sda" + jsonObject.has(Allfild[i][0]));
+                        Log.e("Logfile", Allfild[i][0] + " sda" + jsonObject.has(Allfild[i][0]));
 
 
                         if (jsonObject.has(Allfild[i][0])) {
@@ -4592,7 +4597,7 @@ public class Data_Source extends Parent {
                                 ContentValues cv = new ContentValues();
                                 for (int j = 2; j < Allfild[i].length; j++) {
 
-                                    ////Loge("table",Allfild[i][0]);
+                                     // Log.e("table",Allfild[i][0]);
 
                                     if (Allfild[i][j].equalsIgnoreCase(Tables.MESSAGE_ISPUSHED) || Allfild[i][j].equalsIgnoreCase(Tables.NCP_RETURN_ISPUSHED)) {
                                         cv.put(Allfild[i][j], "1");

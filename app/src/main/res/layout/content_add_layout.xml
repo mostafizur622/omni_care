@@ -271,7 +271,7 @@
                     android:id="@+id/product_list_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    tools:itemCount="4"
+                    tools:itemCount="2"
                     tools:listitem="@layout/print_item">
 
                 </androidx.recyclerview.widget.RecyclerView>

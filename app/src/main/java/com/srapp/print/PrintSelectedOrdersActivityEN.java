@@ -52,6 +52,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -1031,7 +1032,7 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
             View contentLayout;
             TextView area_office, outlet_name_category_address, market_thana, order_memo_no_date, outlet_address_phone;
             TextView discountTxt, bonus, gift = null, total_bill, discount, vatCal, net_payable, sr_db_name, mobile_no, sr_address, office_copy;
-            LinearLayout extra;
+            LinearLayout  layout_save_image,extra;
 
             Cursor c = db.sqLiteDatabase.rawQuery("SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_number=" + "'" + orderList.get(i) + "'",null);
             Log.e("Query", "SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_number=" + "'" + orderList.get(i) + "'");
@@ -1067,6 +1068,7 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
             sr_address = (TextView) contentLayout.findViewById(R.id.sales_officer_address);
             mobile_no = (TextView) contentLayout.findViewById(R.id.sales_officer_phone);
             office_copy = (TextView) contentLayout.findViewById(R.id.office_copy);
+            layout_save_image = (LinearLayout) contentLayout.findViewById(R.id.layout_save_image);
 
             if (c != null && c.getCount() > 0) {
                 if (c.moveToFirst()) {
@@ -1295,27 +1297,23 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
             contentLayout.measure(View.MeasureSpec.makeMeasureSpec(mScreenWidth, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(mScreenHeight, View.MeasureSpec.AT_MOST));
 
             contentLayout.layout(0, 0, contentLayout.getMeasuredWidth(), contentLayout.getMeasuredHeight());
-
-            office_copy.setText("Office Copy");
-
-            SaveClick(contentLayout, "office_" + i);
-
+            if(layout_save_image.getParent() != null) {
+                ((ViewGroup)layout_save_image.getParent()).removeView(layout_save_image); // <- fix
+            }
+            savingLayout.addView(layout_save_image);
+            Log.e("Net-Payable", "getBitmapFromView: ");
+            memoList.add(getBitmapFromView(layout_save_image));
             arrayListPrintImage.add("office_" + i);
 
-            if(contentLayout.getParent() != null) {
-                ((ViewGroup)contentLayout.getParent()).removeView(contentLayout); // <- fix
-            }
-            savingLayout.addView(contentLayout);
-
             office_copy.setText("Outlet Copy");
-
-            SaveClick(contentLayout, "outlet_" + i);
+            if(layout_save_image.getParent() != null) {
+                ((ViewGroup)layout_save_image.getParent()).removeView(layout_save_image); // <- fix
+            }
+            if (i<orderList.size()-1)
+            savingLayout.addView(layout_save_image);
+            memoList.add(getBitmapFromView(layout_save_image));
 
             arrayListPrintImage.add("outlet_" + i);
-            if(contentLayout.getParent() != null) {
-                ((ViewGroup)contentLayout.getParent()).removeView(contentLayout); // <- fix
-            }
-            savingLayout.addView(contentLayout);
 
 /*
             Log.e("contentLayoutWHeight1", i + String.valueOf(mLinearLayout.getHeight() + "," + mLinearLayout.getWidth()));
@@ -1535,9 +1533,8 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
         Log.d("imagename", filename);
 
         File pictureFile = new File(filename);
-        Bitmap bitmap = getBitmapFromView(drawView);
 
-        memoList.add(bitmap);
+
 
     /*    try {
             pictureFile.createNewFile();
@@ -1559,7 +1556,7 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
         System.gc();
         Runtime.getRuntime().gc();
 
-        Bitmap returnedBitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
         //Bind a canvas to it
         Canvas canvas = new Canvas(returnedBitmap);
         //Get the view's background
@@ -1574,6 +1571,8 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
         // draw the view on the canvas
         view.draw(canvas);
         //return the bitmap
+        ImageView iv = (ImageView)findViewById(R.id.image);
+        iv.setImageBitmap(returnedBitmap);
         return returnedBitmap;
     }
 

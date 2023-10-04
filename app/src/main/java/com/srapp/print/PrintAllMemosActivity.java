@@ -1004,6 +1004,7 @@ public class PrintAllMemosActivity extends ParentActivity {
                     if(layout_save_image.getParent() != null) {
                         ((ViewGroup)layout_save_image.getParent()).removeView(layout_save_image); // <- fix
                     }
+                    if (i<c.getCount()-1)
                     savingLayout.addView(layout_save_image);
 
                     memoList.add(getBitmapFromView(layout_save_image));

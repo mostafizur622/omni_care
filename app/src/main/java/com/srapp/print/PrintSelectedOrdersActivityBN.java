@@ -51,6 +51,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -737,58 +738,62 @@ public class PrintSelectedOrdersActivityBN extends ParentActivity {
         int mScreenWidth = metric.widthPixels; // screen width (pixels)
         int mScreenHeight = metric.heightPixels; // screen height (pixels)
 
-
+        Log.e("orderlist",orderList.toString());
         for (int i = 0; i < orderList.size(); i++) {
 
-            TempData.INVOICE_DETAILS_PRINT.clear();
-
-            RecyclerView printRecylerview;
-
-            PrintRecyclerAdapter mAdapter;
 
 
-            TextView area_office, outlet_name_category_address, market_thana, order_memo_no_date, outlet_address_phone;
-            TextView discountTxt, bonus, gift = null, total_bill, discount, vatCal, net_payable, sr_db_name, mobile_no, sr_address, office_copy;
-            LinearLayout  layout_save_image,extra;
+
+
             Cursor c = db.rawQueryCoustom("SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_number=" + "'" + orderList.get(i) + "'");
             Log.e("Query", "SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_number=" + "'" + orderList.get(i) + "'");
-            String memo_no = "";
 
-            //test work-----------------start--------------------------------------------------------------------------
-
-            mLinearLayout = (ViewGroup) findViewById(R.id.layout_save_image);
-
-            View  contentLayout = LayoutInflater.from(this).inflate(R.layout.content_add_layout, null, false);
-
-            Log.e("activity_height", contentLayout.getHeight() + "-" + contentLayout.getWidth());
-
-            contentLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-
-            printRecylerview = (RecyclerView) contentLayout.findViewById(R.id.product_list_recycler_view);
-
-            area_office = (TextView) contentLayout.findViewById(R.id.area_office);
-            outlet_address_phone = (TextView) contentLayout.findViewById(R.id.outlet_address_phone);
-
-            office_copy = (TextView) contentLayout.findViewById(R.id.office_copy);
-            outlet_name_category_address = (TextView) contentLayout.findViewById(R.id.outlet_name_category_address);
-            market_thana = (TextView) contentLayout.findViewById(R.id.market_thana);
-            order_memo_no_date = (TextView) contentLayout.findViewById(R.id.order_memo_no_date);
-            discountTxt = (TextView) contentLayout.findViewById(R.id.discountTxt);
-            bonus = (TextView) contentLayout.findViewById(R.id.bonus);
-            total_bill = (TextView) contentLayout.findViewById(R.id.total_bill);
-            discount = (TextView) contentLayout.findViewById(R.id.discount);
-            extra = contentLayout.findViewById(R.id.extra);
-            vatCal = (TextView) contentLayout.findViewById(R.id.vatCal);
-            net_payable = (TextView) contentLayout.findViewById(R.id.net_payable);
-            sr_db_name = (TextView) contentLayout.findViewById(R.id.sr_db_name);
-            sr_address = (TextView) contentLayout.findViewById(R.id.sales_officer_address);
-            mobile_no = (TextView) contentLayout.findViewById(R.id.sales_officer_phone);
 
 
 
             if (c != null && c.getCount() > 0) {
                 if (c.moveToFirst()) {
                     do {
+
+                        String memo_no = "";
+                        TextView area_office, outlet_name_category_address, market_thana, order_memo_no_date, outlet_address_phone;
+                        TextView discountTxt, bonus, gift = null, total_bill, discount, vatCal, net_payable, sr_db_name, mobile_no, sr_address, office_copy;
+                        LinearLayout  layout_save_image,extra;
+                        TempData.INVOICE_DETAILS_PRINT.clear();
+
+                        RecyclerView printRecylerview;
+
+                        PrintRecyclerAdapter mAdapter;
+                        //test work-----------------start--------------------------------------------------------------------------
+
+                        mLinearLayout = (ViewGroup) findViewById(R.id.layout_save_image);
+
+                        View  contentLayout = LayoutInflater.from(this).inflate(R.layout.content_add_layout, null, false);
+
+                        Log.e("activity_height", contentLayout.getHeight() + "-" + contentLayout.getWidth());
+
+                        contentLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+                        printRecylerview = (RecyclerView) contentLayout.findViewById(R.id.product_list_recycler_view);
+
+                        area_office = (TextView) contentLayout.findViewById(R.id.area_office);
+                        outlet_address_phone = (TextView) contentLayout.findViewById(R.id.outlet_address_phone);
+
+                        office_copy = (TextView) contentLayout.findViewById(R.id.office_copy);
+                        outlet_name_category_address = (TextView) contentLayout.findViewById(R.id.outlet_name_category_address);
+                        market_thana = (TextView) contentLayout.findViewById(R.id.market_thana);
+                        order_memo_no_date = (TextView) contentLayout.findViewById(R.id.order_memo_no_date);
+                        discountTxt = (TextView) contentLayout.findViewById(R.id.discountTxt);
+                        bonus = (TextView) contentLayout.findViewById(R.id.bonus);
+                        total_bill = (TextView) contentLayout.findViewById(R.id.total_bill);
+                        discount = (TextView) contentLayout.findViewById(R.id.discount);
+                        extra = contentLayout.findViewById(R.id.extra);
+                        vatCal = (TextView) contentLayout.findViewById(R.id.vatCal);
+                        net_payable = (TextView) contentLayout.findViewById(R.id.net_payable);
+                        sr_db_name = (TextView) contentLayout.findViewById(R.id.sr_db_name);
+                        sr_address = (TextView) contentLayout.findViewById(R.id.sales_officer_address);
+                        mobile_no = (TextView) contentLayout.findViewById(R.id.sales_officer_phone);
+                        layout_save_image = (LinearLayout) contentLayout.findViewById(R.id.layout_save_image);
 
                         memo_no = c.getString(0);
                         String date = c.getString(1);
@@ -840,13 +845,13 @@ public class PrintSelectedOrdersActivityBN extends ParentActivity {
 
                         date = date.substring(0, date.length() - 3);
 
-
+                        TempData.INVOICE_DETAILS_PRINT.clear();
                         String MemoDetails = "SELECT MD.product_id,P.product_name ,MD.quantity, MD.price,MD.vat,MD.discount_type,MD.discount_amount,P.product_name_bangla FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='0'";
                         Log.e("MemoDetails", "MemoDetails: " + MemoDetails);
                         discount_info = "";
                         Cursor cursor = db.rawQueryCoustom(MemoDetails);
 
-
+                        Log.e("MemoDetails_list_pre", TempData.INVOICE_DETAILS_PRINT.toString());
                         if (cursor != null) {
                             if (cursor.moveToFirst()) {
                                 do {
@@ -875,6 +880,7 @@ public class PrintSelectedOrdersActivityBN extends ParentActivity {
                                     map.put(PRODUCT_ID, product_id);
                                     /////////////////////////
 
+
                                     map = new HashMap<String, String>();
                                     map.put(PRODUCT_PRODUCT_NAME, product_name);
                                     map.put(PRODUCT_PRODUCT_NAME_BN, cursor.getString(7));
@@ -888,6 +894,7 @@ public class PrintSelectedOrdersActivityBN extends ParentActivity {
                                     map.put("vat", roundTwoDecimals(cursor.getDouble(4)) + "%");
                                     TempData.INVOICE_DETAILS_PRINT.add(map);
 
+                                    Log.e("MemoDetails_list", TempData.INVOICE_DETAILS_PRINT.toString());
 
                                 } while (cursor.moveToNext());
                             }
@@ -941,10 +948,12 @@ public class PrintSelectedOrdersActivityBN extends ParentActivity {
                             }
                         }
 
+                        Log.e("MemoDetails_list", TempData.INVOICE_DETAILS_PRINT.toString());
                         mAdapter = new PrintRecyclerAdapter(this, TempData.INVOICE_DETAILS_PRINT);
                         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
                         printRecylerview.setLayoutManager(mLayoutManager);
                         printRecylerview.setAdapter(mAdapter);
+                        mAdapter.notifyDataSetChanged();
 
                         Log.e("layout", "layout");
 
@@ -1028,85 +1037,33 @@ public class PrintSelectedOrdersActivityBN extends ParentActivity {
                         TempData.TempExtraBonus = "";
 
 
+                            contentLayout.measure(View.MeasureSpec.makeMeasureSpec(mScreenWidth, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(mScreenHeight, View.MeasureSpec.AT_MOST));
+
+                            contentLayout.layout(0, 0, contentLayout.getMeasuredWidth(), contentLayout.getMeasuredHeight());
+                            if (layout_save_image.getParent() != null) {
+                                ((ViewGroup) layout_save_image.getParent()).removeView(layout_save_image); // <- fix
+                            }
+                            //savingLayout.addView(layout_save_image);
+                            Log.e("Net-Payable", "getBitmapFromView: ");
+                            memoList.add(getBitmapFromView(layout_save_image));
+                            arrayListPrintImage.add("office_" + i);
+
+                            office_copy.setText("Outlet Copy");
+                            if (layout_save_image.getParent() != null) {
+                                ((ViewGroup) layout_save_image.getParent()).removeView(layout_save_image); // <- fix
+                            }
+                            if (i<orderList.size()-1)
+                            savingLayout.addView(layout_save_image);
+                            memoList.add(getBitmapFromView(layout_save_image));
+
+                            arrayListPrintImage.add("outlet_" + i);
+
 
 
                     } while (c.moveToNext());
                 }
             }
 
-
-      /*         //contentLayout.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-
-                contentLayout.measure(contentLayout.getLayoutParams().MATCH_PARENT, contentLayout.getLayoutParams().MATCH_PARENT);
-
-               contentLayout.layout(0, 0, contentLayout.getMeasuredWidth(), contentLayout.getMeasuredHeight());
-*/
-          /*  LinearLayout LL = new LinearLayout(getApplicationContext());
-
-            LinearLayout.LayoutParams LLParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.MATCH_PARENT);
-            LL.setLayoutParams(LLParams);
-            LL.setId(i);
-            LL.addView(contentLayout);*/
-
-
-            //mLinearLayout.addView(contentLayout);
-
-           /* LL.measure(LL.getLayoutParams().MATCH_PARENT, LL.getLayoutParams().MATCH_PARENT);
-            LL.layout(0, 0, LL.getMeasuredWidth(), LL.getMeasuredHeight());*/
-
-            contentLayout.measure(View.MeasureSpec.makeMeasureSpec(mScreenWidth, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(mScreenHeight, View.MeasureSpec.AT_MOST));
-
-            contentLayout.layout(0, 0, contentLayout.getMeasuredWidth(), contentLayout.getMeasuredHeight());
-
-
-
-            SaveClick(contentLayout, "office_" + i);
-
-            arrayListPrintImage.add("office_" + i);
-
-            if(contentLayout.getParent() != null) {
-                ((ViewGroup)contentLayout.getParent()).removeView(contentLayout); // <- fix
-            }
-            savingLayout.addView(contentLayout);
-
-//            office_copy.setText("Outlet Copy");
-
-            SaveClick(contentLayout, "outlet_" + i);
-
-            arrayListPrintImage.add("outlet_" + i);
-            if(contentLayout.getParent() != null) {
-                ((ViewGroup)contentLayout.getParent()).removeView(contentLayout); // <- fix
-            }
-            //office_copy.setText("দোকান কপি");
-            savingLayout.addView(contentLayout);
-
-/*
-            Log.e("contentLayoutWHeight1", i + String.valueOf(mLinearLayout.getHeight() + "," + mLinearLayout.getWidth()));
-            Log.e("contentLayoutWHeight2", i + String.valueOf(mLinearLayout.getMeasuredHeight() + "," + mLinearLayout.getMeasuredWidth()));
-            Log.e("contentLayoutWHeight3", i + String.valueOf(contentLayout.getMeasuredWidth() + "," + contentLayout.getMeasuredHeight()));
-
-            SaveClick(contentLayout, "office_"+i);
-
-            arrayListPrintImage.add("office_"+i);
-
-            office_copy.setText("Outlet Copy");
-
-            SaveClick(contentLayout, "outlet_"+i);
-
-            arrayListPrintImage.add("outlet_"+i);*/
-
-          /*  contentLayout.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
-                    MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-            contentLayout.layout(0, 0, contentLayout.getMeasuredWidth(),contentLayout.getMeasuredHeight());
-
-            final Bitmap clusterBitmap = Bitmap.createBitmap(contentLayout.getMeasuredWidth(),
-                    contentLayout.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
-
-            Canvas canvas = new Canvas(clusterBitmap);
-            contentLayout.draw(canvas);
-
-            return clusterBitmap;*/
 
 
         }
@@ -1120,6 +1077,8 @@ public class PrintSelectedOrdersActivityBN extends ParentActivity {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         printRecylerview.setLayoutManager(mLayoutManager);
         printRecylerview.setAdapter(mAdapter);*/
+        ImageView iv = (ImageView)findViewById(R.id.image);
+        iv.setVisibility(View.VISIBLE);
     }
 
     private String getMeasurementUnitName(String mesurement_unit_id,String column) {
@@ -1261,75 +1220,9 @@ public class PrintSelectedOrdersActivityBN extends ParentActivity {
     }
 
     // Create image for printing Bangla----------------------------------------------------------------------------
-    public void SaveClick(View view, String fileName) {
-
-        /* for (int i = 0; i < orderList.size(); i++) {*/
-
-        Log.e("contentLayoutHeight_", String.valueOf(view.getMeasuredWidth() + "," + view.getMeasuredHeight()));
-
-        // pd.setMessage("saving your image");
-
-        // pd.show();
-
-        File file = saveBitMap(PrintSelectedOrdersActivityBN.this, view, fileName);
-        if (file != null) {
-            // pd.cancel();
-            Log.i("TAG", "Drawing saved to the gallery!");
-        } else {
-            //pd.cancel();
-            Log.i("TAG", "Oops! Image could not be saved.");
-        }
-
-    /*    File file1 = saveBitMap1(PrintSelectedOrdersActivity.this, savingLayout);
-
-        if (file1 != null) {
-            pd.cancel();
-            Log.i("TAG", "Drawing saved1 to the gallery!");
 
 
-        } else {
-            pd.cancel();
-            Log.i("TAG", "Oops! Image could not be saved1.");
-        }*/
 
-        //   }
-    }
-
-    private File saveBitMap(Context context, View drawView, String fileName) {
-
-        File pictureFileDir = new File(String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)));
-
-        Log.d("imagepath", String.valueOf(pictureFileDir));
-
-        if (!pictureFileDir.exists()) {
-            boolean isDirectoryCreated = pictureFileDir.mkdirs();
-            if (!isDirectoryCreated)
-                Log.i("TAG", "Can't create directory to save the image");
-            return null;
-        }
-
-        // String filename = pictureFileDir.getPath() +File.separator+ System.currentTimeMillis()+".png";
-        String filename = pictureFileDir.getPath() + File.separator + fileName + ".png";
-        Log.d("imagename", filename);
-
-        File pictureFile = new File(filename);
-        Bitmap bitmap = getBitmapFromView(drawView);
-
-        memoList.add(bitmap);
-
-    /*    try {
-            pictureFile.createNewFile();
-            FileOutputStream oStream = new FileOutputStream(pictureFile);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, oStream);
-            oStream.flush();
-            oStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.i("TAG", "There was an issue saving the image.");
-        }*/
-        scanGallery(context, pictureFile.getAbsolutePath());
-        return pictureFile;
-    }
 
     //create bitmap from view and returns it
     private Bitmap getBitmapFromView(View view) {
@@ -1337,7 +1230,7 @@ public class PrintSelectedOrdersActivityBN extends ParentActivity {
         System.gc();
         Runtime.getRuntime().gc();
 
-        Bitmap returnedBitmap = Bitmap.createBitmap(view.getMeasuredWidth(), view.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
         //Bind a canvas to it
         Canvas canvas = new Canvas(returnedBitmap);
         //Get the view's background
@@ -1352,21 +1245,13 @@ public class PrintSelectedOrdersActivityBN extends ParentActivity {
         // draw the view on the canvas
         view.draw(canvas);
         //return the bitmap
+        ImageView iv = (ImageView)findViewById(R.id.image);
+        iv.setImageBitmap(returnedBitmap);
         return returnedBitmap;
     }
 
     // used for scanning gallery
-    private void scanGallery(Context cntx, String path) {
-        try {
-            MediaScannerConnection.scanFile(cntx, new String[]{path}, null, new MediaScannerConnection.OnScanCompletedListener() {
-                public void onScanCompleted(String path, Uri uri) {
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.i("TAG", "There was an issue scanning gallery.");
-        }
-    }
+
 
     public void DeletePOzipFile() {
 

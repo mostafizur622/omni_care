@@ -1025,7 +1025,7 @@ public class PrintAllMemosActivityEn extends ParentActivity {
                     if(layout_save_image.getParent() != null) {
                         ((ViewGroup)layout_save_image.getParent()).removeView(layout_save_image); // <- fix
                     }
-                    savingLayout.addView(layout_save_image);
+                    //savingLayout.addView(layout_save_image);
                     Log.e("Net-Payable", "getBitmapFromView: ");
                     memoList.add(getBitmapFromView(layout_save_image));
                     arrayListPrintImage.add("office_" + i);
@@ -1034,6 +1034,7 @@ public class PrintAllMemosActivityEn extends ParentActivity {
                     if(layout_save_image.getParent() != null) {
                         ((ViewGroup)layout_save_image.getParent()).removeView(layout_save_image); // <- fix
                     }
+                    if (i<c.getCount()-1)
                     savingLayout.addView(layout_save_image);
                     memoList.add(getBitmapFromView(layout_save_image));
 
@@ -1049,9 +1050,7 @@ public class PrintAllMemosActivityEn extends ParentActivity {
 
 
     // Create image for printing Bangla----------------------------------------------------------------------------
-    public void SaveClick(View view, String fileName) {
 
-    }
 
 
 
