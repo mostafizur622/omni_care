@@ -406,8 +406,8 @@
                  try {
                      JSONObject jsonObject = new JSONObject(response.body());
                      dailog.dismiss();
+                     generateOutletJson();
 
-                     updateOutletVisit();
                  } catch (JSONException e) {
                      throw new RuntimeException(e);
                  }
@@ -455,7 +455,9 @@
                      JSONObject jsonObject = new JSONObject(response.body());
                      dailog.dismiss();
 
-                     generateOutletJson();
+                     Flag = 2;
+                     ds.generatePushJson();
+                     bf.savePreference("lsyncTime", DateFormatedConverter(getCurrentDate()) + " " + getCurrentTime());
                  } catch (JSONException e) {
                      throw new RuntimeException(e);
                  }
@@ -484,12 +486,14 @@
                 ds.excQuery("update order_table set outlet_id='" + jsonArray.getJSONObject(i).getString("new_id") + "' where outlet_id='" + jsonArray.getJSONObject(i).getString("previous_id") + "'");
 
             }
+
+            updateOutletVisit();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Flag = 2;
-        ds.generatePushJson();
-        bf.savePreference("lsyncTime", DateFormatedConverter(getCurrentDate()) + " " + getCurrentTime());
+
+
+
     }
 
     private void generatemarketJson() throws JSONException {
