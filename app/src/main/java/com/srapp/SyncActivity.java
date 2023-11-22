@@ -193,7 +193,7 @@
              Toast.makeText(this, "Please Wait "+ TimeUnit.MILLISECONDS.toMinutes(timeRem)+" Minute TO Sync Again", Toast.LENGTH_SHORT).show();
          }
 
-         return false;
+         return true;
      }
 
      @Override
@@ -379,6 +379,12 @@
 
          JSONObject marketObj = new JSONObject();
          JSONArray jsonArray = new JSONArray();
+         ds.sqLiteDatabase.execSQL("DELETE FROM gps_tracker\n" +
+                 "WHERE _id NOT IN (\n" +
+                 "  SELECT MIN(_id) \n" +
+                 "  FROM gps_tracker \n" +
+                 "  GROUP BY latitude, longitude\n" +
+                 ")");
          Cursor c = ds.sqLiteDatabase.rawQuery("select * from gps_tracker where is_pushed='0'",null);
          c.moveToFirst();
          if (c != null && c.getCount() > 0) {
@@ -487,14 +493,18 @@
 
             }
 
-            updateOutletVisit();
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
+         try {
+             updateOutletVisit();
+         } catch (JSONException e) {
+             throw new RuntimeException(e);
+         }
 
-
-    }
+     }
 
     private void generatemarketJson() throws JSONException {
         JSONObject marketObj = new JSONObject();

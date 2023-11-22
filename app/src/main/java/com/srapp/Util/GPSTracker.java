@@ -72,30 +72,39 @@ public class GPSTracker extends Service implements LocationListener {
         Log.e("text","Location Service2");
       //  Handler mainHandler = new Handler(getApplicationContext().getMainLooper());
 
-        timerTask = new TimerTask() {
-            @RequiresApi(api = Build.VERSION_CODES.M)
-            @Override
-            public void run() {
 
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
+        if (timer==null){
+            timer = new Timer();
+        }
 
-                       // getApplicationContext().getMainLooper();
-                        if (CheckTime_date()){
-                            getLocation();
-                        }else {
-                         stopSelf();
-                         timerTask.cancel();
-                         timer.cancel();
+        if (timerTask==null){
+
+
+            timerTask = new TimerTask() {
+                @RequiresApi(api = Build.VERSION_CODES.M)
+                @Override
+                public void run() {
+
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+
+                           // getApplicationContext().getMainLooper();
+                            if (CheckTime_date()){
+                                getLocation();
+                            }else {
+                             stopSelf();
+                             timerTask.cancel();
+                             timer.cancel();
+                            }
+
                         }
-
-                    }
-                });
+                    });
 
 
-            }
-        };
+                }
+            };
+        }
 
         timer.schedule(timerTask,Long.parseLong(getPreference("interval")) , 20000);
     }
