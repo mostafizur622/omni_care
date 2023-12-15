@@ -718,8 +718,8 @@ public class Data_Source extends Parent {
 
             it.remove();
         }
-        if (TableName.equalsIgnoreCase("product_history")) {
-            //Loge("Content producthistory:", values.toString());
+        if (TableName.equalsIgnoreCase("gps_tracker")) {
+            Log.e("Content producthistory:", values.toString());
         }
         //Loge(" Content values  :", values.toString());
         //Loge(TableName, "   :" + "INSERTED");

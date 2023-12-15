@@ -368,6 +368,7 @@ public class DB_Helper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(Tables.CREATE_DIST_BONUS_TABLE);
         sqLiteDatabase.execSQL(Tables.CREATE_FISCAL_YEAR);
         sqLiteDatabase.execSQL(Tables.CREATE_DataCheck_TABLE);
+        sqLiteDatabase.execSQL(Tables.CREATE_OFFER_TABLE);
 
 
         Log.e("DB Create test", "onCreate:  created db" );
@@ -446,6 +447,8 @@ public class DB_Helper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(Tables.DROP_TABLE+ Tables.TABLE_NAME_DISCOUNT);
         sqLiteDatabase.execSQL(Tables.DROP_TABLE+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
         sqLiteDatabase.execSQL(Tables.DROP_TABLE+ Tables.TABLE_NAME_FISCAL_YEAR);
+        sqLiteDatabase.execSQL(Tables.DROP_TABLE+ Tables.CREATE_OFFER_TABLE);
+
 
 
         onCreate(sqLiteDatabase);

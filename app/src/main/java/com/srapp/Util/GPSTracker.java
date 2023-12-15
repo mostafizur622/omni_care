@@ -20,6 +20,7 @@ import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
@@ -60,7 +61,7 @@ public class GPSTracker extends Service implements LocationListener {
     protected LocationManager locationManager;
 
     TimerTask timerTask;
-    Timer timer = new Timer();
+    Timer timer =null;
 
 
 
@@ -69,16 +70,14 @@ public class GPSTracker extends Service implements LocationListener {
     public void onCreate() {
         super.onCreate();
         mContext = this;
-        Log.e("text","Location Service2");
+
       //  Handler mainHandler = new Handler(getApplicationContext().getMainLooper());
 
 
-        if (timer==null){
-            timer = new Timer();
-        }
+
 
         if (timerTask==null){
-
+            Log.e("text","Location Service2"+getPreference("interval"));
 
             timerTask = new TimerTask() {
                 @RequiresApi(api = Build.VERSION_CODES.M)
@@ -88,7 +87,7 @@ public class GPSTracker extends Service implements LocationListener {
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
-
+                            Log.e("text","Location Service2"+CheckTime_date());
                            // getApplicationContext().getMainLooper();
                             if (CheckTime_date()){
                                 getLocation();
@@ -105,8 +104,11 @@ public class GPSTracker extends Service implements LocationListener {
                 }
             };
         }
-
-        timer.schedule(timerTask,Long.parseLong(getPreference("interval")) , 20000);
+        if (timer==null){
+            Log.e("text","Location Service2"+getPreference("interval"));
+            timer = new Timer();
+            timer.schedule(timerTask,5000 , Long.parseLong(getPreference("interval")));
+        }
     }
 
     private boolean CheckTime_date()  {
@@ -236,13 +238,9 @@ public class GPSTracker extends Service implements LocationListener {
         }
         Log.e("getLocation", "getLocation: " + location);
 
-
-
-
-
         Data_Source data_source = new Data_Source(mContext);
 
-
+       // Toast.makeText(mContext,"Location Inserted",Toast.LENGTH_LONG).show();
         HashMap<String, String> map = new HashMap<String, String>();
         if (location != null) {
             map.put("latitude", location.getLatitude() + "");

@@ -189,7 +189,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                         jsonObject.put(Difine.USERENAME, editUsername.getText().toString().trim());
                         jsonObject.put("password", editPassword.getText().toString().trim());
                         jsonObject.put("mac", basicFunction.getPreference("mac"));
-                        jsonObject.put("verDasion", URL.VERSION);
+                        jsonObject.put("version", URL.VERSION);
 
                        //  basicFunction.getResponceData(URL.Login, jsonObject.toString(), 101);
                          Log.e("map : ", jsonObject.toString());
@@ -404,6 +404,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                                 ds.excQuery("delete  from stock_info");
                                 ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
                                 ds.excQuery("delete  from "+ Tables.TABLE_NAME_FISCAL_YEAR);
+                                ds.excQuery("delete  from "+ Tables.TABLE_Name_OFFER_TYPE);
                                 ds.insertData(jsonObject.getJSONObject("response").toString(),1);
                                 Log.e("102", "OnServerResponce: "+"DELETED ALL DATA---------->" );
                                 //basicFunction.getResponceData(URL.Log,jsonObject.getJSONObject("response").toString(),11);

@@ -45,6 +45,10 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:icon">
+        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+        <activity
+            android:name=".WebView"
+            android:exported="false" />
         <activity
             android:name=".NCP_replacemnt"
             android:exported="false" />
@@ -90,7 +94,7 @@
         <activity
             android:name=".print.huawei.PrintAllMemosActivityP"
             android:screenOrientation="portrait" />
-         <activity
+        <activity
             android:name=".print.PrintAllMemosActivityEn"
             android:screenOrientation="portrait" />
         <activity
@@ -329,7 +333,7 @@
             android:name=".LoginActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />
-          <activity
+        <activity
             android:name=".NcpProductCollection"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan" />

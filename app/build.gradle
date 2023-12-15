@@ -26,6 +26,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    useLibrary("org.apache.http.legacy")
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -112,6 +113,8 @@ dependencies {
             transitive = false
         }
     }
+
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
 
 
 

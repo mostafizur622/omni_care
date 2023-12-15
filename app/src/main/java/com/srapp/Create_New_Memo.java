@@ -8,12 +8,15 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.srapp.Adapter.AutoCompeleteTextAdapter;
 import com.srapp.Db_Actions.DBListener;
 import com.srapp.Db_Actions.Data_Source;
-import com.srapp.Db_Actions.Tables;
 import com.srapp.Util.GPSTracker;
 import com.srapp.Util.Parent;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.content.Intent;
@@ -35,6 +38,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -53,10 +57,13 @@ import static com.srapp.TempData.ORDER_TO_MEMO;
 import static com.srapp.TempData.PolicySetRelation;
 import static com.srapp.TempData.policyArrayList;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class Create_New_Memo extends Parent implements OnClickListener, DBListener {
 
     Button buttonLogin;
-    Spinner routeSp, MarketSp, OutletCategorySp, OutletSp;
+    Spinner routeSp, MarketSp, OutletCategorySp, OutletSp,offer_type_sp;
     int autoPos;
     ArrayAdapter<String> dataAdapter;
     ArrayAdapter<String> marketAdapter;
@@ -64,6 +71,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
     ArrayList<String> Route_id = new ArrayList<String>();
     ArrayList<String> Route_name = new ArrayList<String>();
     String _routeid;
+    String offer_type_id;
 
     ArrayList<String> MarketID = new ArrayList<String>();
     ArrayList<String> MarketName = new ArrayList<String>();
@@ -71,6 +79,10 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
 
     ArrayList<String> OutletCategoryID = new ArrayList<String>();
     ArrayList<String> OutletCategoryName = new ArrayList<String>();
+
+
+    ArrayList<String> offer_id_list = new ArrayList<String>();
+    ArrayList<String> offer_name_list = new ArrayList<String>();
     String _OutletCategoryID;
 
 
@@ -110,7 +122,9 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
     TextView userIdTV, titleTV;
     Button OuletlinkBtn, MarketLinkBtn;
 
-    CheckBox radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_CreditCollection, radio_CollectedList, radio_ProductReturn,outlet_visit;
+    LinearLayout offer_type_lay;
+
+    CheckBox radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_CreditCollection, radio_CollectedList, radio_ProductReturn,outlet_visit,offer_type;
 
     Data_Source db;
     TextView title;
@@ -130,10 +144,13 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
         //outltateauto.setText("");
         //savePreference("OutletID", "0") ;
         homeBtn = findViewById(R.id.home);
+        offer_type_lay = findViewById(R.id.offer_type_lay);
         backBtn = findViewById(R.id.back);
         addoutlet = findViewById(R.id.addoutlet);
         marketAddBtn = findViewById(R.id.marketAddBtn);
         outlet_visit = findViewById(R.id.outlet_visit);
+        offer_type = findViewById(R.id.offer_type);
+        offer_type_sp = findViewById(R.id.offer_type_sp);
 
         userIdTV = findViewById(R.id.user_txt_view);
         titleTV = findViewById(R.id.title_tv);
@@ -202,40 +219,42 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
             @Override
             public void onClick(View v) {
 
+                offer_type_lay.setVisibility(View.GONE);
+
                 itemName = radio_GPSUpdate.getText().toString();
                 itemName = "GPS Update";
                 title.setText(itemName);
-                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn,outlet_visit}, 0);
+                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn,outlet_visit,offer_type}, 0);
             }
         });
         radio_ViewLastMemo.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-
+                offer_type_lay.setVisibility(View.GONE);
                 itemName = "View Last Memo";
                 title.setText(itemName);
-                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn,outlet_visit}, 1);
+                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn,outlet_visit,offer_type}, 1);
             }
         });
         radio_SalesMemo.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-
+                offer_type_lay.setVisibility(View.GONE);
                 itemName = "Sales Order";
                 title.setText(itemName);
-                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn,outlet_visit}, 2);
+                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn,outlet_visit,offer_type}, 2);
             }
         });
         radio_ProductReturn.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-
+                offer_type_lay.setVisibility(View.GONE);
                 itemName = "Collect Ncp";
                 title.setText(itemName);
-                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn,outlet_visit}, 3);
+                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn,outlet_visit,offer_type}, 3);
             }
         });
 
@@ -244,10 +263,21 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
             @Override
             public void onClick(View v) {
 
-                itemName = outlet_visit.getText().toString();
+                offer_type_lay.setVisibility(View.GONE);
                 itemName = "Outlet Visit";
                 title.setText(itemName);
-                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn,outlet_visit}, 4);
+                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn,outlet_visit,offer_type}, 4);
+            }
+        });
+
+        offer_type.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                offer_type_lay.setVisibility(View.VISIBLE);
+                itemName = "offer type";
+                title.setText(itemName);
+                settallfalse(new CheckBox[]{radio_GPSUpdate, radio_ViewLastMemo, radio_SalesMemo, radio_ProductReturn,outlet_visit,offer_type}, 5);
             }
         });
         MarketLinkBtn.setOnClickListener(new OnClickListener() {
@@ -300,6 +330,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
         });
 
         ThanaParse();
+        OfferType();
         OutletCategoriesTableParse();
 
         //.................spinnner selecton................................
@@ -355,6 +386,27 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
                     if (MarketID.size() > 0 && OutletCategoryID.size() > 0)
                         OutletAllTableParse(_MarketID, OutletCategoryID.get(OutletCategorySp.getSelectedItemPosition()));
                 }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+                // TODO Auto-generated method stub
+
+            }
+        });
+
+
+        offer_type_sp.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                                       int arg2, long arg3) {
+                // TODO Auto-generated method stub
+
+                offer_type_id = offer_id_list.get(arg2);
+                savePreference("offer_type_id", offer_type_id);
+
 
             }
 
@@ -606,6 +658,19 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
                     }
                     else if (itemName.equalsIgnoreCase("Outlet Visit")) {
                         visitAOutlet();
+                    } else if (itemName.equalsIgnoreCase("offer type")) {
+                        if (!getPreference("offer_type_id").equalsIgnoreCase("0")) {
+                            if (isInternetOn())
+                            new getToken().execute();
+                            else {
+                                Toast.makeText(Create_New_Memo.this, "Please Turn On Internet", Toast.LENGTH_LONG).show();
+
+                                buttonLogin.setEnabled(true);
+                            }
+                            }else {
+                            Toast.makeText(Create_New_Memo.this,"Please select a Offer Type",Toast.LENGTH_LONG).show();
+                            buttonLogin.setEnabled(true);
+                        }
                     }
                   /*  if(itemName.equalsIgnoreCase("Collected List"))
                     {
@@ -642,6 +707,107 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
             savePreference("OutletID", "0") ;
             outltateauto.setText("");
         }
+    }
+
+    public final boolean isInternetOn() {
+        ConnectivityManager connec = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED ||
+                connec.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTING ||
+                connec.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTING ||
+                connec.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED) {
+            return true;
+        } else if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED || connec.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED) {
+            return false;
+        }
+        return false;
+    }
+    class getToken extends AsyncTask<String, String, String> {
+        String RESPONSE;
+        ProgressDialog progressDialog;
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(Create_New_Memo.this);
+            progressDialog.setTitle("Getting Token.......");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+
+        @Override
+        protected String doInBackground(String... args) {
+
+            RESPONSE = "";
+
+            try {
+                String url = "http://182.160.103.234:8079/api_data_webtoapp_retrives/get_so_token.json";
+
+                String requestJson = generateTokenJson();
+                Log.e("InstrumentNo Json", "" + requestJson);
+                RESPONSE = JsonParse.makeServiceCall(url, requestJson);
+
+            } catch (Exception e) {
+            }
+
+
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String file_url) {
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    try {
+                        progressDialog.dismiss();
+                        Log.e("token: ", "token: " + RESPONSE);
+                        buttonLogin.setEnabled(true);
+                        JSONObject jsonObject = new JSONObject(RESPONSE);
+                        if (RESPONSE != null) {
+
+                            Intent intent = new Intent(Create_New_Memo.this,WebView.class);
+                            intent.putExtra("url",jsonObject.getString("form_url"));
+                            startActivity(intent);
+
+//								savePreference("CreditCollectionCheck", "1");
+                        } else {
+                            Log.e("ServiceHandler", "Couldn't get any data from the url");
+                        }
+
+                    } catch (Exception e) {
+                    }
+                }
+            });
+
+
+
+        }
+
+    }
+
+    private String generateTokenJson() {
+
+
+
+        JSONObject jsonObject = new JSONObject();
+        try {
+
+            jsonObject.put("office_id",  getPreference("Office_Id"));
+            jsonObject.put("mac",  getPreference("mac"));
+            jsonObject.put("so_id",getPreference(SR_ID));
+            jsonObject.put("offer_type_id",getPreference("offer_type_id"));
+            jsonObject.put("outlet_id",TempData.OutletID);
+
+
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return jsonObject.toString();
     }
 
     private void visitAOutlet() {
@@ -895,6 +1061,35 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
 
     }
 
+    private void OfferType() {
+        offer_id_list.clear();
+        offer_name_list.clear();
+        offer_id_list.add("0");
+        offer_name_list.add("select Offer Type");
+
+        Cursor c = db.rawQueryCoustom("SELECT * FROM offer_type where status=1 and start_date>="+getCurrentDate()+" and "+getCurrentDate()+"<= end_date  ORDER BY name ASC");
+        if (c != null) {
+            if (c.moveToFirst()) {
+                do {
+
+                    String offer_id = c.getString(c.getColumnIndex("offer_id"));
+                    String offer_name = c.getString(c.getColumnIndex("name"));
+
+                    offer_id_list.add(offer_id);
+                    offer_name_list.add(offer_name);
+
+                } while (c.moveToNext());
+            }
+
+            ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(Create_New_Memo.this, R.layout.spinner_text, offer_name_list);
+            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            offer_type_sp.setAdapter(dataAdapter);
+
+
+
+        }
+
+    }
     private void OutletAllTableParse(String marketID, String typeID) {
 
         OutletID.clear();
