@@ -129,6 +129,11 @@ public class Tools extends AppCompatActivity {
                         startActivity(new Intent(Tools.this, CurrentOfferProductActivity.class));
                         finish();
                         break;
+
+                        case 12:
+                        startActivity(new Intent(Tools.this, outletStatus.class));
+                        finish();
+                        break;
                 }
             }
 
@@ -157,6 +162,7 @@ public class Tools extends AppCompatActivity {
         sr_targetList.add(new SR_Target("Gift Issue",null));
         sr_targetList.add(new SR_Target("Bonus Campaign",null));
         sr_targetList.add(new SR_Target("Current Offer Product",null));
+        sr_targetList.add(new SR_Target("Pending Outlet",null));
        // sr_targetList.add(new SR_Target("",null));
 
         return sr_targetList;

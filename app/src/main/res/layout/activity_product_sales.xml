@@ -458,7 +458,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:gravity="center_vertical"
-                                    android:text="Gift Items"
+                                    android:text="Gift &amp; Items"
                                     android:textColor="@color/off_white">
 
                                 </TextView>

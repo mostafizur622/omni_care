@@ -1187,7 +1187,9 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                             policyWiseSlabArrayList.get(effective_options_slab_index).getOption_id(),
                             policyWiseSlabArrayList.get(effective_options_slab_index).getPolicy_id(),
                             policyIdsArrayList.get(i).getPolicy_name(),
-                            policyWiseSlabArrayList.get(effective_options_slab_index).getMin_qty());
+                            policyWiseSlabArrayList.get(effective_options_slab_index).getMin_qty(),
+                            policyWiseSlabArrayList.get(effective_options_slab_index).getCartValue(),
+                            policyWiseSlabArrayList.get(effective_options_slab_index).getMin_value());
 
 
                 }// end  if is  formula is null or empty
@@ -1278,7 +1280,9 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                                 policyWiseSlabArrayList.get(effective_options_slab_index).getOption_id(),
                                 policyWiseSlabArrayList.get(effective_options_slab_index).getPolicy_id(),
                                 policyIdsArrayList.get(i).getPolicy_name(),
-                                policyWiseSlabArrayList.get(effective_options_slab_index).getMin_qty());
+                                policyWiseSlabArrayList.get(effective_options_slab_index).getMin_qty(),
+                                policyWiseSlabArrayList.get(effective_options_slab_index).getCartValue(),
+                                policyWiseSlabArrayList.get(effective_options_slab_index).getMin_value());
 
 
                     }// end  if is  formula is null or empty
@@ -1365,7 +1369,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
         return totalvat;
     }
 
-    public void onlyBonus(String policyType, String optionId, String policyId, String policyName, String minQty) {
+    public void onlyBonus(String policyType, String optionId, String policyId, String policyName, String minQty,String cart_value,String min_value) {
         policyBonusProductArrayList = db.getBonusProductList(optionId, "");
         policyBonusProductArrList = policyBonusProductArrayList;
         Log.i(TAG, "policyBonusProductArrayList: " + new Gson().toJson(policyBonusProductArrayList));
@@ -1395,7 +1399,14 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
             String bonus_product_id = policyBonusProductArrayList.get(vs).getBonus_product_id();
 
-            bonus_qty = String.valueOf(((Double.parseDouble(bonus_qty) * Double.parseDouble(Quantity)) / Double.parseDouble(minQty))); // Bonus Policy Change nasir vai for Joya 8 s belt
+            if (Double.parseDouble(minQty)>0)
+                bonus_qty = String.valueOf(((Double.parseDouble(bonus_qty) * Double.parseDouble(Quantity)) / Double.parseDouble(minQty))); // for min Quantity
+            else {
+                bonus_qty = String.valueOf(((Double.parseDouble(bonus_qty) *
+                        Double.parseDouble(cart_value)) /
+                        Double.parseDouble(min_value))); // for min Value
+
+            }
 
             bonus_qty = String.valueOf(Math.floor(Float.parseFloat(bonus_qty)));
             Log.e("bonus_qty_ob", bonus_qty + "           " + bonus_product_id + "     " + Quantity + "     " + minQty + "     " + OldBPSelected_bonus.get(policyId));

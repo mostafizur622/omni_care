@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="0dip" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_weight=".5"
+        android:orientation="horizontal"
+        android:weightSum="8"
+        android:layout_height="0dp">
+
+        <TextView
+            android:id="@+id/outlet_name"
+            android:layout_width="0dp"
+            android:text="Outlet Name"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:layout_weight="4"/>
+
+        <TextView
+            android:id="@+id/market_name"
+            android:layout_width="0dp"
+            android:text="Market Name"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:layout_weight="2.5"/>
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="0dp"
+            android:text="Status"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:layout_weight="1.5"/>
+
+
+
+
+
+
+    </LinearLayout>
+
+</RelativeLayout>

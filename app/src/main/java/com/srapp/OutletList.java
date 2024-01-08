@@ -25,6 +25,7 @@ import com.srapp.Adapter.SpinnerAdapter;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Db_Actions.URL;
+import com.srapp.Util.ParentActivity;
 import com.srapp.Util.RecyclerTouchListener;
 import com.srapp.Util.StaticFlags;
 import com.tanvir.BasicFun.BasicFunction;
@@ -47,7 +48,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class OutletList extends AppCompatActivity implements BasicFunctionListener {
+public class OutletList extends ParentActivity implements BasicFunctionListener {
     Spinner thanaSpinner, marketSpinner;
     RecyclerView recyclerView;
     ArrayList<String> outlets;
@@ -461,8 +462,13 @@ public class OutletList extends AppCompatActivity implements BasicFunctionListen
         createOutletBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(OutletList.this, CreateOutlet.class));
-                finish();
+
+                if (ds.checkOutletCreatePermission(getCurrentDateTime())) {
+                    startActivity(new Intent(OutletList.this, CreateOutlet.class));
+                    finish();
+                }else {
+                    Toast.makeText(OutletList.this,"You Don't Have Permission To Create Outlet",Toast.LENGTH_LONG).show();
+                }
             }
         });
 

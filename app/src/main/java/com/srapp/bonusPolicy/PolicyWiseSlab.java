@@ -14,6 +14,17 @@ public class PolicyWiseSlab {
     private String deduct_from_value;
     private String min_value;
 
+    private String cartValue;
+
+
+    public String getCartValue() {
+        return cartValue;
+    }
+
+    public void setCartValue(String cartValue) {
+        this.cartValue = cartValue;
+    }
+
 
     public String getPolicy_id() {
         return policy_id;

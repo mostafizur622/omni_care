@@ -365,10 +365,11 @@ public class Data_Source extends Parent {
             query = "SELECT DISTINCT * FROM " + TABLE_NAME_PRODUCT_BOOLEAN + " WHERE   outlet_id=" + "'" + getPreference(OUTLETS_ID) + "'";
 
 
+
         //subrata da..................................................
         ItemListFromDB.clear();
         Cursor c = sqLiteDatabase.rawQuery(query, null);
-        //Loge("INquery", query + " size=" + c.getCount());
+        Log.e("INquery", query + " size=" + c.getCount());
         if (c != null) {
             if (c.moveToFirst()) {
                 do {
@@ -577,10 +578,26 @@ public class Data_Source extends Parent {
             contentValues.put(i, newOutlet.get(i));
         }
         contentValues.put(Tables.OUTLETS_CREATED_AT, String.valueOf(currentTime));
-        long id = sqLiteDatabase.insert(Tables.TABLE_NAME_OUTLETS, null, contentValues);
+        long id = sqLiteDatabase.insert(Tables.TABLE_NAME_TEMP_OUTLETS, null, contentValues);
         return id;
     }
 
+    public boolean checkOutletCreatePermission(String currentDateTime) {
+        this.open();
+        Log.e("query","Select * from "+Tables.TABLE_OUTLET_PERMISSION+" where '"+currentDateTime+"' between start_time and end_time and no_of_outlet>0");
+        Cursor c = sqLiteDatabase.rawQuery("Select * from "+Tables.TABLE_OUTLET_PERMISSION+" where '"+currentDateTime+"' between start_time and end_time and no_of_outlet>0",null);
+
+        c.moveToFirst();
+        if (c.getCount()>0 && c!=null){
+
+            return true;
+        }
+
+        this.close();
+
+        return false;
+
+    }
     public long updateOutlet(HashMap<String, String> updatedOutlet, String outletId) {
         this.open();
         String[] id = {outletId};
@@ -2806,7 +2823,7 @@ public class Data_Source extends Parent {
                String table_name = cursor.getString(1);
 
               int items = getitemcount(table_name);
-                //Loge("checks", "table_name="+table_name+" total_data_in_main_table="+items+" data_in_table="+cursor.getInt(2) );
+                Log.e("checks", "table_name="+table_name+" total_data_in_main_table="+items+" data_in_table="+cursor.getInt(2) );
               if (items<cursor.getInt(2)){
 
                   return false;
@@ -3286,7 +3303,7 @@ public class Data_Source extends Parent {
                 "policy_id=" + policyId + "\n" + "\n" +
                 "and (min_qty!=0 and min_qty <=" + minQty + "\n" + "\n" +
                 " or min_value <=" + minvalue + ")\n" + "\n" +
-                "order by min_qty desc";
+                "order by min_qty desc,min_value desc";
 
         //Loge("POLICY_SLAB_QUERY:", query2);
         Cursor cursor = sqLiteDatabase.rawQuery(query2, null);
@@ -3306,7 +3323,7 @@ public class Data_Source extends Parent {
                 policyWiseSlab.setMin_value(cursor.getString(8));
                 policyWiseSlab.setDeduct_from_value(cursor.getString(9));
                 policyWiseSlab.setQty_value_flag(cursor.getString(10));
-
+                policyWiseSlab.setCartValue(minvalue);
                 //Loge("root_product_slab_cur", policyWiseSlab.getPolicy_id());
 
                 // Adding policy wise slab to list
@@ -3357,6 +3374,7 @@ public class Data_Source extends Parent {
                 policyWiseSlab.setMin_value(cursor.getString(8));
                 policyWiseSlab.setDeduct_from_value(cursor.getString(9));
                 policyWiseSlab.setQty_value_flag(cursor.getString(10));
+                policyWiseSlab.setCartValue(minvalue);
 
                 Log.e("root_product_slab_cur", policyWiseSlab.getPolicy_id());
 
@@ -3904,8 +3922,6 @@ public class Data_Source extends Parent {
                     "  P.product_category_id,\n" +
                     "  P.product_type_id\n" +
                     "FROM product AS P\n" +
-                    "inner join product_combinations pc on pc.product_id=P.product_id\n" +
-                    "WHERE p.product_type_id = '1'\n" +
                     "GROUP BY P.product_id,\n" +
                     "         P.product_name,\n" +
                     "         P.product_category_id,\n" +

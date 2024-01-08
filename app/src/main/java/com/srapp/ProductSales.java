@@ -63,6 +63,8 @@ import static com.srapp.Db_Actions.Tables.MEMO_DETAILS;
 import static com.srapp.Db_Actions.Tables.MESSAGE_UPDATED_AT;
 import static com.srapp.Db_Actions.Tables.NCP_RETURN_CREATE_AT;
 import static com.srapp.Db_Actions.Tables.ORDER_DETAILS_is_bonus;
+import static com.srapp.Db_Actions.Tables.ORDER_END_TIME;
+import static com.srapp.Db_Actions.Tables.ORDER_START_TIME;
 import static com.srapp.Db_Actions.Tables.ORDER_order_number;
 import static com.srapp.Db_Actions.Tables.SR_ID;
 import static com.srapp.Db_Actions.Tables.TABLE_NAME_GIFT_ISSUE;
@@ -1182,6 +1184,8 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
             map1.put(Tables.ORDER_is_active, "1");
             map1.put(Tables.ORDER_latitude, lat);
             map1.put(Tables.ORDER_longitude, lng);
+            map1.put(ORDER_START_TIME, getPreference(ORDER_START_TIME));
+            map1.put(ORDER_END_TIME, getCurrentDateTime());
             map1.put(Tables.MEMOS_DISCOUNT_TYPE, TempData.DISTYPE + "");
             String outlate = "0";
             if (TempData.OutletCatagoryID.equalsIgnoreCase("17")) {
@@ -1655,7 +1659,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
                     String product_type_id = c.getString(c.getColumnIndex("product_type_id"));
 
 
-                    if (!product_type_id.equalsIgnoreCase("3")) {
+                    if (product_type_id.equalsIgnoreCase("1")) {
                         HashMap<String, String> product_list_map = new HashMap<String, String>();
                         product_list_map.put("product_id", product_id);
                         product_list_map.put("product_name", product_name);

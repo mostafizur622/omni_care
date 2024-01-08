@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.srapp.Db_Actions.Data_Source;
 
 import java.text.DateFormat;
@@ -23,7 +25,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class ParentActivity extends Activity{
+public class ParentActivity extends AppCompatActivity {
 	public static SQLiteDatabase myDB;
     public ProgressDialog pDialog;
     Data_Source db;

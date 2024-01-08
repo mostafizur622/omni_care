@@ -135,6 +135,12 @@ interface ApiInterfaceForJava {
     @Headers("Content-Type: application/json")
     @POST("dist_create_outlet.json")
     fun CreateOutlet(@Body JSONObject: RequestBody): Call<String>
+    @Headers("Content-Type: application/json")
+    @POST("dist_create_temp_outlet.json")
+    fun CreateTempOutlet(@Body JSONObject: RequestBody): Call<String>
+    @Headers("Content-Type: application/json")
+    @POST("get_temp_outlet_status.json")
+    fun Get_OUTLET_STATUS(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_outlet_list.json")
@@ -229,7 +235,7 @@ interface ApiInterfaceForJava {
     @POST("save_ncp_collection.json")
     fun SAVE_NCP(@Body JSONObject: RequestBody): Call<String>
 
- @Headers("Content-Type: application/json")
+    @Headers("Content-Type: application/json")
     @POST("update_ncp_collection.json")
     fun Update_NCP(@Body JSONObject: RequestBody): Call<String>
 
@@ -249,6 +255,11 @@ interface ApiInterfaceForJava {
     @Headers("Content-Type: application/json")
     @POST("dist_create_out_of_plan_visit.json")
     fun OUT_OF_PLAN_VISIT(@Body JSONObject: RequestBody): Call<String>
+
+
+    @Headers("Content-Type: application/json")
+    @POST("get_temp_outlet_status.json")
+    fun tempOutletStatus(@Body JSONObject: RequestBody): Call<String>
 
 
 }

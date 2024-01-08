@@ -177,21 +177,30 @@ class OfferDetailsActivity1 : AppCompatActivity() {
             }
         }
     }
+    private fun getUnitName(unit_id: String?): String {
 
+        val unitquery = db!!.sqLiteDatabase.rawQuery("select unit_name from unit where unit_id='$unit_id'",null)
+        unitquery.moveToFirst();
+        if (unitquery.count>0 && unitquery!=null){
+            return unitquery.getString(0)
+        }
+
+        return ""
+    }
     private fun PolicyOptionDataGet(policyId: String) {
 
         //--------------------Policy Option----------------------------------
         val cursorPolicyOption = db!!.rawQueryCoustom(
             "SELECT \n" +
                     "\tmain_min_qty,\n" +
-                    "\tunit.unit_name,\n" +
+                    "\tunit_id,\n" +
                     "\tpolicy_type,\n" +
                     "\tdiscount_amount,\n" +
                     "\tdiscount_type,\n" +
                     "\tformula_text,\n" +
-                    "\toption_id\n" +
+                    "\toption_id,\n" +
+                    "\tmin_value\n" +
                     " from policy_product_Option \n" +
-                    "INNER join unit on policy_product_Option.unit_id=unit.unit_id\n" +
                     "where policy_id='" + policyId + "'"
         )
 
@@ -205,7 +214,7 @@ class OfferDetailsActivity1 : AppCompatActivity() {
 
                     val pmap = HashMap<String, String>()
                     pmap["minQtyUnit"] =
-                        cursorPolicyOption.getString(0) + " " + cursorPolicyOption.getString(1)
+                        cursorPolicyOption.getString(0) + " " + getUnitName(cursorPolicyOption.getString(1))
                     when {
                         cursorPolicyOption.getString(2).equals("0") -> {
                             pmap["policyType"] = "Discount"
@@ -236,6 +245,7 @@ class OfferDetailsActivity1 : AppCompatActivity() {
                     pmap["bonusProQty"] = bProductQty.toString()
                     pmap["disType"] = cursorPolicyOption.getString(4)
                     pmap["formula"] = cursorPolicyOption.getString(5)
+                    pmap["min_value"] = cursorPolicyOption.getString(7)
 
                     productItemMap.add(pmap)
                     bProductName = ""

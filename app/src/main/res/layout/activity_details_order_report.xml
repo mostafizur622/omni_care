@@ -452,7 +452,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Gift Items"
+                        android:text="Gift &amp; Sample Items"
                         android:gravity="center_vertical"
                         android:textColor="@color/off_white"
                         android:layout_weight="1">

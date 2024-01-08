@@ -498,6 +498,31 @@
             e.printStackTrace();
         }
 
+         generateTempOutletJson();
+
+     }
+
+
+
+     private void updateTempOutlet(JSONObject jsonObject) {
+         try {
+
+
+             JSONArray jsonArray = jsonObject.getJSONObject("outlet").getJSONArray("replaced_relation");
+             for (int i = 0; i < jsonArray.length(); i++) {
+                 if (getPreference("OutletID").equalsIgnoreCase(jsonArray.getJSONObject(i).getString("previous_id"))){
+                     savePreference("OutletID",jsonArray.getJSONObject(i).getString("new_id"));
+                 }
+                 ds.excQuery("update "+Tables.TABLE_NAME_TEMP_OUTLETS+" set isPushed ='1' , outlet_id='" + jsonArray.getJSONObject(i).getString("new_id") + "' where outlet_id='" + jsonArray.getJSONObject(i).getString("previous_id") + "'");
+                 ds.excQuery("update order_table set outlet_id='" + jsonArray.getJSONObject(i).getString("new_id") + "' where outlet_id='" + jsonArray.getJSONObject(i).getString("previous_id") + "'");
+
+             }
+
+
+         } catch (JSONException e) {
+             e.printStackTrace();
+         }
+
          try {
              updateOutletVisit();
          } catch (JSONException e) {
@@ -614,6 +639,66 @@
         });
 
     }
+
+
+     private void generateTempOutletJson() {
+         JSONObject marketObj = new JSONObject();
+         JSONArray jsonArray = new JSONArray();
+         try {
+             Log.e("outlet", "outlet");
+
+             Cursor c = ds.rawQueryCoustom("select * from "+Tables.TABLE_NAME_TEMP_OUTLETS+" where isPushed='0'");
+             c.moveToFirst();
+             if (c != null && c.getCount() > 0) {
+                 do {
+                     JSONObject jsonObject = new JSONObject();
+
+                     for (int i = 2; i < Tables.TEMP_OUTLETS.length; i++) {
+                         if (Tables.TEMP_OUTLETS[i].equalsIgnoreCase("outlet_id")) {
+                             Log.e("tanvir", c.getString(c.getColumnIndex(Tables.TEMP_OUTLETS[i]))+" idd");
+                             jsonObject.put("temp_id", c.getString(c.getColumnIndex(Tables.TEMP_OUTLETS[i])));
+                             continue;
+                         }
+
+                         jsonObject.put(Tables.TEMP_OUTLETS[i], c.getString(c.getColumnIndex(Tables.TEMP_OUTLETS[i])));
+
+                     }
+                     jsonArray.put(jsonObject);
+                 } while (c.moveToNext());
+             }
+
+             marketObj.put("mac", bf.getPreference("mac"));
+             marketObj.put("sales_person_id", bf.getPreference(SR_ID));
+             marketObj.put("outlet_list", jsonArray);
+         } catch (JSONException e) {
+             Log.e("error", e.getMessage());
+             e.printStackTrace();
+         }
+         // bf.getResponceData(URL.CreateOutlet, marketObj.toString(), 110);
+
+         ProgressDialog dailog = CheckConnection(SyncActivity.this,"Checking...");
+         if (dailog==null)
+             return;
+         getJAPi().CreateTempOutlet(convertTORequestdata(marketObj)).enqueue(new Callback<String>() {
+             @Override
+             public void onResponse(Call<String> call, Response<String> response) {
+                 try {
+                     JSONObject jsonObject = new JSONObject(response.body());
+                     dailog.dismiss();
+                     updateTempOutlet(jsonObject);
+
+                 } catch (JSONException e) {
+                     throw new RuntimeException(e);
+                 }
+             }
+
+             @Override
+             public void onFailure(Call<String> call, Throwable t) {
+                 dailog.dismiss();
+             }
+         });
+
+     }
 
     @Override
     public void OnConnetivityError() {

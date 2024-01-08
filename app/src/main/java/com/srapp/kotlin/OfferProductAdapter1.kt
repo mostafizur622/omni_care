@@ -31,6 +31,7 @@ class OfferProductAdapter1(
 
         var txtDisAmtTitle: TextView
         var txtFormulaTitle: TextView
+        var lebel: TextView
         var txtDisProductNameTitle: TextView
         var txtDisPriceTitle: TextView
         var txtBonusProductNameTitle: TextView
@@ -40,6 +41,7 @@ class OfferProductAdapter1(
             txtViewMinQty = view.findViewById<View>(R.id.txtMinQty) as TextView
             txtViewPolicyType = view.findViewById<View>(R.id.txtPolicyType) as TextView
             txtViewDisAmt = view.findViewById<View>(R.id.txtDisAmt) as TextView
+            lebel = view.findViewById<View>(R.id.lebel) as TextView
             txtViewDisProName = view.findViewById<View>(R.id.txtDisProductName) as TextView
             txtViewDisProPrice = view.findViewById<View>(R.id.txtDisPrice) as TextView
             txtViewBonusPro = view.findViewById<View>(R.id.txtBonusProductName) as TextView
@@ -73,6 +75,10 @@ class OfferProductAdapter1(
         val bonusCam = filteredOfferProductList?.get(position)
 
         holder.txtViewMinQty.text = bonusCam?.get("minQtyUnit")
+        if (bonusCam?.get("minQtyUnit")!!.split(" ")[0].toInt()==0){
+            holder.lebel.text = "Min Value:"
+            holder.txtViewMinQty.text ="${bonusCam?.get("min_value")} BDT"
+        }
         holder.txtViewPolicyType.text = bonusCam?.get("policyType")
         if (bonusCam?.get("disAmount").equals(null)){
             holder.txtViewDisAmt.visibility=View.GONE

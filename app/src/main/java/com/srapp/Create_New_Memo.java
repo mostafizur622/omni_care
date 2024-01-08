@@ -46,6 +46,7 @@ import android.widget.Spinner;
 
 import androidx.annotation.RequiresApi;
 
+import static com.srapp.Db_Actions.Tables.ORDER_START_TIME;
 import static com.srapp.Db_Actions.Tables.SR_ID;
 import static com.srapp.TempData.BPSelected_bonus;
 import static com.srapp.TempData.BPSelected_option_id;
@@ -300,10 +301,17 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
             public void onClick(View v) {
                 // TODO Auto-generated method stub
 
-                Intent idn = new Intent(Create_New_Memo.this, CreateOutlet.class);
-                idn.putExtra("PathName", "OutletAccount");
-                startActivity(idn);
-                finish();
+                if (db.checkOutletCreatePermission(getCurrentDateTime())){
+                    Intent idn = new Intent(Create_New_Memo.this, CreateOutlet.class);
+                    idn.putExtra("PathName", "OutletAccount");
+                    startActivity(idn);
+                    finish();
+                }else {
+                    Toast.makeText(Create_New_Memo.this,"You Don't Have Permission To Create Outlet",Toast.LENGTH_LONG).show();
+                }
+
+
+
             }
         });
 
@@ -321,11 +329,15 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
         addoutlet.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(Create_New_Memo.this,CreateOutlet.class);
-                i.putExtra("page_from",-25);
-                i.putExtra("MarketID",getPreference("MarketID"));
-                i.putExtra("OutletCategoryID",getPreference("OutletCategoryID"));
-                startActivity(i);
+                if (db.checkOutletCreatePermission(getCurrentDateTime())) {
+                    Intent i = new Intent(Create_New_Memo.this, CreateOutlet.class);
+                    i.putExtra("page_from", -25);
+                    i.putExtra("MarketID", getPreference("MarketID"));
+                    i.putExtra("OutletCategoryID", getPreference("OutletCategoryID"));
+                    startActivity(i);
+                }else {
+                    Toast.makeText(Create_New_Memo.this,"You Don't Have Permission To Create Outlet",Toast.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -1247,6 +1259,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
         Intent idn = new Intent(Create_New_Memo.this, Sales_Memo.class);
         idn.putExtra("OutletID", _OutletID);
         idn.putExtra("flag", 2);
+        savePreference(ORDER_START_TIME,getCurrentDateTime());
         MEMO_EDIT=false;
         ORDER_TO_MEMO = 0;
         TempData.editMemo = "false";

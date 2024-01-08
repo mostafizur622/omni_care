@@ -369,6 +369,8 @@ public class DB_Helper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(Tables.CREATE_FISCAL_YEAR);
         sqLiteDatabase.execSQL(Tables.CREATE_DataCheck_TABLE);
         sqLiteDatabase.execSQL(Tables.CREATE_OFFER_TABLE);
+        sqLiteDatabase.execSQL(Tables.CREATED_OUTLET_PERMISSION_TABLE);
+        sqLiteDatabase.execSQL(Tables.CREATE_TEMP_OUTLETS_TABLE);
 
 
         Log.e("DB Create test", "onCreate:  created db" );
