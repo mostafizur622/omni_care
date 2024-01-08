@@ -1,10 +1,12 @@
 package com.srapp;
 
 
+import static com.srapp.Db_Actions.URL.CheckConnection;
 import static com.srapp.Db_Actions.URL.convertTORequestdata;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -81,14 +83,16 @@ public class outletStatus extends  AppCompatActivity implements BasicFunctionLis
         bf = new BasicFunction(this, this);
 
 
-
+        ProgressDialog dailog = CheckConnection(outletStatus.this,"Getting Status...");
+        if (dailog==null)
+            return;
         JAPIClient.getClient().create(ApiInterfaceForJava.class).tempOutletStatus(convertTORequestdata(getOutlets())).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
 
                 android.util.Log.e("outlet",response.body());
                String responseMemos = response.body();
-
+                dailog.dismiss();
                 try{
                     if (responseMemos !=null)
                     {
@@ -119,6 +123,7 @@ public class outletStatus extends  AppCompatActivity implements BasicFunctionLis
                     }
                     else
                     {
+                        dailog.dismiss();
                         Log.e("ServiceHandler", "Couldn't get any data from the url");
                     }
                 }catch(Exception e){/*Toast.makeText(getApplicationContext(), Constants.SERVER_MESSAGE, 1000).show();*/}

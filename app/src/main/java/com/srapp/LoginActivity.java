@@ -3,6 +3,7 @@ package com.srapp;
 import static com.srapp.Db_Actions.Tables.SR_ID;
 import static com.srapp.Db_Actions.URL.CheckConnection;
 import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Util.Constants.MIN_ORDER_NUMBER;
 
 import android.Manifest;
 import android.app.PendingIntent;
@@ -227,6 +228,8 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                                         basicFunction.savePreference("db_name",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("db_name"));
                                         basicFunction.savePreference("db_address",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("db_address"));
                                         basicFunction.savePreference("db_mobile",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("db_mobile"));
+                                        basicFunction.savePreference(MIN_ORDER_NUMBER,jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString(MIN_ORDER_NUMBER));
+                                       // basicFunction.savePreference(MIN_ORDER_NUMBER,"1");
 
 
                             basicFunction.savePreference("store_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("store_id"));

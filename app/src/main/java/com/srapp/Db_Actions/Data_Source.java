@@ -105,6 +105,7 @@ public class Data_Source extends Parent {
         this.dbListener = dbListener;
         dBhelper = new DB_Helper(context);
         basicFunction = new BasicFunction(basicFunctionListener, context);
+        Log.e("create",(basicFunction==null)+"");
         FirebaseCrashlytics.getInstance().setUserId(getPreference("sr_uname"));
         open();
     }

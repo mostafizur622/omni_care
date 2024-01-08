@@ -8,8 +8,10 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.srapp.Adapter.AutoCompeleteTextAdapter;
 import com.srapp.Db_Actions.DBListener;
 import com.srapp.Db_Actions.Data_Source;
+import com.srapp.Db_Actions.Tables;
 import com.srapp.Util.GPSTracker;
 import com.srapp.Util.Parent;
+import com.tanvir.BasicFun.BasicFunctionListener;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -48,6 +50,9 @@ import androidx.annotation.RequiresApi;
 
 import static com.srapp.Db_Actions.Tables.ORDER_START_TIME;
 import static com.srapp.Db_Actions.Tables.SR_ID;
+import static com.srapp.Db_Actions.URL.CheckConnection;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.getJAPi;
 import static com.srapp.TempData.BPSelected_bonus;
 import static com.srapp.TempData.BPSelected_option_id;
 import static com.srapp.TempData.BPSelected_policy_type;
@@ -57,11 +62,16 @@ import static com.srapp.TempData.MEMO_EDIT;
 import static com.srapp.TempData.ORDER_TO_MEMO;
 import static com.srapp.TempData.PolicySetRelation;
 import static com.srapp.TempData.policyArrayList;
+import static com.srapp.Util.Constants.MIN_ORDER_NUMBER;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Create_New_Memo extends Parent implements OnClickListener, DBListener {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class Create_New_Memo extends Parent implements OnClickListener, DBListener , BasicFunctionListener {
 
     Button buttonLogin;
     Spinner routeSp, MarketSp, OutletCategorySp, OutletSp,offer_type_sp;
@@ -78,6 +88,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
     ArrayList<String> MarketName = new ArrayList<String>();
     String _MarketID;
 
+    int DBRetriveStatus = 0;
     ArrayList<String> OutletCategoryID = new ArrayList<String>();
     ArrayList<String> OutletCategoryName = new ArrayList<String>();
 
@@ -141,7 +152,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
         TextView txtUser = (TextView) findViewById(R.id.user_txt_view);
         title = (TextView) findViewById(R.id.title);
         txtUser.setText(getPreference("UserName"));
-        db = new Data_Source(this, this);
+        db = new Data_Source(this, this,this);
         //outltateauto.setText("");
         //savePreference("OutletID", "0") ;
         homeBtn = findViewById(R.id.home);
@@ -630,31 +641,26 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
 
                     if (itemName.equals("Sales Order")) {
 
-                        if(getPreference(SR_ID).equalsIgnoreCase("0")){
-                            Toast.makeText(Create_New_Memo.this,"First Make Online Login And then Try again",Toast.LENGTH_LONG).show();
-                            return;
+
+
+                        
+
+
+                        if (checkMemo()){
+
+                            if (isInternetOn()){
+                                DBRetriveStatus = 101;
+                                db.generatePushJson();
+
+                            }else {
+                                switchToSales();
+                                Toast.makeText(Create_New_Memo.this,"Please turn On Internet TO Sync",Toast.LENGTH_LONG).show();
+                            }
+
+                        }else {
+                            switchToSales();
                         }
-                        BPSelected_bonus.clear();
-                        BPSelected_product.clear();
-                        BPSelected_set.clear();
-                        BPSelected_policy_type.clear();
-                        BPSelected_option_id.clear();
-                        policyArrayList.clear();
-                        PolicySetRelation.clear();
 
-                        TempData.isPushed = "0";
-                        savePreference("Thana", routeSp.getSelectedItem().toString());
-                        TempData.tempThana = routeSp.getSelectedItem().toString();
-                        savePreference("Thana", routeSp.getSelectedItem().toString());
-                        TempData.tempThana = routeSp.getSelectedItem().toString();
-                        if (autoPos<BonusPartyType.size())
-                        savePreference("BonusPartyType", BonusPartyType.get(autoPos));
-                        TempData.editMemo = "false";
-                        db.prepareDataForOrder(_OutletID);
-                        ORDER_TO_MEMO = 0;
-                        MEMO_EDIT = false;
-
-//					}
 
 
                     }
@@ -721,6 +727,49 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
         }
     }
 
+
+    public boolean checkMemo() {
+
+        Cursor count = db.rawQueryCoustom("Select count(_id) from "+ Tables.TABLE_NAME_ORDER +" where "+Tables.ORDER_is_pushed+"='0'");
+
+        count.moveToFirst();
+        if (count.getInt(0)==0){
+            return false;
+        }
+        if (count.getInt(0)>=Integer.parseInt(getPreference(MIN_ORDER_NUMBER))){
+            return true;
+        }
+
+        return false;
+    }
+
+    private void switchToSales() {
+        if(getPreference(SR_ID).equalsIgnoreCase("0")){
+            Toast.makeText(Create_New_Memo.this,"First Make Online Login And then Try again",Toast.LENGTH_LONG).show();
+            return;
+        }
+        BPSelected_bonus.clear();
+        BPSelected_product.clear();
+        BPSelected_set.clear();
+        BPSelected_policy_type.clear();
+        BPSelected_option_id.clear();
+        policyArrayList.clear();
+        PolicySetRelation.clear();
+
+        TempData.isPushed = "0";
+        savePreference("Thana", routeSp.getSelectedItem().toString());
+        TempData.tempThana = routeSp.getSelectedItem().toString();
+        savePreference("Thana", routeSp.getSelectedItem().toString());
+        TempData.tempThana = routeSp.getSelectedItem().toString();
+        if (autoPos<BonusPartyType.size())
+            savePreference("BonusPartyType", BonusPartyType.get(autoPos));
+        TempData.editMemo = "false";
+        DBRetriveStatus = 100;
+        db.prepareDataForOrder(_OutletID);
+        ORDER_TO_MEMO = 0;
+        MEMO_EDIT = false;
+    }
+
     public final boolean isInternetOn() {
         ConnectivityManager connec = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED ||
@@ -733,6 +782,17 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
         }
         return false;
     }
+
+    @Override
+    public void OnServerResponce(JSONObject jsonObject, int RequestCode) {
+
+    }
+
+    @Override
+    public void OnConnetivityError() {
+
+    }
+
     class getToken extends AsyncTask<String, String, String> {
         String RESPONSE;
         ProgressDialog progressDialog;
@@ -1256,15 +1316,74 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
 
     @Override
     public void OnLocalDBdataRetrive(String json) {
-        Intent idn = new Intent(Create_New_Memo.this, Sales_Memo.class);
-        idn.putExtra("OutletID", _OutletID);
-        idn.putExtra("flag", 2);
-        savePreference(ORDER_START_TIME,getCurrentDateTime());
-        MEMO_EDIT=false;
-        ORDER_TO_MEMO = 0;
-        TempData.editMemo = "false";
-        startActivity(idn);
+        if ( DBRetriveStatus == 100) {
+            Intent idn = new Intent(Create_New_Memo.this, Sales_Memo.class);
+            idn.putExtra("OutletID", _OutletID);
+            idn.putExtra("flag", 2);
+            savePreference(ORDER_START_TIME, getCurrentDateTime());
+            MEMO_EDIT = false;
+            ORDER_TO_MEMO = 0;
+            TempData.editMemo = "false";
+            startActivity(idn);
+        } else if (DBRetriveStatus == 101) {
 
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    orderPush(json);
+                }
+            });
+
+        }
+
+    }
+
+    private void orderPush(String jsonObject) {
+        ProgressDialog dailog = CheckConnection(Create_New_Memo.this,"Order Sync...");
+        if (dailog==null)
+            return;
+        try {
+
+            getJAPi().ORDERPUSH(convertTORequestdata(new JSONObject(jsonObject))).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+
+                    // Log.e("log", "onResponse: ",response );
+
+                    dailog.dismiss();
+                    if (response.code()==200) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response.body());
+                            int status = jsonObject.getJSONObject("order").getInt("status");
+
+                            if (status == 1) {
+                                DBRetriveStatus = 102;
+                                db.updatePushStatus();
+
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                    }else {
+
+                        Toast.makeText(Create_New_Memo.this,   "Order Not push try Again or Check Order Process from More", Toast.LENGTH_SHORT).show();
+                    }
+
+                    db.getlastupdateddate();
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    dailog.dismiss();
+                    Toast.makeText(Create_New_Memo.this,   "Order Not push try Again or Check Order Process from More", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
