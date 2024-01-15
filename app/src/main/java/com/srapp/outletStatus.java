@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -23,6 +24,7 @@ import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Util.Constants;
 import com.srapp.Util.JAPIClient;
+import com.srapp.Util.StaticFlags;
 import com.srapp.apiService.ApiInterfaceForJava;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
@@ -103,17 +105,21 @@ public class outletStatus extends  AppCompatActivity implements BasicFunctionLis
                         for (int i = 0 ; i<array.length() ; i++){
                             JSONObject obj = array.getJSONObject(i);
 
-                            HashMap<String,String> map= getOutlet(obj.getString("id"),obj.getString("approval_status"),obj.getString("main_id"));
+                            if (obj.getInt("approval_status")== Constants.SUCCESS){
+                                Log.e("approval_status1",obj.getInt("approval_status")+"");
+
+
+                                db.excQuery("INSERT INTO outlets SELECT * FROM temp_outlets WHERE outlet_id='"+obj.getString("id")+"'");
+                                //Log.e("approval_status1","INSERT INTO outlets SELECT * FROM temp_outlets WHERE outlet_id='"+obj.getString("id")+"'    "+ c.getCount());
+                                db.excQuery("Update outlets set outlet_id ='"+obj.getString("main_id")+"' WHERE outlet_id='"+obj.getString("id")+"'");
+                                db.excQuery("delete from temp_outlets WHERE outlet_id='"+obj.getString("id")+"'");
+                            } else if (obj.getInt("approval_status")==Constants.REJECT) {
+                                db.excQuery("delete from temp_outlets WHERE outlet_id='"+obj.getString("id")+"'");
+                            }
+                            HashMap<String,String> map= getTempOutlet(obj.getString("id"),obj.getString("approval_status"),obj.getString("main_id"));
                             list.add(map);
 
-                            if (obj.getInt("approval_status")== Constants.SUCCESS){
 
-                                db.rawQueryCoustom("INSERT INTO outlets SELECT * FROM temp_outlets WHERE outlet_id='"+obj.getString("id")+"'");
-                                db.rawQueryCoustom("Update outlets set outlet_id ='"+obj.getString("main_id")+"' WHERE outlet_id='"+obj.getString("id")+"'");
-                                db.rawQueryCoustom("delete from temp_outlets WHERE outlet_id='"+obj.getString("id")+"'");
-                            } else if (obj.getInt("approval_status")==Constants.REJECT) {
-                                db.rawQueryCoustom("delete from temp_outlets WHERE outlet_id='"+obj.getString("id")+"'");
-                            }
                         }
 
                         adapter = new AdapterForPendingOutlet(outletStatus.this,list);
@@ -137,9 +143,15 @@ public class outletStatus extends  AppCompatActivity implements BasicFunctionLis
             }
         });
     }
-    private HashMap<String, String> getOutlet(String id, String approval_status, String main_id) {
+    private HashMap<String, String> getTempOutlet(String id, String approval_status, String main_id) {
+        Log.e("getTempOutlet",approval_status+" "+id+" "+main_id+" "+(!main_id.equalsIgnoreCase("null")));
         HashMap<String, String> map = new HashMap<>();
+        if (!main_id.equalsIgnoreCase("null")){
+            return getOutlet(id,approval_status,main_id);
+        }
+
         Cursor c = db.rawQueryCoustom("select outlet_id,outlet_name,market_name from temp_outlets as o Inner Join markets as m on o.market_id=m.market_id where outlet_id='"+id+"'");
+        Log.e("Query","select outlet_id,outlet_name,market_name from temp_outlets as o Inner Join markets as m on o.market_id=m.market_id where outlet_id='"+id+"'"+c.getCount());
         c.moveToFirst();
         if (c.getCount()>0 && c!=null){
 
@@ -148,6 +160,47 @@ public class outletStatus extends  AppCompatActivity implements BasicFunctionLis
             map.put("outlet_name",c.getString(1));
             map.put("status",approval_status);
             map.put("main_id",main_id);
+
+            Log.e("approval_status",approval_status);
+        }
+
+        return map;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // TODO Auto-generated method stub
+        if(keyCode== KeyEvent.KEYCODE_BACK)
+        {
+
+
+
+                Intent intent = new Intent(outletStatus.this, Tools.class);
+                intent.putExtra("resume", 1);
+                startActivity(intent);
+                finish();
+
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+
+    }
+
+    private HashMap<String, String> getOutlet(String id, String approval_status, String main_id) {
+        Log.e("getTempOutlet1",approval_status+" "+id+" "+main_id+" "+(!main_id.equalsIgnoreCase("null")));
+        HashMap<String, String> map = new HashMap<>();
+        Cursor c = db.rawQueryCoustom("select outlet_id,outlet_name,market_name from outlets as o Inner Join markets as m on o.market_id=m.market_id where outlet_id='"+main_id+"'");
+        Log.e("Query2","select outlet_id,outlet_name,market_name from temp_outlets as o Inner Join markets as m on o.market_id=m.market_id where outlet_id='"+main_id+"'"+c.getCount());
+        c.moveToFirst();
+        if (c.getCount()>0 && c!=null){
+
+            map.put("outlet_id",id);
+            map.put("market_name",c.getString(2));
+            map.put("outlet_name",c.getString(1));
+            map.put("status",approval_status);
+            map.put("main_id",main_id);
+
+            Log.e("approval_status",approval_status);
         }
 
         return map;

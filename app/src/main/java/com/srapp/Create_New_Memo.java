@@ -733,10 +733,12 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
         Cursor count = db.rawQueryCoustom("Select count(_id) from "+ Tables.TABLE_NAME_ORDER +" where "+Tables.ORDER_is_pushed+"='0'");
 
         count.moveToFirst();
-        if (count.getInt(0)==0){
+
+        int push_count = Integer.parseInt(getPreference(MIN_ORDER_NUMBER));
+        if (push_count==0){
             return false;
         }
-        if (count.getInt(0)>=Integer.parseInt(getPreference(MIN_ORDER_NUMBER))){
+        if (count.getInt(0)>=push_count){
             return true;
         }
 

@@ -76,6 +76,10 @@ import static com.srapp.TempData.policyBonusProductArrList;
 import static com.srapp.TempData.priceMap;
 import static com.srapp.TempData.price_idMap;
 import static com.srapp.TempData.vatMap;
+import static com.srapp.Util.Constants.BONUSQTY;
+import static com.srapp.Util.Constants.BONUS_PRODUCT_ID;
+import static com.srapp.Util.Constants.POLICY_ID;
+import static com.srapp.Util.Constants.SET_PRODUCTS;
 
 public class SalesOrderDetailsAdaper1 extends BaseAdapter {
     public static Bonus_policy bonus_policylistener;
@@ -96,6 +100,9 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
     HashMap<String, String> policy_map = new HashMap<String, String>();
     String price = "";
     int state = 0;
+    boolean setbounseligible = true;
+
+    double in_qty = 10000;
     String TargetCustomer = "0";
     String InstietuteID = "";
     ArrayList<String> policy_ids = new ArrayList<String>();
@@ -899,6 +906,26 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
     }
 
+    private boolean chekckValidity() {
+
+        String query = "select \n" +
+                "     pt.policy_id," +
+                "     pt.policy_name," +
+                "     pt.start_date," +
+                "     pt.end_date " +
+                "    from Policy_Table pt" +
+                " where\n" +
+                "'" + memodate + "' between pt.start_date and pt.end_date and pt.policy_id='"+POLICY_ID+"'" ;
+
+        Cursor c =  db.rawQueryCoustom(query);
+
+        if (c.getCount()>0 && c!=null){
+            return true;
+        }
+
+        return false;
+    }
+
     @SuppressLint("SetTextI18n")
     public void BonusPolicy(String specialGroupIds, String cartProductIDs, Double memoTotal) {
 
@@ -906,7 +933,8 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
         OldBPSelected_set.clear();
         OldBPSelected_policy_type.clear();
         OldBPSelected_option_id.clear();
-
+        setbounseligible = true;
+        in_qty = 10000;
         OldBPSelected_bonus.putAll(BPSelected_bonus);
         Log.e("OldBPSelected_bonus", OldBPSelected_bonus.toString());
         OldBPSelected_set.putAll(BPSelected_set);
@@ -932,6 +960,38 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
         policyIdsArrayList = db.getPolicy_ID_List(specialGroupIds, cartProductIDs, memodate, outlet_ID, TempData.OutletCatagoryID); // getting policy ids list
 
         TempData.policyIdsArrList = policyIdsArrayList;
+
+
+        double total_qty_Of_set = 0.00;
+        if(chekckValidity()) {
+            for (int i = 0; i < SET_PRODUCTS.length; i++) {
+                double cartqty = Double.parseDouble(getPreference(SET_PRODUCTS[i]));
+                total_qty_Of_set += cartqty;
+                if (cartqty < 1) {
+                    setbounseligible = false;
+                    Log.e("loop", SET_PRODUCTS[i]);
+                    break;
+                }
+
+                if (cartqty < in_qty && cartqty != 0)
+                    in_qty = cartqty;
+
+
+            }
+            if (total_qty_Of_set<5){
+                setbounseligible = false;
+            }
+            Bonus.clear();
+            Log.e("set_bonus", in_qty + " " + setbounseligible + " ");
+            //Double bonusqty = in_qty * BONUSQTY;
+            //Double bonusableqty = Double.parseDouble(chekcVanQty(bonusqty,BONUS_PRODUCT_ID));
+//            if (setbounseligible && bonusableqty>0) {
+//
+//
+//            }
+        }else {
+            setbounseligible = false;
+        }
 
         if (policyIdsArrayList.size() == 0)
             return;
@@ -980,11 +1040,16 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
             Double cart_policy_value = 0.0;
             for (int ar = 0; ar < policyProductsIdArray.length; ar++) {
                 Integer product_id = Integer.valueOf(policyProductsIdArray[ar]);
-                String quentity = getPreference(String.valueOf(product_id));
+                Double quentity = ParseDouble(getPreference(String.valueOf(product_id)));
                 Log.e("quentiry_product_id", quentity + "---" + product_id + "   " + priceMap.get(product_id + "") +(priceMap.get(product_id) != null));
-                CartProductQtysum += ParseDouble(quentity);
+                if (setbounseligible){
+                    if(Arrays.asList(SET_PRODUCTS).contains(String.valueOf(product_id)) && !policyIdsArrayList.get(i).getPolicy_id().equalsIgnoreCase(POLICY_ID)){
+                        quentity -= in_qty;
+                    }
+                }
+                CartProductQtysum += quentity;
                 if (priceMap.get(product_id+"") != null)
-                    cart_policy_value += (Double.parseDouble(quentity) * Double.parseDouble(priceMap.get(product_id + "")));
+                    cart_policy_value += (quentity * Double.parseDouble(priceMap.get(product_id + "")));
                 Log.e("product_id_quentity2",cart_policy_value+"");
             }
 
@@ -1398,14 +1463,19 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
             String bonus_qty = policyBonusProductArrayList.get(vs).getBonus_qty();
 
             String bonus_product_id = policyBonusProductArrayList.get(vs).getBonus_product_id();
+            if (policyId.equalsIgnoreCase(POLICY_ID)){
+                if (setbounseligible){
+                    bonus_qty =  String.valueOf(in_qty* Double.parseDouble(bonus_qty));
+                }else {
+                    continue;
+                }
+            }else {
+                if (Double.parseDouble(minQty) > 0)
+                    bonus_qty = String.valueOf(((Math.floor(Double.parseDouble(Quantity) / Double.parseDouble(minQty))) * Double.parseDouble(bonus_qty))); // Bonus Policy Change nasir vai for Joya 8 s belt
+                else {
+                    bonus_qty = String.valueOf(((Double.parseDouble(bonus_qty) * Double.parseDouble(cart_value)) / Double.parseDouble(min_value))); // Bonus Policy Change nasir vai for Joya 8 s belt
 
-            if (Double.parseDouble(minQty)>0)
-                bonus_qty = String.valueOf(((Double.parseDouble(bonus_qty) * Double.parseDouble(Quantity)) / Double.parseDouble(minQty))); // for min Quantity
-            else {
-                bonus_qty = String.valueOf(((Double.parseDouble(bonus_qty) *
-                        Double.parseDouble(cart_value)) /
-                        Double.parseDouble(min_value))); // for min Value
-
+                }
             }
 
             bonus_qty = String.valueOf(Math.floor(Float.parseFloat(bonus_qty)));

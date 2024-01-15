@@ -214,6 +214,8 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
             date = getCurrentDate();
         }
 
+        Log.e("getPreference(ORDER_START_TIME)",getPreference(ORDER_START_TIME));
+
         homeBtn = findViewById(R.id.home);
         backBtn = findViewById(R.id.back);
         policy_tag = findViewById(R.id.policy_tag);

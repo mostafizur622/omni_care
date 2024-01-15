@@ -788,6 +788,7 @@ public class PrintSelectedOrdersActivityBN extends ParentActivity {
                         total_bill = (TextView) contentLayout.findViewById(R.id.total_bill);
                         discount = (TextView) contentLayout.findViewById(R.id.discount);
                         extra = contentLayout.findViewById(R.id.extra);
+                        gift = contentLayout.findViewById(R.id.gift);
                         vatCal = (TextView) contentLayout.findViewById(R.id.vatCal);
                         net_payable = (TextView) contentLayout.findViewById(R.id.net_payable);
                         sr_db_name = (TextView) contentLayout.findViewById(R.id.sr_db_name);

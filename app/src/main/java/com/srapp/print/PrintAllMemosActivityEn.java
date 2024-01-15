@@ -777,7 +777,7 @@ public class PrintAllMemosActivityEn extends ParentActivity {
 
                     View contentLayout;
                     TextView area_office, outlet_name_category_address, market_thana, order_memo_no_date,outlet_address_phone;
-                    TextView discountTxt, bonus, gift = null, total_bill, discount, vatCal, net_payable, sr_db_name, mobile_no, sr_address, office_copy;
+                    TextView discountTxt, bonus, gift, total_bill, discount, vatCal, net_payable, sr_db_name, mobile_no, sr_address, office_copy;
                     LinearLayout  layout_save_image,extra;
                     String memo_no = "";
 
@@ -811,6 +811,7 @@ public class PrintAllMemosActivityEn extends ParentActivity {
                     net_payable = (TextView) contentLayout.findViewById(R.id.net_payable);
                     sr_db_name = (TextView) contentLayout.findViewById(R.id.sr_db_name);
                     sr_address = (TextView) contentLayout.findViewById(R.id.sales_officer_address);
+                    gift = (TextView) contentLayout.findViewById(R.id.gift);
                     mobile_no = (TextView) contentLayout.findViewById(R.id.sales_officer_phone);
                     office_copy = (TextView) contentLayout.findViewById(R.id.office_copy);
                     layout_save_image = (LinearLayout) contentLayout.findViewById(R.id.layout_save_image);

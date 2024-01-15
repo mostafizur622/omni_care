@@ -408,6 +408,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                                 ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
                                 ds.excQuery("delete  from "+ Tables.TABLE_NAME_FISCAL_YEAR);
                                 ds.excQuery("delete  from "+ Tables.TABLE_Name_OFFER_TYPE);
+                                ds.excQuery("delete  from "+ Tables.TABLE_OUTLET_PERMISSION);
                                 ds.insertData(jsonObject.getJSONObject("response").toString(),1);
                                 Log.e("102", "OnServerResponce: "+"DELETED ALL DATA---------->" );
                                 //basicFunction.getResponceData(URL.Log,jsonObject.getJSONObject("response").toString(),11);

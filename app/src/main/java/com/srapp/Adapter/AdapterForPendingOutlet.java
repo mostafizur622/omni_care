@@ -54,18 +54,24 @@ public class AdapterForPendingOutlet extends BaseAdapter {
 
         HashMap<String, String> mapContent = new HashMap<String, String>();
         mapContent = BonusItemList.get(position);
-        Log.e("","bonus_name"+mapContent.get("bonus_name"));
+        Log.e("outlet_name","bonus_name"+mapContent.get("status"));
       //  sl.setText(mapContent.get("sl"));
         outlet_name.setText(mapContent.get("outlet_name"));
         market.setText(mapContent.get("market_name"));
 
-        if (Integer.parseInt(mapContent.get("status"))== Constants.SUCCESS) {
-            status.setText("Accepted");
-        }else if (Integer.parseInt(mapContent.get("status"))== Constants.PENDING) {
-            status.setText("Pending");
-        }else if (Integer.parseInt(mapContent.get("status"))== Constants.REJECT) {
-            status.setText("Rejected");
+        try {
+            if (Integer.parseInt(mapContent.get("status"))== Constants.SUCCESS) {
+                status.setText("Accepted");
+            }else if (Integer.parseInt(mapContent.get("status"))== Constants.PENDING) {
+                status.setText("Pending");
+            }else if (Integer.parseInt(mapContent.get("status"))== Constants.REJECT) {
+                status.setText("Rejected");
+            }
+
+        }catch (Exception e){
+            Log.e("Exception",e.getLocalizedMessage());
         }
+
 
 
         return view2;

@@ -20,6 +20,7 @@ import static com.srapp.Db_Actions.Tables.MEMO_DETAILS_Unit_id;
 import static com.srapp.Db_Actions.Tables.MEMO_DETAILS_memo_number;
 import static com.srapp.Db_Actions.Tables.MEMO_DETAILS_order_number;
 import static com.srapp.Db_Actions.Tables.MEMO_DETAILS_vat;
+import static com.srapp.Db_Actions.Tables.ORDER_START_TIME;
 import static com.srapp.Db_Actions.Tables.ORDER_STATUS;
 import static com.srapp.Db_Actions.Tables.ORDER_TOTAL_VAT;
 import static com.srapp.Db_Actions.Tables.ORDER_editable;
@@ -1447,8 +1448,6 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                     "  P.product_category_id,\n" +
                     "  P.product_type_id\n" +
                     "FROM product AS P\n" +
-                    "inner join product_combinations pc on pc.product_id=P.product_id\n" +
-                    "WHERE p.product_type_id = '1'\n" +
                     "GROUP BY P.product_id,\n" +
                     "         P.product_name,\n" +
                     "         P.product_category_id,\n" +
@@ -1482,7 +1481,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                         } else if (gift >= 0) {
                             is_checked = true;
                             product_quantity = TempData.GiftArrayList.get(gift).get("quantity");
-                            Log.e("query",TempData.GiftArrayList.get(saleable).get("quantity"));
+                           // Log.e("query",TempData.GiftArrayList.get(saleable).get("quantity"));
 
                         }/*else if (bonus>=0){
                             is_checked=true;
@@ -1512,7 +1511,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
             }
 
             setBonus();
-
+            savePreference(ORDER_START_TIME, getCurrentDateTime());
             Intent idn = new Intent(DetailsOrderReport.this, Sales_Memo.class);
             idn.putExtra("flag", 1);
             progressDialog.dismiss();

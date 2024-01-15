@@ -710,7 +710,8 @@ public class CreateOutlet extends AppCompatActivity implements BasicFunctionList
                         //basicFunction.getResponceData(URL.CreateOutlet,primaryData.toString(),301);
 
                         Log.e("json test...", "onClick: "+primaryData.toString() );
-                        ds.InsertTablemap(dataForOutletInsert,Tables.TABLE_NAME_OUTLETS);
+                        ds.InsertTablemap(dataForOutletInsert,Tables.TABLE_NAME_TEMP_OUTLETS);
+                        ds.updateOutletCount(basicFunction.getCurrentDateTime());
                     }catch (JSONException e) {
                         e.printStackTrace();
                     }

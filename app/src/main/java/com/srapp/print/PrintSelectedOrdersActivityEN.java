@@ -1068,6 +1068,7 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
             sr_address = (TextView) contentLayout.findViewById(R.id.sales_officer_address);
             mobile_no = (TextView) contentLayout.findViewById(R.id.sales_officer_phone);
             office_copy = (TextView) contentLayout.findViewById(R.id.office_copy);
+            gift = (TextView) contentLayout.findViewById(R.id.gift);
             layout_save_image = (LinearLayout) contentLayout.findViewById(R.id.layout_save_image);
 
             if (c != null && c.getCount() > 0) {

@@ -741,6 +741,7 @@ public class PrintAllMemosActivity extends ParentActivity {
                     total_bill = (TextView) contentLayout.findViewById(R.id.total_bill);
                     discount = (TextView) contentLayout.findViewById(R.id.discount);
                     vatCal = (TextView) contentLayout.findViewById(R.id.vatCal);
+                    gift = (TextView) contentLayout.findViewById(R.id.gift);
                     net_payable = (TextView) contentLayout.findViewById(R.id.net_payable);
                     sr_db_name = (TextView) contentLayout.findViewById(R.id.sr_db_name);
                     sr_address = (TextView) contentLayout.findViewById(R.id.sales_officer_address);

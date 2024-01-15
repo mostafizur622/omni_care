@@ -555,6 +555,7 @@ public class Data_Source extends Parent {
 
     public Cursor rawQueryCoustom(String query) {
         this.open();
+        Log.e("Outlet_status",query);
         Cursor c = sqLiteDatabase.rawQuery(query, null);
        /* close();
         c.close();*/
@@ -2868,11 +2869,14 @@ public class Data_Source extends Parent {
         //Loge(TableName, "   :" + "INSERTED");
         this.open();
         insertedID = sqLiteDatabase.insert(TableName, null, values);
+
         this.close();
         close();
         return insertedID;
 
     }
+
+
 
     private void insertbonusPolicyOutletData(JSONObject jsonObject) {
         JSONArray Bonus_policy_outlet;
@@ -3626,6 +3630,13 @@ public class Data_Source extends Parent {
             list.add(map);
         }
         return list;
+
+
+    }
+
+    public void updateOutletCount(String currentDateTime) {
+
+            excQuery( "update outlet_create_permission_list set no_of_outlet=(no_of_outlet-1) where '"+currentDateTime+"' between start_time and end_time and no_of_outlet>0");
 
 
     }
