@@ -51,6 +51,7 @@
                             android:text="Mushak - 6.3"
                             android:layout_weight="1"
                             android:gravity="end"
+                            android:visibility="gone"
                             android:textColor="#000"
                             android:textSize="@dimen/_12sdp"
                             android:textStyle="bold" />

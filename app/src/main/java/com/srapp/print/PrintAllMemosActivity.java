@@ -67,7 +67,6 @@ import java.util.Set;
 import NewPrint.BixolonPrinter;
 
 import static com.srapp.Db_Actions.Tables.PRODUCT_BOOLEAN_QUANTITY;
-import static com.srapp.Db_Actions.Tables.PRODUCT_ID;
 import static com.srapp.Db_Actions.Tables.PRODUCT_PRICE_PRICE;
 import static com.srapp.Db_Actions.Tables.PRODUCT_PRODUCT_NAME;
 import static com.srapp.Db_Actions.Tables.PRODUCT_PRODUCT_NAME_BN;
@@ -90,6 +89,7 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
 
 import com.srapp.DetailsOrderReport;
+import com.srapp.Util.NumberToWords;
 import com.srapp.Util.PrintedListener;
 import com.srapp.print.newprint.Constant;
 import com.srapp.print.newprint.PrintContent;
@@ -712,12 +712,13 @@ public class PrintAllMemosActivity extends ParentActivity {
                     TextView area_office, outlet_name_category_address, market_thana, order_memo_no_date,outlet_address_phone;
                     TextView discountTxt, bonus, gift = null, total_bill, discount, vatCal, net_payable, sr_db_name, mobile_no, sr_address, office_copy;
                     LinearLayout  layout_save_image,extra;
+                    TextView db_name,db_address,outlet_name,invoice_no,invoice_date,in_word,title;
                     String memo_no = "";
 
                     //test work-----------------start------------------------------------------------------------
                     mLinearLayout = (ViewGroup) findViewById(R.id.layout_save_image);
 
-                    contentLayout = LayoutInflater.from(this).inflate(R.layout.content_add_layout, mLinearLayout, false);
+                    contentLayout = LayoutInflater.from(this).inflate(R.layout.content_add_layout_bn, mLinearLayout, false);
 
 
                     Log.e("activity_height", contentLayout.getHeight() + "-" + contentLayout.getWidth());
@@ -747,6 +748,14 @@ public class PrintAllMemosActivity extends ParentActivity {
                     sr_address = (TextView) contentLayout.findViewById(R.id.sales_officer_address);
                     mobile_no = (TextView) contentLayout.findViewById(R.id.sales_officer_phone);
                     office_copy = (TextView) contentLayout.findViewById(R.id.office_copy);
+
+                    db_name = (TextView) contentLayout.findViewById(R.id.db_name);
+                    db_address = (TextView) contentLayout.findViewById(R.id.db_address);
+                    outlet_name = (TextView) contentLayout.findViewById(R.id.outlet_name);
+                    invoice_no = (TextView) contentLayout.findViewById(R.id.invoice_no);
+                    invoice_date = (TextView) contentLayout.findViewById(R.id.invoice_date);
+                    in_word = (TextView) contentLayout.findViewById(R.id.in_word);
+
                     layout_save_image = (LinearLayout) contentLayout.findViewById(R.id.layout_save_image);
 
 
@@ -934,10 +943,13 @@ public class PrintAllMemosActivity extends ParentActivity {
                         else*/
                     order_memo_no_date.setText("ওর্ডার# " + ConvertTOBangla(TempData.orderNumber) + ", " + ConvertTOBangla(date));
 
-
-                    sr_db_name.setText(getPreference("sr_name") + "  DB:(" + getPreference("db_name") + ")");
-                    mobile_no.setText("Mobile No: " + getPreference("db_mobile"));
-                    sr_address.setText("Address: " + getPreference("db_address"));
+                    outlet_name.setText("দোকান: "+TempData.OutletName);
+                    db_name.setText("ডিস্টিবিউটির: "+getPreference("db_name"));
+                    db_address.setText("ঠিকানা: "+getPreference("db_address"));
+                    invoice_date.setText("রশিদ তারিখ: "+date);
+                    in_word.setText(NumberToWords.num2bangla((int)Math.floor(Double.parseDouble(roundTwoDecimals(gross_value - TempData.DISCOUNT))))+" টাকা মাত্র");
+                    sr_db_name.setText("এস আর: "+getPreference("sr_name"));
+                    invoice_no.setText("রশিদ নং: " +memo_no);
 
 
                     total_bill.setText("মোট বিলের পরিমাণ :" + ConvertTOBangla(String.valueOf(roundTwoDecimals(gross_value))));

@@ -5,6 +5,7 @@ import static com.srapp.Db_Actions.Tables.PRODUCT_ID;
 import static com.srapp.Db_Actions.Tables.PRODUCT_PRICE_PRICE;
 import static com.srapp.Db_Actions.Tables.PRODUCT_PRODUCT_NAME;
 import static com.srapp.DetailsOrderReport.discount_info;
+import static com.srapp.TempData.memoNumber;
 import static com.srapp.print.newprint.Constant.CONN_STATE_DISCONN;
 import static com.srapp.print.newprint.Constant.Connect_cuccess;
 import static com.srapp.print.newprint.Constant.Connect_fail;
@@ -1235,6 +1236,14 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
                         outlet_name.setText("Outlet: "+TempData.OutletName);
                         db_name.setText("Distributor: "+getPreference("db_name"));
                         db_address.setText("Address: "+getPreference("db_address"));
+                        invoice_no.setText("Invoice No: " +memo_no);
+                        invoice_date.setText("Invoice Date: "+date);
+                        sr_db_name.setText("SR: "+getPreference("sr_name"));
+                        total_bill.setText("Total Bill:   " + String.valueOf(roundTwoDecimals(Double.parseDouble(TempData.InvoiceTotal))));
+                        String word = NumberToWords.convert((int)Math.floor(Double.parseDouble(roundTwoDecimals(gross_value - TempData.DISCOUNT))));
+                        String part1 = word.substring(0,1).toUpperCase();
+                        String part2 = word.substring(1);
+                        in_word.setText(part1+part2);
 
 
                         market_thana.setText(TempData.tempMarket + ", " + TempData.tempThana);
@@ -1252,12 +1261,8 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
                         vatCal.setText("Vat:   " + roundTwoDecimals(TempData.VAT));
                         net_payable.setText("Net-Payable:   " + roundTwoDecimals(gross_value - TempData.DISCOUNT));
 
-                        sr_db_name.setText("SR: "+getPreference("sr_name"));
-                        total_bill.setText("Total Bill:   " + String.valueOf(roundTwoDecimals(Double.parseDouble(TempData.InvoiceTotal))));
-                        String word = NumberToWords.convert((int)Math.floor(Double.parseDouble(roundTwoDecimals(gross_value - TempData.DISCOUNT))));
-                        String part1 = word.substring(0,1).toUpperCase();
-                        String part2 = word.substring(1);
-                        in_word.setText(part1+part2);
+
+
                         if (TempData.DISCOUNT>0) {
                             discount.setVisibility(View.VISIBLE);
                             discount.setText("Discount:   " + roundTwoDecimals(TempData.DISCOUNT));

@@ -147,6 +147,7 @@ import com.srapp.DetailsOrderReport;
 import com.srapp.Multiple_Invoice_print;
 import com.srapp.R;
 import com.srapp.TempData;
+import com.srapp.Util.NumberToWords;
 import com.srapp.Util.PrintedListener;
 import com.srapp.print.newprint.Constant;
 import com.srapp.print.newprint.PrintContent;
@@ -779,6 +780,7 @@ public class PrintAllMemosActivityEn extends ParentActivity {
                     TextView area_office, outlet_name_category_address, market_thana, order_memo_no_date,outlet_address_phone;
                     TextView discountTxt, bonus, gift, total_bill, discount, vatCal, net_payable, sr_db_name, mobile_no, sr_address, office_copy;
                     LinearLayout  layout_save_image,extra;
+                    TextView db_name,db_address,outlet_name,invoice_no,invoice_date,in_word,title;
                     String memo_no = "";
 
                     //test work-----------------start------------------------------------------------------------
@@ -812,6 +814,14 @@ public class PrintAllMemosActivityEn extends ParentActivity {
                     sr_db_name = (TextView) contentLayout.findViewById(R.id.sr_db_name);
                     sr_address = (TextView) contentLayout.findViewById(R.id.sales_officer_address);
                     gift = (TextView) contentLayout.findViewById(R.id.gift);
+
+                    db_name = (TextView) contentLayout.findViewById(R.id.db_name);
+                    db_address = (TextView) contentLayout.findViewById(R.id.db_address);
+                    outlet_name = (TextView) contentLayout.findViewById(R.id.outlet_name);
+                    invoice_no = (TextView) contentLayout.findViewById(R.id.invoice_no);
+                    invoice_date = (TextView) contentLayout.findViewById(R.id.invoice_date);
+                    in_word = (TextView) contentLayout.findViewById(R.id.in_word);
+
                     mobile_no = (TextView) contentLayout.findViewById(R.id.sales_officer_phone);
                     office_copy = (TextView) contentLayout.findViewById(R.id.office_copy);
                     layout_save_image = (LinearLayout) contentLayout.findViewById(R.id.layout_save_image);
@@ -978,9 +988,17 @@ public class PrintAllMemosActivityEn extends ParentActivity {
                     order_memo_no_date.setText("Order# " + memo_no + ", " + date);
 
 
-                    sr_db_name.setText(getPreference("sr_name") + "  DB:(" + getPreference("db_name") + ")");
-                    mobile_no.setText("Mobile No: " + getPreference("db_mobile"));
-                    sr_address.setText("Address: " + getPreference("db_address"));
+                    outlet_name.setText("Outlet: "+TempData.OutletName);
+                    db_name.setText("Distributor: "+getPreference("db_name"));
+                    db_address.setText("Address: "+getPreference("db_address"));
+                    invoice_no.setText("Invoice No: " +memo_no);
+                    invoice_date.setText("Invoice Date: "+date);
+                    sr_db_name.setText("SR: "+getPreference("sr_name"));
+                    total_bill.setText("Total Bill:   " + String.valueOf(roundTwoDecimals(Double.parseDouble(TempData.InvoiceTotal))));
+                    String word = NumberToWords.convert((int)Math.floor(Double.parseDouble(roundTwoDecimals(gross_value - TempData.DISCOUNT))));
+                    String part1 = word.substring(0,1).toUpperCase();
+                    String part2 = word.substring(1);
+                    in_word.setText(part1+part2);
 
                     total_bill.setText("Total Bill:   " + roundTwoDecimals(gross_value));
                     discount.setText("Discount:   " + roundTwoDecimals(TempData.DISCOUNT));

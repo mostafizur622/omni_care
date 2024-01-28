@@ -8,6 +8,7 @@ import static com.srapp.Db_Actions.Tables.PRODUCT_PRODUCT_NAME_BN;
 import static com.srapp.DetailsOrderReport.discount_info;
 import static com.srapp.DetailsOrderReport.discount_info_BN;
 import static com.srapp.TempData.ConvertTOBangla;
+import static com.srapp.TempData.orderNumber;
 import static com.srapp.print.newprint.Constant.CONN_STATE_DISCONN;
 import static com.srapp.print.newprint.Constant.Connect_cuccess;
 import static com.srapp.print.newprint.Constant.Connect_fail;
@@ -32,12 +33,10 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
-import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -74,6 +73,7 @@ import com.srapp.DetailsOrderReport;
 import com.srapp.Multiple_Invoice_print;
 import com.srapp.R;
 import com.srapp.TempData;
+import com.srapp.Util.NumberToWords;
 import com.srapp.Util.PrintedListener;
 import com.srapp.print.newprint.Constant;
 import com.srapp.print.newprint.PrintContent;
@@ -760,6 +760,7 @@ public class PrintSelectedOrdersActivityBN extends ParentActivity {
                         TextView discountTxt, bonus, gift = null, total_bill, discount, vatCal, net_payable, sr_db_name, mobile_no, sr_address, office_copy;
                         LinearLayout  layout_save_image,extra;
                         TempData.INVOICE_DETAILS_PRINT.clear();
+                        TextView db_name,db_address,outlet_name,invoice_no,invoice_date,in_word,title;
 
                         RecyclerView printRecylerview;
 
@@ -768,7 +769,7 @@ public class PrintSelectedOrdersActivityBN extends ParentActivity {
 
                         mLinearLayout = (ViewGroup) findViewById(R.id.layout_save_image);
 
-                        View  contentLayout = LayoutInflater.from(this).inflate(R.layout.content_add_layout, null, false);
+                        View  contentLayout = LayoutInflater.from(this).inflate(R.layout.content_add_layout_bn, null, false);
 
                         Log.e("activity_height", contentLayout.getHeight() + "-" + contentLayout.getWidth());
 
@@ -789,6 +790,13 @@ public class PrintSelectedOrdersActivityBN extends ParentActivity {
                         discount = (TextView) contentLayout.findViewById(R.id.discount);
                         extra = contentLayout.findViewById(R.id.extra);
                         gift =(TextView) contentLayout.findViewById(R.id.gift);
+                        db_name = (TextView) contentLayout.findViewById(R.id.db_name);
+                        db_address = (TextView) contentLayout.findViewById(R.id.db_address);
+                        outlet_name = (TextView) contentLayout.findViewById(R.id.outlet_name);
+                        invoice_no = (TextView) contentLayout.findViewById(R.id.invoice_no);
+                        invoice_date = (TextView) contentLayout.findViewById(R.id.invoice_date);
+                        in_word = (TextView) contentLayout.findViewById(R.id.in_word);
+                        title = (TextView) contentLayout.findViewById(R.id.title);
                         vatCal = (TextView) contentLayout.findViewById(R.id.vatCal);
                         net_payable = (TextView) contentLayout.findViewById(R.id.net_payable);
                         sr_db_name = (TextView) contentLayout.findViewById(R.id.sr_db_name);
@@ -975,11 +983,16 @@ public class PrintSelectedOrdersActivityBN extends ParentActivity {
                         else*/
                         order_memo_no_date.setText("ওর্ডার# " + ConvertTOBangla(memo_no) + ", " + ConvertTOBangla(date));
 
-                        sr_db_name.setText(getPreference("sr_name") + "  DB:(" + getPreference("db_name") + ")");
-                        mobile_no.setText("Mobile No: " + getPreference("db_mobile"));
-                        sr_address.setText("Address: " + getPreference("db_address"));
+                        //sr_db_name.setText(getPreference("sr_name") + "  DB:(" + getPreference("db_name") + ")");
 
 
+                        outlet_name.setText("দোকান: "+TempData.OutletName);
+                        db_name.setText("ডিস্টিবিউটির: "+getPreference("db_name"));
+                        db_address.setText("ঠিকানা: "+getPreference("db_address"));
+                        invoice_date.setText("রশিদ তারিখ: "+date);
+                        in_word.setText(NumberToWords.num2bangla((int)Math.floor(Double.parseDouble(roundTwoDecimals(gross_value - TempData.DISCOUNT))))+" টাকা মাত্র");
+                        sr_db_name.setText("এস আর: "+getPreference("sr_name"));
+                        invoice_no.setText("রশিদ নং: " +memo_no);
 
                         total_bill.setText("মোট বিলের পরিমাণ :" + ConvertTOBangla(String.valueOf(roundTwoDecimals(gross_value))));
                         if (TempData.DISCOUNT!=0) {
