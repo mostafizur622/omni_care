@@ -193,7 +193,7 @@
              Toast.makeText(this, "Please Wait "+ TimeUnit.MILLISECONDS.toMinutes(timeRem)+" Minute TO Sync Again", Toast.LENGTH_SHORT).show();
          }
 
-         return true;
+         return false;
      }
 
      @Override
@@ -228,6 +228,7 @@
                                     ds.excQuery("delete from product_history");
                                     ds.excQuery("delete from fiscal_year");
                                     ds.excQuery("delete  from stock_info");
+                                    ds.excQuery("delete  from "+Tables.TABLE_OUTLET_PERMISSION);
                                     ds.insertData(jsonObject.getJSONObject("response").toString(), 1);
                                     ds.savePreference("dataforsummery", jsonObject.getJSONObject("response").toString());
                                 } catch (JSONException e) {

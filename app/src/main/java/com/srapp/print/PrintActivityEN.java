@@ -1,6 +1,8 @@
 package com.srapp.print;
 
 import static com.srapp.TempData.MEMO_EDIT;
+import static com.srapp.TempData.memoNumber;
+import static com.srapp.TempData.orderNumber;
 import static com.srapp.print.newprint.Constant.CONN_STATE_DISCONN;
 import static com.srapp.print.newprint.Constant.Connect_cuccess;
 import static com.srapp.print.newprint.Constant.Connect_fail;
@@ -64,6 +66,7 @@ import com.srapp.Db_Actions.Tables;
 import com.srapp.DetailsOrderReport;
 import com.srapp.R;
 import com.srapp.TempData;
+import com.srapp.Util.NumberToWords;
 import com.srapp.Util.PrintedListener;
 import com.srapp.print.newprint.Constant;
 import com.srapp.print.newprint.PrintContent;
@@ -105,7 +108,7 @@ public class PrintActivityEN<BarcodeFormat> extends ParentActivity {
     private P25Connector mConnector;
     JSONArray OrderList = null;
     JSONArray details = null;
-    String invoice_no = "", shop_code = "", total_priceMain = "", date = "";
+    String  shop_code = "", total_priceMain = "", date = "";
     public static final int FROM_HTML_MODE_LEGACY = 0;
 
     String appName = "";
@@ -138,6 +141,8 @@ public class PrintActivityEN<BarcodeFormat> extends ParentActivity {
 
     TextView area_office, outlet_name_category_address, market_thana, order_memo_no_date, outlet_address_phone;
 
+    TextView db_name,db_address,outlet_name,invoice_no,invoice_date,in_word,title;
+
     TextView discountTxt, bonus, gift, total_bill, discount, vatCal, net_payable, sr_db_name;
     LinearLayout extra;
 
@@ -157,7 +162,7 @@ public class PrintActivityEN<BarcodeFormat> extends ParentActivity {
 
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.print_test_bn);
+        setContentView(R.layout.print_test_en);
 
         savingLayout = (LinearLayout) findViewById(R.id.layout_save_image);
 
@@ -216,6 +221,16 @@ public class PrintActivityEN<BarcodeFormat> extends ParentActivity {
         net_payable = (TextView) findViewById(R.id.net_payable);
         sr_db_name = (TextView) findViewById(R.id.sr_db_name);
         gift = (TextView) findViewById(R.id.gift);
+
+        db_name = (TextView) findViewById(R.id.db_name);
+        db_address = (TextView) findViewById(R.id.db_address);
+        outlet_name = (TextView) findViewById(R.id.outlet_name);
+        invoice_no = (TextView) findViewById(R.id.invoice_no);
+        invoice_date = (TextView) findViewById(R.id.invoice_date);
+        in_word = (TextView) findViewById(R.id.in_word);
+        title = (TextView) findViewById(R.id.title);
+
+
         extra = (LinearLayout) findViewById(R.id.extra);
 
         if (getPreference("Outletaddress") == null || getPreference("Outletaddress").equals("")) {
@@ -668,11 +683,11 @@ public class PrintActivityEN<BarcodeFormat> extends ParentActivity {
         String Query = "";
         if (MEMO_EDIT) {
 
-            Query = "SELECT memo_date_time,outlet_id,market_id FROM " + Tables.TABLE_NAME_MEMOS + " WHERE " + Tables.MEMOS_memo_number + "='" + TempData.memoNumber + "'";
+            Query = "SELECT memo_date_time,outlet_id,market_id FROM " + Tables.TABLE_NAME_MEMOS + " WHERE " + Tables.MEMOS_memo_number + "='" + memoNumber + "'";
 
         } else {
 
-            Query = "SELECT order_date_time,outlet_id,market_id FROM " + Tables.TABLE_NAME_ORDER + " WHERE " + Tables.ORDER_order_number + "='" + TempData.orderNumber + "'";
+            Query = "SELECT order_date_time,outlet_id,market_id FROM " + Tables.TABLE_NAME_ORDER + " WHERE " + Tables.ORDER_order_number + "='" + orderNumber + "'";
         }
 
         String outlet_id = "", market_id = "";
@@ -719,21 +734,39 @@ public class PrintActivityEN<BarcodeFormat> extends ParentActivity {
 
         outlet_name_category_address.setText(TempData.OutletName + " " + "(" + getPreference("OutletCategoryName") + ") ");
 
+        outlet_name.setText("Outlet: "+TempData.OutletName);
+        db_name.setText("Distributor: "+getPreference("db_name"));
+        db_address.setText("Address: "+getPreference("db_address"));
+
+
+
+
         outlet_address_phone.setText(getPreference("Outletaddress") + ", " + getPreference("OutletMobile"));
 
         market_thana.setText(TempData.tempMarket + ", " + TempData.tempThana);
 
-        if (MEMO_EDIT)
-            order_memo_no_date.setText("Memo# " + TempData.memoNumber + ", " + date);
-        else
-            order_memo_no_date.setText("Order# " + TempData.orderNumber + ", " + date);
-
-        sr_db_name.setText(getPreference("sr_name") + "  DB:(" + getPreference("db_name") + ")");
+        if (MEMO_EDIT) {
+            order_memo_no_date.setText("Memo# " + memoNumber + ", " + date);
+            invoice_no.setText("Invoice No: " +memoNumber);
+            invoice_date.setText("Invoice Date: "+date);
+        }else {
+            order_memo_no_date.setText("Order# " + orderNumber + ", " + date);
+            invoice_no.setText("Invoice No: " +orderNumber);
+            invoice_date.setText("Invoice Date: "+date);
+        }
+        sr_db_name.setText("SR: "+getPreference("sr_name"));
         total_bill.setText("Total Bill:   " + String.valueOf(roundTwoDecimals(Double.parseDouble(TempData.InvoiceTotal))));
-        discount.setText("Discount:   " + roundTwoDecimals(TempData.DISCOUNT));
+        if (TempData.DISCOUNT>0) {
+            discount.setVisibility(View.VISIBLE);
+            discount.setText("Discount:   " + roundTwoDecimals(TempData.DISCOUNT));
+        }
         vatCal.setText("Vat:   " + roundTwoDecimals(TempData.VAT));
         net_payable.setText("Net-Payable:   " + roundTwoDecimals(Double.parseDouble(total) - TempData.DISCOUNT));
 
+        String word = NumberToWords.convert((int)Math.floor(Double.parseDouble(roundTwoDecimals(Double.parseDouble(total) - TempData.DISCOUNT))));
+        String part1 = word.substring(0,1).toUpperCase();
+        String part2 = word.substring(1);
+        in_word.setText(part1+part2);
         //  if ((TempData.TempGift != "Nill" && TempData.TempGift != "") || TempData.TempBonus_EN != "" || TempData.TempExtraBonus != "")
 
 

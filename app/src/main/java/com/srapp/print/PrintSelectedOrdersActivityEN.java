@@ -75,6 +75,7 @@ import com.srapp.DetailsOrderReport;
 import com.srapp.Multiple_Invoice_print;
 import com.srapp.R;
 import com.srapp.TempData;
+import com.srapp.Util.NumberToWords;
 import com.srapp.Util.PrintedListener;
 import com.srapp.print.newprint.Constant;
 import com.srapp.print.newprint.PrintContent;
@@ -1034,6 +1035,8 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
             TextView discountTxt, bonus, gift = null, total_bill, discount, vatCal, net_payable, sr_db_name, mobile_no, sr_address, office_copy;
             LinearLayout  layout_save_image,extra;
 
+            TextView db_name,db_address,outlet_name,invoice_no,invoice_date,in_word,title;
+
             Cursor c = db.sqLiteDatabase.rawQuery("SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_number=" + "'" + orderList.get(i) + "'",null);
             Log.e("Query", "SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where order_number=" + "'" + orderList.get(i) + "'");
             String memo_no = "";
@@ -1069,6 +1072,16 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
             mobile_no = (TextView) contentLayout.findViewById(R.id.sales_officer_phone);
             office_copy = (TextView) contentLayout.findViewById(R.id.office_copy);
             gift = (TextView) contentLayout.findViewById(R.id.gift);
+
+            db_name = (TextView) contentLayout.findViewById(R.id.db_name);
+            db_address = (TextView) contentLayout.findViewById(R.id.db_address);
+            outlet_name = (TextView) contentLayout.findViewById(R.id.outlet_name);
+            invoice_no = (TextView) contentLayout.findViewById(R.id.invoice_no);
+            invoice_date = (TextView) contentLayout.findViewById(R.id.invoice_date);
+            in_word = (TextView) contentLayout.findViewById(R.id.in_word);
+            title = (TextView) contentLayout.findViewById(R.id.title);
+
+
             layout_save_image = (LinearLayout) contentLayout.findViewById(R.id.layout_save_image);
 
             if (c != null && c.getCount() > 0) {
@@ -1219,6 +1232,10 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+                        outlet_name.setText("Outlet: "+TempData.OutletName);
+                        db_name.setText("Distributor: "+getPreference("db_name"));
+                        db_address.setText("Address: "+getPreference("db_address"));
+
 
                         market_thana.setText(TempData.tempMarket + ", " + TempData.tempThana);
                        /* if (MEMO_EDIT)
@@ -1226,7 +1243,7 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
                         else*/
                         order_memo_no_date.setText("Order# " + memo_no + ", " + date);
 
-                        sr_db_name.setText(getPreference("sr_name") + "  DB:(" + getPreference("db_name") + ")");
+
                         mobile_no.setText("Mobile No: " + getPreference("db_mobile"));
                         sr_address.setText("Address: " + getPreference("db_address"));
 
@@ -1234,6 +1251,17 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
                         discount.setText("Discount:   " + roundTwoDecimals(TempData.DISCOUNT));
                         vatCal.setText("Vat:   " + roundTwoDecimals(TempData.VAT));
                         net_payable.setText("Net-Payable:   " + roundTwoDecimals(gross_value - TempData.DISCOUNT));
+
+                        sr_db_name.setText("SR: "+getPreference("sr_name"));
+                        total_bill.setText("Total Bill:   " + String.valueOf(roundTwoDecimals(Double.parseDouble(TempData.InvoiceTotal))));
+                        String word = NumberToWords.convert((int)Math.floor(Double.parseDouble(roundTwoDecimals(gross_value - TempData.DISCOUNT))));
+                        String part1 = word.substring(0,1).toUpperCase();
+                        String part2 = word.substring(1);
+                        in_word.setText(part1+part2);
+                        if (TempData.DISCOUNT>0) {
+                            discount.setVisibility(View.VISIBLE);
+                            discount.setText("Discount:   " + roundTwoDecimals(TempData.DISCOUNT));
+                        }
 
                         if (TempData.TempGift != "Nill" && TempData.TempGift != "") {
                             gift.setText("Gift:" + TempData.TempGift);
@@ -1482,74 +1510,7 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
     }
 
     // Create image for printing Bangla----------------------------------------------------------------------------
-    public void SaveClick(View view, String fileName) {
 
-        /* for (int i = 0; i < orderList.size(); i++) {*/
-
-        Log.e("contentLayoutHeight_", String.valueOf(view.getMeasuredWidth() + "," + view.getMeasuredHeight()));
-
-        // pd.setMessage("saving your image");
-
-        // pd.show();
-
-        File file = saveBitMap(PrintSelectedOrdersActivityEN.this, view, fileName);
-        if (file != null) {
-            // pd.cancel();
-            Log.i("TAG", "Drawing saved to the gallery!");
-        } else {
-            //pd.cancel();
-            Log.i("TAG", "Oops! Image could not be saved.");
-        }
-
-    /*    File file1 = saveBitMap1(PrintSelectedOrdersActivityEN.this, savingLayout);
-
-        if (file1 != null) {
-            pd.cancel();
-            Log.i("TAG", "Drawing saved1 to the gallery!");
-
-
-        } else {
-            pd.cancel();
-            Log.i("TAG", "Oops! Image could not be saved1.");
-        }*/
-
-        //   }
-    }
-
-    private File saveBitMap(Context context, View drawView, String fileName) {
-
-        File pictureFileDir = new File(String.valueOf(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)));
-
-        Log.d("imagepath", String.valueOf(pictureFileDir));
-
-        if (!pictureFileDir.exists()) {
-            boolean isDirectoryCreated = pictureFileDir.mkdirs();
-            if (!isDirectoryCreated)
-                Log.i("TAG", "Can't create directory to save the image");
-            return null;
-        }
-
-        // String filename = pictureFileDir.getPath() +File.separator+ System.currentTimeMillis()+".png";
-        String filename = pictureFileDir.getPath() + File.separator + fileName + ".png";
-        Log.d("imagename", filename);
-
-        File pictureFile = new File(filename);
-
-
-
-    /*    try {
-            pictureFile.createNewFile();
-            FileOutputStream oStream = new FileOutputStream(pictureFile);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, oStream);
-            oStream.flush();
-            oStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.i("TAG", "There was an issue saving the image.");
-        }*/
-        scanGallery(context, pictureFile.getAbsolutePath());
-        return pictureFile;
-    }
 
     //create bitmap from view and returns it
     private Bitmap getBitmapFromView(View view) {
@@ -1578,17 +1539,6 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
     }
 
     // used for scanning gallery
-    private void scanGallery(Context cntx, String path) {
-        try {
-            MediaScannerConnection.scanFile(cntx, new String[]{path}, null, new MediaScannerConnection.OnScanCompletedListener() {
-                public void onScanCompleted(String path, Uri uri) {
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.i("TAG", "There was an issue scanning gallery.");
-        }
-    }
 
     public void DeletePOzipFile() {
 

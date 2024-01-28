@@ -104,7 +104,8 @@ public class outletStatus extends  AppCompatActivity implements BasicFunctionLis
 
                         for (int i = 0 ; i<array.length() ; i++){
                             JSONObject obj = array.getJSONObject(i);
-
+                            HashMap<String,String> map= getTempOutlet(obj.getString("id"),obj.getString("approval_status"),obj.getString("main_id"));
+                            list.add(map);
                             if (obj.getInt("approval_status")== Constants.SUCCESS){
                                 Log.e("approval_status1",obj.getInt("approval_status")+"");
 
@@ -116,8 +117,7 @@ public class outletStatus extends  AppCompatActivity implements BasicFunctionLis
                             } else if (obj.getInt("approval_status")==Constants.REJECT) {
                                 db.excQuery("delete from temp_outlets WHERE outlet_id='"+obj.getString("id")+"'");
                             }
-                            HashMap<String,String> map= getTempOutlet(obj.getString("id"),obj.getString("approval_status"),obj.getString("main_id"));
-                            list.add(map);
+
 
 
                         }
@@ -146,9 +146,9 @@ public class outletStatus extends  AppCompatActivity implements BasicFunctionLis
     private HashMap<String, String> getTempOutlet(String id, String approval_status, String main_id) {
         Log.e("getTempOutlet",approval_status+" "+id+" "+main_id+" "+(!main_id.equalsIgnoreCase("null")));
         HashMap<String, String> map = new HashMap<>();
-        if (!main_id.equalsIgnoreCase("null")){
-            return getOutlet(id,approval_status,main_id);
-        }
+//        if (!main_id.equalsIgnoreCase("null")){
+//            return getOutlet(id,approval_status,main_id);
+//        }
 
         Cursor c = db.rawQueryCoustom("select outlet_id,outlet_name,market_name from temp_outlets as o Inner Join markets as m on o.market_id=m.market_id where outlet_id='"+id+"'");
         Log.e("Query","select outlet_id,outlet_name,market_name from temp_outlets as o Inner Join markets as m on o.market_id=m.market_id where outlet_id='"+id+"'"+c.getCount());

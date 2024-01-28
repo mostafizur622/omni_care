@@ -2,6 +2,8 @@ package com.srapp.print;
 
 import static com.srapp.TempData.ConvertTOBangla;
 import static com.srapp.TempData.MEMO_EDIT;
+import static com.srapp.TempData.memoNumber;
+import static com.srapp.TempData.orderNumber;
 import static com.srapp.print.newprint.Constant.CONN_STATE_DISCONN;
 import static com.srapp.print.newprint.Constant.Connect_cuccess;
 import static com.srapp.print.newprint.Constant.Connect_fail;
@@ -67,6 +69,7 @@ import com.srapp.Db_Actions.Tables;
 import com.srapp.DetailsOrderReport;
 import com.srapp.R;
 import com.srapp.TempData;
+import com.srapp.Util.NumberToWords;
 import com.srapp.Util.PrintedListener;
 import com.srapp.print.newprint.Constant;
 import com.srapp.print.newprint.PrintContent;
@@ -108,7 +111,7 @@ public class PrintActivity<BarcodeFormat> extends ParentActivity {
     private P25Connector mConnector;
     JSONArray OrderList = null;
     JSONArray details = null;
-    String invoice_no = "", shop_code = "", total_priceMain = "", date = "";
+    String  shop_code = "", total_priceMain = "", date = "";
     public static final int FROM_HTML_MODE_LEGACY = 0;
 
     String appName = "";
@@ -140,7 +143,7 @@ public class PrintActivity<BarcodeFormat> extends ParentActivity {
     Button saveButton;
 
     TextView area_office, outlet_name_category_address, market_thana, order_memo_no_date, outlet_address_phone;
-
+    TextView db_name,db_address,outlet_name,invoice_no,invoice_date,in_word,title;
     TextView discountTxt, bonus, gift, total_bill, discount, vatCal, net_payable, sr_db_name;
     LinearLayout extra;
 
@@ -160,7 +163,7 @@ public class PrintActivity<BarcodeFormat> extends ParentActivity {
 
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.print_test);
+        setContentView(R.layout.print_test_bn);
 
         savingLayout = (LinearLayout) findViewById(R.id.layout_save_image);
 
@@ -220,6 +223,14 @@ public class PrintActivity<BarcodeFormat> extends ParentActivity {
         sr_db_name = (TextView) findViewById(R.id.sr_db_name);
         gift = (TextView) findViewById(R.id.gift);
         extra = (LinearLayout) findViewById(R.id.extra);
+
+        db_name = (TextView) findViewById(R.id.db_name);
+        db_address = (TextView) findViewById(R.id.db_address);
+        outlet_name = (TextView) findViewById(R.id.outlet_name);
+        invoice_no = (TextView) findViewById(R.id.invoice_no);
+        invoice_date = (TextView) findViewById(R.id.invoice_date);
+        in_word = (TextView) findViewById(R.id.in_word);
+        title = (TextView) findViewById(R.id.title);
 
         if (getPreference("Outletaddress") == null || getPreference("Outletaddress").equals("")) {
             outlet_address_phone.setVisibility(View.GONE);
@@ -728,12 +739,20 @@ public class PrintActivity<BarcodeFormat> extends ParentActivity {
 
         market_thana.setText(TempData.tempMarket + ", " + TempData.tempThana);
 
-        if (MEMO_EDIT)
+        outlet_name.setText("দোকান: "+TempData.OutletName);
+        db_name.setText("ডিস্টিবিউটির: "+getPreference("db_name"));
+        db_address.setText("ঠিকানা: "+getPreference("db_address"));
+        invoice_date.setText("রশিদ তারিখ: "+date);
+        if (MEMO_EDIT) {
             order_memo_no_date.setText("মেমো# " + ConvertTOBangla(TempData.memoNumber) + ", " + ConvertTOBangla(date));
-        else
+            invoice_no.setText("রশিদ নং: " +memoNumber);
+        }else {
             order_memo_no_date.setText("ওর্ডার# " + ConvertTOBangla(TempData.orderNumber) + ", " + ConvertTOBangla(date));
+            invoice_no.setText("রশিদ নং: " +orderNumber);
 
-        sr_db_name.setText(getPreference("sr_name") + "  DB:(" + getPreference("db_name") + ")");
+        }
+
+        sr_db_name.setText("এস আর: "+getPreference("sr_name"));
         total_bill.setText("মোট বিলের পরিমাণ :" + ConvertTOBangla(String.valueOf(roundTwoDecimals(Double.parseDouble(TempData.InvoiceTotal)))));
         if (TempData.DISCOUNT!=0) {
             discount.setVisibility(View.VISIBLE);
@@ -741,7 +760,7 @@ public class PrintActivity<BarcodeFormat> extends ParentActivity {
         }
         vatCal.setText("ভ্যাট :   " + ConvertTOBangla(roundTwoDecimals(TempData.VAT)));
         net_payable.setText("সর্বমোট প্রদান :   " + ConvertTOBangla(roundTwoDecimals(Double.parseDouble(total) - TempData.DISCOUNT)));
-
+        in_word.setText(NumberToWords.num2bangla((int)Math.floor(Double.parseDouble(roundTwoDecimals(Double.parseDouble(total) - TempData.DISCOUNT))))+" টাকা মাত্র");
         //  if ((TempData.TempGift != "Nill" && TempData.TempGift != "") || TempData.TempBonus != "" || TempData.TempExtraBonus != "")
 
 

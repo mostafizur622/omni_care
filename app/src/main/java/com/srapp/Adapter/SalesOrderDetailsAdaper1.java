@@ -76,8 +76,6 @@ import static com.srapp.TempData.policyBonusProductArrList;
 import static com.srapp.TempData.priceMap;
 import static com.srapp.TempData.price_idMap;
 import static com.srapp.TempData.vatMap;
-import static com.srapp.Util.Constants.BONUSQTY;
-import static com.srapp.Util.Constants.BONUS_PRODUCT_ID;
 import static com.srapp.Util.Constants.POLICY_ID;
 import static com.srapp.Util.Constants.SET_PRODUCTS;
 
@@ -1470,10 +1468,12 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                     continue;
                 }
             }else {
-                if (Double.parseDouble(minQty) > 0)
-                    bonus_qty = String.valueOf(((Math.floor(Double.parseDouble(Quantity) / Double.parseDouble(minQty))) * Double.parseDouble(bonus_qty))); // Bonus Policy Change nasir vai for Joya 8 s belt
+                if (Double.parseDouble(minQty)>0)
+                    bonus_qty = String.valueOf(((Double.parseDouble(bonus_qty) * Double.parseDouble(Quantity)) / Double.parseDouble(minQty))); // for min Quantity
                 else {
-                    bonus_qty = String.valueOf(((Double.parseDouble(bonus_qty) * Double.parseDouble(cart_value)) / Double.parseDouble(min_value))); // Bonus Policy Change nasir vai for Joya 8 s belt
+                    bonus_qty = String.valueOf(((Double.parseDouble(bonus_qty) *
+                            Double.parseDouble(cart_value)) /
+                            Double.parseDouble(min_value))); // for min Value
 
                 }
             }
@@ -1492,6 +1492,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
             String selected = "false";
             if (OldBPSelected_bonus.get(policyId) != null
                     && OldBPSelected_bonus.get(policyId).get(set) != null
+                    && OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id)!=null
                     && (
                     (
                             OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id) == null

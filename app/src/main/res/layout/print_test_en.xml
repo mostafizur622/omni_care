@@ -38,12 +38,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="10dp"
-                        android:text="মূসক-৬.৩"
+                        android:text="Mushak - 6.3"
+                        android:visibility="gone"
                         android:gravity="end"
                         android:textColor="#000"
                         android:textSize="@dimen/_12sdp"
                         android:textStyle="bold" />
-
                     <ImageView
                         android:layout_width="@dimen/_50sdp"
                         android:src="@drawable/smclogo"
@@ -51,99 +51,170 @@
                         android:layout_height="@dimen/_35sdp"/>
 
                     <TextView
+                        android:id="@+id/title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="গণপ্রজাতন্ত্রী বাংলাদেশ সরকার"
+                        android:visibility="visible"
+                        android:text="Invoice"
+                        android:layout_margin="@dimen/_10sdp"
                         android:gravity="center_horizontal"
                         android:textColor="#000000"
-                        android:textSize="@dimen/_9sdp"
+                        android:textSize="@dimen/_12sdp"
+                        android:textStyle="bold" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:orientation="vertical"
+                        android:visibility="gone"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="visible"
+                            android:text="Government of the People's Republic of Bangladesh"
+                            android:gravity="center_horizontal"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/_9sdp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="National Board of Revenue"
+                            android:gravity="center_horizontal"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/_9sdp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="VAT Challan Patra"
+                            android:gravity="center_horizontal"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/_9sdp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="SMC Enterprise Ltd."
+                            android:gravity="center_horizontal"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/_9sdp"
+                            android:textStyle="bold" />
+
+                        <TextView
+
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Central BIN: 000049992-0101."
+                            android:gravity="center_horizontal"
+                            android:textColor="#000000"
+                            android:textSize="@dimen/_9sdp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/area_office"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Area Office:"
+                            android:gravity="start"
+                            android:textColor="#000"
+                            android:textSize="@dimen/_9sdp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/outlet_name_category_address"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="outlet_name_category"
+                            android:gravity="start"
+                            android:textColor="#000"
+                            android:textSize="@dimen/_9sdp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/outlet_address_phone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="outlet_address_phone"
+                            android:gravity="start"
+                            android:textColor="#000"
+                            android:textSize="@dimen/_9sdp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/market_thana"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="market_thana"
+                            android:gravity="start"
+                            android:textColor="#000"
+                            android:textSize="@dimen/_9sdp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/order_memo_no_date"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="order_memo_no_date"
+                            android:gravity="start"
+                            android:textColor="#000"
+                            android:textSize="@dimen/_9sdp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+
+                    <TextView
+                        android:id="@+id/db_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Distributor:"
+                        android:gravity="start"
+                        android:textColor="#000"
+                        android:textSize="@dimen/_10sdp"
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/db_address"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="জাতীয় রাজস্ব বোর্ড"
-                        android:gravity="center_horizontal"
-                        android:textColor="#000000"
-                        android:textSize="@dimen/_9sdp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="ভ্যাট চালানপত্র"
-                        android:gravity="center_horizontal"
-                        android:textColor="#000000"
-                        android:textSize="@dimen/_9sdp"
-                        android:textStyle="bold" />
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="এসএমসি এন্টারপ্রাইজ লিমিটেড"
-                        android:gravity="center_horizontal"
-                        android:textColor="#000000"
-                        android:textSize="@dimen/_9sdp"
-                        android:textStyle="bold" />
-
-                    <TextView
-
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="কেন্দ্রীয় বি আই এন: ০০০০৩৯৯২-০১০১"
-                        android:gravity="center_horizontal"
-                        android:textColor="#000000"
-                        android:textSize="@dimen/_9sdp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/area_office"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Area Office:"
+                        android:text="address:"
                         android:gravity="start"
                         android:textColor="#000"
                         android:textSize="@dimen/_9sdp"
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/outlet_name_category_address"
+                        android:id="@+id/outlet_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="outlet_name_category"
+                        android:text="Outlet:"
                         android:gravity="start"
                         android:textColor="#000"
                         android:textSize="@dimen/_9sdp"
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/outlet_address_phone"
+                        android:id="@+id/invoice_no"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="outlet_address_phone"
+                        android:text="Invoice No:"
                         android:gravity="start"
                         android:textColor="#000"
                         android:textSize="@dimen/_9sdp"
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/market_thana"
+                        android:id="@+id/invoice_date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="market_thana"
+                        android:text="Invoice Date:"
                         android:gravity="start"
                         android:textColor="#000"
                         android:textSize="@dimen/_9sdp"
                         android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/order_memo_no_date"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="order_memo_no_date"
-                        android:gravity="start"
-                        android:textColor="#000"
-                        android:textSize="@dimen/_9sdp"
-                        android:textStyle="bold" />
+
 
                     <View
                         android:layout_width="match_parent"
@@ -163,7 +234,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:orientation="horizontal"
-                        android:layout_weight=".67"
+                        android:layout_weight="0.6"
                         android:layout_height="wrap_content">
 
                         <TextView
@@ -171,7 +242,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="start"
-                            android:text="পণ্য"
+                            android:text="Items"
                             android:textColor="#000"
                             android:textSize="@dimen/_9sdp"
                             android:textStyle="bold" />
@@ -182,6 +253,7 @@
                         android:layout_width="match_parent"
                         android:orientation="horizontal"
                         android:layout_weight=".99"
+                        android:visibility="gone"
                         android:layout_height="wrap_content">
 
                         <TextView
@@ -189,7 +261,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="start"
-                            android:text="ভ্যাট"
+                            android:text="Vat"
                             android:textColor="#000"
                             android:textSize="@dimen/_9sdp"
                             android:textStyle="bold" />
@@ -207,7 +279,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="start"
-                            android:text="মূল্য"
+                            android:text="Price"
                             android:textColor="#000"
                             android:textSize="@dimen/_9sdp"
                             android:textStyle="bold" />
@@ -226,7 +298,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="start"
-                            android:text="পরিমাণ"
+                            android:text="Qty"
                             android:textColor="#000"
                             android:textSize="@dimen/_9sdp"
                             android:textStyle="bold" />
@@ -246,7 +318,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="start"
-                            android:text="মোট"
+                            android:text="Total"
                             android:textColor="#000"
                             android:textSize="@dimen/_9sdp"
                             android:textStyle="bold" />
@@ -263,15 +335,15 @@
                     android:textSize="@dimen/_9sdp"
                     android:textStyle="normal" />
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/product_list_recycler_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false"
-                        tools:itemCount="4"
-                        tools:listitem="@layout/print_item">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/product_list_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    tools:itemCount="4"
+                    tools:listitem="@layout/print_item">
 
-                    </androidx.recyclerview.widget.RecyclerView>
+                </androidx.recyclerview.widget.RecyclerView>
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
@@ -287,43 +359,43 @@
                     android:layout_height="wrap_content">
 
 
-                <TextView
-                    android:id="@+id/gift"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text=""
-                    android:gravity="start"
-                    android:textColor="#000"
-                    android:textSize="@dimen/_9sdp"
-                    android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/gift"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text=""
+                        android:gravity="start"
+                        android:textColor="#000"
+                        android:textSize="@dimen/_9sdp"
+                        android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/discountTxt"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text=""
-                    android:gravity="start"
-                    android:textColor="#000"
-                    android:textSize="@dimen/_9sdp"
-                    android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/discountTxt"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text=""
+                        android:gravity="start"
+                        android:textColor="#000"
+                        android:textSize="@dimen/_9sdp"
+                        android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/bonus"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text=""
-                    android:gravity="start"
-                    android:textColor="#000"
-                    android:layout_marginBottom="@dimen/_2sdp"
-                    android:textSize="@dimen/_9sdp"
-                    android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/bonus"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:gravity="start"
+                        android:textColor="#000"
+                        android:layout_marginBottom="@dimen/_2sdp"
+                        android:textSize="@dimen/_9sdp"
+                        android:textStyle="bold" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="@dimen/_1sdp"
-                    android:background="#000"
-                    android:textStyle="bold" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="@dimen/_1sdp"
+                        android:background="#000"
+                        android:textStyle="bold" />
                 </LinearLayout>
                 <TextView
                     android:id="@+id/total_bill"
@@ -336,12 +408,12 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:visibility="gone"
                     android:id="@+id/discount"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="Discount: 0.00"
                     android:gravity="end"
+                    android:visibility="gone"
                     android:textColor="#000"
                     android:textSize="@dimen/_15sdp"
                     android:textStyle="bold" />
@@ -361,6 +433,7 @@
                     android:layout_height="match_parent"
                     android:text="Vat: 0.00"
                     android:gravity="end"
+                    android:visibility="gone"
                     android:textColor="#000"
                     android:textSize="@dimen/_15sdp"
                     android:textStyle="bold" />
@@ -385,7 +458,16 @@
                     android:visibility="gone"
                     android:textStyle="bold" />
 
-
+                <TextView
+                    android:id="@+id/in_word"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:text="in Word"
+                    android:gravity="start"
+                    android:textColor="#000"
+                    android:textSize="@dimen/_9sdp"
+                    android:textStyle="bold" />
                 <TextView
                     android:id="@+id/sr_db_name"
                     android:layout_width="match_parent"
@@ -402,6 +484,7 @@
                     android:layout_height="match_parent"
                     android:text="Sales Representative"
                     android:gravity="start"
+                    android:visibility="gone"
                     android:textColor="#000"
                     android:textSize="@dimen/_9sdp"
                     android:textStyle="bold" />
@@ -412,6 +495,7 @@
                     android:text="* Product(s) price are SD free &amp; including VAT"
                     android:gravity="start"
                     android:textColor="#000"
+                    android:visibility="gone"
                     android:textSize="@dimen/_9sdp"
                     android:textStyle="bold" />
 
