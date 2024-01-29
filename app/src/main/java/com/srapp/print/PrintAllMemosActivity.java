@@ -824,6 +824,7 @@ public class PrintAllMemosActivity extends ParentActivity {
                     String MemoDetails = "SELECT MD.product_id,P.product_name ,MD.quantity, MD.price,MD.vat,MD.discount_type,MD.discount_amount,P.product_name_bangla FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='0'";
                     Log.e("MemoDetails", "MemoDetails: " + MemoDetails);
                     discount_info = "";
+                    discount_info_BN = "";
                     Cursor cursor = db.rawQueryCoustom(MemoDetails);
 
 
@@ -944,7 +945,7 @@ public class PrintAllMemosActivity extends ParentActivity {
                     order_memo_no_date.setText("ওর্ডার# " + ConvertTOBangla(TempData.orderNumber) + ", " + ConvertTOBangla(date));
 
                     outlet_name.setText("দোকান: "+TempData.OutletName);
-                    db_name.setText("ডিস্টিবিউটির: "+getPreference("db_name"));
+                    db_name.setText("ডিস্ট্রিবিউটর: "+getPreference("db_name"));
                     db_address.setText("ঠিকানা: "+getPreference("db_address"));
                     invoice_date.setText("রশিদ তারিখ: "+date);
                     in_word.setText(NumberToWords.num2bangla((int)Math.floor(Double.parseDouble(roundTwoDecimals(gross_value - TempData.DISCOUNT))))+" টাকা মাত্র");

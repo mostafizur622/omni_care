@@ -184,9 +184,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Distributor:"
-                        android:gravity="start"
+                        android:gravity="center"
                         android:textColor="#000"
-                        android:textSize="@dimen/_10sdp"
+                        android:textSize="@dimen/_12sdp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -194,7 +194,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="address:"
-                        android:gravity="start"
+                        android:gravity="center"
                         android:textColor="#000"
                         android:textSize="@dimen/_9sdp"
                         android:textStyle="bold" />
@@ -351,7 +351,7 @@
                     android:id="@+id/product_list_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    tools:itemCount="2"
+                    tools:itemCount="4"
                     tools:listitem="@layout/print_item">
 
                 </androidx.recyclerview.widget.RecyclerView>
@@ -416,17 +416,17 @@
                     android:text="Total Bill: 5400.00"
                     android:gravity="end"
                     android:textColor="#000"
-                    android:textSize="@dimen/_9sdp"
+                    android:textSize="@dimen/_12sdp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/discount"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="Discount: 0.00"
                     android:gravity="end"
+                    android:text="Discount: 0.00"
                     android:textColor="#000"
-                    android:textSize="@dimen/_9sdp"
+                    android:textSize="@dimen/_12sdp"
                     android:textStyle="bold" />
 
                 <TextView

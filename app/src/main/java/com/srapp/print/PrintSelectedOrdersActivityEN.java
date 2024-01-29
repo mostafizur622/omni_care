@@ -1223,6 +1223,7 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
                         printRecylerview.setLayoutManager(mLayoutManager);
                         printRecylerview.setAdapter(mAdapter);
 
+
                         office_copy.setText("Office Copy");
                         area_office.setText("Area Office: " + getPreference("office_name") +", "+ getPreference("office_address") + ", " + getPreference("office_phone"));
 

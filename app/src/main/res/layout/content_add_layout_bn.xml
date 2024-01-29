@@ -193,9 +193,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Distributor:"
-                        android:gravity="start"
+                        android:gravity="center"
                         android:textColor="#000"
-                        android:textSize="@dimen/_10sdp"
+                        android:textSize="@dimen/_12sdp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -203,7 +203,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="address:"
-                        android:gravity="start"
+                        android:gravity="center"
                         android:textColor="#000"
                         android:textSize="@dimen/_9sdp"
                         android:textStyle="bold" />

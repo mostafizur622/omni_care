@@ -49,7 +49,7 @@ public class PrintRecyclerAdapterEN extends RecyclerView.Adapter<PrintRecyclerAd
         String total_price = String.valueOf(roundTwoDecimals(Double.parseDouble(itemsList.get(i).get("price")) * Double.parseDouble(itemsList.get(i).get("quantity"))));
 
         holder.itemName.setText(itemsList.get(i).get("product_name"));
-        holder.vat.setText(itemsList.get(i).get("vat"));
+        //holder.vat.setText(itemsList.get(i).get("vat"));
         holder.price.setText(price);
         holder.qty.setText(itemsList.get(i).get("quantity"));
         holder.total.setText(total_price);
@@ -63,7 +63,7 @@ public class PrintRecyclerAdapterEN extends RecyclerView.Adapter<PrintRecyclerAd
     public class SingleItemRowHolder extends RecyclerView.ViewHolder {
 
         protected TextView itemName;
-        protected TextView vat;
+       // protected TextView vat;
         protected TextView price;
         protected TextView qty;
         protected TextView total;
@@ -73,7 +73,7 @@ public class PrintRecyclerAdapterEN extends RecyclerView.Adapter<PrintRecyclerAd
             super(view);
 
             this.itemName = (TextView) view.findViewById(R.id.itemName);
-            this.vat = (TextView) view.findViewById(R.id.vat);
+          //  this.vat = (TextView) view.findViewById(R.id.vat);
             this.price = (TextView) view.findViewById(R.id.price);
             this.qty = (TextView) view.findViewById(R.id.qty);
             this.total = (TextView) view.findViewById(R.id.total);

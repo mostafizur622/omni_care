@@ -740,7 +740,7 @@ public class PrintActivity<BarcodeFormat> extends ParentActivity {
         market_thana.setText(TempData.tempMarket + ", " + TempData.tempThana);
 
         outlet_name.setText("দোকান: "+TempData.OutletName);
-        db_name.setText("ডিস্টিবিউটির: "+getPreference("db_name"));
+        db_name.setText("ডিস্ট্রিবিউটর: "+getPreference("db_name"));
         db_address.setText("ঠিকানা: "+getPreference("db_address"));
         invoice_date.setText("রশিদ তারিখ: "+date);
         if (MEMO_EDIT) {
