@@ -988,9 +988,9 @@ public class PrintSelectedOrdersActivityBN extends ParentActivity {
 
 
                         outlet_name.setText("দোকান: "+TempData.OutletName);
-                        db_name.setText("ডিস্ট্রিবিউটর: "+getPreference("db_name"));
-                        db_address.setText("ঠিকানা: "+getPreference("db_address"));
-                        invoice_date.setText("রশিদ তারিখ: "+date);
+                        db_name.setText(getResponsiveText(getPreference("db_name")));
+                        db_address.setText(getDbAddressMobile());
+                        invoice_date.setText("রশিদ তারিখ: "+DateFormatedConverter(date));
                         in_word.setText(NumberToWords.num2bangla((int)Math.floor(Double.parseDouble(roundTwoDecimals(gross_value - TempData.DISCOUNT))))+" টাকা মাত্র");
                         sr_db_name.setText("এস আর: "+getPreference("sr_name"));
                         invoice_no.setText("রশিদ নং: " +memo_no);

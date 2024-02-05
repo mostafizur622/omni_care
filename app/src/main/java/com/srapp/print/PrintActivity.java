@@ -4,6 +4,7 @@ import static com.srapp.TempData.ConvertTOBangla;
 import static com.srapp.TempData.MEMO_EDIT;
 import static com.srapp.TempData.memoNumber;
 import static com.srapp.TempData.orderNumber;
+import static com.srapp.print.PrintActivityEN.getResponsiveText;
 import static com.srapp.print.newprint.Constant.CONN_STATE_DISCONN;
 import static com.srapp.print.newprint.Constant.Connect_cuccess;
 import static com.srapp.print.newprint.Constant.Connect_fail;
@@ -740,9 +741,9 @@ public class PrintActivity<BarcodeFormat> extends ParentActivity {
         market_thana.setText(TempData.tempMarket + ", " + TempData.tempThana);
 
         outlet_name.setText("দোকান: "+TempData.OutletName);
-        db_name.setText("ডিস্ট্রিবিউটর: "+getPreference("db_name"));
-        db_address.setText("ঠিকানা: "+getPreference("db_address"));
-        invoice_date.setText("রশিদ তারিখ: "+date);
+        db_name.setText(getResponsiveText(getPreference("db_name")));
+        db_address.setText(getDbAddressMobile());
+        invoice_date.setText("রশিদ তারিখ: "+DateFormatedConverter(date));
         if (MEMO_EDIT) {
             order_memo_no_date.setText("মেমো# " + ConvertTOBangla(TempData.memoNumber) + ", " + ConvertTOBangla(date));
             invoice_no.setText("রশিদ নং: " +memoNumber);

@@ -735,8 +735,11 @@ public class PrintActivityEN<BarcodeFormat> extends ParentActivity {
         outlet_name_category_address.setText(TempData.OutletName + " " + "(" + getPreference("OutletCategoryName") + ") ");
 
         outlet_name.setText("Outlet: "+TempData.OutletName);
-        db_name.setText("Distributor: "+getPreference("db_name"));
-        db_address.setText("Address: "+getPreference("db_address"));
+
+
+
+        db_name.setText(getResponsiveText(getPreference("db_name")));
+        db_address.setText(getDbAddressMobile());
 
 
 
@@ -748,12 +751,16 @@ public class PrintActivityEN<BarcodeFormat> extends ParentActivity {
         if (MEMO_EDIT) {
             order_memo_no_date.setText("Memo# " + memoNumber + ", " + date);
             invoice_no.setText("Invoice No: " +memoNumber);
-            invoice_date.setText("Invoice Date: "+date);
+            invoice_date.setText("Invoice Date: "+DateFormatedConverter(date));
         }else {
             order_memo_no_date.setText("Order# " + orderNumber + ", " + date);
             invoice_no.setText("Invoice No: " +orderNumber);
-            invoice_date.setText("Invoice Date: "+date);
+            invoice_date.setText("Invoice Date: "+DateFormatedConverter(date));
         }
+
+
+
+
         sr_db_name.setText("SR: "+getPreference("sr_name"));
         total_bill.setText("Total Bill:   " + String.valueOf(roundTwoDecimals(Double.parseDouble(TempData.InvoiceTotal))));
         if (TempData.DISCOUNT>0) {
@@ -1056,6 +1063,32 @@ public class PrintActivityEN<BarcodeFormat> extends ParentActivity {
             Log.e("Tetst", TempData.TempBonus_EN + "no data");
         }*/
 
+
+    }
+
+
+    public static String getResponsiveText(String db_name) {
+        Log.e("text",db_name.length()+"");
+        String sr_name[] =db_name.split(" ");
+        String db_name_srt = "";
+        for (int i = 0 ; i<sr_name.length;i++){
+            db_name_srt+=checkName(sr_name,i);
+        }
+
+        return db_name_srt;
+    }
+
+    public static String checkName(String[] sr_name, int i) {
+
+        if (sr_name.length>i){
+            String part = sr_name[i]+" ";
+            if (i%3==0 && i!=0){
+                part="\n"+part;
+            }
+            return part;
+        }else {
+            return "";
+        }
 
     }
 

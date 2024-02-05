@@ -67,11 +67,59 @@
 
                     </LinearLayout>
 
-                    <ImageView
-                        android:layout_width="@dimen/_50sdp"
-                        android:src="@drawable/smclogo"
-                        android:layout_gravity="center"
-                        android:layout_height="@dimen/_35sdp"/>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:orientation="horizontal"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:layout_width="@dimen/_50sdp"
+                            android:layout_height="@dimen/_35sdp"
+                            android:layout_gravity="center"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/smclogo" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:orientation="vertical"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/db_name"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Distributor:"
+                                android:gravity="center"
+                                android:textColor="#000"
+                                android:textSize="@dimen/_12sdp"
+                                android:textStyle="bold"
+                                />
+                            <TextView
+                                android:id="@+id/smctitle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="এসএমসি ইএল ডিস্ট্রিবিউটর "
+                                android:gravity="center"
+                                android:textColor="#000"
+                                android:textSize="@dimen/_9sdp"
+                                android:textStyle="bold" />
+
+
+                            <TextView
+                                android:id="@+id/db_address"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="address:"
+                                android:gravity="center"
+                                android:textColor="#000"
+                                android:textSize="@dimen/_11sdp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </RelativeLayout>
+
+
+
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -146,15 +194,7 @@
                             android:textSize="@dimen/_9sdp"
                             android:textStyle="bold" />
 
-                        <TextView
-                            android:id="@+id/outlet_address_phone"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="outlet_address_phone"
-                            android:gravity="start"
-                            android:textColor="#000"
-                            android:textSize="@dimen/_9sdp"
-                            android:textStyle="bold" />
+
 
                         <TextView
                             android:id="@+id/market_thana"
@@ -188,25 +228,36 @@
                         android:textColor="#000000"
                         android:textSize="@dimen/_12sdp"
                         android:textStyle="bold" />
-                    <TextView
-                        android:id="@+id/db_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Distributor:"
-                        android:gravity="center"
-                        android:textColor="#000"
-                        android:textSize="@dimen/_12sdp"
-                        android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/db_address"
+
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="address:"
-                        android:gravity="center"
-                        android:textColor="#000"
-                        android:textSize="@dimen/_9sdp"
-                        android:textStyle="bold" />
+                        android:orientation="horizontal"
+                        android:weightSum="10"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/invoice_no"
+                            android:layout_width="0dp"
+                            android:layout_weight="5"
+                            android:layout_height="wrap_content"
+                            android:text="Invoice No:"
+                            android:gravity="start"
+                            android:textColor="#000"
+                            android:textSize="@dimen/_9sdp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/invoice_date"
+                            android:layout_width="0dp"
+                            android:layout_weight="5"
+                            android:layout_height="wrap_content"
+                            android:text="Invoice Date:"
+                            android:gravity="start"
+                            android:textColor="#000"
+                            android:textSize="@dimen/_9sdp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/outlet_name"
@@ -217,26 +268,17 @@
                         android:textColor="#000"
                         android:textSize="@dimen/_9sdp"
                         android:textStyle="bold" />
-
                     <TextView
-                        android:id="@+id/invoice_no"
+                        android:id="@+id/outlet_address_phone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Invoice No:"
+                        android:text="outlet_address_phone"
                         android:gravity="start"
                         android:textColor="#000"
                         android:textSize="@dimen/_9sdp"
                         android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/invoice_date"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Invoice Date:"
-                        android:gravity="start"
-                        android:textColor="#000"
-                        android:textSize="@dimen/_9sdp"
-                        android:textStyle="bold" />
+
 
                     <View
                         android:layout_width="match_parent"

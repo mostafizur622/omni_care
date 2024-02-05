@@ -1235,10 +1235,10 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
                             e.printStackTrace();
                         }
                         outlet_name.setText("Outlet: "+TempData.OutletName);
-                        db_name.setText("Distributor: "+getPreference("db_name"));
-                        db_address.setText("Address: "+getPreference("db_address"));
+                        db_name.setText(getResponsiveText(getPreference("db_name")));
+                        db_address.setText(getDbAddressMobile());
                         invoice_no.setText("Invoice No: " +memo_no);
-                        invoice_date.setText("Invoice Date: "+date);
+                        invoice_date.setText("Invoice Date: "+DateFormatedConverter(date));
                         sr_db_name.setText("SR: "+getPreference("sr_name"));
                         total_bill.setText("Total Bill:   " + String.valueOf(roundTwoDecimals(Double.parseDouble(TempData.InvoiceTotal))));
                         String word = NumberToWords.convert((int)Math.floor(Double.parseDouble(roundTwoDecimals(gross_value - TempData.DISCOUNT))));

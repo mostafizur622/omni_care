@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -17,6 +18,12 @@ import jpos.JposConst;
 import jpos.POSPrinter;
 
 import com.srapp.Util.Parent;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class ParentActivity extends Parent {
  
@@ -79,9 +86,56 @@ public class ParentActivity extends Parent {
 		savePreference("ApplicationLaunchingStatus", "Not Saved"); 
 		finish();
 	}
-	
-	
-	
-	
- 
+	public static String getResponsiveText(String db_name) {
+		Log.e("text",db_name.length()+"");
+		String sr_name[] =db_name.split(" ");
+		String db_name_srt = "";
+		for (int i = 0 ; i<sr_name.length;i++){
+			db_name_srt+=checkName(sr_name,i);
+		}
+
+		return db_name_srt;
+	}
+
+	public static String checkName(String[] sr_name, int i) {
+
+		if (sr_name.length>i){
+			String part = sr_name[i]+" ";
+			if (i%3==0 && i!=0){
+				part="\n"+part;
+			}
+			return part;
+		}else {
+			return "";
+		}
+
+	}
+
+	public String DateFormatedConverter(String oldDateString)
+	{
+		DateFormat originalFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm", Locale.ENGLISH);
+		DateFormat targetFormat = new SimpleDateFormat("dd-MMM-yyyy hh:mm");
+		Date date;
+		String formattedDate="";
+		try {
+			date = originalFormat.parse(oldDateString);
+			formattedDate = targetFormat.format(date);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Log.e("date",formattedDate);
+		return formattedDate;
+
+	}
+
+	public String getDbAddressMobile() {
+
+		return  getPreference("db_address")+", "+getPreference("db_mobile");
+	}
+
+
+
+
+
 }
