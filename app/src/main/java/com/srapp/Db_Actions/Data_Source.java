@@ -354,16 +354,19 @@ public class Data_Source extends Parent {
         return priceListHashmap;
     }
 
-    public ArrayList<HashMap<String, String>> Getproductlist(String CategoryID) {
+    public ArrayList<HashMap<String, String>> Getproductlist(String CategoryID,String type_id,String search) {
 
 
         ArrayList<HashMap<String, String>> ItemListFromDB = new ArrayList<>();
         open();
-        String query = "";
+        String query = "SELECT DISTINCT * FROM " + TABLE_NAME_PRODUCT_BOOLEAN + " WHERE outlet_id=" + "'" + getPreference(OUTLETS_ID) + "'";;
         if (!CategoryID.equalsIgnoreCase("0"))
-            query = "SELECT DISTINCT * FROM " + TABLE_NAME_PRODUCT_BOOLEAN + " WHERE product_category_id=" + "'" + CategoryID + "'" + " AND outlet_id=" + "'" + getPreference(OUTLETS_ID) + "'";
-        else
-            query = "SELECT DISTINCT * FROM " + TABLE_NAME_PRODUCT_BOOLEAN + " WHERE   outlet_id=" + "'" + getPreference(OUTLETS_ID) + "'";
+            query += " AND product_category_id=" + "'" + CategoryID + "'";
+
+        else if (!type_id.equalsIgnoreCase("0"))
+            query += " AND product_type_id=" + "'" + type_id + "'";
+        else if (!search.equalsIgnoreCase(""))
+            query += " AND product_name LIKE" + " '%" + search + "%'";
 
 
 
@@ -3966,6 +3969,7 @@ public class Data_Source extends Parent {
 
                             map.put("outlet_id", _OutletID);
                             map.put("product_id", product_id);
+                            map.put("product_name", product_name);
                             map.put("quantity", "0.00");
                             map.put("boolean", "false");
                             map.put("product_category_id", product_category_id);

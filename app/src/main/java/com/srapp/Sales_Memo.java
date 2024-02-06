@@ -6,12 +6,15 @@ import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -30,6 +33,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.srapp.Db_Actions.Tables.OUTLETS_ID;
+import static com.srapp.Db_Actions.Tables.PPRODCUT_TYPE;
 import static com.srapp.Db_Actions.Tables.PRODUCT_CATEGORYS;
 import static com.srapp.TempData.MEMO_EDIT;
 import static com.srapp.TempData.editMemo;
@@ -41,11 +45,16 @@ public class Sales_Memo extends Parent {
     Data_Source ds;
     Button nextBtn;
     HashMap<String, ArrayList<String>> productcatagory = new HashMap<>();
+    HashMap<String, ArrayList<String>> product_type = new HashMap<>();
     ListView productRecycleView;
     int backactivity;
     ImageView homeBtn,backBtn;
     SalesOrderAdaper adapter;
     TextView userIdTV,titleTV;
+    Spinner productSpinner,product_type_sp;
+
+    String query="";
+    EditText search;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,8 +68,14 @@ public class Sales_Memo extends Parent {
             backactivity = getIntent().getIntExtra("flag", 0);
         }
 
+         productSpinner =
+                findViewById(R.id.product_category_spinner);
+
+         product_type_sp =
+                findViewById(R.id.product_type);
         homeBtn = findViewById(R.id.home);
         backBtn = findViewById(R.id.back);
+        search = findViewById(R.id.search);
 
         userIdTV = findViewById(R.id.user_txt_view);
         titleTV = findViewById(R.id.title_tv);
@@ -86,6 +101,32 @@ public class Sales_Memo extends Parent {
             }
 
 
+        });
+
+
+        search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+                 query = editable.toString();
+                if (query.length()>0){
+
+                }else {
+                    query ="";
+                }
+                getList();
+            }
         });
         nextBtn.setOnClickListener(v -> {
             Runtime.getRuntime().gc(); // use for CursorWindowAllocationException
@@ -146,16 +187,23 @@ public class Sales_Memo extends Parent {
         }
 
         productcatagory = ds.getAccessories(true, "00", PRODUCT_CATEGORYS, null);
+        product_type = ds.getAccessories(true, "00", PPRODCUT_TYPE, null);
         productcatagory.get(PRODUCT_CATEGORYS[3]).add(0, "All");
+        product_type.get(PPRODCUT_TYPE[3]).add(0, "All");
+        Log.e("product_type",product_type.get(PPRODCUT_TYPE[3]).toString()+" ");
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
                 R.layout.spinner_item, productcatagory.get(PRODUCT_CATEGORYS[3]));
-        Spinner productSpinner =
-                findViewById(R.id.product_category_spinner);
+
+        ArrayAdapter<String> product_typeAdapter = new ArrayAdapter<String>(this,
+                R.layout.spinner_item, product_type.get(PPRODCUT_TYPE[3]));
+
         productSpinner.setAdapter(arrayAdapter);
+        product_type_sp.setAdapter(product_typeAdapter);
 
 
         productRecycleView = findViewById(R.id.product_list_recycler);
         productRecycleView.setItemsCanFocus(true);
+        product_type.get(PPRODCUT_TYPE[2]).add(0, "0");
         productcatagory.get(PRODUCT_CATEGORYS[2]).add(0, "0");
 
         productSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -167,7 +215,7 @@ public class Sales_Memo extends Parent {
                     textView.setPadding(0, 0, 0, 0);
                 }
 
-                getList(productcatagory.get(PRODUCT_CATEGORYS[2]).get(position));
+                getList();
                 Log.e("productcatagory", productcatagory.get(PRODUCT_CATEGORYS[2]).get(position));
 
             }
@@ -178,7 +226,27 @@ public class Sales_Memo extends Parent {
             }
         });
 
-        getList("0");
+        product_type_sp.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                TextView textView = (TextView)parent.getChildAt(0);
+                if (textView!=null) {
+                    textView.setTextColor(getResources().getColor(R.color.background_card));
+                    textView.setPadding(0, 0, 0, 0);
+                }
+
+                getList();
+                Log.e("productcatagory", productcatagory.get(PRODUCT_CATEGORYS[2]).get(position));
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        getList();
 
     }
 
@@ -201,8 +269,8 @@ public class Sales_Memo extends Parent {
 
     }
 
-    private void getList(String catagotyid) {
-         adapter = new SalesOrderAdaper(Sales_Memo.this, ds.Getproductlist(catagotyid), "2025", getPreference(Tables.OUTLETS_ID));
+    private void getList() {
+         adapter = new SalesOrderAdaper(Sales_Memo.this, ds.Getproductlist(productcatagory.get(PRODUCT_CATEGORYS[2]).get(productSpinner.getSelectedItemPosition()),product_type.get(PPRODCUT_TYPE[2]).get(product_type_sp.getSelectedItemPosition()),query), "2025", getPreference(Tables.OUTLETS_ID));
          productRecycleView.setAdapter(adapter);
     }
 

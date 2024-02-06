@@ -1067,30 +1067,7 @@ public class PrintActivityEN<BarcodeFormat> extends ParentActivity {
     }
 
 
-    public static String getResponsiveText(String db_name) {
-        Log.e("text",db_name.length()+"");
-        String sr_name[] =db_name.split(" ");
-        String db_name_srt = "";
-        for (int i = 0 ; i<sr_name.length;i++){
-            db_name_srt+=checkName(sr_name,i);
-        }
 
-        return db_name_srt;
-    }
-
-    public static String checkName(String[] sr_name, int i) {
-
-        if (sr_name.length>i){
-            String part = sr_name[i]+" ";
-            if (i%3==0 && i!=0){
-                part="\n"+part;
-            }
-            return part;
-        }else {
-            return "";
-        }
-
-    }
 
     // Create image for printing Bangla----------------------------------------------------------------------------
     public void SaveClick(View view) {

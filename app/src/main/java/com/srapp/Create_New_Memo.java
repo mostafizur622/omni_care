@@ -73,7 +73,7 @@ import retrofit2.Response;
 
 public class Create_New_Memo extends Parent implements OnClickListener, DBListener , BasicFunctionListener {
 
-    Button buttonLogin;
+    Button btnNext;
     Spinner routeSp, MarketSp, OutletCategorySp, OutletSp,offer_type_sp;
     int autoPos;
     ArrayAdapter<String> dataAdapter;
@@ -191,7 +191,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         int width = dm.widthPixels / 15;
-        buttonLogin = (Button) findViewById(R.id.nextBtn);
+        btnNext = (Button) findViewById(R.id.nextBtn);
         routeSp = (Spinner) findViewById(R.id.thana_Spinner);
         MarketSp = (Spinner) findViewById(R.id.market_Spinner);
         OutletCategorySp = (Spinner) findViewById(R.id.outlet_Type_Spinner);
@@ -610,7 +610,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
             }
         });
         itemName = "Sales Order";
-        buttonLogin.setOnClickListener(new OnClickListener() {
+        btnNext.setOnClickListener(new OnClickListener() {
 
 
             @Override
@@ -620,7 +620,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
 
                 System.gc();
 
-                buttonLogin.setEnabled(false);
+                btnNext.setEnabled(false);
                  clearPrefarance();
                 // TODO Auto-generated method stub
                 savePreference(OUTLET_ID, _OutletID);
@@ -683,11 +683,11 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
                             else {
                                 Toast.makeText(Create_New_Memo.this, "Please Turn On Internet", Toast.LENGTH_LONG).show();
 
-                                buttonLogin.setEnabled(true);
+                                btnNext.setEnabled(true);
                             }
                             }else {
                             Toast.makeText(Create_New_Memo.this,"Please select a Offer Type",Toast.LENGTH_LONG).show();
-                            buttonLogin.setEnabled(true);
+                            btnNext.setEnabled(true);
                         }
                     }
                   /*  if(itemName.equalsIgnoreCase("Collected List"))
@@ -838,7 +838,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
                     try {
                         progressDialog.dismiss();
                         Log.e("token: ", "token: " + RESPONSE);
-                        buttonLogin.setEnabled(true);
+                        btnNext.setEnabled(true);
                         JSONObject jsonObject = new JSONObject(RESPONSE);
                         if (RESPONSE != null) {
 
@@ -914,7 +914,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
 
         }
 
-        buttonLogin.setEnabled(true);
+        btnNext.setEnabled(true);
 
 
     }
@@ -990,7 +990,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
     Log.e("getPreference",getPreference("OutletID"));
         if (OutletName.size() <= 0 || TextUtils.isEmpty(outltateauto.getText().toString().trim())) {
             Toast.makeText(getApplicationContext(), "Select outlet first!", Toast.LENGTH_LONG).show();
-            buttonLogin.setEnabled(true);
+            btnNext.setEnabled(true);
             return false;
         }
 

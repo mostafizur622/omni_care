@@ -50,12 +50,12 @@
                         android:orientation="horizontal"
                         android:layout_height="wrap_content">
 
-                    <ImageView
-                        android:layout_width="@dimen/_50sdp"
-                        android:layout_height="@dimen/_35sdp"
-                        android:layout_gravity="center"
-                        android:layout_centerVertical="true"
-                        android:src="@drawable/smclogo" />
+                        <ImageView
+                            android:layout_marginTop="@dimen/_18sdp"
+                            android:layout_width="@dimen/_40sdp"
+                            android:layout_height="@dimen/_20sdp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/smclogo" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -90,7 +90,7 @@
                             android:text="address:"
                             android:gravity="center"
                             android:textColor="#000"
-                            android:textSize="@dimen/_11sdp"
+                            android:textSize="@dimen/_10sdp"
                             android:textStyle="bold" />
                     </LinearLayout>
                     </RelativeLayout>
@@ -446,7 +446,7 @@
                     android:text="Total Bill: 5400.00"
                     android:gravity="end"
                     android:textColor="#000"
-                    android:textSize="@dimen/_15sdp"
+                    android:textSize="@dimen/_11sdp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -463,7 +463,7 @@
                     android:id="@+id/net_payable"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:textSize="@dimen/_15sdp"
+                    android:textSize="@dimen/_11sdp"
                     android:gravity="end"
                     android:text="Net-Payable:"
                     android:textColor="#000"

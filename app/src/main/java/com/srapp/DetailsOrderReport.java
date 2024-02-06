@@ -1497,6 +1497,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                         HashMap<String, String> map = new HashMap<String, String>();
                         map.put("outlet_id", getPreference("OutletID"));
                         map.put("product_id", product_id);
+                        map.put("product_name", product_name);
                         map.put("quantity", product_quantity);
                         map.put("boolean", is_checked + "");
                         map.put("product_category_id", product_category_id);
