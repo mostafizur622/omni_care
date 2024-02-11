@@ -78,7 +78,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
-                                android:text="এসএমসি ইএল ডিস্ট্রিবিউটর"
+                                android:text="(এসএমসি ইএল ডিস্ট্রিবিউটর)"
                                 android:textColor="#000"
                                 android:textSize="@dimen/_9sdp"
                                 android:textStyle="bold" />
@@ -89,6 +89,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="address:"
+                                android:layout_marginTop="@dimen/_5sdp"
                                 android:gravity="center"
                                 android:textColor="#000"
                                 android:textSize="@dimen/_10sdp"
@@ -453,7 +454,7 @@
                     android:text="Discount: 0.00"
                     android:gravity="end"
                     android:textColor="#000"
-                    android:textSize="@dimen/_15sdp"
+                    android:textSize="@dimen/_11sdp"
                     android:textStyle="bold" />
                 <TextView
                     android:id="@+id/net_payable"

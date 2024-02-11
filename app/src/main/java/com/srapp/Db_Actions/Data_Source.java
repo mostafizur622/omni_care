@@ -363,9 +363,9 @@ public class Data_Source extends Parent {
         if (!CategoryID.equalsIgnoreCase("0"))
             query += " AND product_category_id=" + "'" + CategoryID + "'";
 
-        else if (!type_id.equalsIgnoreCase("0"))
+         if (!type_id.equalsIgnoreCase("0"))
             query += " AND product_type_id=" + "'" + type_id + "'";
-        else if (!search.equalsIgnoreCase(""))
+         if (!search.equalsIgnoreCase(""))
             query += " AND product_name LIKE" + " '%" + search + "%'";
 
 

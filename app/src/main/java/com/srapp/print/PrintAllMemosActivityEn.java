@@ -1001,7 +1001,10 @@ public class PrintAllMemosActivityEn extends ParentActivity {
                     in_word.setText(part1+part2);
 
                     total_bill.setText("Total Bill:   " + roundTwoDecimals(gross_value));
-                    discount.setText("Discount:   " + roundTwoDecimals(TempData.DISCOUNT));
+                    if (TempData.DISCOUNT>0) {
+                        discount.setVisibility(View.VISIBLE);
+                        discount.setText("Discount:   " + roundTwoDecimals(TempData.DISCOUNT));
+                    }
                     vatCal.setText("Vat:   " + roundTwoDecimals(TempData.VAT));
                     net_payable.setText("Net-Payable:   " + roundTwoDecimals(gross_value - TempData.DISCOUNT));
 

@@ -76,7 +76,7 @@
                             android:id="@+id/smctitle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Distributor Of SMC EL"
+                            android:text="(Distributor of SMC EL)"
                             android:gravity="center"
                             android:textColor="#000"
                             android:textSize="@dimen/_9sdp"
@@ -88,6 +88,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="address:"
+                            android:layout_marginTop="@dimen/_5sdp"
                             android:gravity="center"
                             android:textColor="#000"
                             android:textSize="@dimen/_10sdp"
@@ -457,7 +458,7 @@
                     android:gravity="end"
                     android:visibility="gone"
                     android:textColor="#000"
-                    android:textSize="@dimen/_15sdp"
+                    android:textSize="@dimen/_11sdp"
                     android:textStyle="bold" />
                 <TextView
                     android:id="@+id/net_payable"

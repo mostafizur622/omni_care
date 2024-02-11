@@ -88,7 +88,7 @@ public class ParentActivity extends Parent {
 	}
 	public static String getResponsiveText(String db_name) {
 		Log.e("text",db_name.length()+"");
-		String sr_name[] =("Name Of Distributor: "+db_name).split(" ");
+		String sr_name[] =("Distribution House: "+db_name).split(" ");
 		String db_name_srt = "";
 		for (int i = 0 ; i<sr_name.length;i++){
 			db_name_srt+=checkName(sr_name,i);
