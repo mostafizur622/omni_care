@@ -73,12 +73,7 @@
                         android:orientation="horizontal"
                         android:layout_height="wrap_content">
 
-                        <ImageView
-                            android:layout_marginTop="@dimen/_18sdp"
-                            android:layout_width="@dimen/_40sdp"
-                            android:layout_height="@dimen/_20sdp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/smclogo" />
+
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -111,7 +106,6 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="address:"
-                                android:layout_marginTop="@dimen/_5sdp"
                                 android:gravity="center"
                                 android:textColor="#000"
                                 android:textSize="@dimen/_10sdp"
@@ -573,6 +567,13 @@
                     android:textColor="#000"
                     android:textSize="@dimen/_9sdp"
                     android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_width="@dimen/_50sdp"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/smclogo" />
 
             </LinearLayout>
 
