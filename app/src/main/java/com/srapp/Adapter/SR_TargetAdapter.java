@@ -36,6 +36,8 @@ public class SR_TargetAdapter extends RecyclerView.Adapter<SR_TargetAdapter.Orde
         //holder.image.setX((float) 1.0);
         //holder.image.setY((float) 0.7);
         holder.image.setImageResource(R.drawable.arrow_right);
+        //if (!singleItem.getVisible())
+      //  holder.itemView.setVisibility(View.GONE);
 
     }
     @Override

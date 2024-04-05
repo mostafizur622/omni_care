@@ -84,28 +84,30 @@ public class Reports_Activity extends AppCompatActivity {
                 }else if (position == 3) {
                     startActivity(new Intent(Reports_Activity.this, ProductWiseDeliveryReport.class));
                     finish();
-                }else if (position == 4) {
-                    startActivity(new Intent(Reports_Activity.this, Product_Wise_Order_Summery.class).putExtra("report_name","Invoice Summery Report").putExtra("flag",1));
-                    finish();
-                }else if (position == 5) {
+                }
+//                else if (position == 4) {
+//                    startActivity(new Intent(Reports_Activity.this, Product_Wise_Order_Summery.class).putExtra("report_name","Invoice Summery Report").putExtra("flag",1));
+//                    finish();
+           //    }
+                else if (position == 4) {
                     startActivity(new Intent(Reports_Activity.this, Product_Wise_Order_Summery.class).putExtra("report_name","Delivery Summery Report").putExtra("flag",2));
                     finish();
-                }else if (position == 6) {
+                }else if (position == 5) {
                     startActivity(new Intent(Reports_Activity.this, Product_Wise_Order_Summery.class).putExtra("report_name","Order Summery Report").putExtra("flag",3));
                     finish();
-                }else if (position == 7) {
+                }else if (position == 6) {
                     startActivity(new Intent(Reports_Activity.this, Product_Wise_Bonus_Summery.class));
                     finish();
-                }else if (position == 8) {
+                }else if (position == 7) {
                     startActivity(new Intent(Reports_Activity.this, OutletVisitReport.class));
                     finish();
-                }else if (position == 9) {
+                }else if (position == 8) {
                     startActivity(new Intent(Reports_Activity.this, Outlet_wise_sales_report.class));
                     finish();
-                }else if (position == 10) {
+                }else if (position == 9) {
                     startActivity(new Intent(Reports_Activity.this, ReportBonusPartyReport.class));
                     finish();
-                }else if (position == 11) {
+                }else if (position == 10) {
                     startActivity(new Intent(Reports_Activity.this, Outlet_wise_Product_report.class));
                     finish();
                 }
@@ -125,7 +127,7 @@ public class Reports_Activity extends AppCompatActivity {
         report_List.add(new Reports("Invoice Report", null));
         report_List.add(new Reports("Order Bonus Report", null));
         report_List.add(new Reports("Product Wise Order Report", null));
-        report_List.add(new Reports("Invoice Summery Report", null));
+        //report_List.add(new Reports("Invoice Summery Report", null));
         report_List.add(new Reports("Delivery Summery Report", null));
         report_List.add(new Reports("Order Summery Report", null));
         report_List.add(new Reports("Memo Bonus Summery Report", null));

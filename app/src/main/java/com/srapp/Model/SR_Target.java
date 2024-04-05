@@ -6,9 +6,17 @@ public class SR_Target {
     String name;
     ImageView image;
 
+
+    Boolean isVisible = true;
     public SR_Target(String name, ImageView image) {
         this.name = name;
         this.image = image;
+    }
+
+    public SR_Target(String name, ImageView image,Boolean isVisible) {
+        this.name = name;
+        this.image = image;
+        this.isVisible=isVisible;
     }
 
     public String getName() {
@@ -21,6 +29,14 @@ public class SR_Target {
 
     public ImageView getImage() {
         return image;
+    }
+
+    public Boolean getVisible() {
+        return isVisible;
+    }
+
+    public void setVisible(Boolean visible) {
+        isVisible = visible;
     }
 
     public void setImage(ImageView image) {

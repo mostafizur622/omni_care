@@ -363,6 +363,7 @@
                 }
                 ds.excQuery("update markets set is_pushed ='1' , market_id='" + jsonArray.getJSONObject(i).getString("new_id") + "' where market_id='" + jsonArray.getJSONObject(i).getString("previous_id") + "'");
                 ds.excQuery("update outlets set market_id='" + jsonArray.getJSONObject(i).getString("new_id") + "' where market_id='" + jsonArray.getJSONObject(i).getString("previous_id") + "'");
+                ds.excQuery("update temp_outlets set market_id='" + jsonArray.getJSONObject(i).getString("new_id") + "' where market_id='" + jsonArray.getJSONObject(i).getString("previous_id") + "'");
                 ds.excQuery("update order_table set market_id='" + jsonArray.getJSONObject(i).getString("new_id") + "' where market_id='" + jsonArray.getJSONObject(i).getString("previous_id") + "'");
 
             }

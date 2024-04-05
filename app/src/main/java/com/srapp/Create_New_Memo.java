@@ -63,9 +63,12 @@ import static com.srapp.TempData.ORDER_TO_MEMO;
 import static com.srapp.TempData.PolicySetRelation;
 import static com.srapp.TempData.policyArrayList;
 import static com.srapp.Util.Constants.MIN_ORDER_NUMBER;
+import static com.srapp.Util.Constants.PUSH_Failed_TIME;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import javax.security.auth.login.LoginException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -734,6 +737,16 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
 
         count.moveToFirst();
 
+        long failed_MEMO_PUSH = Long.parseLong(getPreference(PUSH_Failed_TIME));
+        Log.e("failed_memo_push_time",(failed_MEMO_PUSH-System.currentTimeMillis())+"");
+        if (failed_MEMO_PUSH>0){
+            if (failed_MEMO_PUSH>System.currentTimeMillis()){
+                return false;
+            }
+
+        }
+
+
         int push_count = Integer.parseInt(getPreference(MIN_ORDER_NUMBER));
         if (push_count==0){
             return false;
@@ -741,6 +754,9 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
         if (count.getInt(0)>=push_count){
             return true;
         }
+
+
+
 
         return false;
     }
@@ -1318,6 +1334,8 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
 
     @Override
     public void OnLocalDBdataRetrive(String json) {
+
+        Log.e("onResponse", "onResponse: "+DBRetriveStatus);
         if ( DBRetriveStatus == 100) {
             Intent idn = new Intent(Create_New_Memo.this, Sales_Memo.class);
             idn.putExtra("OutletID", _OutletID);
@@ -1345,15 +1363,16 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
         if (dailog==null)
             return;
         try {
-
+            Log.e("onResponse", "api_call onResponse: ");
+            btnNext.setEnabled(true);
             getJAPi().ORDERPUSH(convertTORequestdata(new JSONObject(jsonObject))).enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
 
-                    // Log.e("log", "onResponse: ",response );
+                     Log.e("onResponse", "onResponse: "+response.toString() );
 
                     dailog.dismiss();
-                    if (response.code()==200) {
+                    if (response.code()==200 && response.isSuccessful()) {
                         try {
                             JSONObject jsonObject = new JSONObject(response.body());
                             int status = jsonObject.getJSONObject("order").getInt("status");
@@ -1365,7 +1384,10 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
                             }
 
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                           // e.printStackTrace();
+                            savePreference(PUSH_Failed_TIME,(System.currentTimeMillis()+180000)+"");
+                        }catch (Exception e){
+                            savePreference(PUSH_Failed_TIME,(System.currentTimeMillis()+180000)+"");
                         }
 
 
@@ -1374,11 +1396,13 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
                         Toast.makeText(Create_New_Memo.this,   "Order Not push try Again or Check Order Process from More", Toast.LENGTH_SHORT).show();
                     }
 
-                    db.getlastupdateddate();
+                    //db.getlastupdateddate();
                 }
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
+
+                    savePreference(PUSH_Failed_TIME,(System.currentTimeMillis()+180000)+"");
                     dailog.dismiss();
                     Toast.makeText(Create_New_Memo.this,   "Order Not push try Again or Check Order Process from More", Toast.LENGTH_SHORT).show();
                 }

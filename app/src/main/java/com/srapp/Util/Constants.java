@@ -12,4 +12,5 @@ public class Constants{
         public static final String MIN_ORDER_NUMBER = "push_order_setting";
         public static String[] SET_PRODUCTS = {"637","638","639","640","642"};
         public static String POLICY_ID = "699";
+        public static String PUSH_Failed_TIME = "failedMemoTime";
 }

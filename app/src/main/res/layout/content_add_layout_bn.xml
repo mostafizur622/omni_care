@@ -570,8 +570,8 @@
 
                 <ImageView
                     android:layout_marginTop="@dimen/_5sdp"
-                    android:layout_width="@dimen/_50sdp"
-                    android:layout_height="@dimen/_30sdp"
+                    android:layout_width="@dimen/_75sdp"
+                    android:layout_height="@dimen/_50sdp"
                     android:layout_gravity="center"
                     android:src="@drawable/smclogo" />
 
