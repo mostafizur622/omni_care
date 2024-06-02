@@ -11,6 +11,7 @@ import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Util.GPSTracker;
 import com.srapp.Util.Parent;
+import com.srapp.Util.ParentActivity;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
 import android.app.ProgressDialog;
@@ -830,7 +831,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
             RESPONSE = "";
 
             try {
-                String url = "http://182.160.103.234:8079/api_data_webtoapp_retrives/get_so_token.json";
+                String url = "http://202.126.123.157/smc_only_dms/api_data_webtoapp_retrives/get_so_token.json";
 
                 String requestJson = generateTokenJson();
                 Log.e("InstrumentNo Json", "" + requestJson);

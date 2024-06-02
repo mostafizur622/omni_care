@@ -11,24 +11,22 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
 import com.google.gson.Gson
 import com.srapp.Dashboard
 import com.srapp.Db_Actions.Data_Source
 import com.srapp.Db_Actions.Tables
 import com.srapp.R
 import com.srapp.Tools
+import com.srapp.Util.ParentActivity
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
+import java.util.Date
 
-class CurrentOfferProductActivity : AppCompatActivity() {
+class CurrentOfferProductActivity : ParentActivity() {
 
     private lateinit var dataViewModel: DataViewModel
     private var bonusCampaignList = ArrayList<BonusCampaign.BonusCamInfo>()
@@ -101,11 +99,7 @@ class CurrentOfferProductActivity : AppCompatActivity() {
 
     }
 
-    fun getCurrentDate(): String {
-        val dateFormat: DateFormat = SimpleDateFormat("yyyy-MM-dd")
-        val date = Date()
-        return "" + dateFormat.format(date)
-    }
+
 
     private fun initObservables() {
 

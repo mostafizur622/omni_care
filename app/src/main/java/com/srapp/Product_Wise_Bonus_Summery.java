@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.srapp.Adapter.AdapterForOrderSummery;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Db_Actions.URL;
+import com.srapp.Util.ParentActivity;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
@@ -43,7 +44,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Product_Wise_Bonus_Summery extends AppCompatActivity implements BasicFunctionListener {
+public class Product_Wise_Bonus_Summery extends ParentActivity implements BasicFunctionListener {
     private DatePickerDialog fromDatePickerDialog;
     private DatePickerDialog toDatePickerDialog;
     private SimpleDateFormat dateFormatter;

@@ -25,6 +25,7 @@ import com.srapp.Db_Actions.Tables;
 import com.srapp.Db_Actions.URL;
 import com.srapp.Model.Product;
 import com.srapp.Util.StaticFlags;
+import com.srapp.print.ParentActivity;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
@@ -52,7 +53,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Bonus_Party_Affiliation extends AppCompatActivity implements BasicFunctionListener {
+public class Bonus_Party_Affiliation extends ParentActivity implements BasicFunctionListener {
 
     RecyclerView recyclerView;
     String[] SPINNERLIST = {"Khilkhet", "Khilgaon", "Gulshan", "Badda"};

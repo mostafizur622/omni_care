@@ -25,6 +25,7 @@ import com.srapp.Adapter.AdapterForMultiOrderPrint;
 import com.srapp.Adapter.SpinnerAdapter;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
+import com.srapp.Util.ParentActivity;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
@@ -47,7 +48,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Multiple_Invoice_print extends AppCompatActivity implements BasicFunctionListener {
+public class Multiple_Invoice_print extends ParentActivity implements BasicFunctionListener {
     Spinner route, MarketSp, OutletSp;
     ArrayList<String> routeList = new ArrayList<String>();
     ArrayList<String> ThanaName = new ArrayList<String>();

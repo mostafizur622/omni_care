@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Db_Actions.URL;
+import com.srapp.Util.ParentActivity;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
@@ -33,7 +34,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SR_Attendance extends AppCompatActivity implements BasicFunctionListener {
+public class SR_Attendance extends ParentActivity implements BasicFunctionListener {
 
     TextView date,checkIntime,checkouttime;
     BasicFunction bf ;

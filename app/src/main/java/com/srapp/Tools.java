@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.srapp.Adapter.SR_TargetAdapter;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Model.SR_Target;
+import com.srapp.Util.ParentActivity;
 import com.srapp.Util.RecyclerTouchListener;
 import com.srapp.kotlin.BonusCampaignActivity;
 import com.srapp.kotlin.CurrentOfferProductActivity;
@@ -25,7 +26,7 @@ import com.srapp.kotlin.CurrentOfferProductActivity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Tools extends AppCompatActivity {
+public class Tools extends ParentActivity {
     RecyclerView recyclerView;
     ImageView homeBtn,backBtn;
     TextView userIdTV,titleTV;
@@ -89,48 +90,48 @@ public class Tools extends AppCompatActivity {
                         finish();
                         break;
 
-//                    case 3:
-//                        startActivity(new Intent(Tools.this,OrderProcess.class));
-//                        finish();
-//                        break;
-//                    case 4:
-//                        startActivity(new Intent(Tools.this,UnProcessOrder.class));
-//                        finish();
-//                        break;
-//
-//                        case 5:
-//                        startActivity(new Intent(Tools.this,Multiple_Invoice_print.class));
-//                        finish();
-//                        break;
                     case 3:
+                        startActivity(new Intent(Tools.this,OrderProcess.class));
+                        finish();
+                        break;
+                    case 4:
+                        startActivity(new Intent(Tools.this,UnProcessOrder.class));
+                        finish();
+                        break;
+
+                        case 5:
+                        startActivity(new Intent(Tools.this,Multiple_Invoice_print.class));
+                        finish();
+                        break;
+                    case 6:
                         startActivity(new Intent(Tools.this,CancelOrder.class));
                         finish();
                         break;
 
-                    case 4:
+                    case 7:
                         startActivity(new Intent(Tools.this,MakePDF.class));
                         finish();
                         break;
-                        case 5:
+                        case 8:
                         startActivity(new Intent(Tools.this,Product_Catalog.class));
                         finish();
                         break;
-                        case 6:
+                        case 9:
                         startActivity(new Intent(Tools.this,GiftIssueList.class));
                         finish();
                         break;
 
-                    case 7:
+                    case 10:
                         startActivity(new Intent(Tools.this, BonusCampaignActivity.class));
                         finish();
                         break;
 
-                    case 8:
+                    case 11:
                         startActivity(new Intent(Tools.this, CurrentOfferProductActivity.class));
                         finish();
                         break;
 
-                        case 9:
+                        case 12:
                         startActivity(new Intent(Tools.this, outletStatus.class));
                         finish();
                         break;
@@ -153,9 +154,9 @@ public class Tools extends AppCompatActivity {
         sr_targetList.add(new SR_Target("Outlet List",null));
         sr_targetList.add(new SR_Target("Market List",null));
         sr_targetList.add(new SR_Target("Price List",null));
-//        sr_targetList.add(new SR_Target("Order Process",null));
-//        sr_targetList.add(new SR_Target("Cancel Invoice ",null));
-//        sr_targetList.add(new SR_Target("Print Invoice",null));
+        sr_targetList.add(new SR_Target("Order Process",null));
+        sr_targetList.add(new SR_Target("Cancel Invoice ",null));
+        sr_targetList.add(new SR_Target("Print Invoice",null));
         sr_targetList.add(new SR_Target("Cancel Order ",null));
         sr_targetList.add(new SR_Target("Generate Order PDF",null));
         sr_targetList.add(new SR_Target("Product Catalog",null));

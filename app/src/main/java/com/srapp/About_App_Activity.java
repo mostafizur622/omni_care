@@ -11,10 +11,11 @@ import android.widget.TextView;
 
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Db_Actions.URL;
+import com.srapp.print.ParentActivity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class About_App_Activity extends AppCompatActivity {
+public class About_App_Activity extends ParentActivity {
 
     ImageView homeBtn,backBtn;
     TextView userIdTV,titleTV ;

@@ -6,11 +6,12 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
+import com.srapp.print.ParentActivity;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class Send_Message_Activity extends AppCompatActivity {
+public class Send_Message_Activity extends ParentActivity {
 
     String[] SPINNERLIST = {"Finance Upper Management", "Finance uPPER Maanagemt"};
     Button sendMessageBtn;

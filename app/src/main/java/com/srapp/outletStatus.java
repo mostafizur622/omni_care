@@ -24,6 +24,7 @@ import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Util.Constants;
 import com.srapp.Util.JAPIClient;
+import com.srapp.Util.ParentActivity;
 import com.srapp.Util.StaticFlags;
 import com.srapp.apiService.ApiInterfaceForJava;
 import com.tanvir.BasicFun.BasicFunction;
@@ -42,7 +43,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class outletStatus extends  AppCompatActivity implements BasicFunctionListener {
+public class outletStatus extends ParentActivity implements BasicFunctionListener {
 
     ImageView homeBtn, backBtn;
     BasicFunction bf;

@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 
-public class MemoDetails extends AppCompatActivity {
+import com.srapp.print.ParentActivity;
+
+public class MemoDetails extends ParentActivity {
 
     ImageView img;
 

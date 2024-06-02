@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.srapp.Db_Actions.URL;
+import com.srapp.print.ParentActivity;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
@@ -30,7 +31,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Change_Password_Activity extends AppCompatActivity implements BasicFunctionListener {
+public class Change_Password_Activity extends ParentActivity implements BasicFunctionListener {
 
     Button changePasswordBtn;
     ImageView homeBtn,backBtn;

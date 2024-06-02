@@ -30,7 +30,8 @@ import com.srapp.Db_Actions.DBListener;
 import com.srapp.Db_Actions.Data_Source;
         import com.srapp.Db_Actions.Tables;
         import com.srapp.Db_Actions.URL;
-        import com.tanvir.BasicFun.BasicFunction;
+import com.srapp.Util.ParentActivity;
+import com.tanvir.BasicFun.BasicFunction;
         import com.tanvir.BasicFun.BasicFunctionListener;
 
         import java.text.ParseException;
@@ -60,7 +61,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MemoReport extends AppCompatActivity implements View.OnClickListener, BasicFunctionListener, DBListener {
+public class MemoReport extends ParentActivity implements View.OnClickListener, BasicFunctionListener, DBListener {
     private DatePickerDialog fromDatePickerDialog;
     private DatePickerDialog toDatePickerDialog;
     private SimpleDateFormat dateFormatter;

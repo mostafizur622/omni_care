@@ -27,6 +27,7 @@ import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Db_Actions.URL;
 import com.srapp.Util.RecyclerTouchListener;
+import com.srapp.print.ParentActivity;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 import com.whiteelephant.monthpicker.MonthPickerDialog;
@@ -51,7 +52,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Visit_Plan_Activity extends AppCompatActivity implements BasicFunctionListener {
+public class Visit_Plan_Activity extends ParentActivity implements BasicFunctionListener {
 
     RecyclerView recyclerView;
     String[] SPINNERLIST = {"10-06-2019", "11-06-2019", "12-06-2019", "13-06-2019"};

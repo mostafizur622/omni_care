@@ -24,6 +24,7 @@ import com.srapp.Adapter.AdapterForAttendanceHistory;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Db_Actions.URL;
+import com.srapp.Util.ParentActivity;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
@@ -45,7 +46,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Attendance_history extends AppCompatActivity implements BasicFunctionListener {
+public class Attendance_history extends ParentActivity implements BasicFunctionListener {
 
     ImageView img;
 
@@ -165,10 +166,10 @@ public class Attendance_history extends AppCompatActivity implements BasicFuncti
 
 
     private void setDateTimeField() {
-        bf.savePreference("start_Date", bf.getCurrentDate());
-        bf.savePreference("end_date", bf.getCurrentDate());
-        startdate.setText(bf.getCurrentDate());
-        enddate.setText(bf.getCurrentDate());
+        bf.savePreference("start_Date",getCurrentDate());
+        bf.savePreference("end_date", getCurrentDate());
+        startdate.setText(getCurrentDate());
+        enddate.setText(getCurrentDate());
 
 
         Calendar newCalendar = Calendar.getInstance();

@@ -5,6 +5,7 @@ import android.widget.ArrayAdapter;
 
 import com.srapp.Adapter.ProductAdapter;
 import com.srapp.Model.Product;
+import com.srapp.print.ParentActivity;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class Create_New_Gift_Issue extends AppCompatActivity {
+public class Create_New_Gift_Issue extends ParentActivity {
 
     String[] SPINNERLIST = {"Khilkhet", "Khilgaon", "Gulshan", "Badda"};
     RecyclerView giftIssueRecycleview;

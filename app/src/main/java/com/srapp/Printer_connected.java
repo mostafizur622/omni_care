@@ -6,7 +6,9 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class Printer_connected extends AppCompatActivity {
+import com.srapp.print.ParentActivity;
+
+public class Printer_connected extends ParentActivity {
    Button ok;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

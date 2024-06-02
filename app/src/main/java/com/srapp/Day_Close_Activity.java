@@ -7,7 +7,9 @@ import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class Day_Close_Activity extends AppCompatActivity {
+import com.srapp.print.ParentActivity;
+
+public class Day_Close_Activity extends ParentActivity {
 
     Button dayCloseBtn;
     @Override

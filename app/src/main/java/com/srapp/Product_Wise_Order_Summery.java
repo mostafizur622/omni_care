@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import com.srapp.Adapter.AdapterForProductOrderWiseSummery;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Db_Actions.URL;
+import com.srapp.Util.ParentActivity;
 import com.srapp.print.SummeryPrintActivity;
 import com.srapp.print.Util;
 import com.tanvir.BasicFun.BasicFunction;
@@ -42,7 +43,7 @@ import NewPrint.BixolonPrinter;
 
 import static com.srapp.Db_Actions.Tables.SR_ID;
 
-public class Product_Wise_Order_Summery extends AppCompatActivity implements BasicFunctionListener {
+public class Product_Wise_Order_Summery extends ParentActivity implements BasicFunctionListener {
     private DatePickerDialog fromDatePickerDialog;
     private DatePickerDialog toDatePickerDialog;
     private SimpleDateFormat dateFormatter;

@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.srapp.Db_Actions.Data_Source;
+import com.srapp.print.ParentActivity;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
@@ -41,7 +42,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Outof_Plan_Visit extends AppCompatActivity implements BasicFunctionListener {
+public class Outof_Plan_Visit extends ParentActivity implements BasicFunctionListener {
     Spinner routesp, marketSpinner;
     ArrayList<String> Route_id = new ArrayList<String>();
     ArrayList<String> Route_name = new ArrayList<String>();

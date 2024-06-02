@@ -234,7 +234,7 @@ public class PrintActivity<BarcodeFormat> extends ParentActivity {
         title = (TextView) findViewById(R.id.title);
 
         if (getPreference("Outletaddress") == null || getPreference("Outletaddress").equals("")) {
-            outlet_address_phone.setVisibility(View.GONE);
+          //  outlet_address_phone.setVisibility(View.GONE);
             Log.e("shah", getPreference("Outletaddress"));
         } else {
             outlet_address_phone.setVisibility(View.VISIBLE);

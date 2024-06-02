@@ -16,6 +16,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.srapp.Util.ParentActivity;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,7 +28,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class NCP_replacemnt extends AppCompatActivity {
+public class NCP_replacemnt extends ParentActivity {
 
     TextView quantity,outlet,p_quantity;
 

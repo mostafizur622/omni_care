@@ -1,8 +1,13 @@
 package com.srapp.Util;
 
 
-import android.app.Activity;
+import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.Db_Actions.URL.isInternetOn;
+
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
@@ -14,6 +19,11 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.srapp.Db_Actions.Data_Source;
+import com.srapp.R;
+import com.srapp.apiService.ApiInterfaceForJava;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -25,21 +35,106 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class ParentActivity extends AppCompatActivity {
 	public static SQLiteDatabase myDB;
     public ProgressDialog pDialog;
     Data_Source db;
+	ApiInterfaceForJava api;
+	AlertDialog progressDialog;
+	AlertDialog.Builder builder;
+	String dateTag = "Date";
+	String IsTryTOFake = "try_to_fake";
+
+	Boolean dailogshowing = false;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState); 
-		
-		
+		super.onCreate(savedInstanceState);
+
+		api = JAPIClient.getClient().create(ApiInterfaceForJava.class);
 /*        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             buildAlertMessageNoGps();
         }
 */
+
+		Log.e("Parent","ParentActivity");
+
+			//getServerDateTime();
+
 	}
+	@Override
+	protected void onResume() {
+		super.onResume();
+		getServerDateTime();
+	}
+	public void getServerDateTime()  {
+
+
+		if (isInternetOn(this)){
+			JSONObject object = null;
+			try {
+				object = new JSONObject().put("mac", getPreference("mac")).put(IsTryTOFake,getPreference(IsTryTOFake));
+			} catch (JSONException e) {
+				throw new RuntimeException(e);
+			}
+			api.getTimeDate(convertTORequestdata(object)).enqueue(new Callback<String>() {
+				@Override
+				public void onResponse(Call<String> call, Response<String> response) {
+					try {
+						savePreference(dateTag,new JSONObject(response.body()).getString("date"));
+						savePreference(IsTryTOFake,"0");
+						showPrintDailog();
+					} catch (JSONException e) {
+						throw new RuntimeException(e);
+					}
+				}
+
+				@Override
+				public void onFailure(Call<String> call, Throwable throwable) {
+
+				}
+			});
+		}else {
+			showPrintDailog();
+		}
+	}
+
+	private void showPrintDailog() {
+
+		if (getPreference(dateTag).equalsIgnoreCase(NO_PREFERENCE)){
+			return;
+		}
+		if (!getCurrentDate().equalsIgnoreCase(getPreference(dateTag))) {
+			Log.e("dateSpookyes",getCurrentDate()+" "+getPreference(dateTag));
+			savePreference(IsTryTOFake,"1");
+			if (builder==null) {
+				builder = new AlertDialog.Builder(this)
+						.setIcon(R.drawable.alert)
+						.setTitle("Warning")
+						.setMessage("Your Device Date Is Fake.")
+						.setCancelable(false);
+			}
+			if (progressDialog==null)
+			progressDialog = builder.create();
+			if (!progressDialog.isShowing()){
+				progressDialog.show();
+			}
+		}else {
+			Log.e("dateSpookNO",getCurrentDate()+" "+getPreference(dateTag));
+			if (progressDialog!=null)
+			if (progressDialog.isShowing()){
+				progressDialog.dismiss();
+			}
+		}
+
+	}
+
+
+
 	public ArrayList<HashMap<String,String>> reOrder(ArrayList<HashMap<String,String>> hashArray)
 	{
 		
@@ -196,6 +291,8 @@ public class ParentActivity extends AppCompatActivity {
         return String.format("%.2f", d);
     }
 
+
+
 	 public String injectable_product_check()
 	 {
 		 String is_injectable="0";
@@ -252,7 +349,31 @@ public class ParentActivity extends AppCompatActivity {
 	     myDB.execSQL(queryDeleteTable);
 	     Log.e("queryDelete : "+table_name, queryDeleteTable);
 	}
-	
+
+	public void buildAlertMessageNoGps() {
+
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				final AlertDialog.Builder builder = new AlertDialog.Builder(ParentActivity.this);
+				builder.setMessage("You need to enable GPS, do you want to enable it?")
+						.setCancelable(false)
+						.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+							public void onClick(final DialogInterface dialog, final int id) {
+								startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+							}
+						})
+						.setNegativeButton("No", new DialogInterface.OnClickListener() {
+							public void onClick(final DialogInterface dialog, final int id) {
+								dialog.cancel();
+							}
+						});
+				final AlertDialog alert = builder.create();
+				alert.show();
+			}
+		});
+
+	}
 	public void CreateTableForVehicle(ArrayList<String> key) {
 		
 	/*	
@@ -480,7 +601,9 @@ public class ParentActivity extends AppCompatActivity {
 		
 		return value;
 		
-	}  
+	}
+
+	String NO_PREFERENCE = "NO PREFERENCE";
 	
 	public static String getCurrentDate()
 	{

@@ -7,6 +7,7 @@ import android.widget.ImageView;
 
 import com.srapp.Adapter.SR_TargetAdapter;
 import com.srapp.Model.SR_Target;
+import com.srapp.print.ParentActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class SR_Target_Activity extends AppCompatActivity {
+public class SR_Target_Activity extends ParentActivity {
 
     RecyclerView recyclerView;
     ImageView srTargetImage;

@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import static com.srapp.Db_Actions.Tables.CREATE_BONUS_PARTY_TABLE;
+import static com.srapp.helpers.SpecialPolicyHelper.CREATE_IGNORE_OUTLET_FOR_POLICY_TABLE;
 
 public class DB_Helper extends SQLiteOpenHelper {
 
@@ -371,6 +372,7 @@ public class DB_Helper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(Tables.CREATE_OFFER_TABLE);
         sqLiteDatabase.execSQL(Tables.CREATED_OUTLET_PERMISSION_TABLE);
         sqLiteDatabase.execSQL(Tables.CREATE_TEMP_OUTLETS_TABLE);
+        sqLiteDatabase.execSQL(CREATE_IGNORE_OUTLET_FOR_POLICY_TABLE);
 
 
         Log.e("DB Create test", "onCreate:  created db" );

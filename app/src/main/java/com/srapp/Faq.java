@@ -16,10 +16,11 @@ import android.widget.TextView;
 import com.srapp.Adapter.FaqAdapter;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Model.FaqModel;
+import com.srapp.print.ParentActivity;
 
 import java.util.ArrayList;
 
-public class Faq extends AppCompatActivity {
+public class Faq extends ParentActivity {
 
     FaqAdapter adapter;
     ArrayList<FaqModel> data;

@@ -31,6 +31,7 @@ import com.srapp.Db_Actions.Tables;
 import com.srapp.Db_Actions.URL;
 import com.srapp.kotlin.DataViewModel;
 import com.srapp.kotlin.DataViewModelFactory;
+import com.srapp.print.ParentActivity;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
@@ -46,7 +47,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PriceList extends AppCompatActivity implements BasicFunctionListener, DBListener {
+public class PriceList extends ParentActivity implements BasicFunctionListener, DBListener {
     ImageView img;
     RecyclerView recyclerView;
     BasicFunction basicFunction;

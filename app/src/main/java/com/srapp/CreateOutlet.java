@@ -49,6 +49,7 @@ import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Db_Actions.URL;
 import com.srapp.Util.StaticFlags;
+import com.srapp.print.ParentActivity;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
@@ -73,7 +74,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CreateOutlet extends AppCompatActivity implements BasicFunctionListener {
+public class CreateOutlet extends ParentActivity implements BasicFunctionListener {
     Spinner outletCategoySpinner, marketSpinner, outletSpinner;
     TextView title;
     ImageView home;

@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.srapp.Adapter.AdapterForGiftIssueList;
 import com.srapp.Db_Actions.Data_Source;
+import com.srapp.print.ParentActivity;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
@@ -43,7 +44,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class GiftIssueList extends AppCompatActivity implements BasicFunctionListener {
+public class GiftIssueList extends ParentActivity implements BasicFunctionListener {
 
     ImageView homeBtn,backBtn;
     BasicFunction bf;

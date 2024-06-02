@@ -17,11 +17,12 @@ import com.srapp.Adapter.AdapterForProductCatalog;
 import com.srapp.Adapter.AdapterForProductPolicyDetails;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
+import com.srapp.Util.ParentActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Product_policy_Details extends AppCompatActivity {
+public class Product_policy_Details extends ParentActivity {
     HashMap<String, ArrayList<String>> productcatagory = new HashMap<>();
     ListView productRecycleView;
     ImageView homeBtn,backBtn;

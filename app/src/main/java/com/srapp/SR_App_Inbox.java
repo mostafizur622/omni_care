@@ -7,6 +7,7 @@ import android.widget.Button;
 
 import com.srapp.Adapter.App_InboxAdapter;
 import com.srapp.Model.App_Inbox;
+import com.srapp.print.ParentActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class SR_App_Inbox extends AppCompatActivity {
+public class SR_App_Inbox extends ParentActivity {
 
     RecyclerView recyclerView;
     Button sendMessageBtn;

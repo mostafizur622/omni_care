@@ -80,6 +80,7 @@ import static com.srapp.Db_Actions.Tables.PRODUCT_PRICE_PRICE;
 import static com.srapp.Db_Actions.Tables.PRODUCT_PRODUCT_NAME;
 import static com.srapp.DetailsOrderReport.discount_info;
 import static com.srapp.TempData.discount_data;
+import static com.srapp.print.ParentActivity.getResponsiveText;
 import static com.srapp.print.newprint.Constant.CONN_STATE_DISCONN;
 import static com.srapp.print.newprint.Constant.Connect_cuccess;
 import static com.srapp.print.newprint.Constant.Connect_fail;

@@ -10,7 +10,6 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,12 +17,11 @@ import com.srapp.Dashboard
 import com.srapp.Db_Actions.Data_Source
 import com.srapp.Db_Actions.Tables
 import com.srapp.R
-import java.util.*
-import kotlin.collections.ArrayList
+import com.srapp.Util.ParentActivity
 import kotlin.collections.set
 import kotlin.math.floor
 
-class OfferDetailsActivity1 : AppCompatActivity() {
+class OfferDetailsActivity1 : ParentActivity() {
 
     var HeaderTitleTv: TextView? = null
     var txtUser: TextView? = null

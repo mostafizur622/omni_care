@@ -8,6 +8,7 @@ import android.widget.ImageView;
 
 import com.srapp.Adapter.App_InboxAdapter;
 import com.srapp.Model.App_Inbox;
+import com.srapp.print.ParentActivity;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class Current_Promotions extends AppCompatActivity {
+public class Current_Promotions extends ParentActivity {
 
     String[] SPINNERLIST = {"Soma-Ject", "Orsaline-N", "Panther Dotted", "Raja Plain"};
     RecyclerView recyclerView;

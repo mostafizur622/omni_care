@@ -35,6 +35,7 @@ import com.srapp.Adapter.SpinnerAdapter;
 import com.srapp.Db_Actions.DBListener;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
+import com.srapp.print.ParentActivity;
 import com.srapp.print.PrintActivity;
 import com.srapp.print.PrintActivityEN;
 import com.srapp.print.PrintAllMemosActivity;
@@ -60,7 +61,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class DeliveryReport extends AppCompatActivity implements BasicFunctionListener , DBListener {
+public class DeliveryReport extends ParentActivity implements BasicFunctionListener , DBListener {
     private DatePickerDialog fromDatePickerDialog;
     private DatePickerDialog toDatePickerDialog;
     private SimpleDateFormat dateFormatter;

@@ -34,6 +34,7 @@ import com.srapp.bonusPolicy.PolicyBonusProduct;
 import com.srapp.bonusPolicy.PolicyID;
 import com.srapp.bonusPolicy.PolicyProduct;
 import com.srapp.bonusPolicy.PolicyWiseSlab;
+import com.srapp.helpers.SpecialPolicyHelper;
 import com.srapp.pricing.CombinationPrices;
 import com.srapp.pricing.CombinationProductDetails;
 import com.srapp.pricing.GSOPrice;
@@ -87,6 +88,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
     String SO_ID;
     int bonusPolicy = 0;
     int policy_offer = 0;
+    SpecialPolicyHelper specialPolicyHelper;
     ArrayList<String> inPolicyProductlist = new ArrayList<>();
     ArrayList<HashMap<String, String>> itemListContent = new ArrayList<HashMap<String, String>>();
     //	ArrayList<HashMap<String, String>> itemListData = new ArrayList<HashMap<String, String>>();
@@ -141,6 +143,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
         itemListContent = arraylistContent;
 
         db = new Data_Source(context);
+        specialPolicyHelper = new SpecialPolicyHelper(context);
         if (TempData.policyClear) {
             db.excQuery("delete from policy_product_Option_temp");
             TempData.policyClear = true;
@@ -1027,7 +1030,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
         Log.e("priceMap", priceMap.toString() + " map4");
         for (int i = 0; i < policyIdsArrayList.size(); i++) {
             String policyProductsId = policyProductMap.get(policyIdsArrayList.get(i).getPolicy_id());
-            if (policyProductsId == null) {
+            if (policyProductsId == null || checkPolicyCapability(policyIdsArrayList.get(i).getPolicy_id())) {
                 continue;
             }
             Log.e("policyProductsId", policyProductsId);
@@ -2885,6 +2888,15 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
             }
         }
 
+
+    }
+
+    private boolean checkPolicyCapability(String policyId) {
+        if (policyId.equalsIgnoreCase(TempData.SPPolicyID)){
+            return specialPolicyHelper.checkOutlet(TempData.OutletID);
+        }else {
+            return false;
+        }
 
     }
 }

@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class OutofPlanVisit extends AppCompatActivity {
+import com.srapp.Util.ParentActivity;
+
+public class OutofPlanVisit extends ParentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

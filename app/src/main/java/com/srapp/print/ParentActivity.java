@@ -5,6 +5,7 @@ package com.srapp.print;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
@@ -17,7 +18,10 @@ import android.widget.Toast;
 import jpos.JposConst;
 import jpos.POSPrinter;
 
+import com.srapp.R;
+import com.srapp.Util.JAPIClient;
 import com.srapp.Util.Parent;
+import com.srapp.apiService.ApiInterfaceForJava;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -25,12 +29,18 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class ParentActivity extends Parent {
- 
+public class ParentActivity extends com.srapp.Util.ParentActivity {
+
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState); 
+		super.onCreate(savedInstanceState);
+
+
+
 	}
+
+
 	 
 	public void logout(int btnLogout)
 	{

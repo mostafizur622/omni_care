@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import com.srapp.Adapter.NCP_CollectionAdapter;
 import com.srapp.Model.NCP_Collection;
 import com.srapp.Util.RecyclerTouchListener;
+import com.srapp.print.ParentActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class SR_NCP_Activity extends AppCompatActivity {
+public class SR_NCP_Activity extends ParentActivity {
 
     RecyclerView recyclerView;
     ImageView homeBtn,backBtn;

@@ -261,6 +261,10 @@ interface ApiInterfaceForJava {
     @POST("get_temp_outlet_status.json")
     fun tempOutletStatus(@Body JSONObject: RequestBody): Call<String>
 
+    @Headers("Content-Type: application/json")
+    @POST("get_system_current_date_time.json")
+    fun getTimeDate(@Body JSONObject: RequestBody): Call<String>
+
 
 }
 

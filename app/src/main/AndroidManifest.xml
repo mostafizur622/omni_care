@@ -60,7 +60,7 @@
             android:name=".NCP_replacemnt"
             android:exported="false" />
         <activity
-            android:name=".NCPReplacment"
+            android:name=".NCP_replacemnt"
             android:exported="false" />
         <activity
             android:name=".NCPCollectionDetails"

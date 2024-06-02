@@ -7,6 +7,7 @@ import android.widget.Button;
 
 import com.srapp.Adapter.ProductAdapter;
 import com.srapp.Model.Product;
+import com.srapp.print.ParentActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class Gift_Issue_Edit extends AppCompatActivity {
+public class Gift_Issue_Edit extends ParentActivity {
 
     RecyclerView EditgiftIssueRecycleview;
     Button submitBtn;

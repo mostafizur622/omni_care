@@ -24,6 +24,7 @@ import com.srapp.Adapter.SrProductTarget_Adapter;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Db_Actions.URL;
+import com.srapp.print.ParentActivity;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 import com.whiteelephant.monthpicker.MonthPickerDialog;
@@ -41,7 +42,7 @@ import java.util.Locale;
 
 import static android.widget.LinearLayout.VERTICAL;
 
-public class SrProductTarget extends AppCompatActivity implements BasicFunctionListener {
+public class SrProductTarget extends ParentActivity implements BasicFunctionListener {
     Spinner monthSpinner;
     ImageView img;
     TextView monthPick;

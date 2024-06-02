@@ -2920,7 +2920,8 @@ public class Data_Source extends Parent {
 
     }
 
-    private String getCurrentDateTime24() {
+    @Override
+    public String getCurrentDateTime24() {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -3642,6 +3643,10 @@ public class Data_Source extends Parent {
             excQuery( "update outlet_create_permission_list set no_of_outlet=(no_of_outlet-1) where '"+currentDateTime+"' between start_time and end_time and no_of_outlet>0");
 
 
+    }
+
+    public void deleteAllRow(String table_name) {
+        excQuery("Delete * from "+table_name);
     }
 
 

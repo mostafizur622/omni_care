@@ -23,11 +23,12 @@ import com.srapp.Adapter.NcpProductCollectionAdapter;
 import com.srapp.Adapter.SpinnerAdapter;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
+import com.srapp.print.ParentActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class NcpProductCollection extends AppCompatActivity {
+public class NcpProductCollection extends ParentActivity {
 
     NcpProductCollectionAdapter adapter;
     ArrayList<String> Selected_products;

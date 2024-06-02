@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.srapp.Db_Actions.Tables;
+import com.srapp.apiService.ApiInterfaceForJava;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,7 +43,7 @@ import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
-public class Parent extends AppCompatActivity {
+public class Parent extends ParentActivity {
 
     public static String Domain = "http://arenaphone.us/tutor_management/";
     public static String UserInfo = Domain+"receive_api_user.php";
@@ -74,30 +76,7 @@ public class Parent extends AppCompatActivity {
         editor.putString(key, value);
         editor.commit();
     }
-    public void buildAlertMessageNoGps() {
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                final AlertDialog.Builder builder = new AlertDialog.Builder(Parent.this);
-                builder.setMessage("You need to enable GPS, do you want to enable it?")
-                        .setCancelable(false)
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            public void onClick(final DialogInterface dialog, final int id) {
-                                startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                            }
-                        })
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            public void onClick(final DialogInterface dialog, final int id) {
-                                dialog.cancel();
-                            }
-                        });
-                final AlertDialog alert = builder.create();
-                alert.show();
-            }
-        });
-
-    }
     public String gettext(int id){
         EditText editText = findViewById(id);
         String text = editText.getText().toString().trim();
@@ -132,14 +111,7 @@ public class Parent extends AppCompatActivity {
 
     }
 
-    public String getCurrentDate (){
-        Calendar cal = Calendar.getInstance();
-        cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
-        Date date = cal.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        return sdf.format(date);
 
-    }
 
     public int getIndex(ArrayList<String> arrayList,String value){
 

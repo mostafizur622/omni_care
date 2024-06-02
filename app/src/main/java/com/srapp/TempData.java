@@ -22,7 +22,7 @@ public class TempData {
     public static String TargetCustomer="";
     public static String MemoDateTime="";
     public static String InstituteID="";
-
+    public static String SPPolicyID = "5195";
 
     public static String OutletCatagoryID="";
     public static String SalesUPricePosition="";
