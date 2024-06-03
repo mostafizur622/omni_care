@@ -932,10 +932,12 @@ public class PrintAllMemosActivity extends ParentActivity {
 
                     outlet_name_category_address.setText(TempData.OutletName + " " + "(" + getPreference("OutletCategoryNameBN") + ") ");
 
-                    try {
+                    if (!TempData.Outlet_Address.equalsIgnoreCase("")) {
+
                         outlet_address_phone.setText(TempData.Outlet_Address +", "+ TempData.Outlet_Mobile_MEM);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+
+                    }else {
+                        outlet_address_phone.setText(TempData.Outlet_Mobile_MEM);
                     }
 
                     market_thana.setText(TempData.tempMarket + ", " + TempData.tempThana);

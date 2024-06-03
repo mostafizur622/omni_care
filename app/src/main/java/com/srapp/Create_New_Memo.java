@@ -831,7 +831,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
             RESPONSE = "";
 
             try {
-                String url = "http://202.126.123.157/smc_only_dms/api_data_webtoapp_retrives/get_so_token.json";
+                String url = "http://182.160.103.234:8079/api_data_webtoapp_retrives/get_so_token.json";
 
                 String requestJson = generateTokenJson();
                 Log.e("InstrumentNo Json", "" + requestJson);

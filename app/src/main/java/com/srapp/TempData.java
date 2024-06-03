@@ -22,7 +22,7 @@ public class TempData {
     public static String TargetCustomer="";
     public static String MemoDateTime="";
     public static String InstituteID="";
-    public static String SPPolicyID = "5195";
+    public static String SPPolicyID = "794";
 
     public static String OutletCatagoryID="";
     public static String SalesUPricePosition="";
@@ -84,9 +84,9 @@ public class TempData {
     public static String printTopContentProductReceive;
     public static String SO_Stock_print;
     public static String printBottonText;
-    public static Object Outlet_Address;
+    public static String Outlet_Address;
     public static Object Outlet_Mobile;
-    public static Object Outlet_Mobile_MEM;
+    public static String Outlet_Mobile_MEM;
     public static Object Outlet_Mobile_DE;
 
     //---------------------2021-----------------

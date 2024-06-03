@@ -744,7 +744,13 @@ public class PrintActivityEN<BarcodeFormat> extends ParentActivity {
 
 
 
-        outlet_address_phone.setText(getPreference("Outletaddress") + ", " + getPreference("OutletMobile"));
+        if (!getPreference("Outletaddress").equalsIgnoreCase("")) {
+
+            outlet_address_phone.setText(getPreference("Outletaddress") + ", " + getPreference("OutletMobile"));
+
+        }else {
+            outlet_address_phone.setText(getPreference("OutletMobile"));
+        }
 
         market_thana.setText(TempData.tempMarket + ", " + TempData.tempThana);
 

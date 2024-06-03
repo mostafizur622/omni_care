@@ -73,7 +73,6 @@ public class ParentActivity extends AppCompatActivity {
 	}
 	public void getServerDateTime()  {
 
-
 		if (isInternetOn(this)){
 			JSONObject object = null;
 			try {
@@ -115,7 +114,7 @@ public class ParentActivity extends AppCompatActivity {
 				builder = new AlertDialog.Builder(this)
 						.setIcon(R.drawable.alert)
 						.setTitle("Warning")
-						.setMessage("Your Device Date Is Fake.")
+						.setMessage("Device date is wrong.")
 						.setCancelable(false);
 			}
 			if (progressDialog==null)
