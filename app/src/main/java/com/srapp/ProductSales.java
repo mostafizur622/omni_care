@@ -405,7 +405,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
 
                         if (!currentDate.after(date)) {
                             Log.e("date", c1.getString(c1.getColumnIndex("memo_date")));
-                            Toast.makeText(ProductSales.this, "Invalide Date", Toast.LENGTH_LONG).show();
+                            Toast.makeText(ProductSales.this, "Invalid Date", Toast.LENGTH_LONG).show();
                             return;
                         }
                     }

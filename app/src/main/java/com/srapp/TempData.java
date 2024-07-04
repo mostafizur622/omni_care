@@ -87,7 +87,7 @@ public class TempData {
     public static String Outlet_Address;
     public static Object Outlet_Mobile;
     public static String Outlet_Mobile_MEM;
-    public static Object Outlet_Mobile_DE;
+    public static String Outlet_Mobile_DE;
 
     //---------------------2021-----------------
     public static String PriceSlabID="";

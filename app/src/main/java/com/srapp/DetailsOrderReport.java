@@ -166,7 +166,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
             try {
                 Date date1 = simpleDateFormat.parse(TempData.MemoDate);
                 Date date2 = simpleDateFormat.parse(getCurrentDate());
-                if (printDifference(date1, date2) > 3) {
+                if (!TempData.MemoDate.equalsIgnoreCase(getCurrentDate())) {
                     btnEdit.setVisibility(View.GONE);
                 }
                 if (TempData.DayCloseMemoEditable != null)
@@ -564,33 +564,34 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
     private void showPrintDailog(String from) {
 
-        new AlertDialog.Builder(this)
-                .setIcon(R.drawable.alert)
-                .setTitle("Select Print Language")
-                .setMessage("Which Language You want to print?")
-                .setPositiveButton("BN", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent idn;
-                        idn = new Intent(DetailsOrderReport.this, PrintActivity.class);
-                        idn.putExtra("From", from);
-                        startActivity(idn);
+        Intent idn;
+        idn = new Intent(DetailsOrderReport.this, PrintActivityEN.class);
+        idn.putExtra("From", from);
+        startActivity(idn);
+        finish();
 
-                        finish();
-                    }
-                })
-                .setNegativeButton("EN",new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent idn;
-                        idn = new Intent(DetailsOrderReport.this, PrintActivityEN.class);
-                        idn.putExtra("From", from);
-                        startActivity(idn);
-
-                        finish();
-                    }
-                })
-                .show();
+//        new AlertDialog.Builder(this)
+//                .setIcon(R.drawable.alert)
+//                .setTitle("Select Print Language")
+//                .setMessage("Which Language You want to print?")
+//                .setPositiveButton("BN", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        Intent idn;
+//                        idn = new Intent(DetailsOrderReport.this, PrintActivity.class);
+//                        idn.putExtra("From", from);
+//                        startActivity(idn);
+//
+//                        finish();
+//                    }
+//                })
+//                .setNegativeButton("EN",new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//
+//                    }
+//                })
+//                .show();
     }
 
     private void exiting_policy_map_createdOrder(String order_no) {

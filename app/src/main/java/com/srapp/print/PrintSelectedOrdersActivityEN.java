@@ -1229,10 +1229,12 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
 
                         outlet_name_category_address.setText(TempData.OutletName + " " + "(" + getPreference("OutletCategoryName") + ") ");
 
-                        try {
+                        if (!TempData.Outlet_Address.equalsIgnoreCase("")) {
+
                             outlet_address_phone.setText(TempData.Outlet_Address + ", " + TempData.Outlet_Mobile_DE);
-                        } catch (Exception e) {
-                            e.printStackTrace();
+
+                        }else {
+                            outlet_address_phone.setText(TempData.Outlet_Mobile_DE);
                         }
                         outlet_name.setText("Outlet: "+TempData.OutletName);
                         db_name.setText(getResponsiveText(getPreference("db_name")));

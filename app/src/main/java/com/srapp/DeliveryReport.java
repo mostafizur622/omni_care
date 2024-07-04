@@ -307,31 +307,37 @@ public class DeliveryReport extends ParentActivity implements BasicFunctionListe
 
     private void showPrintDailog() {
 
-        new AlertDialog.Builder(this)
-                .setIcon(R.drawable.alert)
-                .setTitle("Select Print Language")
-                .setMessage("Which Language You want to print?")
-                .setPositiveButton("BN", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent idn = new Intent(DeliveryReport.this, PrintAllMemosActivity.class);
-                        idn.putExtra("FromDate",start_date.getText().toString());
-                        idn.putExtra("ToDate",end_date.getText().toString());
-                        startActivity(idn);
-                        finish();
-                    }
-                })
-                .setNegativeButton("EN",new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent idn = new Intent(DeliveryReport.this, PrintAllMemosActivityEn.class);
-                        idn.putExtra("FromDate",start_date.getText().toString());
-                        idn.putExtra("ToDate",end_date.getText().toString());
-                        startActivity(idn);
-                        finish();
-                    }
-                })
-                .show();
+        Intent idn = new Intent(DeliveryReport.this, PrintAllMemosActivityEn.class);
+        idn.putExtra("FromDate",start_date.getText().toString());
+        idn.putExtra("ToDate",end_date.getText().toString());
+        startActivity(idn);
+        finish();
+
+//        new AlertDialog.Builder(this)
+//                .setIcon(R.drawable.alert)
+//                .setTitle("Select Print Language")
+//                .setMessage("Which Language You want to print?")
+//                .setPositiveButton("BN", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        Intent idn = new Intent(DeliveryReport.this, PrintAllMemosActivity.class);
+//                        idn.putExtra("FromDate",start_date.getText().toString());
+//                        idn.putExtra("ToDate",end_date.getText().toString());
+//                        startActivity(idn);
+//                        finish();
+//                    }
+//                })
+//                .setNegativeButton("EN",new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        Intent idn = new Intent(DeliveryReport.this, PrintAllMemosActivityEn.class);
+//                        idn.putExtra("FromDate",start_date.getText().toString());
+//                        idn.putExtra("ToDate",end_date.getText().toString());
+//                        startActivity(idn);
+//                        finish();
+//                    }
+//                })
+//                .show();
     }
     private void getdata2(JSONObject jsonObject) {
 
