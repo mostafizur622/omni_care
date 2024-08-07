@@ -1206,6 +1206,7 @@ public class Tables extends Parent {
     public static final String ORDER_is_distributor = "is_distributor";
 
     public static final String ORDER_created_at = "created_at";
+    public static final String ORDER_MEMO_Date = "memo_date";
     public static final String ORDER_updated_at = "updated_at";
 
     public static final String ORDER[] = {TABLE_NAME_ORDER,ORDER_table_id, ORDER_order_number, ORDER_order_date, ORDER_order_date_time, ORDER_sales_to, ORDER_STATUS,ORDER_outlet_id, ORDER_market_id,  ORDER_gross_value, ORDER_cash_received, ORDER_credit_amount, ORDER_is_active, ORDER_latitude,
@@ -1248,6 +1249,7 @@ public class Tables extends Parent {
             ORDER_is_distributor + "  INTEGER,   " +
             ORDER_total_discount + "  DOUBLE,   " +
             ORDER_created_at + "  DATETIME , " +
+            ORDER_MEMO_Date + "  DATETIME , " +
             ORDER_updated_at + "  DATETIME );";
 
     /*..................................Monthly Effective Call......................................... */

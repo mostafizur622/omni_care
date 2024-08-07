@@ -449,7 +449,8 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
                                     new SaveData().execute();
                                 }
                             }
-                        } else {
+                        }
+                        else {
                             Toast.makeText(getApplicationContext(), "Not Saleable Product!", Toast.LENGTH_LONG).show();
                         }
                     }
@@ -1924,7 +1925,9 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
     }
 
     public String injectable_product_check() {
-        String is_injectable = "0";
+
+        return "0";
+        /*String is_injectable = "0";
 
         String outlet = getPreference("OutletID");
         Log.d("outlete", outlet);
@@ -1957,7 +1960,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
             }
         }
 
-        return is_injectable;
+        return is_injectable;*/
     }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {

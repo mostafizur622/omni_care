@@ -1435,7 +1435,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
             super.onPreExecute();
 
             progressDialog = new ProgressDialog(DetailsOrderReport.this);
-            progressDialog.setTitle("Please Wait p.....");
+            progressDialog.setTitle("Please Wait Processing.....");
             progressDialog.setCancelable(false);
             progressDialog.show();
 

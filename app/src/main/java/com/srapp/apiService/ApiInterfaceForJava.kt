@@ -262,7 +262,7 @@ interface ApiInterfaceForJava {
     fun tempOutletStatus(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
-    @POST("get_system_current_date_time.json")
+    @POST("http://202.126.123.157/smc_only_dms/api_data_dist145_retrives/get_system_current_date_time.json")
     fun getTimeDate(@Body JSONObject: RequestBody): Call<String>
 
 
