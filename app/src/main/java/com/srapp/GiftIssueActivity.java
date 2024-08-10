@@ -131,7 +131,11 @@ public class GiftIssueActivity extends ParentActivity implements View.OnClickLis
             getJAPi().GIFT_ITEM_Details(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
                     try {
+
                         JSONObject jsonObject = new JSONObject(response.body());
                         dailog.dismiss();
 
@@ -152,19 +156,26 @@ public class GiftIssueActivity extends ParentActivity implements View.OnClickLis
                        Log.e("exception",e.getLocalizedMessage());
                     }
 
-                    if (state==0) {
-                        for (int i = 0; i < itemListContent.size(); i++) {
-                            if (itemListContent.get(i).get("quantity").equalsIgnoreCase("")) {
-                                itemListContent.remove(i);
+                            Adapter = new GiftIssueAdaper(GiftIssueActivity.this, getPreference("SO"), getPreference("FiscalYearID"),state,itemListContent);
+                            ListView listView = (ListView) findViewById(R.id.list);
+                            listView.setAdapter(Adapter);
+                            if (state==0) {
+                                for (int i = 0; i < itemListContent.size(); i++) {
+                                    if (itemListContent.get(i).get("quantity").equalsIgnoreCase("")) {
+                                        itemListContent.remove(i);
+                                        Adapter.notifyDataSetChanged();
+                                    }
+                                }
                             }
+
+
+
+//
+//
                         }
-                    }
+                    });
 
 
-
-                    Adapter = new GiftIssueAdaper(GiftIssueActivity.this, getPreference("SO"), getPreference("FiscalYearID"),state);
-                    ListView listView = (ListView) findViewById(R.id.list);
-                    listView.setAdapter(Adapter);
                 }
 
                 @Override
@@ -547,7 +558,7 @@ public class GiftIssueActivity extends ParentActivity implements View.OnClickLis
             if (itemListContent.get(i).get("product_id").equalsIgnoreCase(jsonObject.getString("product_id"))){
                 itemListContent.get(i).put("boolean", "true");
                 itemListContent.get(i).put("quantity",jsonObject.getString("quantity"));
-
+              //  Adapter.notifyDataSetChanged();
             }
 
 

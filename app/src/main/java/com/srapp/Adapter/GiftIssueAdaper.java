@@ -50,7 +50,7 @@ import static com.srapp.Db_Actions.Tables.SR_ID;
 import static com.srapp.Db_Actions.URL.CheckConnection;
 import static com.srapp.Db_Actions.URL.convertTORequestdata;
 import static com.srapp.Db_Actions.URL.getJAPi;
-import static com.srapp.GiftIssueActivity.itemListContent;
+
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -65,20 +65,21 @@ public class GiftIssueAdaper extends BaseAdapter implements BasicFunctionListene
 	String OutletID;
 
 
-
+	public  ArrayList<HashMap<String, String>> itemListContent = new ArrayList<HashMap<String, String>>();
 	ArrayList<String> SELECTED_POS=new ArrayList<String>();
     Data_Source db;
 	Boolean validInput;
 	BasicFunction bf;
 	int state;
 
-	public GiftIssueAdaper(Context context, String _SO_ID, String _OutletID, int state) {
+	public GiftIssueAdaper(Context context, String _SO_ID, String _OutletID, int state,ArrayList<HashMap<String, String>> itemListContent) {
 		this.context = context;
 		db=new Data_Source(context);
 		SO_ID = _SO_ID;
 		OutletID = _OutletID;
 		this.state = state;
 		bf = new BasicFunction(this,context);
+		this.itemListContent = itemListContent;
 
 
 	}

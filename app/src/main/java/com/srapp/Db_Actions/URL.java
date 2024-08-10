@@ -21,10 +21,10 @@ public class URL {
 
 
 
-   //public static final String Domain = "http://182.160.103.234:8079/api_data_dist144_retrives/"; //after_marge dec 6 2021
+   public static final String Domain = "http://182.160.103.234:8079/api_data_dist144_retrives/"; //after_marge dec 6 2021
 
     //public static final String Domain = "http://202.126.123.157/smc_only_dms/api_data_dist139_retrives/"; //after_marge dec 6 2021
-  public static final String Domain = "http://202.126.123.157/smc_only_dms/api_data_dist145_retrives/"; //after_marge dec 6 2021
+  //public static final String Domain = "http://202.126.123.157/smc_only_dms/api_data_dist145_retrives/"; //after_marge dec 6 2021
 
 
 
