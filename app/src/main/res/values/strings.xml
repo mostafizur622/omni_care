@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">SRApp</string>
     <string name="footer">Download App Info,Application Info apk 1.0.4 for Android.Simple app to monitor all available info about all install apps on device</string>
-    <string name="order_qty">Order Qty</string>
-    <string name="db_stock">DB Stock</string>
-    <string name="invoice_qty">Invoice Qty</string>
+    <string name="order_qty">Order \n Qty</string>
+    <string name="db_stock">DB \n Stock</string>
+    <string name="invoice_qty">Invoice \n Qty</string>
     <string name="actual_qty">Actual Qty</string>
     <string name="sr_store_status">SR Store Status</string>
 </resources>

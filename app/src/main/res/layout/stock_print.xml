@@ -96,10 +96,10 @@
                             android:id="@+id/vat"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:gravity="start"
                             android:text="@string/actual_qty"
                             android:textColor="#000"
                             android:textSize="@dimen/_9sdp"
+                            android:gravity="center_horizontal"
                             android:textStyle="bold" />
 
                     </LinearLayout>
@@ -114,11 +114,12 @@
                             android:id="@+id/price"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:gravity="start"
+                            android:textAlignment="center"
                             android:text="@string/invoice_qty"
                             android:textColor="#000"
                             android:textSize="@dimen/_9sdp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:gravity="center_horizontal" />
 
                     </LinearLayout>
 
@@ -132,7 +133,7 @@
                             android:id="@+id/qty"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:gravity="start"
+                            android:gravity="center_horizontal"
                             android:text="@string/db_stock"
                             android:textColor="#000"
                             android:layout_marginEnd="@dimen/_2sdp"
@@ -152,7 +153,7 @@
                             android:id="@+id/total"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:gravity="start"
+                            android:gravity="center"
                             android:text="@string/order_qty"
                             android:textColor="#000"
                             android:textSize="@dimen/_9sdp"

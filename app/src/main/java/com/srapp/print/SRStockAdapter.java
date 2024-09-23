@@ -25,7 +25,7 @@ public class SRStockAdapter extends RecyclerView.Adapter<SRStockAdapter.SingleIt
 
     @Override
     public SingleItemRowHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.print_item, null);
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.stock_print_item, null);
         SingleItemRowHolder mh = new SingleItemRowHolder(v);
         return mh;
     }
@@ -33,7 +33,7 @@ public class SRStockAdapter extends RecyclerView.Adapter<SRStockAdapter.SingleIt
     @Override
     public void onBindViewHolder(SingleItemRowHolder holder, int i) {
 
-        holder.vat.setText(itemsList.get("actual_qty").get(i).split("\\.")[0]);
+        holder.vat.setText(itemsList.get("actual_qty").get(i));
         holder.price.setText(itemsList.get("invoice_qty").get(i));
         holder.qty.setText(itemsList.get("db_stock").get(i));
         holder.total.setText(itemsList.get("order_qty").get(i));
