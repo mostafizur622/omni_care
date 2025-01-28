@@ -21,10 +21,10 @@ public class URL {
 
 
 
-   //public static final String Domain = "http://182.160.103.234:8079/api_data_dist145_retrives/"; //after_marge dec 6 2021
+   //public static final String Domain = "http://182.160.103.234:8079/api_data_dist147_retrives/"; //after_marge dec 6 2021
 
     //public static final String Domain = "http://202.126.123.157/smc_only_dms/api_data_dist139_retrives/"; //after_marge dec 6 2021
-  public static final String Domain = "http://202.126.123.157/smc_only_dms/api_data_dist145_retrives/"; //after_marge dec 6 2021
+  public static final String Domain = "http://202.126.123.157/smc_only_dms/api_data_dist147_retrives/"; //after_marge dec 6 2021
 
 
 
@@ -43,7 +43,7 @@ public class URL {
     public static final String OUTLET_WISE_SALES_REPORT = Domain + "dist_outlet_wise_sales_report.json";
     public static final String INCENTIVE_PARTY = Domain + "get_bonus_cards_report.json";
     public static final String GIFT_ISSUE = Domain + "giftitem_received.json";
-    public static final String VERSION = "1.4.4";
+    public static final String VERSION = "1.4.7";
     public static final String [] EMAIL = {"tanvir.ahmed@arenaphonebd.net","abu.naser@arenaphonebd.net"};
     public static final String VERSION_txt = "Version(" + VERSION + ")";
     public static String release_date = "3-JUN-2024";

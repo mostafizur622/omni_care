@@ -31,7 +31,7 @@ public class PrintInvoiceSummeryAdapter extends RecyclerView.Adapter<PrintInvoic
 
     @Override
     public void onBindViewHolder(SingleItemRowHolder holder, int i) {
-        holder.itemName.setText(itemsList.get(i).get("product_name"));
+        holder.itemName.setText(itemsList.get(i).get("product_display_name"));
         holder.vat.setText(itemsList.get(i).get("EC"));
         holder.price.setText(itemsList.get(i).get("OC"));
         holder.qty.setText(itemsList.get(i).get("qty"));

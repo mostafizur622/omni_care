@@ -109,6 +109,6 @@ public abstract class EscPosPrinterSize {
             bitmap = Bitmap.createScaledBitmap(bitmap, bitmapWidth, bitmapHeight, true);
         }
 
-        return EscPosPrinterCommands.bitmapToBytes(bitmap);
+        return EscPosPrinterCommands.bitmapToBytes(bitmap,false);
     }
 }

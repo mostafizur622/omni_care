@@ -40,6 +40,7 @@ import static com.srapp.Db_Actions.Tables.PROCESSING_COMPELETE;
 import static com.srapp.Db_Actions.Tables.PROCESSING_PENDING;
 import static com.srapp.Db_Actions.Tables.PRODUCT_BOOLEAN_QUANTITY;
 import static com.srapp.Db_Actions.Tables.PRODUCT_ID;
+import static com.srapp.Db_Actions.Tables.PRODUCT_IS_VIRTUAL;
 import static com.srapp.Db_Actions.Tables.PRODUCT_PRICE_PRICE;
 import static com.srapp.Db_Actions.Tables.PRODUCT_PRODUCT_NAME;
 import static com.srapp.Db_Actions.Tables.PRODUCT_PRODUCT_NAME_BN;
@@ -118,6 +119,7 @@ import retrofit2.Response;
 
 public class DetailsOrderReport extends Parent implements BasicFunctionListener, DBListener {
     public static String discount_info = "";
+    public static String discount_infoPtint = "";
     public static String discount_info_BN = "";
     String memoNo;
     double subtotal = 0.00;
@@ -810,6 +812,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
     private void SaleAbleList() {
         discount_info = "";
+        discount_infoPtint = "";
         discount_info_BN = "";
         Data = new ArrayList<HashMap<String, String>>();
         Data.clear();
@@ -825,20 +828,27 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 String product_name = "";
+                String product_namePrint = "";
                 String product_namebn = "";
                 do {
-                    Cursor c1 = db.rawQueryCoustom("SELECT " + PRODUCT_PRODUCT_NAME +","+PRODUCT_PRODUCT_NAME_BN+ " From " + TABLE_NAME_PRODUCT + " WHERE " + PRODUCT_ID + "='" + cursor.getString(0) + "'");
+                    Cursor c1 = db.rawQueryCoustom("SELECT " + PRODUCT_PRODUCT_NAME +","+PRODUCT_PRODUCT_NAME_BN + "," + PRODUCT_IS_VIRTUAL + " From " + TABLE_NAME_PRODUCT + " WHERE " + PRODUCT_ID + "='" + cursor.getString(0) + "'");
                     if (c1 != null) {
                         if (c1.moveToFirst()) {
                             do {
                                 product_name = c1.getString(0);
                                 product_namebn = c1.getString(1);
+                               // if(Integer.parseInt(c1.getString(2))>0 ){
+                                //    product_namePrint = getProductNameForPrint(c1.getString(2));
+                               // }else{
+                                    product_namePrint = getProductNameForPrint(cursor.getString(0));
+                               // }
                             } while (c1.moveToNext());
                         }
 
                     }
                     map = new HashMap<String, String>();
                     map.put(PRODUCT_PRODUCT_NAME, product_name);
+                    map.put("product_name_print", product_namePrint);
                     map.put(PRODUCT_PRODUCT_NAME_BN, product_namebn);
                     map.put(PRODUCT_BOOLEAN_QUANTITY, String.valueOf(cursor.getDouble(1)));
                     map.put("quantity_bn", ConvertTOBangla(String.valueOf(cursor.getDouble(1))));
@@ -854,6 +864,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                     Data.add(map);
                     subtotal = subtotal + Double.parseDouble(tPrice);
                     discount_info = discount_info + getdiscount(cursor.getDouble(1), cursor.getDouble(2), cursor.getInt(4), cursor.getDouble(5), product_name);
+                    discount_infoPtint = discount_infoPtint + getdiscountPrint(cursor.getDouble(1), cursor.getDouble(2), cursor.getInt(4), cursor.getDouble(5), product_namePrint);
                     discount_info_BN = discount_info_BN + getdiscountBN(cursor.getDouble(1), cursor.getDouble(2), cursor.getInt(4), cursor.getDouble(5), product_namebn);
 
                 } while (cursor.moveToNext());
@@ -877,8 +888,52 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
 
     }
+    public  String getProductNameForPrint(String product_id) {
+
+        String product_name ="";
+        String query = "SELECT case when product_display_name is null or product_display_name='null' then product_name else product_display_name end   from product WHERE product_id ='" + product_id + "'";
+        Cursor c1 = db.rawQueryCoustom(query);
+        Log.e("query_product_name",query);
+        if (c1 != null) {
+            if (c1.moveToFirst()) {
+                do {
+                    product_name = c1.getString(0);
+
+                } while (c1.moveToNext());
+            }
+
+        }
+        return product_name;
+    }
 
     private String getdiscount(double qty, double price, int distype, double disamount, String product_name) {
+
+        Log.e("dicunttexttest", qty + " " + price + " " + distype + " " + disamount + " " + product_name);
+
+        if (disamount <= 0) {
+            return "";
+        }
+        Double discount = 0.0;
+
+        Log.e("discount_type", distype + "");
+
+        /*if (distype == 0) {
+
+            discount = (price / 100.00) * disamount;
+
+        } else {
+            discount = disamount;
+
+        }*/
+
+        Log.e("discount_type", tdiscount + "  , " + discount);
+        tdiscount = tdiscount + (disamount * qty);
+
+
+        return product_name + "(" + (roundTwoDecimals(disamount * qty)) + ")";
+
+    }
+    private String getdiscountPrint(double qty, double price, int distype, double disamount, String product_name) {
 
         Log.e("dicunttexttest", qty + " " + price + " " + distype + " " + disamount + " " + product_name);
 
@@ -998,22 +1053,29 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
             if (cursor.moveToFirst()) {
                 String product_name = "";
                 String product_name_bn = "";
+                String product_namePrint = "";
                 do {
                     String productId = cursor.getString(0);
                     Log.e("productId: ", productId);
-                    Cursor c1 = db.rawQueryCoustom("SELECT " +  PRODUCT_PRODUCT_NAME +","+PRODUCT_PRODUCT_NAME_BN+  " From " + TABLE_NAME_PRODUCT + " WHERE " + PRODUCT_ID + "='" + productId + "'");
+                    Cursor c1 = db.rawQueryCoustom("SELECT " +  PRODUCT_PRODUCT_NAME +","+PRODUCT_PRODUCT_NAME_BN + "," + PRODUCT_IS_VIRTUAL + " From " + TABLE_NAME_PRODUCT + " WHERE " + PRODUCT_ID + "='" + productId + "'");
                     Log.e("raw Query : ", "SELECT product_name From products WHERE product_id='" + productId + "'");
                     if (c1 != null) {
                         if (c1.moveToFirst()) {
                             do {
                                 product_name = c1.getString(0);
                                 product_name_bn = c1.getString(1);
+                               // if(Integer.parseInt(c1.getString(2))>0 ){
+                               //     product_namePrint = getProductNameForPrint(c1.getString(2));
+                               // }else{
+                                    product_namePrint = getProductNameForPrint(cursor.getString(0));
+                              //  }
                             } while (c1.moveToNext());
                         }
 
                     }
                     HashMap<String, String> map = new HashMap<String, String>();
                     map.put(PRODUCT_PRODUCT_NAME, product_name);
+                    map.put("product_name_print", product_namePrint);
                     map.put(PRODUCT_PRODUCT_NAME_BN, product_name_bn);
                     map.put(PRODUCT_BOOLEAN_QUANTITY, String.valueOf(cursor.getDouble(1)));
                     map.put(PRODUCT_BOOLEAN_QUANTITY+"_bn", ConvertTOBangla(String.valueOf(cursor.getDouble(1))));
@@ -1062,15 +1124,21 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
             if (cursor.moveToFirst()) {
                 String product_name = "";
                 String product_name_bn = "";
+                String product_namePrint = "";
                 do {
                     String productId = cursor.getString(0);
 
-                    Cursor c1 = db.rawQueryCoustom("SELECT " +  PRODUCT_PRODUCT_NAME +","+PRODUCT_PRODUCT_NAME_BN + " From " + TABLE_NAME_PRODUCT + " WHERE " + PRODUCT_ID + "='" + productId + "'");
+                    Cursor c1 = db.rawQueryCoustom("SELECT " +  PRODUCT_PRODUCT_NAME +","+PRODUCT_PRODUCT_NAME_BN + "," + PRODUCT_IS_VIRTUAL + " From " + TABLE_NAME_PRODUCT + " WHERE " + PRODUCT_ID + "='" + productId + "'");
                     if (c1 != null) {
                         if (c1.moveToFirst()) {
                             do {
                                 product_name = c1.getString(0);
                                 product_name_bn = c1.getString(1);
+                               // if(Integer.parseInt(c1.getString(2))>0 ){
+                                //    product_namePrint = getProductNameForPrint(c1.getString(2));
+                               // }else{
+                                    product_namePrint = getProductNameForPrint(cursor.getString(0));
+                              //  }
                             } while (c1.moveToNext());
                         }
 
@@ -1081,6 +1149,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                     HashMap<String, String> map = new HashMap<String, String>();
                     map.put("product_id", swapProductID(cursor.getString(0),cursor.getString(3)));
                     map.put("product_name", product_name);
+                    map.put("product_name_print", product_namePrint);
                     map.put("product_name_bn", product_name_bn);
                     map.put("quantity", cursor.getString(1));
                     map.put("quantity_bn", ConvertTOBangla(cursor.getString(1)));
@@ -1094,6 +1163,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
         String bonus_bn = "";
         String bonus_en = "";
+        String bonus_en_print = "";
 
          TempData.BonusShowList.clear();
 
@@ -1101,6 +1171,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
             HashMap<String, String> map = bonusList.get(i);
             bonus_bn = bonus_bn + map.get("product_name_bn") + "(" + map.get("quantity_bn") + getUnitname(map.get("Unit_id"),"unit_name_bangla") + ")";
+            bonus_en_print = bonus_en_print + map.get("product_name_print") + "(" + map.get("quantity") + getUnitname(map.get("Unit_id"),"unit_name") + ")";
             bonus_en = bonus_en + map.get("product_name") + "(" + map.get("quantity") + getUnitname(map.get("Unit_id"),"unit_name") + ")";
 
             HashMap<String, String> product_map = new HashMap<String, String>();
@@ -1112,6 +1183,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
             if (i != bonusList.size() - 1) {
                 bonus_bn = bonus_bn + ", ";
+                bonus_en_print = bonus_en_print + ", ";
                 bonus_en = bonus_en + ", ";
             }
 
@@ -1127,7 +1199,8 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
             llBonus.setVisibility(View.VISIBLE);
 
             txtBonus.setText(bonus_en);
-            TempData.TempBonus_EN = bonus_en;
+          //  TempData.TempBonus_EN = bonus_en;
+            TempData.TempBonus_EN = bonus_en_print;
             TempData.TempBonus_BN = bonus_bn;
 
         } else {
@@ -1328,17 +1401,22 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
             if (cursor.moveToFirst()) {
                 String product_name = "";
                 String product_name_bn = "";
+                String product_namePrint = "";
                 do {
 
                     String productId = cursor.getString(0);
-                    Cursor c1 = db.rawQueryCoustom("SELECT " + PRODUCT_PRODUCT_NAME +","+PRODUCT_PRODUCT_NAME_BN + " From " + TABLE_NAME_PRODUCT + " WHERE " + PRODUCT_ID + "='" + productId + "'");
+                    Cursor c1 = db.rawQueryCoustom("SELECT " + PRODUCT_PRODUCT_NAME +","+PRODUCT_PRODUCT_NAME_BN + "," + PRODUCT_IS_VIRTUAL + " From " + TABLE_NAME_PRODUCT + " WHERE " + PRODUCT_ID + "='" + productId + "'");
 
                     if (c1 != null) {
                         if (c1.moveToFirst()) {
                             do {
                                 product_name = c1.getString(0);
                                 product_name_bn = c1.getString(0);
-
+                              //  if(Integer.parseInt(c1.getString(2))>0 ){
+                               //     product_namePrint = getProductNameForPrint(c1.getString(2));
+                               // }else{
+                                    product_namePrint = getProductNameForPrint(cursor.getString(0));
+                              //  }
                             } while (c1.moveToNext());
                         }
 
@@ -1346,6 +1424,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                     HashMap<String, String> map = new HashMap<String, String>();
                     map.put("product_id", cursor.getString(0));
                     map.put("product_name", product_name);
+                    map.put("product_name_print", product_namePrint);
                     map.put("product_name_BN", product_name);
                     map.put("quantity", cursor.getString(1));
                     giftList.add(map);
@@ -1366,10 +1445,23 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
         }
         if (gift.length() > 0) {
             txtGift.setText(gift);
-            TempData.TempGift = gift;
+            //TempData.TempGift = gift;
         } else {
             LinearLayout llGift = (LinearLayout) findViewById(R.id.llGift);
             llGift.setVisibility(View.GONE);
+        }
+        String gift1 = "";
+        for (int i = 0; i < giftList.size(); i++) {
+            HashMap<String, String> map = giftList.get(i);
+            gift1 = gift1 + map.get("product_name_print") + "(" + map.get("quantity") + ")";
+            if (i != giftList.size() - 1)
+                gift1 = gift1 + ", ";
+
+            Log.e("gift1: ", gift1);
+        }
+        if (gift1.length() > 0) {
+            //txtGift.setText(gift);
+            TempData.TempGift = gift1;
         }
         TempData.GiftArrayList = giftList;
     }

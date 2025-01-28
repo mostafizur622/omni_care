@@ -1982,6 +1982,7 @@ public class Tables extends Parent {
     public static final String PRODUCT_ORDER = "product_order";
     public static final String PRODUCT_IS_INJECTABLE = "is_injectable";
     public static final String PRODUCT_IMAGE_URL = "image_url";
+    public static final String PRODUCT_DISPLAY_NAME = "product_display_name";
     public static final String PRODUCT_IS_VIRTUAL = "is_virtual";
     public static final String PRODUCT_PARENT_ID = "parent_id";
     public static final String PRODUCT_UPDATED_AT = "updated_at";
@@ -1989,7 +1990,7 @@ public class Tables extends Parent {
 
 
     public static final String PPRODCUT[] = {TABLE_NAME_PRODUCT,PRODUCT_P_id,
-            PRODUCT_PRODUCT_ID, PRODUCT_PRODUCT_NAME,PRODUCT_PRODUCT_NAME_BN, PRODUCT_CATAGORY_ID, PRODUCT_TYPE_ID, PRODUCT_ORDER,PRODUCT_PARENT_ID,PRODUCT_IS_VIRTUAL, PRODUCT_IS_INJECTABLE,PRODUCT_IMAGE_URL, PRODUCT_UPDATED_AT, PRODUCT_CREATED_AT};
+            PRODUCT_PRODUCT_ID, PRODUCT_PRODUCT_NAME,PRODUCT_PRODUCT_NAME_BN, PRODUCT_CATAGORY_ID, PRODUCT_TYPE_ID, PRODUCT_ORDER,PRODUCT_PARENT_ID,PRODUCT_IS_VIRTUAL, PRODUCT_IS_INJECTABLE,PRODUCT_IMAGE_URL,PRODUCT_DISPLAY_NAME, PRODUCT_UPDATED_AT, PRODUCT_CREATED_AT};
 
 
     public static final String CREATE_PRODUCT_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME_PRODUCT + "("
@@ -2004,6 +2005,7 @@ public class Tables extends Parent {
             PRODUCT_PARENT_ID + " INTEGER," +
             PRODUCT_IS_INJECTABLE + " INTEGER," +
             PRODUCT_IMAGE_URL + " Text," +
+            PRODUCT_DISPLAY_NAME + " Text," +
             PRODUCT_CREATED_AT + " DATETIME," +
             PRODUCT_UPDATED_AT + " DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME'))" +
             ")";

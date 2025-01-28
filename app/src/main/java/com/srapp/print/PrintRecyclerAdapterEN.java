@@ -48,7 +48,7 @@ public class PrintRecyclerAdapterEN extends RecyclerView.Adapter<PrintRecyclerAd
         String price = String.valueOf(roundTwoDecimals(Double.parseDouble(itemsList.get(i).get("price"))));
         String total_price = String.valueOf(roundTwoDecimals(Double.parseDouble(itemsList.get(i).get("price")) * Double.parseDouble(itemsList.get(i).get("quantity"))));
 
-        holder.itemName.setText(itemsList.get(i).get("product_name"));
+        holder.itemName.setText(itemsList.get(i).get("product_name_print"));
         //holder.vat.setText(itemsList.get(i).get("vat"));
         holder.price.setText(price);
         holder.qty.setText(itemsList.get(i).get("quantity"));

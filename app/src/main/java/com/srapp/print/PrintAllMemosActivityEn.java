@@ -79,6 +79,7 @@ import static com.srapp.Db_Actions.Tables.PRODUCT_ID;
 import static com.srapp.Db_Actions.Tables.PRODUCT_PRICE_PRICE;
 import static com.srapp.Db_Actions.Tables.PRODUCT_PRODUCT_NAME;
 import static com.srapp.DetailsOrderReport.discount_info;
+import static com.srapp.DetailsOrderReport.discount_infoPtint;
 import static com.srapp.TempData.discount_data;
 import static com.srapp.print.ParentActivity.getResponsiveText;
 import static com.srapp.print.newprint.Constant.CONN_STATE_DISCONN;
@@ -888,9 +889,10 @@ public class PrintAllMemosActivityEn extends ParentActivity {
                     date = date.substring(0, date.length() - 3);
 
 
-                    String MemoDetails = "SELECT MD.product_id,P.product_name ,MD.quantity, MD.price,MD.vat,MD.discount_type,MD.discount_amount FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='0'";
+                    String MemoDetails = "SELECT MD.product_id,P.product_name ,MD.quantity, MD.price,MD.vat,MD.discount_type,MD.discount_amount,MD.virtual_product_id FROM ORDER_DETAILS MD LEFT JOIN product P ON(MD.product_id=P.product_id) WHERE MD.order_number='" + memo_no + "' and MD.product_type='0'";
                     Log.e("MemoDetails", "MemoDetails: " + MemoDetails);
                     discount_info = "";
+                    discount_infoPtint = "";
                     Cursor cursor = db.sqLiteDatabase.rawQuery(MemoDetails,null);
 
 
@@ -899,6 +901,7 @@ public class PrintAllMemosActivityEn extends ParentActivity {
                             do {
                                 discount_info = discount_info + getdiscount(cursor.getDouble(2), cursor.getDouble(3), cursor.getInt(5), cursor.getDouble(6), cursor.getString(1));
 
+                                String product_namePrint = "";
                                 String product_id = cursor.getString(0);
                                 String product_name = cursor.getString(1);
                                 String quantity = cursor.getString(2);
@@ -912,7 +915,14 @@ public class PrintAllMemosActivityEn extends ParentActivity {
                                 Log.e("productname22", product_name);
 
                                 map = new HashMap<String, String>();
+                            //    if(Integer.parseInt(cursor.getString(7))>0 ){
+                              //      product_namePrint = getProductNameForPrint(cursor.getString(7));
+                              //  }else{
+                                    product_namePrint = getProductNameForPrint(cursor.getString(0));
+                              //  }
+                                discount_infoPtint = discount_infoPtint + getdiscountPrint(cursor.getDouble(2), cursor.getDouble(3), cursor.getInt(5), cursor.getDouble(6),product_namePrint);
                                 map.put(PRODUCT_PRODUCT_NAME, product_name);
+                                map.put("product_name_print", product_namePrint);
                                 map.put(PRODUCT_BOOLEAN_QUANTITY, quantity);
                                 map.put(PRODUCT_PRICE_PRICE, price);
 
@@ -935,7 +945,8 @@ public class PrintAllMemosActivityEn extends ParentActivity {
                         if (cur2.moveToFirst()) {
                             do {
                                 String product_id = cur2.getString(0);
-                                String product_name = cur2.getString(1);
+                               // String product_name = cur2.getString(1);
+                                String product_name = getProductNameForPrint(cur2.getString(0));
                                 String quantity = cur2.getString(2);
                                 String Gift2 = product_name + "(" + quantity + ")";
                                 Gift1 = Gift1 + "," + Gift2;
@@ -955,7 +966,8 @@ public class PrintAllMemosActivityEn extends ParentActivity {
                         if (cur.moveToFirst()) {
                             do {
                                 String product_id = cur.getString(0);
-                                String product_name = cur.getString(1);
+                                //String product_name = cur.getString(1);
+                                String product_name = getProductNameForPrint(cur.getString(0));
                                 String quantity = cur.getString(2);
                                 String Bonus2 = product_name + "(" + quantity + " " + getMeasurementUnitName(cur.getString(3)) + ")";
                                 Bonus1 = Bonus1 + "," + Bonus2;
@@ -1032,7 +1044,7 @@ public class PrintAllMemosActivityEn extends ParentActivity {
                     }
 
                     if (!DetailsOrderReport.discount_info.equals("") && DetailsOrderReport.discount_info.length() > 0) {
-                        discountTxt.setText("Discount:" + DetailsOrderReport.discount_info);
+                        discountTxt.setText("Discount:" + discount_infoPtint);
                         extra.setVisibility(View.VISIBLE);
                     }
 
@@ -1080,7 +1092,23 @@ public class PrintAllMemosActivityEn extends ParentActivity {
 
 
     // Create image for printing Bangla----------------------------------------------------------------------------
+    public  String getProductNameForPrint(String product_id) {
+        Data_Source db = new Data_Source(PrintAllMemosActivityEn.this);
+        String product_name ="";
+        String query = "SELECT case when product_display_name is null or product_display_name='null' then product_name else product_display_name end   from product WHERE product_id ='" + product_id + "'";
+        Cursor c1 = db.rawQueryCoustom(query);
+        Log.e("query_product_name",query);
+        if (c1 != null) {
+            if (c1.moveToFirst()) {
+                do {
+                    product_name = c1.getString(0);
 
+                } while (c1.moveToNext());
+            }
+
+        }
+        return product_name;
+    }
 
 
 
@@ -1175,7 +1203,18 @@ public class PrintAllMemosActivityEn extends ParentActivity {
         return product_name + "(" + (roundTwoDecimals(disamount * qty)) + ")";
 
     }
+    private String getdiscountPrint(double qty, double price, int distype, double disamount, String product_name) {
 
+        if (disamount <= 0) {
+            return "";
+        }
+        Double discount = 0.0;
+
+        Log.e("discount_type", distype + "");
+
+        return product_name + "(" + (roundTwoDecimals(disamount * qty)) + ")";
+
+    }
     public String roundTwoDecimals(double d) {
 
         Log.e("Double:", String.valueOf(d));

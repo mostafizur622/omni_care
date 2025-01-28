@@ -799,7 +799,7 @@ public class PrintActivityEN<BarcodeFormat> extends ParentActivity {
             extra.setVisibility(View.VISIBLE);
         }
         if (!DetailsOrderReport.discount_info.equals("") && DetailsOrderReport.discount_info.length() > 0) {
-            discountTxt.setText("Discount:" + DetailsOrderReport.discount_info);
+            discountTxt.setText("Discount:" + DetailsOrderReport.discount_infoPtint);
             extra.setVisibility(View.VISIBLE);
         }
 

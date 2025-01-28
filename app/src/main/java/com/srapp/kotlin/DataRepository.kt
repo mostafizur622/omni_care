@@ -30,7 +30,7 @@ class DataRepository(val application: Application) {
         val service = ApiClient.getClient?.create(ApiInterface::class.java)
         val call = service?.getProductCombinationV2Data(MyJson)
 
-        Log.e("Service_Call_Details","Url= http://182.160.103.236:8079/api_data_dist133Retrives/get_product_combination_v2.json"+ MyJson.toString())
+       // Log.e("Service_Call_Details","Url= http://182.160.103.236:8079/api_data_dist133Retrives/get_product_combination_v2.json"+ MyJson.toString())
         val emptyList = ArrayList<String>()
         //calling the api ---------------------------------------------
         call?.enqueue(object : Callback<ProductCombinationV2> {
@@ -106,7 +106,7 @@ class DataRepository(val application: Application) {
         val service = ApiClient.getClient?.create(ApiInterface::class.java)
         val call = service?.getSpecialGroupData(MyJson)
 
-        Log.e("Service_Call_Details","Url= http://182.160.103.236:8079/api_data_dist133Retrives/get_special_group.json"+ MyJson.toString())
+      //  Log.e("Service_Call_Details","Url= http://182.160.103.236:8079/api_data_dist133Retrives/get_special_group.json"+ MyJson.toString())
         val emptyList = ArrayList<String>()
         //calling the api ---------------------------------------------
         call?.enqueue(object : Callback<SpecialGroupData> {
@@ -172,7 +172,7 @@ class DataRepository(val application: Application) {
         val service = ApiClient.getClient?.create(ApiInterface::class.java)
         val call = MyJson?.let { service?.getProductCombinationListData(it) }
 
-        Log.e("Service_Call_Details","Url= http://182.160.103.236:8079/api_data_dist133Retrives/get_combination_list.json"+ MyJson.toString())
+        //Log.e("Service_Call_Details","Url= http://182.160.103.236:8079/api_data_dist133Retrives/get_combination_list.json"+ MyJson.toString())
 
         val emptyList = ArrayList<String>()
 
@@ -243,7 +243,7 @@ class DataRepository(val application: Application) {
         val service = ApiClient.getClient?.create(ApiInterface::class.java)
         val call = service?.getBonusCampaignData(MyJson)
 
-        Log.e("Service_Call_Details","Url= http://182.160.103.236:8079/api_data_dist133Retrives/get_bonus_campaign_list.json"+ MyJson.toString())
+       // Log.e("Service_Call_Details","Url= http://182.160.103.236:8079/api_data_dist133Retrives/get_bonus_campaign_list.json"+ MyJson.toString())
 
         val emptyList = ArrayList<String>()
 

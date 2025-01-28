@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 
 import com.dantsu.escposprinter.EscPosPrinter;
 import com.dantsu.escposprinter.EscPosPrinterCommands;
+import com.dantsu.escposprinter.exceptions.EscPosConnectionException;
 import com.dantsu.escposprinter.exceptions.EscPosEncodingException;
 import com.dantsu.escposprinter.textparser.PrinterTextParser;
 import com.dantsu.escposprinter.textparser.PrinterTextParserColumn;
@@ -125,7 +126,7 @@ public class PrinterTextParserImg implements IPrinterTextParserElement {
 
         if (nbrWhiteByteToInsert > 0) {
             int newByteWidth = byteWidth + nbrWhiteByteToInsert;
-            byte[] newImage = EscPosPrinterCommands.initImageCommand(newByteWidth, height);
+            byte[] newImage = initImageCommand(newByteWidth, height);
             for (int i = 0; i < height; i++) {
                 System.arraycopy(image, (byteWidth * i + 8), newImage, (newByteWidth * i + nbrWhiteByteToInsert + 8), byteWidth);
             }
@@ -134,6 +135,17 @@ public class PrinterTextParserImg implements IPrinterTextParserElement {
 
         this.length = (int) Math.ceil(((float) byteWidth * 8) / ((float) printer.getPrinterCharSizeWidthPx()));
         this.image = image;
+    }
+    public static byte[] initImageCommand(int width, int height) {
+        // Assuming we need a byte array for image data
+        // Width in bytes, so we might need to round it up to the nearest multiple of 8
+        int byteWidth = (width + 7) / 8; // round up to the nearest byte
+        byte[] imageData = new byte[byteWidth * height + 8]; // +8 for command header or any additional data
+        // Initialize with zeros or any specific pattern if needed
+        for (int i = 0; i < imageData.length; i++) {
+            imageData[i] = 0; // or some default value
+        }
+        return imageData;
     }
 
     /**
@@ -154,7 +166,13 @@ public class PrinterTextParserImg implements IPrinterTextParserElement {
      */
     @Override
     public PrinterTextParserImg print(EscPosPrinterCommands printerSocket) {
-        printerSocket.printImage(this.image);
+        try {
+            printerSocket.printImage(this.image);
+        } catch (EscPosConnectionException e) {
+            // Handle the exception (e.g., log the error, notify the user, etc.)
+            e.printStackTrace(); // or use your logging mechanism
+        }
+
         return this;
     }
 }

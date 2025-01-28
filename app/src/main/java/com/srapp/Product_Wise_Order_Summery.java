@@ -296,6 +296,11 @@ public class Product_Wise_Order_Summery extends ParentActivity implements BasicF
                     if (Double.parseDouble(jsonArray.getJSONObject(j).getString("total_qty")) > 0 || Double.parseDouble(jsonArray.getJSONObject(j).getString("bonus_qty")) > 0) {
                         HashMap<String, String> map = new HashMap<>();
                         map.put("product_name", jsonArray.getJSONObject(j).getString("product_name"));
+                        if (jsonArray.getJSONObject(j).getString("product_display_name").equalsIgnoreCase("null") || jsonArray.getJSONObject(j).getString("product_display_name").isEmpty()){
+                            map.put("product_display_name", jsonArray.getJSONObject(j).getString("product_name"));
+                        }else {
+                            map.put("product_display_name", jsonArray.getJSONObject(j).getString("product_display_name"));
+                        }
                         map.put("EC", jsonArray.getJSONObject(j).getString("total_ec"));
                         map.put("OC", jsonArray.getJSONObject(j).getString("total_oc"));
                         map.put("qty", jsonArray.getJSONObject(j).getString("total_qty"));
