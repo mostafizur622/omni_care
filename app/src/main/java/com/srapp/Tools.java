@@ -90,48 +90,48 @@ public class Tools extends ParentActivity {
                         finish();
                         break;
 
+//                    case 3:
+//                        startActivity(new Intent(Tools.this,OrderProcess.class));
+//                        finish();
+//                        break;
+//                    case 4:
+//                        startActivity(new Intent(Tools.this,UnProcessOrder.class));
+//                        finish();
+//                        break;
+//
+//                        case 5:
+//                        startActivity(new Intent(Tools.this,Multiple_Invoice_print.class));
+//                        finish();
+//                        break;
                     case 3:
-                        startActivity(new Intent(Tools.this,OrderProcess.class));
-                        finish();
-                        break;
-                    case 4:
-                        startActivity(new Intent(Tools.this,UnProcessOrder.class));
-                        finish();
-                        break;
-
-                        case 5:
-                        startActivity(new Intent(Tools.this,Multiple_Invoice_print.class));
-                        finish();
-                        break;
-                    case 6:
                         startActivity(new Intent(Tools.this,CancelOrder.class));
                         finish();
                         break;
 
-                    case 7:
+                    case 4:
                         startActivity(new Intent(Tools.this,MakePDF.class));
                         finish();
                         break;
-                        case 8:
+                        case 5:
                         startActivity(new Intent(Tools.this,Product_Catalog.class));
                         finish();
                         break;
-                        case 9:
+                        case 6:
                         startActivity(new Intent(Tools.this,GiftIssueList.class));
                         finish();
                         break;
 
-                    case 10:
+                    case 7:
                         startActivity(new Intent(Tools.this, BonusCampaignActivity.class));
                         finish();
                         break;
 
-                    case 11:
+                    case 8:
                         startActivity(new Intent(Tools.this, CurrentOfferProductActivity.class));
                         finish();
                         break;
 
-                        case 12:
+                        case 9:
                         startActivity(new Intent(Tools.this, outletStatus.class));
                         finish();
                         break;
@@ -154,9 +154,9 @@ public class Tools extends ParentActivity {
         sr_targetList.add(new SR_Target("Outlet List",null));
         sr_targetList.add(new SR_Target("Market List",null));
         sr_targetList.add(new SR_Target("Price List",null));
-        sr_targetList.add(new SR_Target("Order Process",null));
+/*        sr_targetList.add(new SR_Target("Order Process",null));
         sr_targetList.add(new SR_Target("Cancel Invoice ",null));
-        sr_targetList.add(new SR_Target("Print Invoice",null));
+        sr_targetList.add(new SR_Target("Print Invoice",null));*/
         sr_targetList.add(new SR_Target("Cancel Order ",null));
         sr_targetList.add(new SR_Target("Generate Order PDF",null));
         sr_targetList.add(new SR_Target("Product Catalog",null));

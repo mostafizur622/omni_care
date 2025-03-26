@@ -65,6 +65,7 @@ import static com.srapp.TempData.MEMO_EDIT;
 import static com.srapp.TempData.ORDER_TO_MEMO;
 import static com.srapp.TempData.PROCESSING_ON_SERVER;
 import static com.srapp.TempData.PolicySetRelation;
+import static com.srapp.TempData.TempGift;
 import static com.srapp.TempData.policyArrayList;
 
 import android.app.AlertDialog;
@@ -161,9 +162,9 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
         user_txt_view.setText(bf.getPreference(SR_ID));
         FirebaseCrashlytics.getInstance().setUserId(getPreference("sr_uname"));
         if (MEMO_EDIT) {
-            title.setText("Invoice Details");
-            btnEdit.setText("Edit Invoice");
-            print.setText("Print Invoice");
+            title.setText("Delivery Details");
+            btnEdit.setText("Edit");
+            print.setText("Print");
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             try {
                 Date date1 = simpleDateFormat.parse(TempData.MemoDate);
@@ -427,7 +428,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                             finish();
                         }
                     } else {
-                        Toast.makeText(DetailsOrderReport.this, "This Order is Already Processed Please cancel invoice to Edit", Toast.LENGTH_LONG).show();
+                        Toast.makeText(DetailsOrderReport.this, "This Order is Already Processed ", Toast.LENGTH_LONG).show();
                     }
                 } else if (ORDER_TO_MEMO == 1) {
                     cancel.setEnabled(false);
@@ -551,7 +552,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                     SwitchToSaleOrder();
                 }
             } else {
-                Toast.makeText(DetailsOrderReport.this, "This Order is Already Processed Please cancel invoice to Edit", Toast.LENGTH_LONG).show();
+                Toast.makeText(DetailsOrderReport.this, "This Order is Already Processed", Toast.LENGTH_LONG).show();
             }
 
 
@@ -930,7 +931,8 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
         tdiscount = tdiscount + (disamount * qty);
 
 
-        return product_name + "(" + (roundTwoDecimals(disamount * qty)) + ")";
+        //return product_name + "(" + (roundTwoDecimals(disamount * qty)) + ")";
+        return product_name + "(" + (Math.round(disamount * qty)) + ")";
 
     }
     private String getdiscountPrint(double qty, double price, int distype, double disamount, String product_name) {
@@ -957,7 +959,8 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
         tdiscount = tdiscount + (disamount * qty);
 
 
-        return product_name + "(" + (roundTwoDecimals(disamount * qty)) + ")";
+        //return product_name + "(" + (roundTwoDecimals(disamount * qty)) + ")";
+        return product_name + "(" + (Math.round(disamount * qty)) + ")";
 
     }
  private String getdiscountBN(double qty, double price, int distype, double disamount, String product_name) {
@@ -1020,7 +1023,8 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
         Cursor c = db.rawQueryCoustom(memo_id);
         c.moveToFirst();
         if (c.getCount()>0 && c!=null){
-            discountt.setText(c.getString(0));
+            double discountValue = Double.parseDouble(c.getString(0)); // Convert String to double
+            discountt.setText(String.valueOf(Math.round(discountValue)));
             sub_total.setText(c.getString(1));
         }
 
@@ -1462,6 +1466,8 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
         if (gift1.length() > 0) {
             //txtGift.setText(gift);
             TempData.TempGift = gift1;
+        }else {
+            TempData.TempGift = "";
         }
         TempData.GiftArrayList = giftList;
     }

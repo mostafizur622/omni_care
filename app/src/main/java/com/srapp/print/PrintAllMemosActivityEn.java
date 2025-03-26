@@ -763,12 +763,12 @@ public class PrintAllMemosActivityEn extends ParentActivity {
 
         String Query = "";
         if (getPreference("data").equalsIgnoreCase("all")) {
-            Query = "SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where  status='1' ORDER BY _id DESC";
+            Query = "SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where  status='1' ORDER BY order_date DESC";
         } else {
-            Query = "SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where  status='1' and order_date>=" + "'" + FromDate + "'" + " and order_date <=" + "'" + ToDate + "' ORDER BY _id DESC";
+            Query = "SELECT order_number, order_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where  status='1' and order_date>=" + "'" + FromDate + "'" + " and order_date <=" + "'" + ToDate + "' ORDER BY order_date DESC";
         }
         Cursor c = db.sqLiteDatabase.rawQuery(Query,null);
-        Log.e("Query", "SELECT memo_number, memo_date_time, outlet_id, gross_value, cash_received, credit_amount, market_id,discount_value,total_vat,total_discount FROM order_table where memo_date>=" + "'" + FromDate + "'" + " and memo_date <=" + "'" + ToDate + "' ORDER BY _id DESC");
+        Log.e("Query", Query);
         if (c != null && c.getCount() > 0) {
             if (c.moveToFirst()) {
                 do {
@@ -979,9 +979,11 @@ public class PrintAllMemosActivityEn extends ParentActivity {
                     }
 
                     mAdapter = new PrintRecyclerAdapterEN(this, TempData.INVOICE_DETAILS_PRINT);
-                    RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+                    mAdapter.notifyDataSetChanged();
+                    RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(PrintAllMemosActivityEn.this);
                     printRecylerview.setLayoutManager(mLayoutManager);
                     printRecylerview.setAdapter(mAdapter);
+                    printRecylerview.setNestedScrollingEnabled(false);
 
                     office_copy.setText("Office Copy");
                     area_office.setText("Area Office: " + getPreference("office_name") +", "+ getPreference("office_address") + ", " + getPreference("office_phone"));

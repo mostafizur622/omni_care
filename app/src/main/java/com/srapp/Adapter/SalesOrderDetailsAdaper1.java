@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.srapp.Bonus_policy;
 import com.srapp.Db_Actions.Data_Source;
+import com.srapp.Db_Actions.URL;
 import com.srapp.R;
 import com.srapp.TempData;
 import com.srapp.Util.Parent;
@@ -1220,7 +1221,9 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                                 policy_id,
                                 "0",
                                 policyWiseSlabArrayList.get(effective_options_slab_index).getPolicy_type(),
-                                policyWiseSlabArrayList.get(effective_options_slab_index).getDeduct_from_value()
+                                policyWiseSlabArrayList.get(effective_options_slab_index).getDeduct_from_value(),
+                                policyWiseSlabArrayList.get(effective_options_slab_index).getMin_qty(),
+                                String.valueOf(CartProductQtysum)
                         );
 
                     }
@@ -1318,7 +1321,9 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                                     policy_id,
                                     "0",
                                     policyWiseSlabArrayList.get(effective_options_slab_index).getPolicy_type(),
-                                    policyWiseSlabArrayList.get(effective_options_slab_index).getDeduct_from_value()
+                                    policyWiseSlabArrayList.get(effective_options_slab_index).getDeduct_from_value(),
+                                    policyWiseSlabArrayList.get(effective_options_slab_index).getMin_qty(),
+                                    String.valueOf(CartProductQtysum)
                             );
 
                         }
@@ -1391,7 +1396,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
             if (Total_Discount > 0.0) {
 
-                discount.setText(roundTwoDecimal(Total_Discount) + "");
+                discount.setText(Math.round(Total_Discount) + "");
                 discount.setVisibility(View.VISIBLE);
                 discount_details.setText(discount_data.substring(0, Discounttext.length() - 1));
 
@@ -2376,7 +2381,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
     }
 
 
-    private void setOnlydiscount(String option_id, String discount_type, double discount_amount, String option_product_id, String policy_id, String recall_Qty, String policy_type, String deduct_from_value) {
+    private void setOnlydiscount(String option_id, String discount_type, double discount_amount, String option_product_id, String policy_id, String recall_Qty, String policy_type, String deduct_from_value,String minQty,String qty) {
         Log.e("dis_count_type", discount_type);
 
         try {
@@ -2404,7 +2409,36 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
             if (Integer.parseInt(discount_type) == 0) {
                 discount = (price / 100.00) * discount_amount;
             } else {
-                discount = discount_amount;
+                if(policy_id.equals(URL.NEW_DISCOUNT_POLICY) || policy_id.equals(URL.NEW_DISCOUNT_POLICY2)){
+                    double quantity = Double.parseDouble(qty);
+                    double minQuantity = Double.parseDouble(minQty);
+                    double extraQuantity = quantity % minQuantity;
+                    Log.e("extraQuantity12", extraQuantity + "");
+                    double adjustedQuantity = quantity - extraQuantity;
+                    double minvalue=price*quantity;
+                    String query2 = "select * from policy_product_Option\n" +
+                            "where \n" +
+                            "policy_id=" + policy_id + "\n" + "\n" +
+                            "AND min_qty <= " + extraQuantity + "\n" +
+                            "and (min_qty!=0 and min_qty <=" + extraQuantity + "\n" + "\n" +
+                            " or min_value <=" + minvalue + ")\n" + "\n" +
+                            "order by min_qty desc,min_value desc";
+                    Cursor cursor = db.rawQueryCoustom(query2);
+                    Log.e("startQuery",query2);
+                    cursor.moveToFirst();
+                    if (cursor != null && cursor.getCount() > 0) {
+                        double extraDiscount=Double.parseDouble(cursor.getString(cursor.getColumnIndex("discount_amount")));
+                        Log.e("discountQuery12", cursor.getString(cursor.getColumnIndex("discount_amount"))) ;
+                        discount = discount_amount/Double.parseDouble(minQty)*adjustedQuantity+extraDiscount;
+
+                    }else {
+                        discount = discount_amount/Double.parseDouble(minQty)*adjustedQuantity;
+                    }
+                    discount = discount / quantity;
+                    cursor.close();
+                }else {
+                    discount = discount_amount;
+                }
             }
             price_ad = price - discount;
 
@@ -2769,7 +2803,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
             discount = discountp;
         }
         Total_Discount = Total_Discount + discount + sp_discount;
-        this.discount.setText(roundTwoDecimals(Total_Discount));
+        this.discount.setText(String.valueOf(Math.round(Total_Discount)));
 
         subt.setText(roundTwoDecimals(memoValue - Total_Discount));
 

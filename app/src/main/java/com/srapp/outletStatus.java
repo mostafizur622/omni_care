@@ -93,7 +93,7 @@ public class outletStatus extends ParentActivity implements BasicFunctionListene
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
 
-                android.util.Log.e("outlet",response.body());
+                //android.util.Log.e("outlet",response.body());
                String responseMemos = response.body();
                 dailog.dismiss();
                 try{

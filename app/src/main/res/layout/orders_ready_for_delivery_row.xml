@@ -20,7 +20,7 @@
             android:id="@+id/sirial"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight=".6"
+            android:layout_weight=".4"
             android:gravity="center"
             android:textAlignment="gravity"
 
@@ -55,7 +55,7 @@
             android:id="@+id/amount"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1.1"
+            android:layout_weight="0.9"
             android:gravity="center"
             android:textAlignment="gravity"
             android:textStyle="bold"
@@ -77,6 +77,17 @@
             android:text="Complete">
 
         </Button>
+        <CheckBox
+            android:id="@+id/checkbox"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="0dp"
+            android:button="@drawable/custom_checkbox"
+            android:scaleX="0.8"
+            android:scaleY="0.8"
+            android:layout_weight="0.4">
+
+        </CheckBox>
 
     </LinearLayout>
 

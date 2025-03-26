@@ -40,7 +40,7 @@
                 android:autoSizeMinTextSize="12sp"
                 android:autoSizeMaxTextSize="20sp"
                 android:autoSizeStepGranularity="2sp"
-                android:text="Invoice Reports">
+                android:text="Delivery Reports">
 
             </TextView>
 

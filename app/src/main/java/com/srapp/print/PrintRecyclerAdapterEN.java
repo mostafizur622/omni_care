@@ -37,7 +37,7 @@ public class PrintRecyclerAdapterEN extends RecyclerView.Adapter<PrintRecyclerAd
 
     @Override
     public SingleItemRowHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.print_item, null);
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.print_item, viewGroup,false);
         SingleItemRowHolder mh = new SingleItemRowHolder(v);
         return mh;
     }

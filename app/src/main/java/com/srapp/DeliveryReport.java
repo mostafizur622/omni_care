@@ -193,30 +193,30 @@ public class DeliveryReport extends ParentActivity implements BasicFunctionListe
 
 
 
-        print.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                System.gc();
-                Runtime.getRuntime().gc();
-
-                UsbConnection usbConnection = UsbPrintersConnections.selectFirstConnected(DeliveryReport.this);
-                UsbManager usbManager = (UsbManager) DeliveryReport.this.getSystemService(Context.USB_SERVICE);
-
-               /* if (usbConnection == null || usbManager == null) {
-                    new AlertDialog.Builder(DeliveryReport.this)
-                            .setTitle("USB Connection")
-                            .setMessage("No USB printer found.")
-                            .show();
-                }
-
-                else {*/
-
-                    showPrintDailog();
-
-               // }
-
-            }
-        });
+//        print.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                System.gc();
+//                Runtime.getRuntime().gc();
+//
+//                UsbConnection usbConnection = UsbPrintersConnections.selectFirstConnected(DeliveryReport.this);
+//                UsbManager usbManager = (UsbManager) DeliveryReport.this.getSystemService(Context.USB_SERVICE);
+//
+//               /* if (usbConnection == null || usbManager == null) {
+//                    new AlertDialog.Builder(DeliveryReport.this)
+//                            .setTitle("USB Connection")
+//                            .setMessage("No USB printer found.")
+//                            .show();
+//                }
+//
+//                else {*/
+//
+//                    showPrintDailog();
+//
+//               // }
+//
+//            }
+//        });
 
         all.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -519,7 +519,7 @@ public class DeliveryReport extends ParentActivity implements BasicFunctionListe
             @Override
             public void run() {
                 list = arrayList;
-                AdapterForOrderReadyForDalivery adapter = new AdapterForOrderReadyForDalivery(DeliveryReport.this,list);
+                AdapterForOrderReadyForDalivery adapter = new AdapterForOrderReadyForDalivery(DeliveryReport.this,list,start_date.getText().toString(),end_date.getText().toString());
                 daliveryList.setAdapter(adapter);
             }
         });

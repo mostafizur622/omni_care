@@ -73,6 +73,7 @@ import com.gprinter.io.PortManager;
 import com.gprinter.io.UsbPort;
 import com.gprinter.utils.Command;
 import com.srapp.Db_Actions.Data_Source;
+import com.srapp.DeliveryReport;
 import com.srapp.DetailsOrderReport;
 import com.srapp.Multiple_Invoice_print;
 import com.srapp.R;
@@ -204,7 +205,7 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
 
             DeletePOzipFile();
 
-            startActivity(new Intent(PrintSelectedOrdersActivityEN.this, Multiple_Invoice_print.class));
+            startActivity(new Intent(PrintSelectedOrdersActivityEN.this, DeliveryReport.class));
 
             finish();
 
@@ -1495,7 +1496,7 @@ public class PrintSelectedOrdersActivityEN extends ParentActivity {
 
         DeletePOzipFile();
 
-        startActivity(new Intent(PrintSelectedOrdersActivityEN.this, Multiple_Invoice_print.class));
+        startActivity(new Intent(PrintSelectedOrdersActivityEN.this, DeliveryReport.class));
 
         finish();
     }

@@ -11,13 +11,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
+import com.srapp.DeliveryReport;
 import com.srapp.DetailsOrderReport;
 import com.srapp.R;
 import com.srapp.TempData;
+import com.srapp.print.PrintAllMemosActivityEn;
+import com.srapp.print.PrintSelectedOrdersActivityEN;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,13 +48,17 @@ public class AdapterForOrderReadyForDalivery extends BaseAdapter {
 
 
     Activity context;
-
+    ArrayList<String> list = new ArrayList<>();
     Data_Source db;
+    Button printBtn;
     ArrayList<HashMap<String, String>> maplist = new ArrayList<HashMap<String, String>>();
-    public AdapterForOrderReadyForDalivery(Activity context, ArrayList<HashMap<String, String>> arraylistContent) {
+    String start_date,end_date;
+    public AdapterForOrderReadyForDalivery(Activity context, ArrayList<HashMap<String, String>> arraylistContent,String start_date,String end_date) {
         this.context = context;
         maplist = arraylistContent;
         db = new Data_Source(context);
+        this.start_date=start_date;
+        this.end_date=end_date;
     }
 
     @Override
@@ -84,6 +92,53 @@ public class AdapterForOrderReadyForDalivery extends BaseAdapter {
         date.setText(map.get(Tables.ORDER_order_date));
         outlet.setText(map.get(Tables.OUTLETS_OUTLET_NAME));
         amount.setText(map.get(Tables.ORDER_gross_value));
+        //Start_setOrderPrintCheckItem
+        CheckBox checkBox1 = (CheckBox) view2.findViewById(R.id.checkbox);
+
+        checkBox1.setChecked(isInList(map.get(ORDER_order_number)));
+
+        final ArrayList<HashMap<String, String>> finalMapContent = maplist;
+
+        checkBox1.setOnCheckedChangeListener((buttonView, isChecked) -> {
+
+            Log.e("isChecked", isChecked + "");
+
+            //linear_saveimage.setVisibility(View.VISIBLE);
+
+            if (isChecked) {
+
+                list.add(finalMapContent.get(position).get(ORDER_order_number));
+                Log.e("saveOrderNumber",finalMapContent.get(position).get(ORDER_order_number));
+
+
+            } else {
+                list.remove(finalMapContent.get(position).get(ORDER_order_number));
+
+            }
+
+        });
+        printBtn = (Button)((Activity) context).findViewById(R.id.print);
+        printBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(list.size() == 0){
+                    Intent idn = new Intent(context, PrintAllMemosActivityEn.class);
+                    idn.putExtra("FromDate",start_date);
+                    idn.putExtra("ToDate",end_date);
+                    context.startActivity(idn);
+                    context.finish();
+                }else {
+                    Intent idn = new Intent(context, PrintSelectedOrdersActivityEN.class);
+                    idn.putExtra("FromDate", list);
+                    context.startActivity(idn);
+                    context.finish();
+                }
+
+
+            }
+        });
+
+        //End_setOrderPrintCheckItem
         if (map.get(Tables.ORDER_STATUS).equalsIgnoreCase("1")) {
             status.setText("Pending");
             status.setBackgroundResource(R.drawable.red_button);
@@ -165,7 +220,15 @@ public class AdapterForOrderReadyForDalivery extends BaseAdapter {
         return view2;
     }
 
+    boolean isInList(String orderNO) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).equalsIgnoreCase(orderNO)) {
+                return true;
+            }
+        }
 
+        return false;
+    }
 
     public String getPreference(String key)
     {

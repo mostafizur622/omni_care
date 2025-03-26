@@ -48,6 +48,7 @@
             android:layout_width="match_parent"
             android:orientation="horizontal"
             android:layout_weight=".95"
+            android:visibility="gone"
             android:layout_height="wrap_content">
 
             <TextView
@@ -88,9 +89,10 @@
 
             <TextView
                 android:id="@+id/total"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
+                android:layout_gravity="center"
                 android:text="1000000"
                 android:textColor="#000000"
                 android:textSize="@dimen/_10sdp"

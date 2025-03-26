@@ -657,7 +657,8 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
                                 db.generatePushJson();
 
                             }else {
-                                switchToSales();
+                                //hold for local uat
+                               // switchToSales();
                                 Toast.makeText(Create_New_Memo.this,"Please turn On Internet TO Sync",Toast.LENGTH_LONG).show();
                             }
 
@@ -1195,10 +1196,10 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
         Cursor c;
         String Query;
         if (typeID.equalsIgnoreCase("0")) {
-            Query = "SELECT * FROM outlets  WHERE market_id='" + marketID + "' and isActivated='1' ORDER BY outlet_name COLLATE NOCASE ASC";
+            Query = "SELECT * FROM outlets  WHERE market_id='" + marketID + "' and isActivated='1' GROUP BY outlet_name ORDER BY outlet_name COLLATE NOCASE ASC";
             c = db.rawQueryCoustom(Query);
         } else {
-            Query = "SELECT * FROM outlets  WHERE market_id='" + marketID + "' AND outlet_category_id='" + typeID + "' and isActivated='1' ORDER BY outlet_name COLLATE NOCASE ASC";
+            Query = "SELECT * FROM outlets  WHERE market_id='" + marketID + "' AND outlet_category_id='" + typeID + "' and isActivated='1' GROUP BY outlet_name ORDER BY outlet_name COLLATE NOCASE ASC";
             c = db.rawQueryCoustom(Query);
         }
         c.moveToFirst();
