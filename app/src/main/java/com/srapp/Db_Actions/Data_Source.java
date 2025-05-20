@@ -2508,6 +2508,7 @@ public class Data_Source extends Parent {
                         map.put("policy_name", policy_table.getString("name"));
                         map.put("end_date", policy_table.getString("end_date"));
                         map.put("updated_at", policy_table.getString("updated_at"));
+                        map.put("bonus_applicable", policy_table.getString("policy_applicable"));
                         InsertTable(map, "Policy_Table");
                     } catch (Exception e) {
                         //Loge("policy_tablex1", e.getMessage());
@@ -3228,7 +3229,7 @@ public class Data_Source extends Parent {
                 "left join DiscountBonusPolicyToSpecialGroupSo spg on spg.discount_bonus_policy_id=pt.policy_id and spg.reffrence_id in (" + specialGroupId + ")\n" +
                 "where\n" +
                 "'" + memodate + "' between pt.start_date and pt.end_date\n" +
-                " and prp.root_product_id in (" + rootProductId + ")\n" +
+                "and pt.bonus_applicable=1 and prp.root_product_id in (" + rootProductId + ")\n" +
                 " and (beo._id is not null or beoc._id is not null or spg.id is not null)\n"+
                 excluding_condition+
                 "group by \n" +
@@ -3479,7 +3480,7 @@ public class Data_Source extends Parent {
                 "left join unit u on u.unit_id=pbp.unit_id\n" +
                 "where option_id=" + optionId + ohter_con;
 
-        //Loge("policy_Bonus_Query:", query2);
+        Log.e("policy_Bonus_Query:", query2);
         Cursor cursor = sqLiteDatabase.rawQuery(query2, null);
 
         // looping through all rows and adding to list

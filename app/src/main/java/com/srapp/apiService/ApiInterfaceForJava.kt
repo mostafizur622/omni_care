@@ -7,6 +7,7 @@ import okhttp3.RequestBody
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
 
@@ -111,6 +112,9 @@ interface ApiInterfaceForJava {
     @Headers("Content-Type: application/json")
     @POST("dist_order_details.json")
     fun GET_ORDER_DETAILS(@Body JSONObject: RequestBody): Call<String>
+    @Headers("Content-Type: application/json")
+    @POST("policy_bonus_applicable_checking.json")
+    fun Policy_Bonus_Applicable(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_order_delivery_schedule.json")

@@ -174,7 +174,61 @@
             }
         });
     }
+     private void getTradeOfferPolicy() {
+         JSONObject dataObject = new JSONObject();
+         ProgressDialog dailog = CheckConnection(SyncActivity.this,"Trade Offer Policy Loading...");
+         if (dailog==null)
+             return;
+         try {
+             dataObject.put("so_id","");
+             Log.e("onResponse", "api_call onResponse: ");
+             getJAPi().Policy_Bonus_Applicable(convertTORequestdata(dataObject)).enqueue(new Callback<String>() {
+                 @Override
+                 public void onResponse(Call<String> call, Response<String> response) {
 
+                     Log.e("onResponse", "onResponse: "+response.toString() );
+
+                     dailog.dismiss();
+                     if (response.code()==200 && response.isSuccessful()) {
+                         try {
+                             JSONObject jsonObject = new JSONObject(response.body());
+                             Log.e("policyTrade",jsonObject.toString());
+                             JSONArray array=jsonObject.getJSONArray("policy_data");
+                             for (int i =0 ; i<array.length();i++){
+                                 JSONObject policyOBject=array.getJSONObject(i);
+                                 String policyId=policyOBject.getString("policy_id");
+                                 String bonusApplicable=policyOBject.getString("policy_applicable");
+                                 Log.e("policyId",policyId);
+                                 Log.e("bonusApplicable",bonusApplicable);
+                                 String queryUpdateTable = "UPDATE " + "Policy_Table" + " SET " + "bonus_applicable" + "='" + bonusApplicable + "'  WHERE " + "policy_id" + "='" + policyId + "'";
+                                 ds.excQuery(queryUpdateTable);
+                             }
+
+                         } catch (JSONException e) {
+                             // e.printStackTrace();
+
+                         }catch (Exception e){
+
+                         }
+
+
+                     }else {
+
+                         Toast.makeText(SyncActivity.this,   "Failed try Again", Toast.LENGTH_SHORT).show();
+                     }
+
+                 }
+
+                 @Override
+                 public void onFailure(Call<String> call, Throwable t) {
+                     dailog.dismiss();
+                     Toast.makeText(SyncActivity.this,   "Try again", Toast.LENGTH_SHORT).show();
+                 }
+             });
+         } catch (JSONException e) {
+             throw new RuntimeException(e);
+         }
+     }
      private boolean checkTime() {
 
          if (bf.getPreference("lastSyncTime").equalsIgnoreCase("null")){
@@ -232,6 +286,7 @@
                                     ds.excQuery("delete  from "+Tables.TABLE_OUTLET_PERMISSION);
                                     ds.insertData(jsonObject.getJSONObject("response").toString(), 1);
                                     ds.savePreference("dataforsummery", jsonObject.getJSONObject("response").toString());
+                                    getTradeOfferPolicy();
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }

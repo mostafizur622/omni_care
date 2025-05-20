@@ -182,6 +182,7 @@ public class DB_Helper extends SQLiteOpenHelper {
                 "policy_name" + " TEXT," +
                 "start_date" + " DATE," +
                 "end_date" + " DATE," +
+                "bonus_applicable" + " TEXT," +
                 "updated_at" + " DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME'))" +
                 ")";
         sqLiteDatabase.execSQL(Policy_Table);

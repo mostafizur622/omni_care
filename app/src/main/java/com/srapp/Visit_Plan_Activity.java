@@ -162,7 +162,7 @@ public class Visit_Plan_Activity extends ParentActivity implements BasicFunction
         try {
             primaryData.put("mac",basicFunction.getPreference("mac"));
             primaryData.put("sales_person_id",basicFunction.getPreference("sales_person_id"));
-            primaryData.put("week_id",1);
+            primaryData.put("week_id",weekNumber);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -199,7 +199,7 @@ public class Visit_Plan_Activity extends ParentActivity implements BasicFunction
                         try {
                             primaryData.put("mac",basicFunction.getPreference("mac"));
                             primaryData.put("sales_person_id",basicFunction.getPreference("sales_person_id"));
-                            primaryData.put("week_id",1);
+                            primaryData.put("week_id",weekNumber);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

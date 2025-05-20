@@ -66,6 +66,7 @@ import static com.srapp.TempData.policyArrayList;
 import static com.srapp.Util.Constants.MIN_ORDER_NUMBER;
 import static com.srapp.Util.Constants.PUSH_Failed_TIME;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -1382,6 +1383,7 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
                             if (status == 1) {
                                 DBRetriveStatus = 102;
                                 db.updatePushStatus();
+                                getTradeOfferPolicy();
 
                             }
 
@@ -1407,6 +1409,63 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
                     savePreference(PUSH_Failed_TIME,(System.currentTimeMillis()+180000)+"");
                     dailog.dismiss();
                     Toast.makeText(Create_New_Memo.this,   "Order Not push try Again or Check Order Process from More", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private void getTradeOfferPolicy() {
+        JSONObject dataObject = new JSONObject();
+        ProgressDialog dailog = CheckConnection(Create_New_Memo.this,"Trade Offer Policy Loading...");
+        if (dailog==null)
+            return;
+        try {
+            dataObject.put("so_id","");
+            Log.e("onResponse", "api_call onResponse: ");
+            btnNext.setEnabled(true);
+            getJAPi().Policy_Bonus_Applicable(convertTORequestdata(dataObject)).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+
+                    Log.e("onResponse", "onResponse: "+response.toString() );
+
+                    dailog.dismiss();
+                    if (response.code()==200 && response.isSuccessful()) {
+                        try {
+                            JSONObject jsonObject = new JSONObject(response.body());
+                            Log.e("policyTrade",jsonObject.toString());
+                            JSONArray array=jsonObject.getJSONArray("policy_data");
+                            for (int i =0 ; i<array.length();i++){
+                                JSONObject policyOBject=array.getJSONObject(i);
+                                String policyId=policyOBject.getString("policy_id");
+                                String bonusApplicable=policyOBject.getString("policy_applicable");
+                                Log.e("policyId",policyId);
+                                Log.e("bonusApplicable",bonusApplicable);
+                                String queryUpdateTable = "UPDATE " + "Policy_Table" + " SET " + "bonus_applicable" + "='" + bonusApplicable + "'  WHERE " + "policy_id" + "='" + policyId + "'";
+                                db.excQuery(queryUpdateTable);
+                            }
+
+
+                        } catch (JSONException e) {
+                            // e.printStackTrace();
+
+                        }catch (Exception e){
+
+                        }
+
+
+                    }else {
+
+                        Toast.makeText(Create_New_Memo.this,   "Failed try Again", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    dailog.dismiss();
+                    Toast.makeText(Create_New_Memo.this,   "Try again", Toast.LENGTH_SHORT).show();
                 }
             });
         } catch (JSONException e) {
