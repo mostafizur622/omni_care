@@ -41,6 +41,7 @@ import static com.srapp.Db_Actions.Tables.OUTLETS_ISNGO;
 import static com.srapp.Db_Actions.Tables.OUTLETS_IS_WITHIN_GROUP;
 import static com.srapp.Db_Actions.Tables.OUTLETS_NGO_INST_ID;
 import static com.srapp.Db_Actions.Tables.TABLE_NAME_ORDER;
+import static com.srapp.TempData.DELIVERY_EDIT;
 import static com.srapp.TempData.MEMO_EDIT;
 import static com.srapp.TempData.ORDER_TO_MEMO;
 
@@ -143,6 +144,10 @@ public class AdapterForOrderReadyForDalivery extends BaseAdapter {
             status.setText("Pending");
             status.setBackgroundResource(R.drawable.red_button);
         }
+        else if (map.get(Tables.ORDER_STATUS).equalsIgnoreCase("4")) {
+            status.setText("Bounce");
+            status.setBackgroundResource(R.drawable.bounce_button);
+        }
         else {
             status.setText("Complete");
             status.setBackgroundResource(R.drawable.green_button);
@@ -210,6 +215,7 @@ public class AdapterForOrderReadyForDalivery extends BaseAdapter {
                 Intent in=new Intent(context, DetailsOrderReport.class);
                 ORDER_TO_MEMO = 1;
                 MEMO_EDIT =false;
+                DELIVERY_EDIT = true;
                 in.putExtra("memo",1);
                 context.startActivity(in);
 

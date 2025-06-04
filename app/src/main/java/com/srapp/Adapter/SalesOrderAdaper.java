@@ -93,6 +93,7 @@ public class SalesOrderAdaper extends BaseAdapter {
         mapContent = itemListContent.get(position);
         String product_name = mapContent.get("product_name");
         final String boolean100 = mapContent.get("boolean");
+        String productSales= mapContent.get("productSales");
         final String _product_id = mapContent.get("product_id");
         NameTv.setText(product_name);
         Log.e("~~~~~~~~~~~~~~~~~~~~~~~~~", "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" + _product_id+"ksdma"+mapContent.get("boolean"));
@@ -135,12 +136,12 @@ public class SalesOrderAdaper extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-
+                if (productSales.equals("1")){
                 if (chbox.isChecked()) {
                     AppManager.setOpenKeyBoard(context);
 
 
-                    db.excQuery("UPDATE "+Tables.TABLE_NAME_PRODUCT_BOOLEAN+" SET quantity = " + "'" + qty + "'" + ", boolean = " + "'" + chbox.isChecked() + "'" + " WHERE product_id = " + "'" + _product_id + "'" + " and outlet_id=" + "'" + OutletID + "'");
+                    db.excQuery("UPDATE " + Tables.TABLE_NAME_PRODUCT_BOOLEAN + " SET quantity = " + "'" + qty + "'" + ", boolean = " + "'" + chbox.isChecked() + "'" + " WHERE product_id = " + "'" + _product_id + "'" + " and outlet_id=" + "'" + OutletID + "'");
 
                     Log.e("UPDATED AFTER CHECKED:", "UPDATED");
 
@@ -154,9 +155,9 @@ public class SalesOrderAdaper extends BaseAdapter {
                     itemListContent.get(position).put("boolean", "true");
 
                     //QuantityEd.setFocusableInTouchMode(true);
-                   QuantityEd.requestFocus();
+                    QuantityEd.requestFocus();
 
-                    Cursor c = db.rawQueryCoustom("SELECT * FROM "+Tables.TABLE_NAME_PRODUCT_BOOLEAN+" where product_id = " + "'" + _product_id + "'" + " and outlet_id=" + "'" + OutletID + "'");
+                    Cursor c = db.rawQueryCoustom("SELECT * FROM " + Tables.TABLE_NAME_PRODUCT_BOOLEAN + " where product_id = " + "'" + _product_id + "'" + " and outlet_id=" + "'" + OutletID + "'");
                     if (c != null) {
                         if (c.moveToFirst()) {
                             do {
@@ -190,8 +191,8 @@ public class SalesOrderAdaper extends BaseAdapter {
 
                             Log.e("LENGTH:", "" + s.toString().length());
                             if (s.toString().length() == 0) {
-                                db.excQuery("UPDATE "+Tables.TABLE_NAME_PRODUCT_BOOLEAN+" SET quantity =" + "'" + qty + "'" + ", boolean = " + "'" + chbox.isChecked() + "'" + " WHERE product_id = " + "'" + _product_id + "'" + " and outlet_id=" + "'" + OutletID + "'");
-                                Log.e("AFTER EDIT1 :", "UPDATE "+Tables.TABLE_NAME_PRODUCT_BOOLEAN+" SET quantity =" + "'" + qty + "'" + ", boolean = " + "'" + chbox.isChecked() + "'" + " WHERE product_id = " + "'" + _product_id + "'" + "and so_id=" + "'" + SO_ID + "'" + " and outlet_id=" + "'" + OutletID + "'");
+                                db.excQuery("UPDATE " + Tables.TABLE_NAME_PRODUCT_BOOLEAN + " SET quantity =" + "'" + qty + "'" + ", boolean = " + "'" + chbox.isChecked() + "'" + " WHERE product_id = " + "'" + _product_id + "'" + " and outlet_id=" + "'" + OutletID + "'");
+                                Log.e("AFTER EDIT1 :", "UPDATE " + Tables.TABLE_NAME_PRODUCT_BOOLEAN + " SET quantity =" + "'" + qty + "'" + ", boolean = " + "'" + chbox.isChecked() + "'" + " WHERE product_id = " + "'" + _product_id + "'" + "and so_id=" + "'" + SO_ID + "'" + " and outlet_id=" + "'" + OutletID + "'");
 
                                 Log.e("UPDATED IN TEXTCHANGED:", "UPDATED");
                             }
@@ -206,7 +207,7 @@ public class SalesOrderAdaper extends BaseAdapter {
 
                                     Log.e("giventQty", "" + giventQty);
 
-                                    String Updatequery = "UPDATE "+Tables.TABLE_NAME_PRODUCT_BOOLEAN+" SET quantity =" + "'" + Quantity + "'" + ", boolean = " + "'" + chbox.isChecked() + "'" + " WHERE product_id = " + "'" + _product_id + "'" + " and outlet_id=" + "'" + OutletID + "'";
+                                    String Updatequery = "UPDATE " + Tables.TABLE_NAME_PRODUCT_BOOLEAN + " SET quantity =" + "'" + Quantity + "'" + ", boolean = " + "'" + chbox.isChecked() + "'" + " WHERE product_id = " + "'" + _product_id + "'" + " and outlet_id=" + "'" + OutletID + "'";
                                     Log.e("Updatequery", "" + Updatequery);
                                     db.excQuery(Updatequery);
 
@@ -228,7 +229,7 @@ public class SalesOrderAdaper extends BaseAdapter {
                     if (getArrayListIndex("" + position) >= 0)
                         SELECTED_POS.remove("" + position);
 
-                    db.excQuery("UPDATE "+Tables.TABLE_NAME_PRODUCT_BOOLEAN+" SET quantity =" + "'" + qty + "'" + ", boolean = " + "'" + chbox.isChecked() + "'" + " WHERE product_id = " + "'" + _product_id + "'" + " and outlet_id=" + "'" + OutletID + "'");
+                    db.excQuery("UPDATE " + Tables.TABLE_NAME_PRODUCT_BOOLEAN + " SET quantity =" + "'" + qty + "'" + ", boolean = " + "'" + chbox.isChecked() + "'" + " WHERE product_id = " + "'" + _product_id + "'" + " and outlet_id=" + "'" + OutletID + "'");
                     Log.e("UNCHECKED:", "UPDATE product_table SET product_quantity =" + "'" + qty + "'" + ", boolean = " + "'" + chbox.isChecked() + "'" + " WHERE product_id = " + "'" + _product_id + "'" + " and outlet_id=" + "'" + OutletID + "'");
 
 
@@ -241,7 +242,7 @@ public class SalesOrderAdaper extends BaseAdapter {
                     itemListContent.get(position).put("boolean", "false");
                     savePreference(itemListContent.get(position).get("product_id"), "0.0");
 
-                    Cursor c = db.rawQueryCoustom("SELECT * FROM "+Tables.TABLE_NAME_PRODUCT_BOOLEAN+" where product_id = " + "'" + _product_id + "'" + " and outlet_id=" + "'" + OutletID + "'");
+                    Cursor c = db.rawQueryCoustom("SELECT * FROM " + Tables.TABLE_NAME_PRODUCT_BOOLEAN + " where product_id = " + "'" + _product_id + "'" + " and outlet_id=" + "'" + OutletID + "'");
                     if (c != null) {
                         if (c.moveToFirst()) {
                             do {
@@ -252,8 +253,11 @@ public class SalesOrderAdaper extends BaseAdapter {
                         }
                     }
                 }
-                db.excQuery("UPDATE "+Tables.TABLE_NAME_PRODUCT_BOOLEAN+" SET boolean = " + "'" + chbox.isChecked() + "'" + " WHERE product_id = " + "'" + _product_id + "'" +  " and outlet_id=" + "'" + OutletID + "'");
-
+                db.excQuery("UPDATE " + Tables.TABLE_NAME_PRODUCT_BOOLEAN + " SET boolean = " + "'" + chbox.isChecked() + "'" + " WHERE product_id = " + "'" + _product_id + "'" + " and outlet_id=" + "'" + OutletID + "'");
+            }else {
+                    chbox.setChecked(false);
+                    Toast.makeText(context, "You can not choose this product for sales", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

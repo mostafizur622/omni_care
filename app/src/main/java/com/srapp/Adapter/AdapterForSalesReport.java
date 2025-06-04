@@ -41,6 +41,7 @@ import static com.srapp.Db_Actions.Tables.OUTLETS_IS_WITHIN_GROUP;
 import static com.srapp.Db_Actions.Tables.OUTLETS_NGO_INST_ID;
 import static com.srapp.Db_Actions.Tables.OUTLETS_OUTLET_NAME;
 import static com.srapp.Db_Actions.Tables.TABLE_NAME_ORDER;
+import static com.srapp.TempData.DELIVERY_EDIT;
 import static com.srapp.TempData.MEMO_EDIT;
 import static com.srapp.TempData.ORDER_TO_MEMO;
 
@@ -226,6 +227,7 @@ public class AdapterForSalesReport extends BaseAdapter {
 				Intent in=new Intent(context, DetailsOrderReport.class);
 				ORDER_TO_MEMO = 0;
 				MEMO_EDIT =false;
+				DELIVERY_EDIT = false;
 				context.startActivity(in);
 
 			}

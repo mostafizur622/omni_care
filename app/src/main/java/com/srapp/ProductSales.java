@@ -227,6 +227,16 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
         });
 
         backBtn.setOnClickListener(v -> {
+            if (TempData.DELIVERY_EDIT){
+                startActivity(new Intent(ProductSales.this, DeliveryReport.class));
+                finish();
+                return;
+            }
+            if (MEMO_EDIT){
+                startActivity(new Intent(ProductSales.this, MemoReport.class));
+                finish();
+                return;
+            }
             startActivity(new Intent(ProductSales.this, Sales_Memo.class));
             finish();
 
@@ -381,6 +391,10 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
             @Override
             public void onClick(View v) {
                 //  SavePrintButton.setEnabled(false);
+                if (SalesOrderDetailsAdaper1.not_bonus==1){
+                    Toast.makeText(getApplicationContext(), "This Order/Memo Doesn't meet Bonus Policy!", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 SaveBtn.setEnabled(false);
                 Cursor c1 = db.rawQueryCoustom("SELECT * FROM memos where from_app='1' order by _id DESC limit 1");
                 c1.moveToFirst();
@@ -1108,8 +1122,10 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
             Log.e("orderNo", orderNo);
             map1.put(Tables.ORDER_order_number, orderNo);
             map1.put(Tables.MEMOS_memo_number, memoNo);
-            map1.put(Tables.MEMOS_memo_date, getCurrentDate());
-            map1.put(Tables.MEMOS_memo_date_time, getCurrentDateTime());
+/*            map1.put(Tables.MEMOS_memo_date, getCurrentDate());
+            map1.put(Tables.MEMOS_memo_date_time, getCurrentDateTime());*/
+            map1.put(Tables.MEMOS_memo_date, TempData.selectDeliveryDate);
+            map1.put(Tables.MEMOS_memo_date_time, TempData.selectDeliveryDateTime);
             map1.put(Tables.SR_ID, bf.getPreference(SR_ID));
             map1.put(Tables.MEMOS_sales_to, "0");
             map1.put(Tables.OUTLETS_ID, TempData.OutletID);
@@ -1966,10 +1982,18 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // TODO Auto-generated method stub
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-
-            Intent idd = new Intent(ProductSales.this, Sales_Memo.class);
-            startActivity(idd);
-            finish();
+            if (TempData.DELIVERY_EDIT){
+                startActivity(new Intent(ProductSales.this, DeliveryReport.class));
+                finish();
+            }
+            else if (MEMO_EDIT){
+                startActivity(new Intent(ProductSales.this, MemoReport.class));
+                finish();
+            }else {
+                Intent idd = new Intent(ProductSales.this, Sales_Memo.class);
+                startActivity(idd);
+                finish();
+            }
 
 
         }

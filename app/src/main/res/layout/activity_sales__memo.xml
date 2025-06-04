@@ -239,16 +239,20 @@
             android:weightSum="2">
 
 
-
             <Button
                 android:id="@+id/nextBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:layout_weight="1"
-                android:text="Next"
                 android:layout_alignParentBottom="true"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_weight="1"
                 android:background="@drawable/red_round_button"
+                android:text="Next"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 android:textSize="18dp"></Button>

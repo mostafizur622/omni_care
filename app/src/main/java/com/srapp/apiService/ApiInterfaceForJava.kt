@@ -179,6 +179,9 @@ interface ApiInterfaceForJava {
     @POST("dist_order_cancel.json")
     fun CANCEL_ORDER(@Body JSONObject: RequestBody): Call<String>
 
+    @Headers("Content-Type: application/json")
+    @POST("dist_order_bounce.json")
+    fun BOUNCE_ORDER(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("dist_order_cancel_list.json")
@@ -266,7 +269,7 @@ interface ApiInterfaceForJava {
     fun tempOutletStatus(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
-    @POST("http://202.126.123.157/smc_only_dms/api_data_dist145_retrives/get_system_current_date_time.json")
+    @POST("http://182.160.103.234:8079/api_data_dist150_retrives/get_system_current_date_time.json")
     fun getTimeDate(@Body JSONObject: RequestBody): Call<String>
 
 

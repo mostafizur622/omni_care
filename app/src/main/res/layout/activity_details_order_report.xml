@@ -184,6 +184,57 @@
 
 
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/newLayout"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_height="50dp">
+            <Button
+                android:id="@+id/bounceOrder"
+                android:gravity="center"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:layout_height="50dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:text="Bounce Order"
+                android:singleLine="true"
+                android:textColor="@color/background_white"
+                android:textAllCaps="false"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:backgroundTint="#A57C00"
+                android:background="@drawable/red_button">
+
+            </Button>
+            <Button
+                android:id="@+id/pickDate"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/calx"
+                android:drawablePadding="5dp"
+                android:paddingLeft="10dp"
+                android:textColor="@color/white"
+                android:text="Pick Delivery Date"
+                android:textAllCaps="false"
+                android:background="@drawable/rounded_transparent_bg">
+
+            </Button>
+
+        </LinearLayout>
+
+
         //scrollview container =2.7 rest = 0.6
         <TextView
             android:layout_width="match_parent"

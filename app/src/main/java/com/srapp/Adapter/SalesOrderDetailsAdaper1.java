@@ -3,6 +3,7 @@ package com.srapp.Adapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
@@ -60,6 +61,7 @@ import static com.srapp.TempData.BPSelected_product;
 import static com.srapp.TempData.BPSelected_set;
 import static com.srapp.TempData.BPbonus_product;
 import static com.srapp.TempData.BPbonus_product_t;
+import static com.srapp.TempData.DELIVERY_EDIT;
 import static com.srapp.TempData.MEMO_EDIT;
 import static com.srapp.TempData.OldBPSelected_bonus;
 import static com.srapp.TempData.OldBPSelected_option_id;
@@ -83,6 +85,7 @@ import static com.srapp.Util.Constants.SET_PRODUCTS;
 
 public class SalesOrderDetailsAdaper1 extends BaseAdapter {
     public static Bonus_policy bonus_policylistener;
+    public static int not_bonus = 0;
     boolean memoeditable = true;
     // Declare Variables
     Context context;
@@ -137,7 +140,8 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
     ArrayList<ExclusionProduct> exclusionArrayList;
     ArrayList<ExclusionProduct> inclusionArrayList;
     ArrayList<PolicyBonusProduct> policyBonusProductArrayList;
-
+    android.app.AlertDialog alert;
+    android.app.AlertDialog.Builder builder ;
     public SalesOrderDetailsAdaper1(Context context, ArrayList<HashMap<String, String>> arraylistContent, String _SO_ID, String outlet_ID) {
         this.context = context;
         this.outlet_ID = outlet_ID;
@@ -149,7 +153,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
             db.excQuery("delete from policy_product_Option_temp");
             TempData.policyClear = true;
         }
-
+        builder = new android.app.AlertDialog.Builder(context);
         SO_ID = _SO_ID;
 
         bonus_policylistener = state1 -> {
@@ -367,6 +371,30 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                         Log.e("QuantityEd quantity: ", "" + QuantityEd.getText().toString());
                         //QuantityEd.setText("0");
                         QUANTITY = s.toString();
+                        double giventQty = Double.parseDouble(s.toString());
+                        if (DELIVERY_EDIT || MEMO_EDIT) {
+                            double myQuantity=0;
+                            Cursor orderQuantity = db.rawQueryCoustom(
+                                    "SELECT orderQuantity FROM product_boolean WHERE product_id = '" +
+                                            itemListContent.get(position).get("product_id") + "'"
+                            );
+                            if (orderQuantity != null) {
+                                if (orderQuantity.moveToFirst()) {
+                                    do {
+                                        myQuantity =  Double.parseDouble(orderQuantity.getString(0));
+                                        Log.e("MyOrderQuantity", "" + myQuantity);
+                                    } while (orderQuantity.moveToNext());
+                                }
+                            }
+                            orderQuantity.close();
+                            if(giventQty>myQuantity){
+                                QUANTITY = "" + myQuantity;
+                                Toast.makeText(context, "Not Allowed ", Toast.LENGTH_LONG).show();
+                            }else {
+                                QUANTITY = "" + giventQty;
+                            }
+                            Log.e("iscondition","true");
+                        }
                         String query = "UPDATE product_boolean SET quantity = " + "'" + QUANTITY + "'" + " WHERE product_id = " + "'" + itemListContent.get(position).get("product_id") + "'" + " AND outlet_id='" + outlet_ID + "'";
                         Log.e("QUERY", query);
                         db.excQuery(query);
@@ -480,7 +508,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
 
 
     public void UpdatePrice1() {
-
+        not_bonus = 0;
         Log.e("outletCategory__", TempData.OutletCatagoryID);
 
         sgidArrayList = db.SpecialGroup_ID_List(memodate, outlet_ID, TempData.OutletCatagoryID);
@@ -1526,6 +1554,7 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                 ) {
                     bonus_value = Double.valueOf(OldBPSelected_bonus.get(policyId).get(set).get(bonus_product_id).get("qty"));
                     //if (checkDefaultProduct(policyBonusProductArrList.get(0).getPolicy_id(), bonus_product_id))
+                    provide_qty += bonus_value;
                     selected = "true";
                 } else {
                     bonus_value = 0.0;
@@ -1539,7 +1568,12 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
                     selected = "true";
                 }
             }
-
+            Log.e("provide_qty123",String.valueOf(provide_qty));
+            Log.e("bonus_qty123",bonus_qty);
+            if (vs==policyBonusProductArrayList.size()-1 && provide_qty <Double.parseDouble(bonus_qty) ){
+                Log.e("condition","Tue");
+                noBonusDailog(1,bonus_product_id);
+            }
             Log.e("bonus_value", bonus_value + "");
             HashMap<String, String> map = new HashMap<>();
             map.put("product_id", policyBonusProductArrList.get(vs).getBonus_product_id());
@@ -1582,7 +1616,32 @@ public class SalesOrderDetailsAdaper1 extends BaseAdapter {
         Log.e(TAG, "BPSelected_bonus_OB: " + new Gson().toJson(BPBonusProductView));
 
     }
+    private void noBonusDailog(int pos,String product_id) {
+        String  product_name = getProductName(product_id);
+        Log.e("show","not_data"+pos);
+        not_bonus = 1;
+        if (alert!=null){
+            if (alert.isShowing()){
+                return;
+            }
+        }
 
+
+
+        builder.setTitle("warning")
+                .setMessage("Not enough Bonus Quantity")
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+
+                    }
+
+                });
+
+        alert = builder.create();
+        alert.show();
+    }
     private void formulaBonus(String policyType, String option_id, String policyId, String policyName, String minQty, ArrayList<HashMap<String, String>> formulaArrayMap) {
         ArrayList<HashMap<String, String>> bonus_list_view = new ArrayList<HashMap<String, String>>();
         if (formulaArrayMap.size() > 1) {

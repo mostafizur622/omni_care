@@ -58,6 +58,7 @@ import static com.srapp.Db_Actions.Tables.MEMOS_memo_number;
 import static com.srapp.Db_Actions.Tables.MEMO_DETAILS;
 import static com.srapp.Db_Actions.Tables.MEMO_DETAILS_Unit_id;
 import static com.srapp.Db_Actions.Tables.ORDER;
+import static com.srapp.Db_Actions.Tables.ORDER_BOUNCE;
 import static com.srapp.Db_Actions.Tables.ORDER_DETAILS;
 import static com.srapp.Db_Actions.Tables.ORDER_STATUS;
 import static com.srapp.Db_Actions.Tables.ORDER_gross_value;
@@ -382,6 +383,7 @@ public class Data_Source extends Parent {
                     String outlet_id = c.getString(c.getColumnIndex(OUTLETS_ID));
                     String product_id = c.getString(c.getColumnIndex(PRODUCT_PRODUCT_ID));
                     String quantity = c.getString(c.getColumnIndex("product_id"));
+                    String productSales = c.getString(c.getColumnIndex("product_sales"));
 
                     String product_name = "";
                     String query1 = "SELECT product_name FROM " + TABLE_NAME_PRODUCT + " WHERE product_id='" + product_id + "'";
@@ -412,6 +414,7 @@ public class Data_Source extends Parent {
                     product_list_map.put("product_id", product_id);
                     product_list_map.put("product_name", getProductName(product_id,product_name));
                     product_list_map.put("boolean", boolean12);
+                    product_list_map.put("productSales", productSales);
 
 
                 /*    if (TempData.OutletCatagoryID.equalsIgnoreCase("17")) {
@@ -3710,7 +3713,7 @@ public class Data_Source extends Parent {
                         sqLiteDatabase.update(ORDER[0], contentValues, ORDER_order_number + " =? ", ar);
                     else {
                         contentValues.put(ORDER_is_pushed, 1);
-                        contentValues.put(ORDER_STATUS, PROCESSING_COMPELETE);
+                        contentValues.put(ORDER_STATUS, jsonObject1.getString("status"));
                         sqLiteDatabase.insert(ORDER[0], null, contentValues);
                     }
 
@@ -3786,11 +3789,11 @@ public class Data_Source extends Parent {
             String Query = "";
 
             if (outlate_id.equals("0") && !start_date.equalsIgnoreCase("0"))
-                Query = "SELECT * FROM " + Tables.TABLE_NAME_ORDER + " where " + Tables.ORDER_order_date + ">=" + "'" + start_date + "' and " + ORDER_STATUS + " = '" + PROCESSING_COMPELETE + "'" + " and " + Tables.ORDER_order_date + " <=" + "'" + end_date + "'  ORDER BY order_number Asc";
+                Query = "SELECT * FROM " + Tables.TABLE_NAME_ORDER + " where " + Tables.ORDER_order_date + ">=" + "'" + start_date + "' and " + ORDER_STATUS + " IN (" + PROCESSING_COMPELETE + ", " + ORDER_BOUNCE + ")" + " and " + Tables.ORDER_order_date + " <=" + "'" + end_date + "'  ORDER BY order_number Asc";
             else if (!outlate_id.equals("0") && !start_date.equalsIgnoreCase("0"))
-                Query = "SELECT * FROM " + Tables.TABLE_NAME_ORDER + " as ot join markets as m on ot.market_id=m.market_id and m.route_id='" + outlate_id + "' where " + Tables.ORDER_order_date + ">=" + "'" + start_date + "'and " + ORDER_STATUS + " = '" + PROCESSING_COMPELETE + "'" + " and " + Tables.ORDER_order_date + " <=" + "'" + end_date + "' ORDER BY order_number Asc";
+                Query = "SELECT * FROM " + Tables.TABLE_NAME_ORDER + " as ot join markets as m on ot.market_id=m.market_id and m.route_id='" + outlate_id + "' where " + Tables.ORDER_order_date + ">=" + "'" + start_date + "'and " + ORDER_STATUS + " IN (" + PROCESSING_COMPELETE + ", " + ORDER_BOUNCE + ")" + " and " + Tables.ORDER_order_date + " <=" + "'" + end_date + "' ORDER BY order_number Asc";
             else if (outlate_id.equals("0") && start_date.equalsIgnoreCase("0") && end_date.equalsIgnoreCase("0")) {
-                Query = "SELECT * FROM " + Tables.TABLE_NAME_ORDER + " where  " + ORDER_STATUS + " = '" + PROCESSING_COMPELETE + "'   ORDER BY order_number Asc";
+                Query = "SELECT * FROM " + Tables.TABLE_NAME_ORDER + " where  " + ORDER_STATUS + " IN (" + PROCESSING_COMPELETE + ", " + ORDER_BOUNCE + ")" + " ORDER BY order_number Asc";
             }
 
             //Loge("DataView", Query);
@@ -3941,7 +3944,8 @@ public class Data_Source extends Parent {
                     "  P.product_id,\n" +
                     "  P.product_name,\n" +
                     "  P.product_category_id,\n" +
-                    "  P.product_type_id\n" +
+                    "  P.product_type_id\n," +
+                    "  P.product_sales\n" +
                     "FROM product AS P\n" +
                     "GROUP BY P.product_id,\n" +
                     "         P.product_name,\n" +
@@ -3961,6 +3965,7 @@ public class Data_Source extends Parent {
 
                         String product_category_id = c2.getString(c2.getColumnIndex("product_category_id"));
                         String product_type_id = c2.getString(c2.getColumnIndex("product_type_id"));
+                        String product_sales = c2.getString(c2.getColumnIndex("product_sales"));
 
 
                         savePreference(product_id, "0.0");
@@ -3980,6 +3985,7 @@ public class Data_Source extends Parent {
                             map.put("boolean", "false");
                             map.put("product_category_id", product_category_id);
                             map.put("product_type_id", product_type_id);
+                            map.put("product_sales", product_sales);
 
                             InsertTable(map, Tables.TABLE_NAME_PRODUCT_BOOLEAN);
                         }

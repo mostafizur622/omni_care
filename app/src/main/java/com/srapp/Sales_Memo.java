@@ -24,6 +24,7 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 
 import com.srapp.Adapter.SalesOrderAdaper;
+import com.srapp.Adapter.SalesOrderDetailsAdaper1;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Util.AppManager;
@@ -36,6 +37,11 @@ import java.util.HashMap;
 import static com.srapp.Db_Actions.Tables.OUTLETS_ID;
 import static com.srapp.Db_Actions.Tables.PPRODCUT_TYPE;
 import static com.srapp.Db_Actions.Tables.PRODUCT_CATEGORYS;
+import static com.srapp.TempData.BPSelected_bonus;
+import static com.srapp.TempData.BPSelected_option_id;
+import static com.srapp.TempData.BPSelected_policy_type;
+import static com.srapp.TempData.BPSelected_product;
+import static com.srapp.TempData.BPSelected_set;
 import static com.srapp.TempData.MEMO_EDIT;
 import static com.srapp.TempData.editMemo;
 
@@ -131,8 +137,13 @@ public class Sales_Memo extends Parent {
         });
         nextBtn.setOnClickListener(v -> {
             Runtime.getRuntime().gc(); // use for CursorWindowAllocationException
+            SalesOrderDetailsAdaper1.not_bonus = 0;
             AppManager.setCloseKeyBoard(Sales_Memo.this,adapter.editText );
-
+/*            BPSelected_bonus.clear();
+            BPSelected_product.clear();
+            BPSelected_set.clear();
+            BPSelected_policy_type.clear();
+            BPSelected_option_id.clear();*/
             Boolean validInput = true;
 
             String query = "SELECT quantity,product_id FROM product_boolean WHERE outlet_id='" + getPreference("OutletID") + "' AND boolean='true' ";
@@ -177,6 +188,7 @@ public class Sales_Memo extends Parent {
             }
 
         });
+
         String outlet = getPreference("OutletID");
         Cursor c3 = ds.rawQueryCoustom("select outlet_category_id from outlets where outlet_id='" + outlet + "'");
         c3.moveToFirst();

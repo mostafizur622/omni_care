@@ -11,6 +11,7 @@ public class Tables extends Parent {
     public static final String DATABASE_NAME = "SR_Database_"+URL.VERSION+".db";
     public static final int PROCESSING_PENDING = 0;
     public static final int PROCESSING_COMPELETE = 1;
+    public static final int ORDER_BOUNCE = 4;
     public static final int DALIVEERY_COMPELETE = 2;
     public static final String ORDER_DETAILS_policy_ID = "policy_id";
     public static final String Quantity = "quantity";
@@ -1799,6 +1800,8 @@ public class Tables extends Parent {
     public static final String PRODUCT_BOOLEAN_OUTLET_ID = "outlet_id";
     public static final String PRODUCT_BOOLEAN_PRODUCT_ID = "product_id";
     public static final String PRODUCT_BOOLEAN_QUANTITY = "quantity";
+    public static final String PRODUCT_BOOLEAN_ORDER_QUANTITY = "orderQuantity";
+    public static final String product_sales_b = "product_sales";
     public static final String PRODUCT_BOOLEAN_BOOLEAN = "boolean";
     public static final String PRODUCT_BOOLEAN_PRODUCT_CATAGORY_ID = "product_category_id";
     public static final String PRODUCT_BOOLEAN_PRODUCT_TYPE_ID = "product_type_id";
@@ -1816,6 +1819,8 @@ public class Tables extends Parent {
             PRODUCT_BOOLEAN_OUTLET_ID + " INTEGER," +
             PRODUCT_BOOLEAN_PRODUCT_ID + " INTEGER," +
             PRODUCT_BOOLEAN_QUANTITY + " DOUBLE," +
+            PRODUCT_BOOLEAN_ORDER_QUANTITY + " DOUBLE," +
+            product_sales_b + " INTEGER," +
             PRODUCT_BOOLEAN_BOOLEAN + " VARCHAR," +
             PRODUCT_BOOLEAN_PRODUCT_NAME + " VARCHAR," +
             PRODUCT_BOOLEAN_PRODUCT_CATAGORY_ID + " INTEGER," +
@@ -1983,6 +1988,7 @@ public class Tables extends Parent {
     public static final String PRODUCT_IS_INJECTABLE = "is_injectable";
     public static final String PRODUCT_IMAGE_URL = "image_url";
     public static final String PRODUCT_DISPLAY_NAME = "product_display_name";
+    public static final String PRODUCT_SALES_DATA = "product_sales";
     public static final String PRODUCT_IS_VIRTUAL = "is_virtual";
     public static final String PRODUCT_PARENT_ID = "parent_id";
     public static final String PRODUCT_UPDATED_AT = "updated_at";
@@ -1990,7 +1996,7 @@ public class Tables extends Parent {
 
 
     public static final String PPRODCUT[] = {TABLE_NAME_PRODUCT,PRODUCT_P_id,
-            PRODUCT_PRODUCT_ID, PRODUCT_PRODUCT_NAME,PRODUCT_PRODUCT_NAME_BN, PRODUCT_CATAGORY_ID, PRODUCT_TYPE_ID, PRODUCT_ORDER,PRODUCT_PARENT_ID,PRODUCT_IS_VIRTUAL, PRODUCT_IS_INJECTABLE,PRODUCT_IMAGE_URL,PRODUCT_DISPLAY_NAME, PRODUCT_UPDATED_AT, PRODUCT_CREATED_AT};
+            PRODUCT_PRODUCT_ID, PRODUCT_PRODUCT_NAME,PRODUCT_PRODUCT_NAME_BN, PRODUCT_CATAGORY_ID, PRODUCT_TYPE_ID, PRODUCT_ORDER,PRODUCT_PARENT_ID,PRODUCT_IS_VIRTUAL, PRODUCT_IS_INJECTABLE,PRODUCT_IMAGE_URL,PRODUCT_DISPLAY_NAME,PRODUCT_SALES_DATA, PRODUCT_UPDATED_AT, PRODUCT_CREATED_AT};
 
 
     public static final String CREATE_PRODUCT_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME_PRODUCT + "("
@@ -2006,6 +2012,7 @@ public class Tables extends Parent {
             PRODUCT_IS_INJECTABLE + " INTEGER," +
             PRODUCT_IMAGE_URL + " Text," +
             PRODUCT_DISPLAY_NAME + " Text," +
+            PRODUCT_SALES_DATA + " INTEGER," +
             PRODUCT_CREATED_AT + " DATETIME," +
             PRODUCT_UPDATED_AT + " DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME'))" +
             ")";

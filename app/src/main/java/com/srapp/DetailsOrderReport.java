@@ -61,26 +61,32 @@ import static com.srapp.TempData.BPSelected_product;
 import static com.srapp.TempData.BPSelected_set;
 import static com.srapp.TempData.BonusArrayList;
 import static com.srapp.TempData.ConvertTOBangla;
+import static com.srapp.TempData.DELIVERY_EDIT;
 import static com.srapp.TempData.MEMO_EDIT;
 import static com.srapp.TempData.ORDER_TO_MEMO;
 import static com.srapp.TempData.PROCESSING_ON_SERVER;
 import static com.srapp.TempData.PolicySetRelation;
 import static com.srapp.TempData.TempGift;
 import static com.srapp.TempData.policyArrayList;
+import static com.srapp.TempData.selectDeliveryDate;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -92,6 +98,7 @@ import androidx.annotation.RequiresApi;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.Gson;
 import com.srapp.Adapter.AdapterForMemoDetails;
+import com.srapp.Adapter.SalesOrderDetailsAdaper1;
 import com.srapp.Db_Actions.DBListener;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
@@ -108,10 +115,15 @@ import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -125,7 +137,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
     String memoNo;
     double subtotal = 0.00;
     ListView list;
-    Button btnEdit, cancel, print;
+    Button btnEdit, cancel, print,bounceOrder;
     AdapterForMemoDetails adapter;
     OrderDetailsModel orderDetailsModel;
     ArrayList<HashMap<String, String>> Data;
@@ -138,7 +150,8 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
     boolean memo_create = true;
     HashMap<String, String> map;
     BasicFunction bf;
-
+    Button pickDeliveryDate;
+    LinearLayout newLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -155,6 +168,10 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
         vat = findViewById(R.id.vat);
         cancel = findViewById(R.id.cancel);
         print = findViewById(R.id.print);
+        bounceOrder = findViewById(R.id.bounceOrder);
+        pickDeliveryDate = findViewById(R.id.pickDate);
+        pickDeliveryDate.setText(ParentActivity.getCurrentDate());
+        newLayout = findViewById(R.id.newLayout);
         total_price = findViewById(R.id.total_price);
         list = findViewById(R.id.list);
         title = findViewById(R.id.title);
@@ -165,6 +182,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
             title.setText("Delivery Details");
             btnEdit.setText("Edit");
             print.setText("Print");
+            newLayout.setVisibility(View.GONE);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             try {
                 Date date1 = simpleDateFormat.parse(TempData.MemoDate);
@@ -187,7 +205,6 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
             btnEdit.setText("Edit Order");
             print.setText("Print Order");
             cancel.setText("Cancel Order");
-
             if (ORDER_TO_MEMO == 1) {
                 cancel.setText("Deliver Now");
                 cancel.setVisibility(View.VISIBLE);
@@ -197,6 +214,152 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                 cancel.setVisibility(View.GONE);
             }
         }
+        if(DELIVERY_EDIT){
+            newLayout.setVisibility(View.VISIBLE);
+        }
+        bounceOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(DetailsOrderReport.this);
+                builder.setTitle("Order Bounce?");
+                LinearLayout layout = new LinearLayout(DetailsOrderReport.this);
+                layout.setOrientation(LinearLayout.VERTICAL); // Make sure the orientation is vertical
+                layout.setPadding(20, 20, 20, 20); // Optional padding for layout
+
+                final EditText reasonEditText = new EditText(DetailsOrderReport.this);
+                reasonEditText.setHint("Enter reason"); // Optionally set a hint for the EditText
+
+                int heightInPixels = (int) (100 * getResources().getDisplayMetrics().density);
+
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        heightInPixels
+                );
+                reasonEditText.setLayoutParams(params);
+
+                Drawable background = getResources().getDrawable(R.drawable.rounded_et_tv_bg);
+                reasonEditText.setBackground(background);
+                layout.addView(reasonEditText);
+                builder.setView(layout)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                String inputReason = reasonEditText.getText().toString().trim();
+                                if (!inputReason.isEmpty()) {
+                                    Log.d("SelectedReason", "User entered: " + inputReason);
+                                    if (bf.isInternetOn()) {
+
+                                        JSONObject jsonObject = new JSONObject();
+                                        try {
+                                            jsonObject.put("mac", bf.getPreference("mac"));
+                                            jsonObject.put(SR_ID, bf.getPreference(SR_ID));
+                                            jsonObject.put("processing_status", "1");
+                                            jsonObject.put("bounceNote", inputReason);
+                                            jsonObject.put(ORDER_order_number, TempData.orderNumber);
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                        //  bf.getResponceData(URL.CANCEL_ORDER, jsonObject.toString(), 111);
+
+                                        ProgressDialog dailog = CheckConnection(DetailsOrderReport.this,"Please wait...");
+                                        if (dailog==null)
+                                            return;
+                                        getJAPi().BOUNCE_ORDER(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                                            @Override
+                                            public void onResponse(Call<String> call, Response<String> response) {
+                                                try {
+                                                    JSONObject jsonObject = new JSONObject(response.body());
+                                                    Toast.makeText(DetailsOrderReport.this, jsonObject.getJSONObject("dist_order_bounce").getString("message"), Toast.LENGTH_SHORT).show();
+                                                    dailog.dismiss();
+                                                    startActivity(new Intent(DetailsOrderReport.this, DeliveryReport.class));
+                                                    finishAffinity();
+
+                                                } catch (JSONException e) {
+                                                    throw new RuntimeException(e);
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onFailure(Call<String> call, Throwable t) {
+                                                dailog.dismiss();
+                                            }
+                                        });
+                                    } else {
+                                        Toast.makeText(DetailsOrderReport.this, "NO Internet Connection", Toast.LENGTH_LONG).show();
+                                        btnEdit.setEnabled(true);
+                                        return;
+                                    }
+                                } else {
+                                    // If input is empty, show a toast
+                                    Toast.makeText(DetailsOrderReport.this, "Please enter a reason.", Toast.LENGTH_SHORT).show();
+
+                                }
+                            }
+                        })
+                        .setNegativeButton("Cancel", null); // Cancel button just closes the dialog
+
+                AlertDialog dialog = builder.create();
+
+                dialog.show();
+                WindowManager.LayoutParams params1 = dialog.getWindow().getAttributes();
+                params1.height = LinearLayout.LayoutParams.WRAP_CONTENT;  // Optionally, adjust the height of the dialog
+                dialog.getWindow().setAttributes(params1);
+            }
+        });
+        pickDeliveryDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String orderDateStr = TempData.MemoDate;
+                Log.e("orderDateStr",orderDateStr);
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                try {
+                    // Convert orderDateStr to Date
+                    Date orderDate = sdf.parse(orderDateStr);
+                    // Today
+                    Calendar today = Calendar.getInstance();
+                    Date currentDate = today.getTime();
+                    // Format both dates to yyyy-MM-dd
+                    String orderDateFormatted = sdf.format(orderDate);
+                    String currentDateFormatted = sdf.format(currentDate);
+                    // Define minDate
+                    Calendar minDate = Calendar.getInstance();
+
+                    if (orderDateFormatted.equals(currentDateFormatted)) {
+                        minDate.setTime(currentDate); // minDate = today
+                        Log.d("DateCheck", "Order date is today. Only today is selectable.");
+                    } else {
+                        minDate.setTime(currentDate);
+                        minDate.add(Calendar.DAY_OF_MONTH, -1); // minDate = yesterday
+                        Log.d("DateCheck", "Order date is not today. Show today and 1 day before.");
+                    }
+                    // DatePickerDialog with today as initial date
+                    DatePickerDialog datePickerDialog = new DatePickerDialog(
+                            DetailsOrderReport.this,
+                            (view, year, monthOfYear, dayOfMonth) -> {
+                                Calendar selected = Calendar.getInstance();
+                                selected.set(year, monthOfYear, dayOfMonth);
+                                String selectedDate = sdf.format(selected.getTime());
+                                pickDeliveryDate.setText(selectedDate);
+                                Toast.makeText(getApplicationContext(), "Delivery Date: " + selectedDate, Toast.LENGTH_SHORT).show();
+                            },
+                            today.get(Calendar.YEAR),
+                            today.get(Calendar.MONTH),
+                            today.get(Calendar.DAY_OF_MONTH)
+                    );
+
+                    // Set allowed range
+                    datePickerDialog.getDatePicker().setMinDate(minDate.getTimeInMillis());
+                    datePickerDialog.getDatePicker().setMaxDate(today.getTimeInMillis());
+
+                    datePickerDialog.show();
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), "Invalid order date", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         String Query = "";
         if (!TempData.MEMO_EDIT)
             Query = "SELECT " + ORDER_TOTAL_VAT + " FROM " + TABLE_NAME_ORDER + " where " + ORDER_order_number + "='" + TempData.orderNumber + "'";
@@ -452,7 +615,14 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
         btnEdit.setOnClickListener(v -> {
             btnEdit.setEnabled(false);
             clearPrefarance();
-
+            SalesOrderDetailsAdaper1.not_bonus = 0;
+            if (DELIVERY_EDIT){
+                SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+                String currentTime = timeFormat.format(new Date());
+                TempData.selectDeliveryDate=pickDeliveryDate.getText().toString();
+                TempData.selectDeliveryDateTime=pickDeliveryDate.getText().toString()+" "+currentTime;
+                Log.e("selectDeliveryDate",selectDeliveryDate);
+            }
             db.excQuery("delete from " + TABLE_NAME_PRODUCT_BOOLEAN);
             Log.e("disable", "disable");
             TempData.editMemo = "true";
@@ -704,7 +874,14 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
     }
     private void MakeMemo() {
-
+        if (DELIVERY_EDIT){
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+            String currentTime = timeFormat.format(new Date());
+            TempData.selectDeliveryDate=pickDeliveryDate.getText().toString();
+            TempData.selectDeliveryDateTime=pickDeliveryDate.getText().toString()+" "+currentTime;
+            Log.e("selectDeliveryDate",TempData.selectDeliveryDate);
+            Log.e("selectDeliveryDateTime",TempData.selectDeliveryDateTime);
+        }
         Cursor c = db.rawQueryCoustom("select * from order_table where order_number='" + TempData.orderNumber + "'");
         c.moveToFirst();
         if (c != null && c.getCount() > 0) {
@@ -716,8 +893,10 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
             }
             map.put(MEMOS_gross_value, c.getString(c.getColumnIndex(ORDER_gross_value)));
             map.put(MEMOS_ORDER_NUMBER, c.getString(c.getColumnIndex(ORDER_order_number)));
-            map.put(MEMOS_memo_date, getCurrentDate());
-            map.put(MEMOS_memo_date_time, getCurrentDateTime());
+/*            map.put(MEMOS_memo_date, getCurrentDate());
+            map.put(MEMOS_memo_date_time, getCurrentDateTime());*/
+            map.put(MEMOS_memo_date, TempData.selectDeliveryDate);
+            map.put(MEMOS_memo_date_time, TempData.selectDeliveryDateTime);
             map.put(MEMOS_memo_number, SalesMemoNO());
             map.put(MEMOS_for_memo_delete, c.getString(c.getColumnIndex(ORDER_for_order_delete)));
             map.put(Tables.MEMOS_created_at, getCurrentDateTime());
@@ -1299,7 +1478,8 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                                         ORDER_TO_MEMO = 0;
                                         MEMO_EDIT = true;
                                         Back = 1;
-
+                                        startActivity(new Intent(DetailsOrderReport.this, DeliveryReport.class));
+                                        finish();
 
                                     } else {
 
@@ -1546,7 +1726,8 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                     "  P.product_id,\n" +
                     "  P.product_name,\n" +
                     "  P.product_category_id,\n" +
-                    "  P.product_type_id\n" +
+                    "  P.product_type_id,\n" +
+                    "  P.product_sales\n" +
                     "FROM product AS P\n" +
                     "GROUP BY P.product_id,\n" +
                     "         P.product_name,\n" +
@@ -1564,7 +1745,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
                         String product_category_id = c3.getString(c3.getColumnIndex("product_category_id"));
                         String product_type_id = c3.getString(c3.getColumnIndex("product_type_id"));
-
+                        String product_sales = c3.getString(c3.getColumnIndex("product_sales"));
                         boolean is_checked = false;
 
                         int saleable = getIndexSaleAble(product_id);
@@ -1599,6 +1780,8 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                         map.put("product_id", product_id);
                         map.put("product_name", product_name);
                         map.put("quantity", product_quantity);
+                        map.put("orderQuantity", product_quantity);
+                        map.put("product_sales", product_sales);
                         map.put("boolean", is_checked + "");
                         map.put("product_category_id", product_category_id);
                         map.put("product_type_id", product_type_id);
@@ -1613,7 +1796,12 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 
             setBonus();
             savePreference(ORDER_START_TIME, getCurrentDateTime());
-            Intent idn = new Intent(DetailsOrderReport.this, Sales_Memo.class);
+            Intent idn;
+            if (DELIVERY_EDIT || MEMO_EDIT){
+                idn = new Intent(DetailsOrderReport.this, ProductSales.class);
+            }else {
+                idn = new Intent(DetailsOrderReport.this, Sales_Memo.class);
+            }
             idn.putExtra("flag", 1);
             progressDialog.dismiss();
             startActivity(idn);

@@ -69,6 +69,7 @@ public class TempData {
     public static int ORDER_TO_MEMO;
     public static int PROCESSING_ON_SERVER=7;
     public static boolean MEMO_EDIT;
+    public static boolean DELIVERY_EDIT;
     public static String InvoicePayment;
     public static String InvoiceGrand;
     public static String printBlankContent;
@@ -96,6 +97,8 @@ public class TempData {
     public static String discount_info_flag = "0";
     public static String discount_data = "";
     public static String SetRelation="";
+    public static String selectDeliveryDate="";
+    public static String selectDeliveryDateTime="";
 
     public static ArrayList<PolicyID> policyIdsArrList=new ArrayList<>();
     public static ArrayList<HashMap<String, String>> policyArrayList= new ArrayList<>();

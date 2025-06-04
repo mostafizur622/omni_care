@@ -202,6 +202,7 @@ public class AdapterForMemoReport extends BaseAdapter {
 				Intent in=new Intent(context, DetailsOrderReport.class);
 				in.putExtra("memo",5);
 				ORDER_TO_MEMO = 0;
+				TempData.DELIVERY_EDIT = false;
 				MEMO_EDIT =true;
 				context.startActivity(in);
 
