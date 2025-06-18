@@ -990,6 +990,7 @@ public class Tables extends Parent {
     public static final String MEMOS_is_pushed = "is_pushed";
     public static final String MEMOS_is_distributor = "is_distributor";
     public static final String MEMOS_total_discount = "total_discount";
+    public static final String MEMOS_ORDER_DATE = "order_date";
     public static final String MEMOS_created_at = "created_at";
     public static final String MEMOS_updated_at = "updated_at";
 
@@ -1020,6 +1021,7 @@ public class Tables extends Parent {
             MEMOS_is_pushed,
             MEMOS_is_distributor,
             MEMOS_total_discount,
+            MEMOS_ORDER_DATE,
             MEMOS_created_at,
             MEMOS_updated_at
     };
@@ -1052,6 +1054,7 @@ public class Tables extends Parent {
             MEMOS_is_pushed + "  VARCHAR,   " +
             MEMOS_is_distributor + "  INTEGER,   " +
             MEMOS_total_discount + "  DOUBLE,   " +
+            MEMOS_ORDER_DATE + "  VARCHAR,   " +
             MEMOS_created_at + "  DATETIME , " +
             MEMOS_updated_at + "  DATETIME );";
 
@@ -1083,6 +1086,7 @@ public class Tables extends Parent {
             MEMOS_is_pushed + "  VARCHAR,   " +
             MEMOS_is_distributor + "  INTEGER,   " +
             MEMOS_total_discount + "  DOUBLE,   " +
+            MEMOS_ORDER_DATE + "  DOUBLE,   " +
             MEMOS_created_at + "  DATETIME , " +
             MEMOS_updated_at + "  DATETIME );";
 
@@ -2012,7 +2016,7 @@ public class Tables extends Parent {
             PRODUCT_IS_INJECTABLE + " INTEGER," +
             PRODUCT_IMAGE_URL + " Text," +
             PRODUCT_DISPLAY_NAME + " Text," +
-            PRODUCT_SALES_DATA + " INTEGER," +
+            PRODUCT_SALES_DATA + " INTEGER DEFAULT 1," +
             PRODUCT_CREATED_AT + " DATETIME," +
             PRODUCT_UPDATED_AT + " DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME'))" +
             ")";

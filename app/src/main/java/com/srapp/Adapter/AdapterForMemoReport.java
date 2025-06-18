@@ -24,6 +24,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static com.srapp.Db_Actions.Tables.MEMOS_ORDER_DATE;
 import static com.srapp.Db_Actions.Tables.MEMOS_ORDER_NUMBER;
 import static com.srapp.Db_Actions.Tables.MEMOS_editable;
 import static com.srapp.Db_Actions.Tables.MEMOS_for_memo_delete;
@@ -146,7 +147,7 @@ public class AdapterForMemoReport extends BaseAdapter {
 				TempData.MarketID="";
 				TempData.From_App="";
 				TempData.DayCloseMemoEditable="";
-				Cursor c =db.rawQueryCoustom("SELECT _id,"+ MEMOS_memo_number+comma+MEMOS_is_pushed+comma+MEMOS_outlet_id+comma+MEMOS_memo_date+comma+MEMOS_market_id+comma+MEMOS_from_app+comma+MEMOS_memo_date_time+comma+MEMOS_editable+comma+MEMOS_gross_value+comma+MEMOS_for_memo_delete+comma+MEMOS_ORDER_NUMBER+"  FROM "+TABLE_NAME_MEMOS+" where "+MEMOS_memo_number+"='"+memoNo+"'");
+				Cursor c =db.rawQueryCoustom("SELECT _id,"+ MEMOS_memo_number+comma+MEMOS_is_pushed+comma+MEMOS_outlet_id+comma+MEMOS_memo_date+comma+MEMOS_market_id+comma+MEMOS_from_app+comma+MEMOS_memo_date_time+comma+MEMOS_editable+comma+MEMOS_gross_value+comma+MEMOS_for_memo_delete+comma+MEMOS_ORDER_NUMBER+comma+MEMOS_ORDER_DATE+"  FROM "+TABLE_NAME_MEMOS+" where "+MEMOS_memo_number+"='"+memoNo+"'");
 				//Log.e("Querymemo","SELECT _id,"+ MEMOS_memo_number+comma+MEMOS_is_pushed+comma+MEMOS_outlet_id+comma+MEMOS_memo_date+comma+MEMOS_market_id+comma+MEMOS_from_app+comma+MEMOS_memo_date_time+comma+MEMOS_editable+comma+MEMOS_gross_value+comma+MEMOS_for_memo_delete+"  FROM "+TABLE_NAME_MEMOS+" where "+MEMOS_memo_number+"='"+memoNo+"'");
 				if(c!=null)
 				{
@@ -167,6 +168,7 @@ public class AdapterForMemoReport extends BaseAdapter {
 						TempData.for_memo_delete = c.getString(10);
 						TempData.ORDER_STATUE = 1;
 						TempData.orderNumber=c.getString(11);
+						TempData.MemoAndOrderDate=c.getString(12);
 
 						Log.e("ORDER_STATUE", " "+TempData.orderNumber);
 

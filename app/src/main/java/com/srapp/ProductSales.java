@@ -1157,6 +1157,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
             map1.put(Tables.MEMOS_editable, editableAllow);
             Log.e("ProductSalesUsingFor", "Order To Memo");
             map1.put(Tables.ORDER_is_pushed, "1");
+            map1.put(Tables.MEMOS_ORDER_DATE, TempData.MemoAndOrderDate);
             map1.put(Tables.ORDER_created_at, bf.getCurrentDateTime());
             map1.put(Tables.ORDER_updated_at, bf.getCurrentDateTime());
             db.InsertTable(map1, "temp_memos");
@@ -1263,6 +1264,7 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
             map1.put(Tables.MEMOS_editable, editableAllow);
             map1.put(Tables.MEMOS_TOTAL_Vat, vattv.getText().toString().trim());
             map1.put(Tables.ORDER_is_pushed, "1");
+            map1.put(Tables.MEMOS_ORDER_DATE, TempData.MemoAndOrderDate);
             map1.put(Tables.ORDER_created_at, TempData.MemoDateTime);
             map1.put(Tables.ORDER_updated_at, bf.getCurrentDateTime());
             db.InsertTable(map1, "temp_memos");

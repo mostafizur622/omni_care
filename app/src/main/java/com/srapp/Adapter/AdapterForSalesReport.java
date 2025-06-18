@@ -184,6 +184,7 @@ public class AdapterForSalesReport extends BaseAdapter {
 						TempData.isPushed=c.getString(2);
 						TempData.OutletID=c.getString(3);
 						TempData.MemoDate=c.getString(4);
+						TempData.MemoAndOrderDate=c.getString(4);
 						TempData.MarketID=c.getString(5);
 						TempData.From_App=c.getString(6);
 						TempData.MemoDateTime=c.getString(7);
@@ -194,6 +195,7 @@ public class AdapterForSalesReport extends BaseAdapter {
 						TempData.ORDER_STATUE = c.getInt(11);
 
 						Log.e("----ORDER_STATUE----", "~~~~~~"+TempData.ORDER_STATUE);
+						Log.e("----MemoAndOr----", "~~~~~~"+TempData.MemoAndOrderDate);
 
 
 					}while(c.moveToNext());

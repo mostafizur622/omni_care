@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.srapp.TempData;
 import com.srapp.Util.Parent;
+import com.srapp.Util.ParentActivity;
 import com.srapp.bonusPolicy.ExclusionProduct;
 import com.srapp.bonusPolicy.PolicyBonusProduct;
 import com.srapp.bonusPolicy.PolicyID;
@@ -3241,7 +3242,7 @@ public class Data_Source extends Parent {
                 "pt.start_date,\n" +
                 "pt.end_date";
 
-        //Loge("POLICY_ID_QUERY2:", query2);
+        Log.e("POLICY_ID_QUERY2:", query2);
         Cursor cursor = sqLiteDatabase.rawQuery(query2, null);
 
         // looping through all rows and adding to list

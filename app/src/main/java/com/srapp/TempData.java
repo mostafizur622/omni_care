@@ -48,6 +48,7 @@ public class TempData {
     public static String From_App="";
     public static String for_memo_delete="";
     public static String MemoDate="";
+    public static String MemoAndOrderDate="";
     public static String DayCloseMemoEditable="";
     public static String InvoiceTotal="0";
     public static String TempGift="";

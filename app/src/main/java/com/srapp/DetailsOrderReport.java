@@ -214,6 +214,9 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                 cancel.setVisibility(View.GONE);
             }
         }
+        if (TempData.ORDER_STATUE == 4){
+            bounceOrder.setVisibility(View.GONE);
+        }
         if(DELIVERY_EDIT){
             newLayout.setVisibility(View.VISIBLE);
         }
@@ -1798,6 +1801,14 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
             savePreference(ORDER_START_TIME, getCurrentDateTime());
             Intent idn;
             if (DELIVERY_EDIT || MEMO_EDIT){
+                String outlet = getPreference("OutletID");
+                Cursor cTest = db.rawQueryCoustom("select outlet_category_id from outlets where outlet_id='" + outlet + "'");
+                cTest.moveToFirst();
+                Log.e("count", cTest.getCount() + "");
+                if (cTest != null && cTest.getCount() > 0) {
+
+                    TempData.OutletCatagoryID = cTest.getString(0);
+                }
                 idn = new Intent(DetailsOrderReport.this, ProductSales.class);
             }else {
                 idn = new Intent(DetailsOrderReport.this, Sales_Memo.class);
