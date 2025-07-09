@@ -813,7 +813,16 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
                     Log.e("productId: ", "" + productId);
                     Log.e("Quantity: ", "" + Quantity);
                     Log.e("orderNumber: ", "" + TempData.orderNumber);
-
+                    if (Quantity==0.0){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "Product Quantity 0 is not excepted ", Toast.LENGTH_SHORT).show();
+                                SaveBtn.setEnabled(true);
+                            }
+                        });
+                        return;
+                    }
                     String Memoquery = "SELECT SUM(quantity) FROM memo_details WHERE product_id='" + productId + "' and " + Tables.MEMOS_memo_number + "='" + TempData.orderNumber + "'";
                     Cursor c3 = db.rawQueryCoustom(Memoquery);
                     int count3 = c3.getCount();

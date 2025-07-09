@@ -242,6 +242,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                             basicFunction.savePreference("start_time",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("start_time"));
                             basicFunction.savePreference("end_time",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("end_time"));
                             basicFunction.savePreference("interval",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("interval"));
+                            basicFunction.savePreference("deliveryTime",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("show_delivery_date_time"));
 
                                         Log.e("office_name",getPreference("office_name"));
                                         ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);

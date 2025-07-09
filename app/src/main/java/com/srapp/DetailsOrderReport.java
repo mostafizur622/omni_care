@@ -152,6 +152,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
     BasicFunction bf;
     Button pickDeliveryDate;
     LinearLayout newLayout;
+    String serverTime="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -310,11 +311,29 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                 dialog.getWindow().setAttributes(params1);
             }
         });
+        if (DELIVERY_EDIT){
+            getCurrentServerTime();
+            if (!bf.isInternetOn()){
+                new AlertDialog.Builder(DetailsOrderReport.this)
+                        .setTitle("No Internet Connection!")
+                        .setMessage("Please connect to the internet to proceed with delivery date selection.")
+                        .setCancelable(false)
+                        .setPositiveButton("Ok", (dialog, which) -> {
+                            Intent intent = new Intent(DetailsOrderReport.this, Dashboard.class);
+                            startActivity(intent);
+                            finish();
+                        })
+                        .show();
+            }
+        }
         pickDeliveryDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String orderDateStr = TempData.MemoDate;
-                Log.e("orderDateStr",orderDateStr);
+                Log.d("orderDateStr",orderDateStr);
+                String timeFromWebSetting = bf.getPreference("deliveryTime");
+                Log.d("deliveryTime",timeFromWebSetting);
+                SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                 try {
                     // Convert orderDateStr to Date
@@ -327,14 +346,27 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                     String currentDateFormatted = sdf.format(currentDate);
                     // Define minDate
                     Calendar minDate = Calendar.getInstance();
-
                     if (orderDateFormatted.equals(currentDateFormatted)) {
                         minDate.setTime(currentDate); // minDate = today
                         Log.d("DateCheck", "Order date is today. Only today is selectable.");
                     } else {
-                        minDate.setTime(currentDate);
-                        minDate.add(Calendar.DAY_OF_MONTH, -1); // minDate = yesterday
-                        Log.d("DateCheck", "Order date is not today. Show today and 1 day before.");
+                        try {
+                            Date deliveryCutoffTime = timeFormat.parse(timeFromWebSetting);
+                            Date serverTimeOnly = timeFormat.parse(serverTime);
+                            if (serverTimeOnly.before(deliveryCutoffTime)){
+                                // If server time is before cutoff, allow selection of today and yesterday
+                                minDate.setTime(currentDate);
+                                minDate.add(Calendar.DAY_OF_MONTH, -1); // minDate = yesterday
+                                Log.d("DateCheck", "Order date is not today. Show today and 1 day before.");
+                            } else {
+                                // If server time is after cutoff, allow selection of today only
+                                minDate.setTime(currentDate); // minDate = today
+                                Log.d("DateCheck", "Order date is not today. Show only today.");
+                            }
+
+                        }catch (ParseException e){
+                            e.printStackTrace();
+                        }
                     }
                     // DatePickerDialog with today as initial date
                     DatePickerDialog datePickerDialog = new DatePickerDialog(
@@ -768,6 +800,36 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
 //                    }
 //                })
 //                .show();
+    }
+    private void getCurrentServerTime(){
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("mac", bf.getPreference("mac"));
+            jsonObject.put(SR_ID, bf.getPreference(SR_ID));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ProgressDialog dailog = CheckConnection(DetailsOrderReport.this,"Getting Server Time...");
+        if (dailog==null)
+            return;
+        getJAPi().ServerTime(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response.body());
+                    dailog.dismiss();
+                    serverTime = jsonObject.getString("time");
+                    Log.e("ServerTime", jsonObject.toString());
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                dailog.dismiss();
+            }
+        });
     }
 
     private void exiting_policy_map_createdOrder(String order_no) {

@@ -180,6 +180,10 @@ interface ApiInterfaceForJava {
     fun CANCEL_ORDER(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
+    @POST("get_system_current_date_time.json")
+    fun ServerTime(@Body JSONObject: RequestBody): Call<String>
+
+    @Headers("Content-Type: application/json")
     @POST("dist_order_bounce.json")
     fun BOUNCE_ORDER(@Body JSONObject: RequestBody): Call<String>
 
