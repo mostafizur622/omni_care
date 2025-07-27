@@ -276,7 +276,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                                                     JSONObject jsonObject = new JSONObject(response.body());
                                                     Toast.makeText(DetailsOrderReport.this, jsonObject.getJSONObject("dist_order_bounce").getString("message"), Toast.LENGTH_SHORT).show();
                                                     dailog.dismiss();
-                                                    startActivity(new Intent(DetailsOrderReport.this, DeliveryReport.class));
+                                                    startActivity(new Intent(DetailsOrderReport.this, DeliveryReport.class).putExtra("a_from", 1));
                                                     finishAffinity();
 
                                                 } catch (JSONException e) {
@@ -1543,7 +1543,7 @@ public class DetailsOrderReport extends Parent implements BasicFunctionListener,
                                         ORDER_TO_MEMO = 0;
                                         MEMO_EDIT = true;
                                         Back = 1;
-                                        startActivity(new Intent(DetailsOrderReport.this, DeliveryReport.class));
+                                        startActivity(new Intent(DetailsOrderReport.this, DeliveryReport.class).putExtra("a_from", 1));
                                         finish();
 
                                     } else {
