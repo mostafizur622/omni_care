@@ -253,7 +253,7 @@ public class CreateOutlet extends ParentActivity implements BasicFunctionListene
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 TextView textView = (TextView)parent.getChildAt(0);
                 if (textView!=null) {
-                    textView.setTextColor(getResources().getColor(R.color.background_card));
+                    textView.setTextColor(getResources().getColor(R.color.black));
                     textView.setPadding(0, 0, 0, 0);
                 }
 
@@ -277,7 +277,7 @@ public class CreateOutlet extends ParentActivity implements BasicFunctionListene
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 TextView textView = (TextView)parent.getChildAt(0);
-                textView.setTextColor(getResources().getColor(R.color.background_card));
+                textView.setTextColor(getResources().getColor(R.color.black));
                 textView.setPadding(0,0,0,0);
 
                 outletCategory = outletCategories.get(Tables.OUTLET_CATEGORY_CATEGORY_ID).get(position);

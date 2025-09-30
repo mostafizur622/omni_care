@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:statusBarColor">@color/newThemeColor</item>
     </style>
 
     <style name="EditTextTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -33,6 +34,16 @@
     <style name="MatchSpinnerStyle" parent="android:style/Widget.ListView.DropDown">
         <item name="android:divider">#9293a3</item>
         <item name="android:dividerHeight">1dp</item>
+        <item name="android:tint">@color/white</item>
+    </style>
+
+    <style name="MatchSpinnerTheme2" parent="AppTheme">
+        <item name="android:dropDownListViewStyle">@style/MatchSpinnerStyle2</item>
+    </style>
+    <style name="MatchSpinnerStyle2" parent="android:style/Widget.ListView.DropDown">
+        <item name="android:divider">#9293a3</item>
+        <item name="android:dividerHeight">1dp</item>
+        <item name="android:tint">@color/white</item>
     </style>
     <style name="SwitchTheme" parent="Theme.AppCompat.Light">
         <item name="android:colorControlActivated">#ff6c58</item>

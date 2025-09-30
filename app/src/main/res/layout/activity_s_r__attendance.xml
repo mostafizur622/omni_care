@@ -11,7 +11,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/secondary_color"
+        android:background="@drawable/horizontal_gradient"
         android:weightSum="2"
         android:orientation="horizontal"
         android:layout_weight="0.4">
@@ -40,7 +40,7 @@
                 android:autoSizeMinTextSize="12sp"
                 android:autoSizeMaxTextSize="20sp"
                 android:autoSizeStepGranularity="2sp"
-                android:text="Change Password">
+                android:text="Attendance">
 
             </TextView>
 
@@ -60,7 +60,7 @@
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
                 android:layout_marginLeft="15dp"
-                android:background="@drawable/login_id_bg_shade"
+                android:background="@drawable/user_id_back"
                 android:text="273638"
                 android:autoSizeTextType="uniform"
                 android:autoSizeMinTextSize="12sp"
@@ -92,12 +92,20 @@
         android:orientation="vertical"
         android:weightSum="5"
         android:layout_height="0dp">
+
         <Button
             android:id="@+id/history"
-            android:text="history"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right" />
+            android:layout_width="140dp"
+            android:layout_height="40dp"
+            android:text="History"
+            android:layout_gravity="end|center_vertical"
+            android:background="@drawable/user_id_back"
+            android:textAllCaps="false"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="25dp"
+            android:textColor="@color/white"
+            android:textSize="18dp"/>
         <View
             android:layout_width="wrap_content"
             android:layout_height="0dp"
@@ -216,10 +224,18 @@
 
         <Button
             android:id="@+id/attendance"
-            android:text="Check_in "
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Check In"
+            android:layout_gravity="end|center_vertical"
+            android:background="@drawable/user_id_back"
+            android:textAllCaps="false"
+            android:layout_marginLeft="15dp"
             android:layout_centerHorizontal="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="25dp"
+            android:textColor="@color/white"
+            android:textSize="18dp"/>
 
 
 

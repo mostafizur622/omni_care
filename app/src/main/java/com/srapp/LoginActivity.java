@@ -3,9 +3,13 @@ package com.srapp;
 import static com.srapp.Db_Actions.Tables.SR_ID;
 import static com.srapp.Db_Actions.URL.CheckConnection;
 import static com.srapp.Db_Actions.URL.convertTORequestdata;
+import static com.srapp.FaceDetection.LivenessOverlayActivity.EXTRA_BASE64;
+import static com.srapp.LoginImageCapture.LocationUtils.isInsideGeofence;
+import static com.srapp.LoginImageCapture.LocationUtils.isWithinRadius;
 import static com.srapp.Util.Constants.MIN_ORDER_NUMBER;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -13,14 +17,20 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -40,6 +50,7 @@ import com.bxl.config.editor.BXLConfigLoader;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.google.gson.JsonObject;
@@ -48,10 +59,15 @@ import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Difine;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Db_Actions.URL;
+import com.srapp.FaceDetection.FaceRecognition.MatchVerifier;
+import com.srapp.FaceDetection.FaceRecognition.VerifyCallback;
+import com.srapp.FaceDetection.LivenessOverlayActivity;
+import com.srapp.LoginImageCapture.CameraHelper;
+import com.srapp.LoginImageCapture.LocationHelper;
+import com.srapp.LoginImageCapture.LoginWithImage;
+import com.srapp.Util.AuthPreference;
 import com.srapp.Util.JAPIClient;
 import com.srapp.Util.Parent;
-import com.srapp.apiService.ApiClient;
-import com.srapp.apiService.ApiInterface;
 import com.srapp.apiService.ApiInterfaceForJava;
 import com.srapp.kotlin.DataViewModel;
 import com.srapp.kotlin.DataViewModelFactory;
@@ -60,18 +76,24 @@ import com.srapp.thermalprint.async.usbdevice.UsbDataBinder;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.TimeZone;
+import java.util.concurrent.Executors;
 
 import NewPrint.BixolonPrinter;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -100,10 +122,18 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
 
     DataViewModel dataViewModel;
     ApiInterfaceForJava api;
+    private CameraHelper cameraHelper;
+    String imageBase64 = "";
+    private LocationHelper locationHelper;
+    private volatile Location latestFix;
+    private static final int REQ_LIVENESS_OVERLAY = 4411;
+    ImageView showImage;
+    Boolean faceMatch=false;
     public LoginActivity() {
         dataViewModel = null;
     }
-
+    String faceVerification="0";
+    private AuthPreference authPreference;
 
 
 
@@ -116,7 +146,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Log.e("DeviceVersion", Build.VERSION.BASE_OS);
         }
-
+        showImage = findViewById(R.id.showImage);
      /*   //-----------------------------------------
         mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
         usbConnection();*/
@@ -128,10 +158,31 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
 
         textDummyHintUsername = (TextView) findViewById(R.id.text_dummy_hint_username);
         textDummyHintPassword = (TextView) findViewById(R.id.text_dummy_hint_password);
-
+        authPreference = new AuthPreference(getApplicationContext());
        // editUsername.setText("error");
         editUsername = (EditText) findViewById(R.id.edit_username);
         editPassword = (EditText) findViewById(R.id.edit_password);
+        locationHelper = new LocationHelper(this);
+        if (!locationHelper.hasFinePermission()) {
+            locationHelper.requestFinePermission();
+        } else {
+            fetchLocationOrAskSettings();
+        }
+/*        cameraHelper = new CameraHelper(this, new CameraHelper.CameraCallback() {
+            @Override
+            public void onImageCaptured(Bitmap bitmap, String base64String) {
+                imageBase64 = base64String;
+                Log.e("ImageBase64", imageBase64);
+                Toast.makeText(LoginActivity.this, "Image Captured!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onPermissionDenied() {
+                Toast.makeText(LoginActivity.this, "Camera permission denied", Toast.LENGTH_SHORT).show();
+            }
+        });*/
+
+        // Trigger the camera flow
 
         TextView version = findViewById(R.id.version);
         if (URL.Domain.contains("202"))
@@ -173,7 +224,19 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
         login_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (latestFix == null) {
+                    Toast.makeText(getApplicationContext(), "Getting location... Please wait a moment.", Toast.LENGTH_SHORT).show();
+                    fetchLocationOrAskSettings(); // আবার চেষ্টা
+                    return;
+                }
+                if (editUsername.getText().toString().trim().isEmpty()){
+                    Toast.makeText(getApplicationContext(), "Insert user name", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (editPassword.getText().toString().trim().isEmpty()){
+                    Toast.makeText(getApplicationContext(), "Insert password", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 /*login_button.setEnabled(false);
                 startActivity(new Intent(LoginActivity.this, Dashboard.class));
                 finish();*/
@@ -181,6 +244,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
 
 
                 if (basicFunction.getPreference("sales_person_id").equalsIgnoreCase("null") || basicFunction.isInternetOn()){
+
                 JSONObject jsonObject = new JSONObject();
                 try {
                     Log.e("permission", checkForPermission() + "");
@@ -192,6 +256,9 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                         jsonObject.put("password", editPassword.getText().toString().trim());
                         jsonObject.put("mac", basicFunction.getPreference("mac"));
                         jsonObject.put("version", URL.VERSION);
+//                        jsonObject.put("image", imageBase64);
+                        jsonObject.put("lat", latestFix.getLatitude());
+                        jsonObject.put("long", latestFix.getLongitude());
 
                        //  basicFunction.getResponceData(URL.Login, jsonObject.toString(), 101);
                          Log.e("map : ", jsonObject.toString());
@@ -201,7 +268,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                          if (dailog==null)
                              return;
 
-                        api.Login(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
+                        api.loginNew(convertTORequestdata(jsonObject)).enqueue(new Callback<String>() {
                             @Override
                             public void onResponse(Call<String> call, Response<String> response) {
                                 RcCount = 101;
@@ -243,11 +310,395 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                             basicFunction.savePreference("end_time",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("end_time"));
                             basicFunction.savePreference("interval",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("interval"));
                             basicFunction.savePreference("deliveryTime",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("show_delivery_date_time"));
+                            basicFunction.savePreference("roll",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("user_type"));
 
-                                        Log.e("office_name",getPreference("office_name"));
-                                        ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
-                                        ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
-                                        ds.getlastupdateddate();
+
+
+                            //check location validation type
+                            String isChecking= jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("login_checking");
+                            String radiusMeter= jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("radius_miter");
+                            String locationType= jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("login_type");
+                            /*centerLocation*/
+                            String loginLatStr = jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getJSONArray("coordinates").optJSONObject(0).getString("lat");
+                            String loginLngStr = jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getJSONArray("coordinates").optJSONObject(0).getString("lng");
+                            /*GeoFenceLocation*/
+                            JSONArray geoFence = jsonObject.getJSONArray("response")
+                                    .getJSONObject(0)
+                                    .getJSONObject("user_info")
+                                    .getJSONArray("coordinates");
+
+                            String isPreviousImage= jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("image_url");
+
+                            //Store the login location in the shared preferences
+                            // Assuming 'myJSONArray' is your JSONArray instance
+                            SharedPreferences locationPreferences = getSharedPreferences("Location", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = locationPreferences.edit();
+
+                            editor.putString("radius", radiusMeter);
+                            editor.putString("isChecking", isChecking);
+                            editor.putString("centerPointLat", loginLatStr);
+                            editor.putString("centerPointLong", loginLngStr);
+                            editor.putString("location_check", locationType);
+                            editor.putString("geoFence", geoFence.toString());
+                            editor.putString("attendance_online", jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("attendance_online"));
+                            editor.apply(); // or editor.commit();
+
+                            faceVerification = jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("face_recognition");
+
+                            String serverTime = jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("server_time");
+                            int allowedTimeDifferenceInMinutes = 1;
+                            boolean canLogin = checkTimeDifference(serverTime, ParentActivity.getCurrentTimeAMPM(), allowedTimeDifferenceInMinutes);
+                            if (!canLogin) {
+                                login_button.setEnabled(true);
+                                Toast.makeText(LoginActivity.this, "Device time is not correct. Please adjust your device time.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(LoginActivity.this, "Server time is "+serverTime, Toast.LENGTH_LONG).show();
+                                return;
+                            }
+                           authPreference.setDeviceTimeChange("0");
+                            if (faceVerification.equalsIgnoreCase("1")){
+                                if (imageBase64.isEmpty()){
+                                    startActivityForResult(new Intent(getApplicationContext(), LivenessOverlayActivity.class), REQ_LIVENESS_OVERLAY);
+                                    Toast.makeText(LoginActivity.this, "Please capture your face image first.", Toast.LENGTH_SHORT).show();
+                                    login_button.setEnabled(true);
+                                    return;
+                                }
+                                Log.e("isPreviousImage",isPreviousImage);
+                                //checkPreviousImage
+                                if (!isPreviousImage.isEmpty()){
+                                    Bitmap liveBmp = base64ToBitmap(imageBase64);
+                                    //refUrl Image getting from api
+                                    String refUrl = isPreviousImage;
+                                    if (refUrl == null || refUrl.isEmpty()) {
+                                        setResult(Activity.RESULT_CANCELED); finish(); return;
+                                    }
+                                    verifyAndFinish(liveBmp, refUrl, matched -> {
+                                        if (matched) {
+                                            try {
+                                                //*currentLocation*//*
+                                                double currentLat = latestFix.getLatitude();
+                                                double currentLng = latestFix.getLongitude();
+                                                Location currentLocation = new Location("");
+                                                currentLocation.setLatitude(currentLat);
+                                                currentLocation.setLongitude(currentLng);
+                                                if (isChecking.equalsIgnoreCase("2")){
+                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+                                                    ds.getlastupdateddate();
+                                                }
+                                                else if (isChecking.equalsIgnoreCase("1"))
+                                                {
+                                                    if (locationType.equalsIgnoreCase("1")){
+                                                        Log.e("LocationMode V","Radius");
+                                                        /*LoginLocation*/
+                                                        Log.e("", "Login Location: " + loginLatStr + ", " + loginLngStr);
+                                                        double loginLat = Double.parseDouble(loginLatStr);
+                                                        double loginLng = Double.parseDouble(loginLngStr);
+                                                        Location loginLocation = new Location("");
+                                                        loginLocation.setLatitude(loginLat);
+                                                        loginLocation.setLongitude(loginLng);
+                                                        //checkValidation
+                                                        boolean isAllowed = isWithinRadius(currentLocation, loginLocation, Float.parseFloat(radiusMeter));
+                                                        if (isAllowed) {
+                                                            Toast.makeText(LoginActivity.this, "Login Successfully....!", Toast.LENGTH_LONG).show();
+                                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+                                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+                                                            ds.getlastupdateddate();
+                                                        } else {
+                                                            login_button.setEnabled(true);
+                                                            Toast.makeText(LoginActivity.this, "You are not allowed to login from this location.", Toast.LENGTH_LONG).show();
+                                                            return;
+                                                        }
+                                                    }
+                                                    if (locationType.equalsIgnoreCase("2")){
+                                                        Log.e("LocationMode V","GeoFence");
+                                                        //log geofencePoints
+                                                        List<Location> geofencePoints = new ArrayList<>();
+                                                        try {
+                                                            // Get geoFence array
+
+
+                                                            Log.e("GeoFenceCheck", "GeoFence Points Count: " + geoFence.length());
+
+                                                            for (int i = 0; i < geoFence.length(); i++) {
+                                                                JSONObject pin = geoFence.getJSONObject(i);
+                                                                double lat = pin.getDouble("lat");
+                                                                double lng = pin.getDouble("lng");
+
+                                                                Log.e("GeoFenceCheck", "Pin " + i + ": lat=" + lat + ", lng=" + lng);
+
+                                                                // Create a Location object for each pin
+                                                                Location location = new Location("");
+                                                                location.setLatitude(lat);
+                                                                location.setLongitude(lng);
+
+                                                                // Add the location to the geofencePoints list
+                                                                geofencePoints.add(location);
+                                                            }
+
+                                                            // Check if the geofencePoints are populated correctly
+                                                            Log.e("GeoFenceCheck", "Geofence Points Size: " + geofencePoints.size());
+                                                        } catch (JSONException e) {
+                                                            Log.e("GeoFenceCheck", "Error parsing geoFance: " + e.getMessage());
+                                                        }
+
+                                                        Log.e("GeoFenceCheck", "Geofence Points Count: " + geofencePoints.size());
+                                                        boolean inside = isInsideGeofence(currentLocation, geofencePoints);
+                                                        if (inside) {
+                                                            Toast.makeText(LoginActivity.this, "Login Successfully....!", Toast.LENGTH_LONG).show();
+                                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+                                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+                                                            ds.getlastupdateddate();
+                                                        } else {
+                                                            login_button.setEnabled(true);
+                                                            Toast.makeText(LoginActivity.this, "You are not allowed to login from this location.", Toast.LENGTH_LONG).show();
+                                                            return;
+                                                        }
+                                                        Log.d("GeoFenceCheck", "Current Location: " + currentLocation.getLatitude() + ", " + currentLocation.getLongitude());
+                                                        Log.d("GeoFenceCheck", "Inside geofence? " + inside);
+                                                    }
+                                                }
+                                                else {
+                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+                                                    ds.getlastupdateddate();
+                                                }
+                                            }
+                                            catch (NullPointerException e){
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                        else {
+                                            login_button.setEnabled(true);
+                                            android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(LoginActivity.this);
+                                            builder.setCancelable(true);
+                                            builder.setTitle("Face MichMatch");
+                                            builder.setMessage("We can not verify your face do you want capture new image?");
+                                            builder.setPositiveButton("yes",
+                                                    new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog, int which) {
+                                                            startActivityForResult(new Intent(getApplicationContext(), LivenessOverlayActivity.class), REQ_LIVENESS_OVERLAY);
+                                                            Toast.makeText(LoginActivity.this, "Please capture your face image first.", Toast.LENGTH_SHORT).show();
+                                                            return;
+                                                        }
+                                                    });
+                                            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.cancel();
+                                                }
+                                            });
+                                            android.app.AlertDialog dialog = builder.create();
+                                            dialog.show();
+                                        }
+                                    });
+                                }
+                                else {
+                                    JSONObject srImageObject = new JSONObject();
+                                    try {
+                                        srImageObject.put("imageBase64",imageBase64);
+                                    }catch (JSONException e){
+                                        e.printStackTrace();
+                                    }
+                                    api.saveSrImage(convertTORequestdata(srImageObject)).enqueue(new Callback<String>() {
+                                        @Override
+                                        public void onResponse(Call<String> call, Response<String> response) {
+                                            Log.e("imageResponse",response.body().toString());
+                                        }
+
+                                        @Override
+                                        public void onFailure(Call<String> call, Throwable t) {
+                                            dailog.dismiss();
+                                        }
+                                    });
+
+                                    try {
+                                        //*currentLocation*//*
+                                        double currentLat = latestFix.getLatitude();
+                                        double currentLng = latestFix.getLongitude();
+                                        Location currentLocation = new Location("");
+                                        currentLocation.setLatitude(currentLat);
+                                        currentLocation.setLongitude(currentLng);
+                                        if (isChecking.equalsIgnoreCase("2")){
+                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+                                            ds.getlastupdateddate();
+                                        }
+                                        else if (isChecking.equalsIgnoreCase("1"))
+                                        {
+                                            if (locationType.equalsIgnoreCase("1")){
+                                                Log.e("LocationMode W.V","Radius");
+                                                /*LoginLocation*/
+                                                Log.e("", "Login Location: " + loginLatStr + ", " + loginLngStr);
+                                                double loginLat = Double.parseDouble(loginLatStr);
+                                                double loginLng = Double.parseDouble(loginLngStr);
+                                                Location loginLocation = new Location("");
+                                                loginLocation.setLatitude(loginLat);
+                                                loginLocation.setLongitude(loginLng);
+                                                //checkValidation
+                                                boolean isAllowed = isWithinRadius(currentLocation, loginLocation, Float.parseFloat(radiusMeter));
+                                                if (isAllowed) {
+                                                    Toast.makeText(LoginActivity.this, "Login Successfully....!", Toast.LENGTH_LONG).show();
+                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+                                                    ds.getlastupdateddate();
+                                                } else {
+                                                    login_button.setEnabled(true);
+                                                    Toast.makeText(LoginActivity.this, "You are not allowed to login from this location.", Toast.LENGTH_LONG).show();
+                                                    return;
+                                                }
+                                            }
+                                            if (locationType.equalsIgnoreCase("2")){
+                                                Log.e("LocationMode W.V","GeoFence");
+                                                //log geofencePoints
+                                                List<Location> geofencePoints = new ArrayList<>();
+                                                try {
+                                                    // Get geoFence array
+
+
+                                                    Log.e("GeoFenceCheck", "GeoFence Points Count: " + geoFence.length());
+
+                                                    for (int i = 0; i < geoFence.length(); i++) {
+                                                        JSONObject pin = geoFence.getJSONObject(i);
+                                                        double lat = pin.getDouble("lat");
+                                                        double lng = pin.getDouble("lng");
+
+                                                        Log.e("GeoFenceCheck", "Pin " + i + ": lat=" + lat + ", lng=" + lng);
+
+                                                        // Create a Location object for each pin
+                                                        Location location = new Location("");
+                                                        location.setLatitude(lat);
+                                                        location.setLongitude(lng);
+
+                                                        // Add the location to the geofencePoints list
+                                                        geofencePoints.add(location);
+                                                    }
+
+                                                    // Check if the geofencePoints are populated correctly
+                                                    Log.e("GeoFenceCheck", "Geofence Points Size: " + geofencePoints.size());
+                                                } catch (JSONException e) {
+                                                    Log.e("GeoFenceCheck", "Error parsing geoFance: " + e.getMessage());
+                                                }
+
+                                                Log.e("GeoFenceCheck", "Geofence Points Count: " + geofencePoints.size());
+                                                boolean inside = isInsideGeofence(currentLocation, geofencePoints);
+                                                if (inside) {
+                                                    Toast.makeText(LoginActivity.this, "Login Successfully....!", Toast.LENGTH_LONG).show();
+                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+                                                    ds.getlastupdateddate();
+                                                } else {
+                                                    login_button.setEnabled(true);
+                                                    Toast.makeText(LoginActivity.this, "You are not allowed to login from this location.", Toast.LENGTH_LONG).show();
+                                                    return;
+                                                }
+                                                Log.d("GeoFenceCheck", "Current Location: " + currentLocation.getLatitude() + ", " + currentLocation.getLongitude());
+                                                Log.d("GeoFenceCheck", "Inside geofence? " + inside);
+                                            }
+                                        }
+                                        else {
+                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+                                            ds.getlastupdateddate();
+                                        }
+                                    }
+                                    catch (NullPointerException e){
+                                        e.printStackTrace();
+                                    }
+                                }
+                               // verifyAndFinish(liveBmp, refUrl);
+                            }else {
+                                //*currentLocation*//*
+                                double currentLat = latestFix.getLatitude();
+                                double currentLng = latestFix.getLongitude();
+                                Location currentLocation = new Location("");
+                                currentLocation.setLatitude(currentLat);
+                                currentLocation.setLongitude(currentLng);
+                                if (isChecking.equalsIgnoreCase("2")){
+                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+                                    ds.getlastupdateddate();
+                                }
+                                else if (isChecking.equalsIgnoreCase("1"))
+                                {
+                                    if (locationType.equalsIgnoreCase("1")){
+                                        Log.e("LocationMode W.V","Radius");
+                                        /*LoginLocation*/
+                                        Log.e("", "Login Location: " + loginLatStr + ", " + loginLngStr);
+                                        double loginLat = Double.parseDouble(loginLatStr);
+                                        double loginLng = Double.parseDouble(loginLngStr);
+                                        Location loginLocation = new Location("");
+                                        loginLocation.setLatitude(loginLat);
+                                        loginLocation.setLongitude(loginLng);
+                                        //checkValidation
+                                        boolean isAllowed = isWithinRadius(currentLocation, loginLocation, Float.parseFloat(radiusMeter));
+                                        if (isAllowed) {
+                                            Toast.makeText(LoginActivity.this, "Login Successfully....!", Toast.LENGTH_LONG).show();
+                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+                                            ds.getlastupdateddate();
+                                        } else {
+                                            login_button.setEnabled(true);
+                                            Toast.makeText(LoginActivity.this, "You are not allowed to login from this location.", Toast.LENGTH_LONG).show();
+                                            return;
+                                        }
+                                    }
+                                    if (locationType.equalsIgnoreCase("2")){
+                                        Log.e("LocationMode W.V","GeoFence");
+                                        //log geofencePoints
+                                        List<Location> geofencePoints = new ArrayList<>();
+                                        try {
+                                            // Get geoFence array
+
+
+                                            Log.e("GeoFenceCheck", "GeoFence Points Count: " + geoFence.length());
+
+                                            for (int i = 0; i < geoFence.length(); i++) {
+                                                JSONObject pin = geoFence.getJSONObject(i);
+                                                double lat = pin.getDouble("lat");
+                                                double lng = pin.getDouble("lng");
+
+                                                Log.e("GeoFenceCheck", "Pin " + i + ": lat=" + lat + ", lng=" + lng);
+
+                                                // Create a Location object for each pin
+                                                Location location = new Location("");
+                                                location.setLatitude(lat);
+                                                location.setLongitude(lng);
+
+                                                // Add the location to the geofencePoints list
+                                                geofencePoints.add(location);
+                                            }
+
+                                            // Check if the geofencePoints are populated correctly
+                                            Log.e("GeoFenceCheck", "Geofence Points Size: " + geofencePoints.size());
+                                        } catch (JSONException e) {
+                                            Log.e("GeoFenceCheck", "Error parsing geoFance: " + e.getMessage());
+                                        }
+
+                                        Log.e("GeoFenceCheck", "Geofence Points Count: " + geofencePoints.size());
+                                        boolean inside = isInsideGeofence(currentLocation, geofencePoints);
+                                        if (inside) {
+                                            Toast.makeText(LoginActivity.this, "Login Successfully....!", Toast.LENGTH_LONG).show();
+                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+                                            ds.getlastupdateddate();
+                                        } else {
+                                            login_button.setEnabled(true);
+                                            Toast.makeText(LoginActivity.this, "You are not allowed to login from this location.", Toast.LENGTH_LONG).show();
+                                            return;
+                                        }
+                                        Log.d("GeoFenceCheck", "Current Location: " + currentLocation.getLatitude() + ", " + currentLocation.getLongitude());
+                                        Log.d("GeoFenceCheck", "Inside geofence? " + inside);
+                                    }
+                                }
+                                else {
+                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+                                    ds.getlastupdateddate();
+                                }
+                            }
+                            Log.e("FaceMatchLogin", String.valueOf(faceMatch));
+                            Log.e("office_name",getPreference("office_name"));
 
                                     } else {
                                         login_button.setEnabled(true);
@@ -266,7 +717,8 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
 
 
                     }
-                } catch (JSONException e) {
+                }
+                catch (JSONException e) {
                     e.printStackTrace();
                     Log.e("ServiceHandlerOutlets", e.getMessage());
                 }
@@ -331,7 +783,89 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
 
 
     }
+    public static boolean checkTimeDifference(String serverTime, String deviceTime, int allowedMinutes) {
+        Log.d("TimeCheck", "Server Time: " + serverTime + " Device Time: " + deviceTime + " Allowed Minutes: " + allowedMinutes);
 
+        try {
+            // সার্ভারের টাইম ফরম্যাট সেট করা (যদি সার্ভারের টাইম থাকে 24 ঘণ্টার ফরম্যাটে)
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC")); // সার্ভারের টাইম UTC হিসেবে ধরা হচ্ছে
+            Date serverDate = sdf.parse(serverTime);
+            long serverTimeInMillis = serverDate.getTime();
+
+            // ডিভাইস টাইম স্ট্রিংকে Date তে কনভার্ট করা
+            Date deviceDate = sdf.parse(deviceTime);  // ডিভাইস টাইম স্ট্রিংকে Date-এ কনভার্ট করা
+            long deviceTimeInMillis = deviceDate.getTime();  // তারপরে মিলিসেকেন্ডে কনভার্ট
+
+            // সময়ের পার্থক্য বের করা (মিলিসেকেন্ডে)
+            long timeDifference = Math.abs(deviceTimeInMillis - serverTimeInMillis);
+
+            // মিনিটে টাইম পার্থক্য
+            long allowedTimeDifferenceInMillis = allowedMinutes * 60 * 1000; // মিনিটকে মিলিসেকেন্ডে কনভার্ট করা
+
+            // নির্ধারিত সীমার মধ্যে পার্থক্য হলে লগ ইন হবে
+            if (timeDifference <= allowedTimeDifferenceInMillis) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    private void verifyAndFinish(Bitmap liveBmp, String refUrl,@Nullable VerifyCallback cb) {
+        // ব্যাকগ্রাউন্ডে ভারি কাজ (নেটওয়ার্ক+ML)
+        Executors.newSingleThreadExecutor().execute(() -> {
+            boolean ok = false;
+            try {
+                MatchVerifier verifier = new MatchVerifier(this);
+                ok = verifier.verify(liveBmp, refUrl);
+                verifier.close();
+            } catch (Exception ignored) {}
+
+            boolean finalOk = ok;
+            runOnUiThread(() -> {
+                if (finalOk) {
+                    // ✅ ম্যাচ — লগইন Allow
+                    // চাইলে সার্ভারে সাইন-ইন API কল করুন; অথবা শুধু রেজাল্ট ফেরত দিন
+                    Intent data = new Intent();
+                    data.putExtra(EXTRA_BASE64, bitmapToBase64(liveBmp));
+                    setResult(Activity.RESULT_OK, data);
+                    Toast.makeText(this, "Face Match", Toast.LENGTH_LONG).show();
+                } else {
+                    // ❌ মিসম্যাচ — লগইন ব্লক
+                    Toast.makeText(this, "Face mismatch. Login blocked.", Toast.LENGTH_LONG).show();
+                    //setResult(Activity.RESULT_CANCELED);
+                }
+                if (cb != null) cb.onVerified(finalOk);
+                //finish();
+            });
+        });
+    }
+    private String bitmapToBase64(Bitmap bitmap) {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, os);
+        return Base64.encodeToString(os.toByteArray(), Base64.NO_WRAP);
+    }
+    private Bitmap base64ToBitmap(String b64) {
+        if (b64 == null) return null;
+
+        // যদি "data:image/jpeg;base64,..." টাইপ প্রিফিক্স থাকে, কেটে দিন
+        int comma = b64.indexOf(',');
+        if (comma >= 0) {
+            b64 = b64.substring(comma + 1);
+        }
+
+        try {
+            byte[] bytes = Base64.decode(b64.trim(), Base64.DEFAULT);
+            return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        } catch (Exception e) {
+            return null;
+        }
+    }
     @Override
     public void OnServerResponce(JSONObject jsonObject, int RequestCode) {
 
@@ -401,7 +935,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                                 try {
                                     jsonObject = new JSONObject(response.body());
                                     dailog.dismiss();
-                                RcCount = 102;
+                                RcCount = 105;
                                 ds.excQuery("delete  from product_history");
                                 ds.excQuery("delete  from instrument_type");
                                 ds.excQuery("delete  from location");
@@ -495,7 +1029,8 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
 
 
 
-                    } else if (json.equalsIgnoreCase("dbPolicy") && RcCount==103){
+                    }
+                   else if (json.equalsIgnoreCase("dbPolicy") && RcCount==103){
                         progressDialog.dismiss();
                        JSONObject jsonObject =  new JSONObject();
                        jsonObject.put("Territory_Id",basicFunction.getPreference("territory_id"));
@@ -533,7 +1068,8 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                         });
 
 
-                    }else if (RcCount==104){
+                    }
+                   else if (RcCount==104){
                         progressDialog.dismiss();
                         JSONObject jsonObject =  new JSONObject();
                         jsonObject.put("Territory_Id",basicFunction.getPreference("territory_id"));
@@ -570,8 +1106,9 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                         });
 
 
-                    }else if (RcCount==105){
-                        progressDialog.dismiss();
+                    }
+                   else if (RcCount==105){
+                       // progressDialog.dismiss();
 
 
                         if (json.equalsIgnoreCase("false")){
@@ -683,7 +1220,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
 
     private boolean checkForPermission() {
         //  Log.e("tag", "Permission");
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED   || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -693,7 +1230,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
             // for ActivityCompat#requestPermissions for more details.
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_PHONE_STATE, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                requestPermissions(new String[]{Manifest.permission.READ_PHONE_STATE, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             }
             return false;
         } else {
@@ -702,13 +1239,48 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
         }
 
     }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+/*
+        if (requestCode == 2002) {
+            cameraHelper.handleActivityResult(requestCode, resultCode, data);
+        }
+*/
+        if (requestCode == REQ_LIVENESS_OVERLAY) {
+            if (resultCode == RESULT_OK && data != null) {
+                String base64 = data.getStringExtra(EXTRA_BASE64);
+                if (base64 != null) {
+                    Log.e("LoginActivity", "Captured Base64: " + base64);
+                    //make toast
+                    Toast.makeText(this, "Face captured successfully", Toast.LENGTH_SHORT).show();
+                    imageBase64 = base64;
+                    //base64 image show in imageview
+                    byte[] decodedString = Base64.decode(base64, Base64.DEFAULT);
+                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0,decodedString.length);
+                   // showImage.setImageBitmap(decodedByte);
+                    // এখানে আপনার পুরোনো CameraHelper-এর callback-এর মত ব্যবহার করুন
+                    // উদা: সার্ভারে আপলোড, লোকাল সেভ, ইত্যাদি
+                }
+            } else {
+                Toast.makeText(this, "Liveliness failed or canceled", Toast.LENGTH_SHORT).show();
+            }
+        }
+        if (requestCode == 7001) {
 
+        }
+    }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode==1 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
-            checkLocationPermission();
+        if (requestCode == 1) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                checkLocationPermission(); // Call to proceed after permission is granted
+            } else {
+                // Handle the case where the permission is denied
+                Toast.makeText(this, "Permission denied. Cannot proceed with location features.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -844,5 +1416,37 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
             mInfo.append(device.getProductId() + "\n");
             mInfo.append(device.getVendorId() + "\n");
         }
+    }
+    private void fetchLocationOrAskSettings() {
+        if (!locationHelper.hasFinePermission()) {
+            locationHelper.requestFinePermission();
+            return;
+        }
+        locationHelper.requestSingleFix(new LocationHelper.SingleFixCallback() {
+            @Override
+            public void onLocationReady(@NonNull Location loc) {
+                latestFix = loc;
+                Log.e("Location", "Fix: lat=" + loc.getLatitude() + " lon=" + loc.getLongitude()
+                        + " acc=" + loc.getAccuracy());
+                Toast.makeText(LoginActivity.this, "Location ready", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailed(@NonNull String reason) {
+                Log.e("Location", "Failed: " + reason);
+                Toast.makeText(LoginActivity.this, "Location failed: " + reason, Toast.LENGTH_LONG).show();
+            }
+
+
+            @Override
+            public void onResolutionRequired(ResolvableApiException resolvable) {
+                try {
+                    // ইউজারকে Location On করতে “Turn on location?” ডায়ালগ দেখাবে
+                    resolvable.startResolutionForResult(LoginActivity.this, 7001);
+                } catch (IntentSender.SendIntentException e) {
+                    onFailed("Resolution launch failed");
+                }
+            }
+        });
     }
 }

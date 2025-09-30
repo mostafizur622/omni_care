@@ -6,12 +6,12 @@
     android:layout_height="match_parent"
     android:weightSum="4"
     android:orientation="vertical"
-    android:background="@color/new_outlet"
+    android:background="@color/newThemeColor"
     tools:context=".OutletList">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/secondary_color"
+        android:background="@drawable/horizontal_gradient"
         android:weightSum="2"
         android:orientation="horizontal"
         android:layout_weight="0.4">
@@ -60,7 +60,7 @@
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
                 android:layout_marginLeft="15dp"
-                android:background="@drawable/login_id_bg_shade"
+                android:background="@drawable/user_id_back"
                 android:text="273638"
                 android:autoSizeTextType="uniform"
                 android:autoSizeMinTextSize="12sp"
@@ -126,7 +126,7 @@
                     android:layout_height="match_parent"
                     android:paddingLeft="10dp"
                     android:drawableLeft="@drawable/add_icon"
-                    android:background="@drawable/green_button"
+                    android:background="@drawable/user_id_back"
                     android:textStyle="bold"
                     android:textSize="18sp"
                     android:textColor="@color/white"
@@ -158,7 +158,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Route"
-                    android:textColor="@color/text_color_hint"
+                    android:textColor="@color/white"
                     android:textSize="15sp">
 
                 </TextView>
@@ -174,7 +174,7 @@
 
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/spinner_line"
+                    android:background="@color/white"
                     android:alpha="50"></TextView>
 
             </LinearLayout>
@@ -190,7 +190,7 @@
                     android:layout_height="wrap_content"
                     android:text="Market"
                     android:textSize="15sp"
-                    android:textColor="@color/text_color_hint">
+                    android:textColor="@color/white">
 
                 </TextView>
                 <Spinner
@@ -205,7 +205,7 @@
 
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/spinner_line"
+                    android:background="@color/white"
                     android:alpha="50"></TextView>
 
             </LinearLayout>

@@ -132,7 +132,7 @@ public class Visit_Plan_Activity extends ParentActivity implements BasicFunction
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent( Visit_Plan_Activity.this, SR_Account_Activity.class));
+                startActivity(new Intent( Visit_Plan_Activity.this, Dashboard.class));
                 finish();
             }
         });
@@ -581,7 +581,7 @@ public class Visit_Plan_Activity extends ParentActivity implements BasicFunction
             getData(primaryData);
         }else {
             super.onBackPressed();
-            startActivity(new Intent( Visit_Plan_Activity.this, SR_Account_Activity.class));
+            startActivity(new Intent( Visit_Plan_Activity.this, Dashboard.class));
             finish();
         }
     }
@@ -610,7 +610,7 @@ public class Visit_Plan_Activity extends ParentActivity implements BasicFunction
                 getData(primaryData);
             }else {
                 //super.onBackPressed();
-                startActivity(new Intent( Visit_Plan_Activity.this, SR_Account_Activity.class));
+                startActivity(new Intent( Visit_Plan_Activity.this, Dashboard.class));
                 finish();
             }
             return true;

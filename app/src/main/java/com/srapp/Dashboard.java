@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -13,9 +14,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
+import androidx.cardview.widget.CardView;
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.srapp.Db_Actions.Data_Source;
@@ -30,12 +33,17 @@ import org.json.JSONObject;
 
 public class Dashboard extends Parent implements BasicFunctionListener {
 
-    Button reportBtn, stockBtn, accountBtn, syncBtn, toolsBtn, deliveryBtn;
+    Button  toolsBtn ;
+    LinearLayout stockBtn,deliveryBtn,syncBtn,accountBtn;
     ImageView backBtn, homeBtn;
     LinearLayout order_or_delivery;
-    TextView cash_number, oc_value, userIdTV, titleTV,oc;
+    TextView cash_number, oc_value, userIdTV, titleTV,oc,srName;
     Data_Source ds;
     BasicFunction basicFunction;
+    String roll="";
+    TableRow stockAndDeliveryOption;
+    LinearLayout ecOc;
+    CardView listCard;
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -80,9 +88,13 @@ public class Dashboard extends Parent implements BasicFunctionListener {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String value = prefs.getString(Tables.SR_ID, "0");
         FirebaseCrashlytics.getInstance().setUserId(basicFunction.getPreference("sr_uname"));
+        roll=basicFunction.getPreference("roll");
+        srName=findViewById(R.id.userName);
+        srName.setText(basicFunction.getPreference("sr_name"));
+        Log.e("UserRoll",roll);
         userIdTV.setText(value);
         ds = new Data_Source(this);
-        reportBtn = findViewById(R.id.reportBtn);
+        //reportBtn = findViewById(R.id.reportBtn);
         cash_number = findViewById(R.id.cash_number);
         oc_value = findViewById(R.id.oc_value);
         oc = findViewById(R.id.oc);
@@ -93,22 +105,33 @@ public class Dashboard extends Parent implements BasicFunctionListener {
         deliveryBtn = findViewById(R.id.deliveryBtn);
         backBtn = findViewById(R.id.back);
         homeBtn = findViewById(R.id.home);
+        stockAndDeliveryOption=findViewById(R.id.stockAndDeliveryOption);
+        ecOc=findViewById(R.id.ecOc);
+        listCard=findViewById(R.id.cardView);
+        if (roll.equalsIgnoreCase("1")){
+            stockAndDeliveryOption.setVisibility(View.GONE);
+        }
 
 
         order_or_delivery = findViewById(R.id.logo);
-        reportBtn.setOnClickListener(new View.OnClickListener() {
+        if (roll.equalsIgnoreCase("2")){
+            order_or_delivery.setVisibility(View.GONE);
+            ecOc.setVisibility(View.GONE);
+            listCard.setBackgroundColor(Color.parseColor("#EDF2F6"));
+        }
+/*        reportBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Dashboard.this, Reports_Activity.class);
                 startActivity(intent);
                 finish();
             }
-        });
+        });*/
 
         deliveryBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Dashboard.this, DeliveryReport.class);
+                Intent intent = new Intent(Dashboard.this, Visit_Plan_Activity.class);
                 startActivity(intent);
                 finish();
             }
@@ -117,7 +140,7 @@ public class Dashboard extends Parent implements BasicFunctionListener {
         stockBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Dashboard.this, SrStoreStatus.class);
+                Intent intent = new Intent(Dashboard.this, SR_Attendance.class);
                 startActivity(intent);
                 finish();
             }

@@ -453,7 +453,7 @@ public class OutletList extends ParentActivity implements BasicFunctionListener 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent( OutletList.this, Tools.class));
+                startActivity(new Intent( OutletList.this, SR_Account_Activity.class));
                 finish();
             }
         });
@@ -463,12 +463,12 @@ public class OutletList extends ParentActivity implements BasicFunctionListener 
             @Override
             public void onClick(View v) {
 
-                if (ds.checkOutletCreatePermission(getCurrentDateTime())) {
+  //              if (ds.checkOutletCreatePermission(getCurrentDateTime())) {
                     startActivity(new Intent(OutletList.this, CreateOutlet.class));
                     finish();
-                }else {
-                    Toast.makeText(OutletList.this,"You Don't Have Permission To Create Outlet",Toast.LENGTH_LONG).show();
-                }
+//                }else {
+//                    Toast.makeText(OutletList.this,"You Don't Have Permission To Create Outlet",Toast.LENGTH_LONG).show();
+//                }
             }
         });
 
@@ -817,7 +817,7 @@ public class OutletList extends ParentActivity implements BasicFunctionListener 
             StaticFlags.OUTLET_MARKET_SPINNER_POSITION = 0;
             StaticFlags.OUTLET_SCROL_POSITION = 0;
             StaticFlags.OUTLET_THANA_SPINNER_POSITION = 0;
-            startActivity(new Intent( OutletList.this, Tools.class));
+            startActivity(new Intent( OutletList.this, SR_Account_Activity.class));
             finish();
             return true;
         }

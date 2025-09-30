@@ -7,13 +7,13 @@
     android:layout_height="match_parent"
     android:weightSum="4"
     android:orientation="vertical"
-    android:background="@color/background"
+    android:background="@color/newBackColor"
     tools:context=".SyncActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/secondary_color"
+        android:background="@drawable/horizontal_gradient"
         android:weightSum="2"
         android:orientation="horizontal"
         android:layout_weight="0.4">
@@ -64,7 +64,7 @@
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
                 android:layout_marginLeft="15dp"
-                android:background="@drawable/login_id_bg_shade"
+                android:background="@drawable/user_id_back"
                 android:text="273638"
                 android:autoSizeTextType="uniform"
                 android:autoSizeMinTextSize="12sp"
@@ -107,6 +107,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginTop="50dp"
                 app:cardElevation="4dp"
+                android:layout_marginBottom="5dp"
                 app:cardCornerRadius="30dp"
                 >
 
@@ -220,7 +221,7 @@
                                 android:layout_height="match_parent"
                                 android:layout_weight="0.8"
                                 android:textSize="16sp"
-                                android:text="Pending Order No">
+                                android:text="Pending Visit">
 
                             </TextView>
 
@@ -230,6 +231,247 @@
                                 android:layout_height="match_parent"
                                 android:layout_weight=".2"
                                 android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textAlignment="center"
+                                android:text="0">
+
+                            </TextView>
+
+                        </LinearLayout>
+
+                        <View android:layout_height="1dp"
+                            android:layout_marginLeft="25dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginRight="25dp"
+                            android:visibility="gone"
+                            android:background="@color/shade_color"
+                            android:layout_width="match_parent"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            android:weightSum="3"
+                            android:visibility="gone"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginLeft="25dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_weight="1">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="0.2"
+                                android:textSize="16sp"
+                                android:text="Pending Credit Collection">
+
+                            </TextView>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="2.8"
+                                android:textSize="16sp"
+                                android:text="04">
+
+                            </TextView>
+
+                        </LinearLayout>
+
+                        <View android:layout_height="1dp"
+                            android:layout_marginLeft="25dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginRight="25dp"
+                            android:background="@color/shade_color"
+                            android:layout_width="match_parent"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            android:weightSum="3"
+                            android:visibility="gone"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginLeft="25dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginBottom="20dp"
+                            android:layout_weight="1">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="0.2"
+                                android:textSize="16sp"
+                                android:text="Pending Deposit">
+
+                            </TextView>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="2.8"
+                                android:textSize="16sp"
+                                android:text="00">
+
+                            </TextView>
+
+                        </LinearLayout>
+
+
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:weightSum="3">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            android:weightSum="1"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginLeft="25dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_weight="1">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="0.8"
+                                android:textSize="16sp"
+                                android:text="Pending Market">
+
+                            </TextView>
+
+                            <TextView
+                                android:id="@+id/pendingMarket"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight=".2"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textAlignment="center"
+                                android:text="0">
+
+                            </TextView>
+
+                        </LinearLayout>
+
+                        <View android:layout_height="1dp"
+                            android:layout_marginLeft="25dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginRight="25dp"
+                            android:visibility="gone"
+                            android:background="@color/shade_color"
+                            android:layout_width="match_parent"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            android:weightSum="3"
+                            android:visibility="gone"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginLeft="25dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_weight="1">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="0.2"
+                                android:textSize="16sp"
+                                android:text="Pending Credit Collection">
+
+                            </TextView>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="2.8"
+                                android:textSize="16sp"
+                                android:text="04">
+
+                            </TextView>
+
+                        </LinearLayout>
+
+                        <View android:layout_height="1dp"
+                            android:layout_marginLeft="25dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginRight="25dp"
+                            android:background="@color/shade_color"
+                            android:layout_width="match_parent"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            android:weightSum="3"
+                            android:visibility="gone"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginLeft="25dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginBottom="20dp"
+                            android:layout_weight="1">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="0.2"
+                                android:textSize="16sp"
+                                android:text="Pending Deposit">
+
+                            </TextView>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="2.8"
+                                android:textSize="16sp"
+                                android:text="00">
+
+                            </TextView>
+
+                        </LinearLayout>
+
+
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:weightSum="3">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            android:weightSum="1"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginLeft="25dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_weight="1">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="0.8"
+                                android:textSize="16sp"
+                                android:text="Pending Outlet">
+
+                            </TextView>
+
+                            <TextView
+                                android:id="@+id/pendingOutlet"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight=".2"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
                                 android:textAlignment="center"
                                 android:text="0">
 
@@ -319,6 +561,121 @@
 
                     </LinearLayout>
 
+                    <LinearLayout
+                        android:id="@+id/pendingAttendance"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:weightSum="3">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            android:weightSum="1"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginLeft="25dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_weight="1">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="0.8"
+                                android:textSize="16sp"
+                                android:text="Pending Attendance">
+
+                            </TextView>
+
+                            <TextView
+                                android:id="@+id/pendingAttendanceStatus"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight=".2"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textAlignment="center"
+                                android:text="0">
+
+                            </TextView>
+
+                        </LinearLayout>
+
+                        <View android:layout_height="1dp"
+                            android:layout_marginLeft="25dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginRight="25dp"
+                            android:visibility="gone"
+                            android:background="@color/shade_color"
+                            android:layout_width="match_parent"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            android:weightSum="3"
+                            android:visibility="gone"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginLeft="25dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_weight="1">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="0.2"
+                                android:textSize="16sp"
+                                android:text="Pending Credit Collection">
+
+                            </TextView>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="2.8"
+                                android:textSize="16sp"
+                                android:text="04">
+
+                            </TextView>
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal"
+                            android:weightSum="3"
+                            android:visibility="gone"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginLeft="25dp"
+                            android:layout_marginRight="25dp"
+                            android:layout_marginBottom="20dp"
+                            android:layout_weight="1">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="0.2"
+                                android:textSize="16sp"
+                                android:text="Pending Deposit">
+
+                            </TextView>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="2.8"
+                                android:textSize="16sp"
+                                android:text="00">
+
+                            </TextView>
+
+                        </LinearLayout>
+
+
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -347,7 +704,7 @@
                 android:id="@+id/sync_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/green_button"
+                android:background="@drawable/user_id_back"
                 android:text="Sync"
                 android:textAllCaps="false"
                 android:textColor="@color/white"

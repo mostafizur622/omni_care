@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/new_outlet"
+    android:background="@color/newBackColor"
     android:orientation="vertical"
     android:weightSum="4"
     tools:context=".GPS_UPdate">
@@ -12,7 +12,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/secondary_color"
+        android:background="@drawable/horizontal_gradient"
         android:weightSum="2"
         android:orientation="horizontal"
         android:layout_weight="0.4">
@@ -61,7 +61,7 @@
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
                 android:layout_marginLeft="15dp"
-                android:background="@drawable/login_id_bg_shade"
+                android:background="@drawable/user_id_back"
                 android:text="273638"
                 android:autoSizeTextType="uniform"
                 android:autoSizeMinTextSize="12sp"
@@ -210,7 +210,7 @@
             android:layout_gravity="center_horizontal"
             android:text="        Update GPS                   "
             android:textColor="@color/white"
-            android:background="@drawable/green_button"
+            android:background="@drawable/user_id_back"
         android:layout_height="wrap_content" />
 
     </LinearLayout>

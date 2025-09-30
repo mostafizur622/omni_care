@@ -50,7 +50,7 @@ class DataViewModel(application: Application) : AndroidViewModel(application){
 }
 
     class DataViewModelFactory(var application: Application) : ViewModelProvider.Factory {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(DataViewModel::class.java)) {
                 return DataViewModel(application) as T
             }

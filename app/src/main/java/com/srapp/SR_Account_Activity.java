@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.srapp.Adapter.SR_AccountAdapter;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Model.SR_Account;
+import com.srapp.Model.SR_Target;
 import com.srapp.Util.DatabaseBackManager;
 import com.srapp.Util.Parent;
 import com.srapp.Util.RecyclerTouchListener;
@@ -82,35 +83,33 @@ public class SR_Account_Activity extends Parent {
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
-               // Toast.makeText(SR_Account_Activity.this, ""+position, Toast.LENGTH_SHORT).show();
-                if(position == 7){
-                    startActivity(new Intent(SR_Account_Activity.this,Faq.class));
+                // Toast.makeText(SR_Account_Activity.this, ""+position, Toast.LENGTH_SHORT).show();
+                if(position == 0){
+                    startActivity(new Intent(SR_Account_Activity.this,LeaveList.class));
+                    finish();
+                }
+               else if(position == 1){
+                    startActivity(new Intent(SR_Account_Activity.this,Outof_Plan_Visit.class));
+                    finish();
+                } else if(position == 2){
+                    startActivity(new Intent(SR_Account_Activity.this,MarketList.class));
+                    finish();
+                } else if(position == 3){
+                    startActivity(new Intent(SR_Account_Activity.this,OutletList.class));
+                    finish();
+                }
+                else if(position == 4){
+                    startActivity(new Intent(SR_Account_Activity.this,outletStatus.class));
+                    finish();
+                }
+//                else if(position == 5){
+//                    DatabaseBackUp();
+//                }
+                else if(position == 5){
+                    startActivity(new Intent(SR_Account_Activity.this,Change_Password_Activity.class));
                     finish();
                 }else if(position == 6){
                     startActivity(new Intent(SR_Account_Activity.this,About_App_Activity.class));
-                    finish();
-                }else if(position == 5){
-                    startActivity(new Intent(SR_Account_Activity.this,Change_Password_Activity.class));
-                    finish();
-                }else if(position == 4){
-                    DatabaseBackUp();
-                }else if(position == 0){
-                    startActivity(new Intent(SR_Account_Activity.this,Visit_Plan_Activity.class));
-                    finish();
-                }else if(position == 3){
-                    startActivity(new Intent(SR_Account_Activity.this,Bonus_Party_Affiliation.class));
-                    finish();
-                }else if(position == 2){
-                    startActivity(new Intent(SR_Account_Activity.this,SrProductTarget.class));
-                    finish();
-                }else if(position == 1){
-                    startActivity(new Intent(SR_Account_Activity.this,Outof_Plan_Visit.class));
-                    finish();
-                }else if(position == 8){
-                    startActivity(new Intent(SR_Account_Activity.this,SR_Attendance.class));
-                    finish();
-                }else if(position == 9){
-                    startActivity(new Intent(SR_Account_Activity.this,SR_NCP_Activity.class));
                     finish();
                 }
             }
@@ -142,7 +141,7 @@ public class SR_Account_Activity extends Parent {
                 String result = edittext.getText().toString();
 
                 String so=getPreference(SR_ID);
-              //  DatabaseBackManager.setBackUp(SR_Account_Activity.this);
+                //  DatabaseBackManager.setBackUp(SR_Account_Activity.this);
                 if(result.equals(so)){
                     DatabaseBackManager.setBackUp(SR_Account_Activity.this);
                 }else{
@@ -164,18 +163,17 @@ public class SR_Account_Activity extends Parent {
     private List<SR_Account> getList() {
         List<SR_Account> sr_targetList = new ArrayList<>();
         // src Wikipedia
-       // sr_targetList.add(new SR_Account("Apps Inbox",null));
+        // sr_targetList.add(new SR_Account("Apps Inbox",null));
         //sr_targetList.add(new SR_Account("Current Promotion",null));
-        sr_targetList.add(new SR_Account("Visit Plan",null));
+        sr_targetList.add(new SR_Account("Leave Application",null));
         sr_targetList.add(new SR_Account("Out of Visit Plan ",null));
-        sr_targetList.add(new SR_Account("SR Target",null));
-        sr_targetList.add(new SR_Account("Incentive Party",null));
-        sr_targetList.add(new SR_Account("Database Backup",null));
+        sr_targetList.add(new SR_Account("Market List",null));
+        sr_targetList.add(new SR_Account("Outlet List",null));
+        sr_targetList.add(new SR_Account("Pending Outlet",null));
+//        sr_targetList.add(new SR_Account("Database Backup",null));
         sr_targetList.add(new SR_Account("Change Password",null));
         sr_targetList.add(new SR_Account("About",null));
-        sr_targetList.add(new SR_Account("FAQ",null));
-        sr_targetList.add(new SR_Account("Attendance",null));
-       // sr_targetList.add(new SR_Account("NCP",null));
+        // sr_targetList.add(new SR_Account("NCP",null));
 
 
         return sr_targetList;

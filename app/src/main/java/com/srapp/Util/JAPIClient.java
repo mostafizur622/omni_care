@@ -78,6 +78,7 @@ public class JAPIClient {
                         finaljsonObject.put(SR_ID,getPreference(SR_ID));
                         finaljsonObject.put("so_id",getPreference(SR_ID));
                         finaljsonObject.put("mac",getPreference("mac"));
+                        finaljsonObject.put("user_type",getPreference("roll"));
 
                         Request.Builder rb =chain.request().newBuilder();
 

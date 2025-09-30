@@ -47,6 +47,7 @@ public class ParentActivity extends AppCompatActivity {
 	AlertDialog progressDialog;
 	AlertDialog.Builder builder;
 	String dateTag = "Date";
+	String serverTime = "Time";
 	String IsTryTOFake = "try_to_fake";
 
 	Boolean dailogshowing = false;
@@ -85,6 +86,7 @@ public class ParentActivity extends AppCompatActivity {
 				public void onResponse(Call<String> call, Response<String> response) {
 					try {
 						savePreference(dateTag,new JSONObject(response.body()).getString("date"));
+						savePreference(serverTime,new JSONObject(response.body()).getString("time"));
 						savePreference(IsTryTOFake,"0");
 						showPrintDailog();
 					} catch (JSONException e) {
@@ -702,9 +704,9 @@ public class ParentActivity extends AppCompatActivity {
 	}
 
 
-	public String getCurrentTimeAMPM()
+	public static  String getCurrentTimeAMPM()
 	{
-		DateFormat dateFormat = new SimpleDateFormat("hh:mm a");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 		Date date = new Date();
 		String CurrentDate =dateFormat.format(date);
 

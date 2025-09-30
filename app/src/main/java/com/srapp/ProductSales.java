@@ -48,6 +48,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -823,6 +824,12 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
                         });
                         return;
                     }
+                    if (checkAndSetQuantityValidation(Quantity,productId)){
+
+                        showAssistToast(productId);
+                        return;
+                    }
+
                     String Memoquery = "SELECT SUM(quantity) FROM memo_details WHERE product_id='" + productId + "' and " + Tables.MEMOS_memo_number + "='" + TempData.orderNumber + "'";
                     Cursor c3 = db.rawQueryCoustom(Memoquery);
                     int count3 = c3.getCount();
@@ -1067,7 +1074,88 @@ public class ProductSales extends Parent implements BasicFunctionListener, DBLis
             }
         }
     }
+    private boolean checkAndSetQuantityValidation(double giventQty,String product_id) {
 
+        double actualquantity=giventQty;
+
+        Log.e("floor",actualquantity+" - "+Math.floor(giventQty)+"= "+(actualquantity - Math.floor(giventQty)));
+        if(actualquantity==Math.floor(giventQty)){
+
+            return false;
+        }else {
+
+            Cursor c1 = db.rawQueryCoustom("select qty_in_base from product where product_id='"+product_id+"'");
+            c1.moveToFirst();
+            if (c1!=null && c1.getCount()>0 ){
+
+                Double baseUnit = c1.getDouble(0);
+                if (baseUnit==1){
+
+                    return true;
+                }
+            }
+
+            if (isFractionSlabExsist(product_id)) {
+                double remainder = actualquantity - Math.floor(giventQty);
+                DecimalFormat df2 = new DecimalFormat("#.##");
+
+                Cursor c = db.rawQueryCoustom("select sales_qty from product_fraciton_slab where sales_qty =" + df2.format(remainder) + " and use_for_sales=1 and product_id='"+product_id+"'");
+                Log.e("check", "select sales_qty from product_fraciton_slab where sales_qty =" +  df2.format(remainder)+ " and use_for_sales=1 and product_id=23" + c.getCount());
+                c.moveToFirst();
+                if (c != null && c.getCount() > 0) {
+
+                    return false;
+
+                } else {
+
+                    return true;
+                }
+            }else {
+                return true;
+            }
+
+
+        }
+
+    }
+    private boolean isFractionSlabExsist(String product_id) {
+
+        Cursor c = db.rawQueryCoustom("select sales_qty from product_fraciton_slab where  use_for_sales=1 and product_id='"+product_id+"'");
+        Log.e("Fcheck", "select sales_qty from product_fraciton_slab where  use_for_sales=1 and product_id='"+product_id+"'");
+        if (c!=null && c.getCount()>0){
+
+            return true;
+
+        }else {
+
+            return false;
+        }
+
+    }
+    private void showAssistToast(final String string) {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... voids) {
+                String query = "SELECT product_name FROM product WHERE product_id='" + string + "' ";
+                Log.e("QUERY_VALUE:", "..............." + "query" + query);
+                Cursor c2 = db.rawQueryCoustom(query);
+                String productName = null;
+                if (c2 != null && c2.moveToFirst()) {
+                    productName = c2.getString(0);
+                }
+                c2.close(); // Don't forget to close the cursor
+                return productName;
+            }
+
+            @Override
+            protected void onPostExecute(String productName) {
+                if (productName != null) {
+                    Toast.makeText(ProductSales.this, productName + " Product Quantity Not Meet The Fraction Slab", Toast.LENGTH_LONG).show();
+                    SaveBtn.setEnabled(true);
+                }
+            }
+        }.execute();
+    }
     private void generateMemoForPush(String orderNo) {
 
         db.generateSingleOrder(orderNo);

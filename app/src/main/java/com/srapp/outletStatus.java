@@ -78,7 +78,7 @@ public class outletStatus extends ParentActivity implements BasicFunctionListene
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(outletStatus.this, Tools.class));
+                startActivity(new Intent(outletStatus.this, SR_Account_Activity.class));
                 finish();
             }
         });
@@ -176,7 +176,7 @@ public class outletStatus extends ParentActivity implements BasicFunctionListene
 
 
 
-                Intent intent = new Intent(outletStatus.this, Tools.class);
+                Intent intent = new Intent(outletStatus.this, SR_Account_Activity.class);
                 intent.putExtra("resume", 1);
                 startActivity(intent);
                 finish();

@@ -6,12 +6,12 @@
     android:layout_height="match_parent"
     android:weightSum="4"
     android:orientation="vertical"
-    android:background="@color/new_outlet"
+    android:background="@color/newThemeColor"
     tools:context=".SrProductTarget">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/secondary_color"
+        android:background="@drawable/horizontal_gradient"
         android:weightSum="2"
         android:orientation="horizontal"
         android:layout_weight="0.4">
@@ -40,7 +40,7 @@
                 android:autoSizeMinTextSize="12sp"
                 android:autoSizeMaxTextSize="20sp"
                 android:autoSizeStepGranularity="2sp"
-                android:text="Product Target">
+                android:text="Attendance History">
 
             </TextView>
 
@@ -60,7 +60,7 @@
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
                 android:layout_marginLeft="15dp"
-                android:background="@drawable/login_id_bg_shade"
+                android:background="@drawable/user_id_back"
                 android:text="273638"
                 android:autoSizeTextType="uniform"
                 android:autoSizeMinTextSize="12sp"
@@ -182,7 +182,7 @@
                         android:layout_weight="0.7"
                         android:text="Date From"
                         android:textSize="15sp"
-                        android:textColor="@color/text_color_hint">
+                        android:textColor="@color/white">
 
                     </TextView>
                     <Button
@@ -207,7 +207,8 @@
                     android:layout_marginTop="16dp"
                     android:scaleY="0.5"
                     android:scaleX="0.5"
-                    android:layout_weight="0.2">
+                    android:layout_weight="0.2"
+                    app:tint="@color/white">
 
                 </ImageView>
                 <LinearLayout
@@ -223,7 +224,7 @@
                         android:layout_weight="0.7"
                         android:text="Date To"
                         android:textSize="15sp"
-                        android:textColor="@color/text_color_hint">
+                        android:textColor="@color/white">
 
                     </TextView>
                     <Button

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/login_bg"
+    android:background="@drawable/new_back"
     tools:context=".LoginActivity">
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,6 +20,7 @@
             android:layout_weight=".9">
 
             <ImageView
+                android:id="@+id/showImage"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:scaleType="fitXY"

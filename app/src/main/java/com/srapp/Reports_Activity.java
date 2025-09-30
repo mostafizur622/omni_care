@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -30,6 +31,7 @@ public class Reports_Activity extends ParentActivity {
     RecyclerView recyclerView;
     ImageView report_icon,home,back;
     TextView userIdTV,titleTV  ;
+    String roll="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +43,7 @@ public class Reports_Activity extends ParentActivity {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String value = prefs.getString(Tables.SR_ID, "0");
+        roll = prefs.getString("roll","0");
         userIdTV.setText(value);
 
         recyclerView = (RecyclerView) findViewById(R.id.Reports_recycleView);
@@ -73,44 +76,87 @@ public class Reports_Activity extends ParentActivity {
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(this, recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                if (position == 0) {
-                    startActivity(new Intent(Reports_Activity.this, Order_Report_Activity.class));
-                    finish();
-                } else if (position == 1) {
-                    startActivity(new Intent(Reports_Activity.this, MemoReport.class));
-                    finish();
-                } else if (position == 2) {
-                    startActivity(new Intent(Reports_Activity.this, BonusReport.class));
-                    finish();
-                }else if (position == 3) {
-                    startActivity(new Intent(Reports_Activity.this, ProductWiseDeliveryReport.class));
-                    finish();
-                }
+                if (roll.equalsIgnoreCase("1")){
+                    if (position == 0) {
+                        startActivity(new Intent(Reports_Activity.this, Order_Report_Activity.class));
+                        finish();
+                    } else if (position == 1) {
+                        startActivity(new Intent(Reports_Activity.this, BonusReport.class));
+                        finish();
+                    } else if (position == 2) {
+                        startActivity(new Intent(Reports_Activity.this, ProductWiseDeliveryReport.class));
+                        finish();
+                    } else if (position == 3) {
+                        startActivity(new Intent(Reports_Activity.this, Product_Wise_Order_Summery.class).putExtra("report_name", "Order Summery Report").putExtra("flag", 3));
+                        finish();
+                    } else if (position == 4) {
+                        startActivity(new Intent(Reports_Activity.this, OutletVisitReport.class));
+                        finish();
+                    }  else if (position == 5) {
+                        startActivity(new Intent(Reports_Activity.this, ReportBonusPartyReport.class));
+                        finish();
+                    }
+                }else if (roll.equalsIgnoreCase("2")){
+                    if (position == 0) {
+                        startActivity(new Intent(Reports_Activity.this, MemoReport.class));
+                        finish();
+                    }
+                    else if (position == 1) {
+                        startActivity(new Intent(Reports_Activity.this, Product_Wise_Order_Summery.class).putExtra("report_name", "Delivery Summery Report").putExtra("flag", 2));
+                        finish();
+                    }  else if (position == 2) {
+                        startActivity(new Intent(Reports_Activity.this, Product_Wise_Bonus_Summery.class));
+                        finish();
+                    }else if (position == 3) {
+                        startActivity(new Intent(Reports_Activity.this, Outlet_wise_sales_report.class));
+                        finish();
+                    } else if (position == 4) {
+                        startActivity(new Intent(Reports_Activity.this, ReportBonusPartyReport.class));
+                        finish();
+                    } else if (position == 5) {
+                        startActivity(new Intent(Reports_Activity.this, Outlet_wise_Product_report.class));
+                        finish();
+                    }
+                }else {
+                    if (position == 0) {
+                        startActivity(new Intent(Reports_Activity.this, Order_Report_Activity.class));
+                        finish();
+                    } else if (position == 1) {
+                        startActivity(new Intent(Reports_Activity.this, MemoReport.class));
+                        finish();
+                    } else if (position == 2) {
+                        startActivity(new Intent(Reports_Activity.this, BonusReport.class));
+                        finish();
+                    } else if (position == 3) {
+                        startActivity(new Intent(Reports_Activity.this, ProductWiseDeliveryReport.class));
+                        finish();
+                    }
 /*                else if (position == 4) {
                     startActivity(new Intent(Reports_Activity.this, Product_Wise_Order_Summery.class).putExtra("report_name","Invoice Summery Report").putExtra("flag",1));
                     finish();
                }*/
-                else if (position == 4) {
-                    startActivity(new Intent(Reports_Activity.this, Product_Wise_Order_Summery.class).putExtra("report_name","Delivery Summery Report").putExtra("flag",2));
-                    finish();
-                }else if (position == 5) {
-                    startActivity(new Intent(Reports_Activity.this, Product_Wise_Order_Summery.class).putExtra("report_name","Order Summery Report").putExtra("flag",3));
-                    finish();
-                }else if (position == 6) {
-                    startActivity(new Intent(Reports_Activity.this, Product_Wise_Bonus_Summery.class));
-                    finish();
-                }else if (position == 7) {
-                    startActivity(new Intent(Reports_Activity.this, OutletVisitReport.class));
-                    finish();
-                }else if (position == 8) {
-                    startActivity(new Intent(Reports_Activity.this, Outlet_wise_sales_report.class));
-                    finish();
-                }else if (position == 9) {
-                    startActivity(new Intent(Reports_Activity.this, ReportBonusPartyReport.class));
-                    finish();
-                }else if (position == 10) {
-                    startActivity(new Intent(Reports_Activity.this, Outlet_wise_Product_report.class));
-                    finish();
+                    else if (position == 4) {
+                        startActivity(new Intent(Reports_Activity.this, Product_Wise_Order_Summery.class).putExtra("report_name", "Delivery Summery Report").putExtra("flag", 2));
+                        finish();
+                    } else if (position == 5) {
+                        startActivity(new Intent(Reports_Activity.this, Product_Wise_Order_Summery.class).putExtra("report_name", "Order Summery Report").putExtra("flag", 3));
+                        finish();
+                    } else if (position == 6) {
+                        startActivity(new Intent(Reports_Activity.this, Product_Wise_Bonus_Summery.class));
+                        finish();
+                    } else if (position == 7) {
+                        startActivity(new Intent(Reports_Activity.this, OutletVisitReport.class));
+                        finish();
+                    } else if (position == 8) {
+                        startActivity(new Intent(Reports_Activity.this, Outlet_wise_sales_report.class));
+                        finish();
+                    } else if (position == 9) {
+                        startActivity(new Intent(Reports_Activity.this, ReportBonusPartyReport.class));
+                        finish();
+                    } else if (position == 10) {
+                        startActivity(new Intent(Reports_Activity.this, Outlet_wise_Product_report.class));
+                        finish();
+                    }
                 }
             }
 
@@ -124,18 +170,34 @@ public class Reports_Activity extends ParentActivity {
     private List<Reports> getList() {
         List<Reports> report_List = new ArrayList<>();
         // src Wikipedia
-        report_List.add(new Reports("Order Report", null));
-        report_List.add(new Reports("Delivery Report", null));
-        report_List.add(new Reports("Order Bonus Report", null));
-        report_List.add(new Reports("Product Wise Order Report", null));
-       /* report_List.add(new Reports("Invoice Summery Report", null));*/
-        report_List.add(new Reports("Delivery Summery Report", null));
-        report_List.add(new Reports("Order Summery Report", null));
-        report_List.add(new Reports("Memo Bonus Summery Report", null));
-        report_List.add(new Reports("Outlet Visit Report", null));
-        report_List.add(new Reports("Outlet Wise Sales Report", null));
-        report_List.add(new Reports("Incentive Party report", null));
-        report_List.add(new Reports("Outlet Wise Product Summery Report", null));
+        if (roll.equalsIgnoreCase("1")){
+            report_List.add(new Reports("Order Report", null));
+            report_List.add(new Reports("Order Bonus Report", null));
+            report_List.add(new Reports("Product Wise Order Report", null));
+            report_List.add(new Reports("Order Summery Report", null));
+            report_List.add(new Reports("Outlet Visit Report", null));
+            report_List.add(new Reports("Incentive Party report", null));
+        }else if (roll.equalsIgnoreCase("2")){
+            report_List.add(new Reports("Delivery Report", null));
+            report_List.add(new Reports("Delivery Summery Report", null));
+            report_List.add(new Reports("Memo Bonus Summery Report", null));
+            report_List.add(new Reports("Outlet Wise Sales Report", null));
+            report_List.add(new Reports("Incentive Party report", null));
+            report_List.add(new Reports("Outlet Wise Product Summery Report", null));
+        }else {
+            report_List.add(new Reports("Order Report", null));
+            report_List.add(new Reports("Delivery Report", null));
+            report_List.add(new Reports("Order Bonus Report", null));
+            report_List.add(new Reports("Product Wise Order Report", null));
+            /* report_List.add(new Reports("Invoice Summery Report", null));*/
+            report_List.add(new Reports("Delivery Summery Report", null));
+            report_List.add(new Reports("Order Summery Report", null));
+            report_List.add(new Reports("Memo Bonus Summery Report", null));
+            report_List.add(new Reports("Outlet Visit Report", null));
+            report_List.add(new Reports("Outlet Wise Sales Report", null));
+            report_List.add(new Reports("Incentive Party report", null));
+            report_List.add(new Reports("Outlet Wise Product Summery Report", null));
+        }
 
         return report_List;
     }

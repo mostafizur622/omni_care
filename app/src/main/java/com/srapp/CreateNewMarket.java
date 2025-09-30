@@ -157,6 +157,7 @@ public class CreateNewMarket extends ParentActivity implements BasicFunctionList
         if (routeData != null && routeData.size()>0) {
             SpinnerAdapter routeSpinnerAdapter = new SpinnerAdapter(this, R.layout.spinner_item, routeData.get(Tables.ROUTE_NAME));
             routeSpinner.setAdapter(routeSpinnerAdapter);
+            routeSpinner.requestFocus();
             if (page_from==25)
             routeSpinner.setSelection(getPosition(routeData.get(Tables.ROUTE_ID),routeId));
         }else {
@@ -205,7 +206,7 @@ public class CreateNewMarket extends ParentActivity implements BasicFunctionList
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 TextView textView = (TextView)parent.getChildAt(0);
-                textView.setTextColor(getResources().getColor(R.color.background_card));
+                textView.setTextColor(getResources().getColor(R.color.black));
                 textView.setPadding(0,0,0,0);
 
                 thanaId = thanaData.get(Tables.THANA_TH_id).get(position);
@@ -223,7 +224,7 @@ public class CreateNewMarket extends ParentActivity implements BasicFunctionList
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 TextView textView = (TextView)parent.getChildAt(0);
-                textView.setTextColor(getResources().getColor(R.color.background_card));
+                textView.setTextColor(getResources().getColor(R.color.black));
                 textView.setPadding(0,0,0,0);
 
                 routeId = routeData.get(Tables.ROUTE_ID).get(position);
@@ -241,7 +242,7 @@ public class CreateNewMarket extends ParentActivity implements BasicFunctionList
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 TextView textView = (TextView)parent.getChildAt(0);
-                textView.setTextColor(getResources().getColor(R.color.background_card));
+                textView.setTextColor(getResources().getColor(R.color.black));
                 textView.setPadding(0,0,0,0);
 
                 locationId = locationData.get(Tables.LOCATION_location_id).get(position);

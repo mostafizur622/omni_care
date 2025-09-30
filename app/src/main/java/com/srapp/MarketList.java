@@ -233,7 +233,7 @@ public class MarketList extends ParentActivity implements BasicFunctionListener 
                 StaticFlags.MARKET_ID_FOR_POSITION = null;
                 StaticFlags.MARKET_THANA_ID = null;
                 StaticFlags.MARKET_THANA_SPINNER_POSITION = 0;
-                startActivity(new Intent( MarketList.this, Tools.class));
+                startActivity(new Intent( MarketList.this, SR_Account_Activity.class));
                 finish();
             }
         });
@@ -476,7 +476,7 @@ public class MarketList extends ParentActivity implements BasicFunctionListener 
             StaticFlags.MARKET_ID_FOR_POSITION = null;
             StaticFlags.MARKET_THANA_ID = null;
             StaticFlags.MARKET_THANA_SPINNER_POSITION = 0;
-            startActivity(new Intent( MarketList.this, Tools.class));
+            startActivity(new Intent( MarketList.this, SR_Account_Activity.class));
             finish();
             return true;
         }

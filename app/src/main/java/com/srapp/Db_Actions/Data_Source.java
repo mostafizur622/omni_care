@@ -2233,7 +2233,7 @@ public class Data_Source extends Parent {
     public String getPendingOrderCount() {
 
         open();
-        Cursor c = sqLiteDatabase.rawQuery("SELECT count(_id) from ORDER_table WHERE is_Pushed='0'", null);
+        Cursor c = sqLiteDatabase.rawQuery("SELECT count(_id) from outlet_visit WHERE isPushed='0'", null);
         c.moveToFirst();
         if (c != null && c.getCount() > 0) {
             return c.getString(0);
@@ -2241,6 +2241,27 @@ public class Data_Source extends Parent {
         return "0";
     }
 
+    public String getPendingMarket() {
+
+        open();
+        Cursor c = sqLiteDatabase.rawQuery("SELECT count(_id) from markets WHERE is_pushed = '0'", null);
+        c.moveToFirst();
+        if (c != null && c.getCount() > 0) {
+            return c.getString(0);
+        }
+        return "0";
+    }
+
+    public String getPendingOutlet() {
+
+        open();
+        Cursor c = sqLiteDatabase.rawQuery("SELECT count(_id) from temp_outlets WHERE isPushed = '0'", null);
+        c.moveToFirst();
+        if (c != null && c.getCount() > 0) {
+            return c.getString(0);
+        }
+        return "0";
+    }
     public void updatePushStatus() {
         //Loge("log", "update ORDER_table set is_pushed ='1'");
         excQuery("update ORDER_table set is_pushed ='1'");
@@ -3004,6 +3025,13 @@ public class Data_Source extends Parent {
     public ArrayList<GSOPrice> GSOPriceList(String product_id, String minQty, String str, String memodate, String outletCategoryId) {
         ArrayList<GSOPrice> pricessArrayList = new ArrayList<GSOPrice>();
 //        pc.effective_date <='" + memodate + "' and
+        Double min_qty = Double.parseDouble(minQty);
+
+
+        if (min_qty<1){
+            min_qty+=1;
+        }
+
         String query2 = "select \n" +
                 "pc.slab_id,\n" +
                 "pc.effective_date,\n" +
@@ -3017,7 +3045,7 @@ public class Data_Source extends Parent {
                 "inner join (select effective_date from product_price where product_id=" + product_id + " and effective_date <='" + memodate + "' order by effective_date desc,_id desc limit 1) pp on pp.effective_date=pc.effective_date\n" +
                 "left join product_price_other_for_slabs_v2  pc_for_special on pc_for_special.product_combination_id=pc.slab_id and pc_for_special.type=1 and pc_for_special.reference_id in (" + str + ")\n" +
                 "left join product_price_other_for_slabs_v2 pc_for_outlet_category on pc_for_outlet_category.product_combination_id=pc.slab_id and pc_for_outlet_category.type=2 and pc_for_outlet_category.reference_id= '" + outletCategoryId + "' \n" + "\n" +
-                "where pc.min_quantity <=" + minQty + " and pc.product_id=" + product_id + "\n" + "\n" +
+                "where pc.min_quantity <=" + String.valueOf(min_qty) + " and pc.product_id=" + product_id + "\n" + "\n" +
                 "order by pc.effective_date desc,pc.min_quantity desc,pc_for_special.reference_id desc,pc.product_price_id DESC,pc_for_outlet_category.reference_id desc\n" +
                 "limit 1";
 
@@ -4697,8 +4725,8 @@ public class Data_Source extends Parent {
                         }
                     }
 
-                    updateWithServer(jsonObject,code);
-                    updateMemoWithServer(jsonObject,code);
+//                    updateWithServer(jsonObject,code);
+//                    updateMemoWithServer(jsonObject,code);
                     progressDialog.dismiss();
                     dbListener.OnLocalDBdataRetrive("done");
                 }

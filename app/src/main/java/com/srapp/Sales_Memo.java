@@ -31,6 +31,7 @@ import com.srapp.Util.AppManager;
 import com.srapp.Util.Parent;
 import com.srapp.print.ParentActivity;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -153,7 +154,13 @@ public class Sales_Memo extends Parent {
             if (c2 != null) {
                 if (c2.moveToFirst()) {
                     do {
+                    //check fraction slab
+                        if (checkAndSetQuantityValidation(c2.getDouble(0),c2.getString(1))){
 
+                            showAssistToast(c2.getString(1));
+
+                            return;
+                        }
                         if (c2.getString(0).trim().length() == 0) {
                             validInput = false;
                             Log.e("falsevalidation", "falsevalidation");
@@ -281,7 +288,77 @@ public class Sales_Memo extends Parent {
         return super.onKeyDown(keyCode, event);
 
     }
+    private boolean isFractionSlabExsist(String product_id) {
 
+        Cursor c = ds.rawQueryCoustom("select sales_qty from product_fraciton_slab where  use_for_sales=1 and product_id='"+product_id+"'");
+        Log.e("Fcheck", "select sales_qty from product_fraciton_slab where  use_for_sales=1 and product_id='"+product_id+"'");
+        if (c!=null && c.getCount()>0){
+
+            return true;
+
+        }else {
+
+            return false;
+        }
+
+    }
+    private boolean checkAndSetQuantityValidation(double giventQty,String product_id) {
+
+        double actualquantity=giventQty;
+
+        Log.e("floor",actualquantity+" - "+Math.floor(giventQty)+"= "+(actualquantity - Math.floor(giventQty)));
+        if(actualquantity==Math.floor(giventQty)){
+
+            return false;
+        }else {
+
+            Cursor c1 = ds.rawQueryCoustom("select qty_in_base from product where product_id='"+product_id+"'");
+            c1.moveToFirst();
+            if (c1!=null && c1.getCount()>0 ){
+
+                Double baseUnit = c1.getDouble(0);
+                if (baseUnit==1){
+
+                    return true;
+                }
+            }
+
+            if (isFractionSlabExsist(product_id)) {
+                double remainder = actualquantity - Math.floor(giventQty);
+                DecimalFormat df2 = new DecimalFormat("#.##");
+
+                Cursor c = ds.rawQueryCoustom("select sales_qty from product_fraciton_slab where sales_qty =" + df2.format(remainder) + " and use_for_sales=1 and product_id='"+product_id+"'");
+                Log.e("check", "select sales_qty from product_fraciton_slab where sales_qty =" +  df2.format(remainder)+ " and use_for_sales=1 and product_id=23" + c.getCount());
+                c.moveToFirst();
+                if (c != null && c.getCount() > 0) {
+
+                    return false;
+
+                } else {
+
+                    return true;
+                }
+            }else {
+                return true;
+            }
+
+
+        }
+
+    }
+    private void showAssistToast(String string) {
+        String query = "SELECT product_name FROM product WHERE product_id='" + string + "' ";
+        Log.e("QUERY_VALUE:", "..............." + "query" + query);
+        Cursor c2 = ds.rawQueryCoustom(query);
+        int count = c2.getCount();
+        Log.e("QUERY COUNT:", "..............." + count + "query" + query);
+        c2.moveToFirst();
+        if (c2 != null && c2.getCount()>0) {
+
+            Toast.makeText(this,c2.getString(0)+" Product Quantity Not Meet The Fraction Slab",Toast.LENGTH_LONG).show();
+        }
+
+    }
     private void getList() {
          adapter = new SalesOrderAdaper(Sales_Memo.this, ds.Getproductlist(productcatagory.get(PRODUCT_CATEGORYS[2]).get(productSpinner.getSelectedItemPosition()),product_type.get(PPRODCUT_TYPE[2]).get(product_type_sp.getSelectedItemPosition()),query), "2025", getPreference(Tables.OUTLETS_ID));
          productRecycleView.setAdapter(adapter);

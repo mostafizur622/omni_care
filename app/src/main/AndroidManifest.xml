@@ -5,11 +5,14 @@
 
     <uses-feature android:name="android.hardware.usb.host" />
 
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
 
-    <uses-feature android:name="android.hardware.location.gps" />
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false" />
     <uses-feature
         android:name="android.hardware.bluetooth"
         android:required="false" />
@@ -46,6 +49,12 @@
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:icon">
         <activity
+            android:name=".LeaveApply"
+            android:exported="false" />
+        <activity
+            android:name=".LeaveList"
+            android:exported="false" />
+        <activity
             android:name=".outletStatus"
             android:exported="false" />
 
@@ -75,6 +84,7 @@
             android:exported="false" />
         <activity
             android:name=".SplashActivity"
+            android:exported="true"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
@@ -84,6 +94,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".Attendance_history" />
+        <activity android:name=".LoginImageCapture.LoginWithImage" />
         <activity android:name=".ReportBonusPartyReport" />
         <activity android:name=".GiftIssueActivity" />
         <activity android:name=".Product_policy_Details" />
@@ -322,7 +333,11 @@
             android:name=".SR_Account_Activity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".FaceDetection.LivenessOverlayActivity"
+            android:exported="false" />
+        <activity
             android:name=".Printer_connected"
+            android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Translucent"
             android:windowSoftInputMode="adjustPan">
@@ -351,9 +366,15 @@
 
         <provider
             android:name=".Util.CachedFileProvider"
-            android:authorities="com.srapp.provider"
+            android:authorities="com.srapp_smart_login.provider"
             android:grantUriPermissions="true" />
-
+        <receiver android:name=".Util.TimeChangedReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIME_CHANGED" />
+            </intent-filter>
+        </receiver>
         <meta-data
             android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
             android:resource="@xml/device_filter" />

@@ -30,6 +30,7 @@ public class Tools extends ParentActivity {
     RecyclerView recyclerView;
     ImageView homeBtn,backBtn;
     TextView userIdTV,titleTV;
+    String roll="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +44,7 @@ public class Tools extends ParentActivity {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String value = prefs.getString(Tables.SR_ID, "0");
+        roll = prefs.getString("roll","0");
         userIdTV.setText(value);
 
         homeBtn.setOnClickListener(new View.OnClickListener() {
@@ -74,21 +76,23 @@ public class Tools extends ParentActivity {
             @Override
             public void onClick(View view, int position) {
 
-                switch (position){
 
-                    case 0:
-                        startActivity(new Intent(Tools.this,OutletList.class));
-                        finish();
-                        break;
-                    case 1:
-                        startActivity(new Intent(Tools.this,MarketList.class));
-                        finish();
-                        break;
+                if (roll.equalsIgnoreCase("1")){
+                    switch (position){
 
-                    case 2:
-                        startActivity(new Intent(Tools.this,PriceList.class));
-                        finish();
-                        break;
+                        case 0:
+                            startActivity(new Intent(Tools.this,OutletList.class));
+                            finish();
+                            break;
+                        case 1:
+                            startActivity(new Intent(Tools.this,MarketList.class));
+                            finish();
+                            break;
+
+                        case 2:
+                            startActivity(new Intent(Tools.this,PriceList.class));
+                            finish();
+                            break;
 
 //                    case 3:
 //                        startActivity(new Intent(Tools.this,OrderProcess.class));
@@ -103,38 +107,123 @@ public class Tools extends ParentActivity {
 //                        startActivity(new Intent(Tools.this,Multiple_Invoice_print.class));
 //                        finish();
 //                        break;
-                    case 3:
-                        startActivity(new Intent(Tools.this,CancelOrder.class));
-                        finish();
-                        break;
+                        case 3:
+                            startActivity(new Intent(Tools.this,CancelOrder.class));
+                            finish();
+                            break;
 
-                    case 4:
-                        startActivity(new Intent(Tools.this,MakePDF.class));
-                        finish();
-                        break;
+                        case 4:
+                            startActivity(new Intent(Tools.this,MakePDF.class));
+                            finish();
+                            break;
                         case 5:
-                        startActivity(new Intent(Tools.this,Product_Catalog.class));
-                        finish();
-                        break;
+                            startActivity(new Intent(Tools.this,Product_Catalog.class));
+                            finish();
+                            break;
                         case 6:
-                        startActivity(new Intent(Tools.this,GiftIssueList.class));
-                        finish();
-                        break;
+                            startActivity(new Intent(Tools.this,GiftIssueList.class));
+                            finish();
+                            break;
 
-                    case 7:
-                        startActivity(new Intent(Tools.this, BonusCampaignActivity.class));
-                        finish();
-                        break;
+                        case 7:
+                            startActivity(new Intent(Tools.this, BonusCampaignActivity.class));
+                            finish();
+                            break;
 
-                    case 8:
-                        startActivity(new Intent(Tools.this, CurrentOfferProductActivity.class));
-                        finish();
-                        break;
+                        case 8:
+                            startActivity(new Intent(Tools.this, CurrentOfferProductActivity.class));
+                            finish();
+                            break;
 
                         case 9:
-                        startActivity(new Intent(Tools.this, outletStatus.class));
-                        finish();
-                        break;
+                            startActivity(new Intent(Tools.this, outletStatus.class));
+                            finish();
+                            break;
+                    }
+                }else if (roll.equalsIgnoreCase("2")){
+                    switch (position){
+                        case 0:
+                            startActivity(new Intent(Tools.this,PriceList.class));
+                            finish();
+                            break;
+                        case 1:
+                            startActivity(new Intent(Tools.this,Product_Catalog.class));
+                            finish();
+                            break;
+
+                        case 2:
+                            startActivity(new Intent(Tools.this, BonusCampaignActivity.class));
+                            finish();
+                            break;
+
+                        case 3:
+                            startActivity(new Intent(Tools.this, CurrentOfferProductActivity.class));
+                            finish();
+                            break;
+                    }
+                }else {
+                    switch (position){
+
+                        case 0:
+                            startActivity(new Intent(Tools.this,OutletList.class));
+                            finish();
+                            break;
+                        case 1:
+                            startActivity(new Intent(Tools.this,MarketList.class));
+                            finish();
+                            break;
+
+                        case 2:
+                            startActivity(new Intent(Tools.this,PriceList.class));
+                            finish();
+                            break;
+
+//                    case 3:
+//                        startActivity(new Intent(Tools.this,OrderProcess.class));
+//                        finish();
+//                        break;
+//                    case 4:
+//                        startActivity(new Intent(Tools.this,UnProcessOrder.class));
+//                        finish();
+//                        break;
+//
+//                        case 5:
+//                        startActivity(new Intent(Tools.this,Multiple_Invoice_print.class));
+//                        finish();
+//                        break;
+                        case 3:
+                            startActivity(new Intent(Tools.this,CancelOrder.class));
+                            finish();
+                            break;
+
+                        case 4:
+                            startActivity(new Intent(Tools.this,MakePDF.class));
+                            finish();
+                            break;
+                        case 5:
+                            startActivity(new Intent(Tools.this,Product_Catalog.class));
+                            finish();
+                            break;
+                        case 6:
+                            startActivity(new Intent(Tools.this,GiftIssueList.class));
+                            finish();
+                            break;
+
+                        case 7:
+                            startActivity(new Intent(Tools.this, BonusCampaignActivity.class));
+                            finish();
+                            break;
+
+                        case 8:
+                            startActivity(new Intent(Tools.this, CurrentOfferProductActivity.class));
+                            finish();
+                            break;
+
+                        case 9:
+                            startActivity(new Intent(Tools.this, outletStatus.class));
+                            finish();
+                            break;
+                    }
                 }
             }
 
@@ -151,21 +240,40 @@ public class Tools extends ParentActivity {
     private List<SR_Target> getList() {
         List<SR_Target> sr_targetList = new ArrayList<>();
         // src Wikipedia--------------------------------------------------
-        sr_targetList.add(new SR_Target("Outlet List",null));
-        sr_targetList.add(new SR_Target("Market List",null));
-        sr_targetList.add(new SR_Target("Price List",null));
+        if (roll.equalsIgnoreCase("1")){
+            sr_targetList.add(new SR_Target("Outlet List",null));
+            sr_targetList.add(new SR_Target("Market List",null));
+            sr_targetList.add(new SR_Target("Price List",null));
+            sr_targetList.add(new SR_Target("Cancel Order ",null));
+            sr_targetList.add(new SR_Target("Generate Order PDF",null));
+            sr_targetList.add(new SR_Target("Product Catalog",null));
+            sr_targetList.add(new SR_Target("Gift Issue",null));
+            sr_targetList.add(new SR_Target("Bonus Campaign",null));
+            sr_targetList.add(new SR_Target("Current Offer Product",null));
+            sr_targetList.add(new SR_Target("Pending Outlet",null));
+
+        }else if (roll.equalsIgnoreCase("2")){
+            sr_targetList.add(new SR_Target("Price List",null));
+            sr_targetList.add(new SR_Target("Product Catalog",null));
+            sr_targetList.add(new SR_Target("Bonus Campaign",null));
+            sr_targetList.add(new SR_Target("Current Offer Product",null));
+        }else {
+            sr_targetList.add(new SR_Target("Outlet List",null));
+            sr_targetList.add(new SR_Target("Market List",null));
+            sr_targetList.add(new SR_Target("Price List",null));
 /*        sr_targetList.add(new SR_Target("Order Process",null));
         sr_targetList.add(new SR_Target("Cancel Invoice ",null));
         sr_targetList.add(new SR_Target("Print Invoice",null));*/
-        sr_targetList.add(new SR_Target("Cancel Order ",null));
-        sr_targetList.add(new SR_Target("Generate Order PDF",null));
-        sr_targetList.add(new SR_Target("Product Catalog",null));
-        sr_targetList.add(new SR_Target("Gift Issue",null));
-        sr_targetList.add(new SR_Target("Bonus Campaign",null));
-        sr_targetList.add(new SR_Target("Current Offer Product",null));
-        sr_targetList.add(new SR_Target("Pending Outlet",null));
-       // sr_targetList.add(new SR_Target("",null));
+            sr_targetList.add(new SR_Target("Cancel Order ",null));
+            sr_targetList.add(new SR_Target("Generate Order PDF",null));
+            sr_targetList.add(new SR_Target("Product Catalog",null));
+            sr_targetList.add(new SR_Target("Gift Issue",null));
+            sr_targetList.add(new SR_Target("Bonus Campaign",null));
+            sr_targetList.add(new SR_Target("Current Offer Product",null));
+            sr_targetList.add(new SR_Target("Pending Outlet",null));
+            // sr_targetList.add(new SR_Target("",null));
 
+        }
         return sr_targetList;
     }
 

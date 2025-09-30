@@ -31,7 +31,13 @@ interface ApiInterfaceForJava {
     @Headers("Content-Type: application/json; charset=utf-8")
     @POST("dist_user_login.json")
     fun Login(@Body JSONObject: RequestBody): Call<String>
+    @Headers("Content-Type: application/json; charset=utf-8")
+    @POST("dist_new_user_login.json")
+    fun loginNew(@Body JSONObject: RequestBody): Call<String>
 
+    @Headers("Content-Type: application/json; charset=utf-8")
+    @POST("save_sr_image.json")
+    fun saveSrImage(@Body JSONObject: RequestBody): Call<String>
     @Headers("Content-Type: application/json")
     @POST("create_outlet.json")
     fun Push(@Body JSONObject: RequestBody): Call<String>
@@ -39,7 +45,16 @@ interface ApiInterfaceForJava {
     @Headers("Content-Type: application/json")
     @POST("dist_data_pull.json")
     fun PULL(@Body JSONObject: RequestBody): Call<String>
+    @Headers("Content-Type: application/json")
+    @POST("get_dist_sr_leave_types.json")
+    fun leaveType(@Body JSONObject: RequestBody): Call<String>
+    @Headers("Content-Type: application/json")
+    @POST("create_dist_sr_leave.json")
+    fun leaveCreate(@Body JSONObject: RequestBody): Call<String>
 
+    @Headers("Content-Type: application/json")
+    @POST("get_dist_sr_leave_list.json")
+    fun leaveList(@Body JSONObject: RequestBody): Call<String>
     @Headers("Content-Type: application/json")
     @POST("dist_update_outlet.json")
     fun GPS_UPDATE(@Body JSONObject: RequestBody): Call<String>
@@ -113,7 +128,7 @@ interface ApiInterfaceForJava {
     @POST("dist_order_details.json")
     fun GET_ORDER_DETAILS(@Body JSONObject: RequestBody): Call<String>
     @Headers("Content-Type: application/json")
-    @POST("policy_bonus_applicable_checking.json")
+    @POST("sr_attendance_in_out.json")
     fun Policy_Bonus_Applicable(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")

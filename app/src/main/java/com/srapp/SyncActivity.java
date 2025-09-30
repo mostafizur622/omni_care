@@ -12,6 +12,7 @@
  import android.content.Intent;
  import android.content.SharedPreferences;
  import android.database.Cursor;
+ import android.graphics.Color;
  import android.net.ConnectivityManager;
  import android.net.NetworkInfo;
  import android.os.Build;
@@ -23,6 +24,7 @@
  import android.view.View;
  import android.widget.Button;
  import android.widget.ImageView;
+ import android.widget.LinearLayout;
  import android.widget.ListView;
  import android.widget.TextView;
  import android.widget.Toast;
@@ -34,6 +36,7 @@
  import com.srapp.Db_Actions.Data_Source;
  import com.srapp.Db_Actions.Tables;
  import com.srapp.Db_Actions.URL;
+ import com.srapp.Util.AuthPreference;
  import com.srapp.Util.Parent;
  import com.srapp.print.ParentActivity;
  import com.tanvir.BasicFun.BasicFunction;
@@ -55,16 +58,16 @@
  public class SyncActivity extends Parent implements DBListener, BasicFunctionListener {
 
     Button sync_btn, viewSummery;
-    TextView pendingMemo;
+    TextView pendingMemo,pendingAttendanceStatus,pendingOutlet,pendingMarket;
     Data_Source ds;
     int Flag = 0;
     ListView listView;
     BasicFunction bf;
     ImageView homeBtn, backBtn;
     TextView userIdTV, titleTV, date;
-
-
-
+     String loginFacility="1";
+     private AuthPreference authPreference;
+     LinearLayout pendingAttendance;
 
      @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +80,7 @@
         bf = new BasicFunction(this, this);
         homeBtn = findViewById(R.id.home);
         backBtn = findViewById(R.id.back);
-
+        authPreference = new AuthPreference(getApplicationContext());
         userIdTV = findViewById(R.id.user_txt_view);
         titleTV = findViewById(R.id.title_tv);
         date = findViewById(R.id.date);
@@ -88,13 +91,34 @@
         sync_btn = (Button) findViewById(R.id.sync_btn);
         viewSummery = (Button) findViewById(R.id.viewSummery);
         pendingMemo = findViewById(R.id.pendingMemo);
-
+        pendingOutlet = findViewById(R.id.pendingOutlet);
+        pendingMarket = findViewById(R.id.pendingMarket);
         pendingMemo.setText(ds.getPendingOrderCount());
+        pendingMarket.setText(ds.getPendingMarket());
+        pendingOutlet.setText(ds.getPendingOutlet());
         viewSummery.setVisibility(View.GONE);
          FirebaseCrashlytics.getInstance().setUserId(getPreference("sr_uname"));
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String value = prefs.getString(Tables.SR_ID, "0");
         userIdTV.setText(value);
+        SharedPreferences sharedPreferences = getSharedPreferences("Location", Context.MODE_PRIVATE);
+        loginFacility = sharedPreferences.getString("attendance_online", null);
+        pendingAttendance = findViewById(R.id.pendingAttendance);
+         pendingAttendanceStatus = findViewById(R.id.pendingAttendanceStatus);
+
+        if (loginFacility.equalsIgnoreCase("0")){
+            if (authPreference.getPendingAttendance().equalsIgnoreCase("1")) {
+                pendingAttendance.setVisibility(View.VISIBLE);
+                pendingAttendanceStatus.setText("Yes");
+                pendingAttendanceStatus.setTextColor(Color.parseColor("#004714"));
+            }else {
+                pendingAttendanceStatus.setText("No");
+                pendingAttendanceStatus.setTextColor(Color.parseColor("#ff2200"));
+            }
+        }else {
+            pendingAttendance.setVisibility(View.GONE);
+        }
+        Log.e("loginFacility",loginFacility+"");
 
         homeBtn.setOnClickListener(v -> {
             startActivity(new Intent(SyncActivity.this, Dashboard.class));
@@ -176,12 +200,20 @@
     }
      private void getTradeOfferPolicy() {
          JSONObject dataObject = new JSONObject();
-         ProgressDialog dailog = CheckConnection(SyncActivity.this,"Trade Offer Policy Loading...");
+         ProgressDialog dailog = CheckConnection(SyncActivity.this,"Saving Attendance Data...");
          if (dailog==null)
              return;
          try {
-             dataObject.put("so_id","");
-             Log.e("onResponse", "api_call onResponse: ");
+             dataObject.put("so_id",bf.getPreference(SR_ID));
+             dataObject.put("mac",bf.getPreference("mac"));
+             dataObject.put("date",authPreference.getCheckInDate());
+             dataObject.put("in_time",authPreference.getInTime());
+             dataObject.put("out_time",authPreference.getOutTime());
+             dataObject.put("in_lat",authPreference.getInLat());
+             dataObject.put("in_long",authPreference.getInLong());
+             dataObject.put("out_lat",authPreference.getOutLat());
+             dataObject.put("out_long",authPreference.getOutLong());
+             Log.e("Payload", dataObject.toString());
              getJAPi().Policy_Bonus_Applicable(convertTORequestdata(dataObject)).enqueue(new Callback<String>() {
                  @Override
                  public void onResponse(Call<String> call, Response<String> response) {
@@ -190,26 +222,7 @@
 
                      dailog.dismiss();
                      if (response.code()==200 && response.isSuccessful()) {
-                         try {
-                             JSONObject jsonObject = new JSONObject(response.body());
-                             Log.e("policyTrade",jsonObject.toString());
-                             JSONArray array=jsonObject.getJSONArray("policy_data");
-                             for (int i =0 ; i<array.length();i++){
-                                 JSONObject policyOBject=array.getJSONObject(i);
-                                 String policyId=policyOBject.getString("policy_id");
-                                 String bonusApplicable=policyOBject.getString("policy_applicable");
-                                 Log.e("policyId",policyId);
-                                 Log.e("bonusApplicable",bonusApplicable);
-                                 String queryUpdateTable = "UPDATE " + "Policy_Table" + " SET " + "bonus_applicable" + "='" + bonusApplicable + "'  WHERE " + "policy_id" + "='" + policyId + "'";
-                                 ds.excQuery(queryUpdateTable);
-                             }
-
-                         } catch (JSONException e) {
-                             // e.printStackTrace();
-
-                         }catch (Exception e){
-
-                         }
+                         authPreference.setPendingAttendance("0");
 
 
                      }else {
@@ -230,7 +243,9 @@
          }
      }
      private boolean checkTime() {
-
+         if (URL.Domain.contains("202")){
+                return true;
+         }
          if (bf.getPreference("lastSyncTime").equalsIgnoreCase("null")){
              return true;
          }
@@ -260,8 +275,11 @@
             try {
 
                 if (json.toString().equalsIgnoreCase("done")) {
-                    pendingMemo.setText(ds.getPendingOrderCount());
-                    viewSummery.setVisibility(View.VISIBLE);
+//                    pendingMemo.setText(ds.getPendingOrderCount());
+//                    viewSummery.setVisibility(View.VISIBLE);
+                    Toast.makeText(SyncActivity.this, "Sync Complete", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(SyncActivity.this, SyncActivity.class));
+                    finish();
                 }
 
                 JSONObject jsonObject = new JSONObject(json);
@@ -286,7 +304,9 @@
                                     ds.excQuery("delete  from "+Tables.TABLE_OUTLET_PERMISSION);
                                     ds.insertData(jsonObject.getJSONObject("response").toString(), 1);
                                     ds.savePreference("dataforsummery", jsonObject.getJSONObject("response").toString());
-                                    getTradeOfferPolicy();
+                                    if (loginFacility.equalsIgnoreCase("0")){
+                                        getTradeOfferPolicy();
+                                    }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -304,7 +324,10 @@
                         }
                     });
                 } else if (Flag == 2) {
-                   // bf.getResponceData(URL.ORDERPUSH, jsonObject.toString(), 103);
+                    ds.updatePushStatus();
+                    Flag = 1;
+                    ds.getlastupdateddate();
+/*                   // bf.getResponceData(URL.ORDERPUSH, jsonObject.toString(), 103);
                     ProgressDialog dailog = CheckConnection(SyncActivity.this,"Order Sync...");
                     if (dailog==null)
                         return;
@@ -345,7 +368,7 @@
                             dailog.dismiss();
                             Toast.makeText(SyncActivity.this,   "Order Not push try Again or Check Order Process from More", Toast.LENGTH_SHORT).show();
                         }
-                    });
+                    });*/
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -370,9 +393,10 @@
 
     @Override
     public void OnServerResponce(JSONObject jsonObject, int i) {
+         Log.e("JSSSSSS",jsonObject.toString());
         if (jsonObject.toString().equalsIgnoreCase("done")) {
 
-
+            Toast.makeText(SyncActivity.this, "Complete", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(SyncActivity.this, SyncActivity.class));
             finish();
         }
@@ -518,6 +542,11 @@
                  try {
                      JSONObject jsonObject = new JSONObject(response.body());
                      dailog.dismiss();
+                     Log.e("PushOutletResponse",jsonObject.toString());
+                     Log.e("Status",jsonObject.getJSONObject("outlet_visit").getString("status"));
+                     if (jsonObject.getJSONObject("outlet_visit").getString("status").equalsIgnoreCase("1")){
+                         ds.excQuery("UPDATE outlet_visit SET isPushed='1' WHERE isPushed='0'");
+                     }
 
                      Flag = 2;
                      ds.generatePushJson();

@@ -345,15 +345,15 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
         addoutlet.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (db.checkOutletCreatePermission(getCurrentDateTime())) {
+ //               if (db.checkOutletCreatePermission(getCurrentDateTime())) {
                     Intent i = new Intent(Create_New_Memo.this, CreateOutlet.class);
                     i.putExtra("page_from", -25);
                     i.putExtra("MarketID", getPreference("MarketID"));
                     i.putExtra("OutletCategoryID", getPreference("OutletCategoryID"));
                     startActivity(i);
-                }else {
-                    Toast.makeText(Create_New_Memo.this,"You Don't Have Permission To Create Outlet",Toast.LENGTH_LONG).show();
-                }
+//                }else {
+//                    Toast.makeText(Create_New_Memo.this,"You Don't Have Permission To Create Outlet",Toast.LENGTH_LONG).show();
+//                }
             }
         });
 
