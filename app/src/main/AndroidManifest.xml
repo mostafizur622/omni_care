@@ -34,15 +34,15 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
     <application
         android:name=".print.newprint.App"
         android:allowBackup="true"
-        android:icon="@drawable/logo_icon"
+        android:icon="@mipmap/field_force"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@drawable/logo_icon"
+        android:roundIcon="@mipmap/field_force"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
@@ -366,7 +366,7 @@
 
         <provider
             android:name=".Util.CachedFileProvider"
-            android:authorities="com.srapp_smart_login.provider"
+            android:authorities="com.srapp_new_life.provider"
             android:grantUriPermissions="true" />
         <receiver android:name=".Util.TimeChangedReceiver"
             android:exported="true">
@@ -375,6 +375,9 @@
                 <action android:name="android.intent.action.TIME_CHANGED" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name=".ActivityRecognition.ActivityUpdatesReceiver"
+            android:exported="false" />
         <meta-data
             android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
             android:resource="@xml/device_filter" />

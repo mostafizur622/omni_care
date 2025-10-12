@@ -108,7 +108,7 @@
 
         if (loginFacility.equalsIgnoreCase("0")){
             if (authPreference.getPendingAttendance().equalsIgnoreCase("1")) {
-                pendingAttendance.setVisibility(View.VISIBLE);
+                //pendingAttendance.setVisibility(View.VISIBLE);
                 pendingAttendanceStatus.setText("Yes");
                 pendingAttendanceStatus.setTextColor(Color.parseColor("#004714"));
             }else {
@@ -116,7 +116,7 @@
                 pendingAttendanceStatus.setTextColor(Color.parseColor("#ff2200"));
             }
         }else {
-            pendingAttendance.setVisibility(View.GONE);
+           // pendingAttendance.setVisibility(View.GONE);
         }
         Log.e("loginFacility",loginFacility+"");
 
@@ -137,10 +137,12 @@
         sync_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(checkTime())
+                //if(checkTime())
                 if (isInternetOn()){
                     try {
                         bf.savePreference("lastSyncTime",(System.currentTimeMillis()+(5*60*1000))+"");
+                        bf.savePreference("lsyncTime", DateFormatedConverter(getCurrentDate()) + " " + getCurrentTime());
+                        Log.e("lastSyncTime",(System.currentTimeMillis()+(5*60*1000))+"");
                      //   String url = URL.UpdatePushTime;
 
                         JSONObject obJson = new JSONObject();
@@ -160,7 +162,7 @@
                                     JSONObject jsonObject = new JSONObject(response.body());
                                     dailog.dismiss();
 
-                                    generatemarketJson();
+                                    UpdateLocation();
 
                                 } catch (JSONException e) {
                                     throw new RuntimeException(e);
@@ -224,7 +226,9 @@
                      if (response.code()==200 && response.isSuccessful()) {
                          authPreference.setPendingAttendance("0");
 
-
+                         Toast.makeText(SyncActivity.this,   "Sync Successfully", Toast.LENGTH_SHORT).show();
+                         startActivity(new Intent(SyncActivity.this, SyncActivity.class));
+                         finish();
                      }else {
 
                          Toast.makeText(SyncActivity.this,   "Failed try Again", Toast.LENGTH_SHORT).show();
@@ -475,6 +479,10 @@
 
                  jsonObject.put(Tables.GPS_TRACKER_latitude, c.getString(c.getColumnIndex(Tables.GPS_TRACKER_latitude)));
                  jsonObject.put(Tables.GPS_TRACKER_longitude, c.getString(c.getColumnIndex(Tables.GPS_TRACKER_longitude)));
+                 jsonObject.put(Tables.GPS_TRACKER_STATUS, c.getString(c.getColumnIndex(Tables.GPS_TRACKER_STATUS)));
+                 jsonObject.put(Tables.GPS_TRACKER_ADDRESS, c.getString(c.getColumnIndex(Tables.GPS_TRACKER_ADDRESS)));
+                 jsonObject.put(Tables.GPS_TRACKER_NETWORK_TYPE, c.getString(c.getColumnIndex(Tables.GPS_TRACKER_NETWORK_TYPE)));
+                 jsonObject.put(Tables.GPS_TRACKER_DISTANCE, c.getString(c.getColumnIndex(Tables.GPS_TRACKER_DISTANCE)));
                  jsonObject.put(Tables.GPS_TRACKER_created_at, c.getString(c.getColumnIndex(Tables.GPS_TRACKER_created_at)));
 
 
@@ -493,8 +501,21 @@
              public void onResponse(Call<String> call, Response<String> response) {
                  try {
                      JSONObject jsonObject = new JSONObject(response.body());
+                     JSONObject locationObj = jsonObject.getJSONObject("response");
+                     String status = locationObj.getString("status");
+                     if (status.equalsIgnoreCase("1")){
+                         ds.excQuery("UPDATE gps_tracker SET is_pushed='1' WHERE is_pushed='0'");
+
+                         if (loginFacility.equalsIgnoreCase("0")){
+                             getTradeOfferPolicy();
+                         }else {
+                             Toast.makeText(SyncActivity.this, "Sync Successfully", Toast.LENGTH_SHORT).show();
+                             startActivity(new Intent(SyncActivity.this, SyncActivity.class));
+                             finish();
+                         }
+
+                     }
                      dailog.dismiss();
-                     generateOutletJson();
 
                  } catch (JSONException e) {
                      throw new RuntimeException(e);

@@ -420,6 +420,18 @@ public class SR_Attendance extends ParentActivity implements BasicFunctionListen
                                 Log.d("GeoFenceCheck", "Inside geofence? " + inside);
                             }
                             return;
+                        }else if (loginFacility.equalsIgnoreCase("0")){
+                            authPreference.setCurrentDate(currentDate);
+                            authPreference.setCheckInStatus("1");
+                            authPreference.setCheckOutStatus("0");
+                            authPreference.setInTime(currentTime);
+                            checkIntime.setText(authPreference.getInTime());
+                            attendance_btn.setText("Check Out");
+                            authPreference.setInLat(String.valueOf(currentLat));
+                            authPreference.setInLong(String.valueOf(currentLng));
+                            authPreference.setPendingAttendance("1");
+                            Toast.makeText(getContext(), "Check in Success...", Toast.LENGTH_SHORT).show();
+                            return;
                         }
 
                         ProgressDialog dailog = CheckConnection(SR_Attendance.this,"Checking...");

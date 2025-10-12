@@ -44,7 +44,7 @@ public class Dashboard extends Parent implements BasicFunctionListener {
     TableRow stockAndDeliveryOption;
     LinearLayout ecOc;
     CardView listCard;
-
+    private static final int REQ_AR = 7001;
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // TODO Auto-generated method stub
@@ -112,7 +112,12 @@ public class Dashboard extends Parent implements BasicFunctionListener {
             stockAndDeliveryOption.setVisibility(View.GONE);
         }
 
-
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            if (checkSelfPermission(android.Manifest.permission.ACTIVITY_RECOGNITION)
+                    != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{android.Manifest.permission.ACTIVITY_RECOGNITION}, REQ_AR);
+            }
+        }
         order_or_delivery = findViewById(R.id.logo);
         if (roll.equalsIgnoreCase("2")){
             order_or_delivery.setVisibility(View.GONE);
@@ -149,7 +154,7 @@ public class Dashboard extends Parent implements BasicFunctionListener {
         accountBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Dashboard.this, SR_Account_Activity.class);
+                Intent intent = new Intent(Dashboard.this, LeaveList.class);
                 startActivity(intent);
                 finish();
             }

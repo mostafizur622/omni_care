@@ -75,7 +75,7 @@ public class LeaveList extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void onClick(View v) {
-                startActivity(new Intent( LeaveList.this, SR_Account_Activity.class));
+                startActivity(new Intent( LeaveList.this, Dashboard.class));
                 finishAffinity();
             }
         });
@@ -128,7 +128,7 @@ public class LeaveList extends AppCompatActivity {
         // TODO Auto-generated method stub
         if(keyCode== KeyEvent.KEYCODE_BACK)
         {
-            startActivity(new Intent( LeaveList.this, SR_Account_Activity.class));
+            startActivity(new Intent( LeaveList.this, Dashboard.class));
             finishAffinity();
             return true;
         }

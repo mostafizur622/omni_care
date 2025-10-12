@@ -8,6 +8,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -22,15 +24,28 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
+import com.srapp.ActivityRecognition.ActivityRecognitionManager;
 import com.srapp.Db_Actions.Data_Source;
+import com.srapp.Db_Actions.Tables;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -62,17 +77,18 @@ public class GPSTracker extends Service implements LocationListener {
 
     TimerTask timerTask;
     Timer timer =null;
-
-
+    private FusedLocationProviderClient fused;
+    private ActivityRecognitionManager arManager;
 
 
     @Override
     public void onCreate() {
         super.onCreate();
         mContext = this;
-
+        fused = LocationServices.getFusedLocationProviderClient(this);
       //  Handler mainHandler = new Handler(getApplicationContext().getMainLooper());
-
+        arManager = new ActivityRecognitionManager(this);
+        arManager.start(Long.parseLong(getPreference("interval")));
 
 
 
@@ -90,7 +106,8 @@ public class GPSTracker extends Service implements LocationListener {
                             Log.e("text","Location Service2"+CheckTime_date());
                            // getApplicationContext().getMainLooper();
                             if (CheckTime_date()){
-                                getLocation();
+                                //getLocation();
+                                fetchCurrentLocationOnce();
                             }else {
                              stopSelf();
                              timerTask.cancel();
@@ -110,7 +127,216 @@ public class GPSTracker extends Service implements LocationListener {
             timer.schedule(timerTask,5000 , Long.parseLong(getPreference("interval")));
         }
     }
+    // ---- core: always get a fresh fix ----
+    private void fetchCurrentLocationOnce() {
+        if (!hasLocationPermission()) {
+            Log.e("GPSTrackerNew", "Location permission missing.");
+            return;
+        }
 
+        // Option A: একদম one-shot fresh fix
+        fused.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        saveLocationWithExtras(location);
+                    } else {
+                        // Option B fallback: small active request (timeout সহ)
+                        requestSingleUpdateFallback();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("GPSTrackerNew", "getCurrentLocation failed: " + e.getMessage());
+                    requestSingleUpdateFallback();
+                });
+    }
+
+    // Fallback: একবারের আপডেট নিয়ে removeUpdates করা
+    private void requestSingleUpdateFallback() {
+        if (!hasLocationPermission()) return;
+
+        LocationRequest req = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 2000)
+                .setWaitForAccurateLocation(true)
+                .setMinUpdateIntervalMillis(0)
+                .setMaxUpdates(1)              // একবারই নেবে
+                .build();
+
+        LocationCallback cb = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult result) {
+                fused.removeLocationUpdates(this);
+                Location loc = result.getLastLocation();
+                if (loc != null) saveLocationWithExtras(loc);
+            }
+        };
+
+        fused.requestLocationUpdates(req, cb, Looper.getMainLooper());
+    }
+
+    private boolean hasLocationPermission() {
+        boolean fine = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        boolean coarse = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+
+        // যদি background লাগবে:
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            boolean bg = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED;
+            // আপনার দরকার অনুযায়ী bg না থাকলেও চলতে পারে যদি সার্ভিস foreground হয়
+            return (fine || coarse) && bg;
+        }
+        return fine || coarse;
+    }
+
+    // আপনার ৩টা নতুন ইনফো যুক্ত করে DB তে save
+    private void saveLocationWithExtras(Location loc) {
+        double lat = loc.getLatitude();
+        double lon = loc.getLongitude();
+        // আগের লোকেশন আনুন
+        double[] last = fetchLastSavedLatLon();
+        float distanceM = 0f;
+        if (last != null) {
+            distanceM = distanceMeters(last[0], last[1], lat, lon); // meters
+        }
+        // (১) Status (speed-based heuristic)
+        // speed m/s: 0=still, ~1.4 = walking, ~5-8 cycling, >8 vehicle
+        //String status = deriveStatusFromSpeed(loc);
+        SharedPreferences sp = android.preference.PreferenceManager.getDefaultSharedPreferences(mContext);
+        String arStatus = sp.getString("last_activity_status", null);
+
+// যদি AR থেকে পাওয়া থাকে, সেটাই ব্যবহার করুন; না থাকলে আপনার fallback (speed-based)
+        String status1 = (arStatus != null && !"unknown".equals(arStatus))
+                ? arStatus
+                : classifyStatus(loc); // আপনার আগের fallback ফাংশন
+
+       // Toast.makeText(mContext, status1, Toast.LENGTH_SHORT).show();
+
+        // (২) Address (reverse geocode) — try/catch + fallback
+        String address = reverseGeocode(lat, lon);
+
+        // (৩) Source/provider
+        // Fused হলে provider সাধারণত "fused"; নইলে "gps"/"network"
+        String provider = loc.getProvider() != null ? loc.getProvider() : "gps";
+
+//        Log.d("GPSTrackerNew",
+//                "Saving: lat=" + lat + " lon=" + lon + " status=" + status + " addr=" + address + " provider=" + provider);
+
+        HashMap<String, String> map = new HashMap<>();
+        map.put("latitude", String.valueOf(lat));
+        map.put("longitude", String.valueOf(lon));
+        map.put("gps_bts", ""); // চাইলে cell info লিখতে পারেন
+        map.put("status", status1);
+        map.put("address", address);
+        map.put("type", provider);           // আপনার GPS_TRACKER_NETWORK_TYPE = "type"
+        map.put("distance",  String.valueOf(distanceM));
+        map.put("is_pushed", "0");
+        map.put("created_at", String.valueOf(System.currentTimeMillis()));
+        map.put("updated_at", String.valueOf(System.currentTimeMillis()));
+
+        Data_Source ds = new Data_Source(mContext);
+        ds.InsertTable(map, "gps_tracker");
+    }
+    @Nullable
+    private double[] fetchLastSavedLatLon() {
+        try {
+            String sql = "SELECT latitude, longitude " +
+                    "FROM gps_tracker " +
+                    "WHERE latitude IS NOT NULL AND longitude IS NOT NULL " +
+                    "ORDER BY created_at DESC " +
+                    "LIMIT 1";
+
+            android.database.sqlite.SQLiteDatabase db =
+                    android.database.sqlite.SQLiteDatabase.openDatabase(
+                            mContext.getDatabasePath(Tables.DATABASE_NAME).getPath(),
+                            null,
+                            android.database.sqlite.SQLiteDatabase.OPEN_READONLY
+                    );
+
+            android.database.Cursor c = db.rawQuery(sql, null);
+            double[] pair = null;
+            if (c.moveToFirst()) {
+                double lat = c.getDouble(0);
+                double lon = c.getDouble(1);
+                pair = new double[]{lat, lon};
+            }
+            c.close();
+            db.close();
+            return pair;
+        } catch (Exception e) {
+            Log.e("fetchLastSavedLatLon", "err: " + e.getMessage());
+            return null;
+        }
+    }
+    private static float distanceMeters(double lat1, double lon1, double lat2, double lon2) {
+        float[] res = new float[1];
+        android.location.Location.distanceBetween(lat1, lon1, lat2, lon2, res);
+        return res[0]; // meters
+    }
+    private String classifyStatus(Location loc) {
+        final float STANDING_MAX = 0.5f;     // ~0-1.8 km/h
+        final float WALK_MAX     = 2.2f;     // ~8 km/h
+        final float BIKE_MAX     = 6.9f;     // ~25 km/h
+        final float MAX_VALID_ACCURACY = 50f; // meters
+        Double lastLat = null, lastLon = null;
+        Long lastTs = null; // epoch millis
+        if (loc.hasAccuracy() && loc.getAccuracy() > MAX_VALID_ACCURACY) {
+            return "unknown";
+        }
+
+        float speed = 0f;
+        if (loc.hasSpeed()) {
+            speed = loc.getSpeed(); // m/s
+        }
+
+        long now = loc.getTime() > 0 ? loc.getTime() : System.currentTimeMillis();
+        if ((speed <= STANDING_MAX || !loc.hasSpeed()) && lastLat != null && lastLon != null && lastTs != null) {
+            float d = distanceMeters(lastLat, lastLon, loc.getLatitude(), loc.getLongitude());
+            float dt = (now - lastTs) / 1000f; // seconds
+            if (dt >= 2f) { // খুব ছোট Δt হলে noise বেশি হয়
+                float v = d / dt; // m/s
+                if (v > 0.3f) speed = v;
+            }
+        }
+        final String status;
+        if (speed <= STANDING_MAX) {
+            status = "standing";
+        } else if (speed <= WALK_MAX) {
+            status = "walking";
+        } else if (speed <= BIKE_MAX) {
+            status = "bicycle";
+        } else {
+            status = "vehicle";
+        }
+        lastLat = loc.getLatitude();
+        lastLon = loc.getLongitude();
+        lastTs  = now;
+
+        return status;
+    }
+    private String deriveStatusFromSpeed(Location loc) {
+        float speed = loc.hasSpeed() ? loc.getSpeed() : 0f; // m/s
+        if (speed < 0.5f) return "standing";
+        if (speed < 2.5f) return "walking";
+        if (speed < 6.5f) return "bicycle";
+        return "vehicle"; // bus/train/car
+    }
+
+    private String reverseGeocode(double lat, double lon) {
+        try {
+            Geocoder geocoder = new Geocoder(mContext, Locale.getDefault());
+            List<Address> list = geocoder.getFromLocation(lat, lon, 1);
+            if (list != null && !list.isEmpty()) {
+                Address a = list.get(0);
+                String line = a.getMaxAddressLineIndex() >= 0 ? a.getAddressLine(0) : null;
+                if (line != null && !line.trim().isEmpty()) return line;
+                // fallback compose
+                return (a.getSubLocality() != null ? a.getSubLocality() + ", " : "") +
+                        (a.getLocality() != null ? a.getLocality() + ", " : "") +
+                        (a.getAdminArea() != null ? a.getAdminArea() + ", " : "") +
+                        (a.getCountryName() != null ? a.getCountryName() : "");
+            }
+        } catch (IOException e) {
+            Log.e("GPSTrackerNew", "Geocoder failed: " + e.getMessage());
+        }
+        return "";
+    }
     private boolean CheckTime_date()  {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 

@@ -381,9 +381,11 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                                                 currentLocation.setLatitude(currentLat);
                                                 currentLocation.setLongitude(currentLng);
                                                 if (isChecking.equalsIgnoreCase("2")){
-                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
-                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
-                                                    ds.getlastupdateddate();
+//                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+//                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+//                                                    ds.getlastupdateddate();
+                                                    startActivity(new Intent(LoginActivity.this, Dashboard.class));
+                                                    finish();
                                                 }
                                                 else if (isChecking.equalsIgnoreCase("1"))
                                                 {
@@ -400,9 +402,11 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                                                         boolean isAllowed = isWithinRadius(currentLocation, loginLocation, Float.parseFloat(radiusMeter));
                                                         if (isAllowed) {
                                                             Toast.makeText(LoginActivity.this, "Login Successfully....!", Toast.LENGTH_LONG).show();
-                                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
-                                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
-                                                            ds.getlastupdateddate();
+//                                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+//                                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+//                                                            ds.getlastupdateddate();
+                                                            startActivity(new Intent(LoginActivity.this, Dashboard.class));
+                                                            finish();
                                                         } else {
                                                             login_button.setEnabled(true);
                                                             Toast.makeText(LoginActivity.this, "You are not allowed to login from this location.", Toast.LENGTH_LONG).show();
@@ -445,9 +449,11 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                                                         boolean inside = isInsideGeofence(currentLocation, geofencePoints);
                                                         if (inside) {
                                                             Toast.makeText(LoginActivity.this, "Login Successfully....!", Toast.LENGTH_LONG).show();
-                                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
-                                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
-                                                            ds.getlastupdateddate();
+                                                            startActivity(new Intent(LoginActivity.this, Dashboard.class));
+                                                            finish();
+//                                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+//                                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+//                                                            ds.getlastupdateddate();
                                                         } else {
                                                             login_button.setEnabled(true);
                                                             Toast.makeText(LoginActivity.this, "You are not allowed to login from this location.", Toast.LENGTH_LONG).show();
@@ -458,9 +464,11 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                                                     }
                                                 }
                                                 else {
-                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
-                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
-                                                    ds.getlastupdateddate();
+                                                    startActivity(new Intent(LoginActivity.this, Dashboard.class));
+                                                    finish();
+//                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+//                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+//                                                    ds.getlastupdateddate();
                                                 }
                                             }
                                             catch (NullPointerException e){
@@ -520,9 +528,11 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                                         currentLocation.setLatitude(currentLat);
                                         currentLocation.setLongitude(currentLng);
                                         if (isChecking.equalsIgnoreCase("2")){
-                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
-                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
-                                            ds.getlastupdateddate();
+                                            startActivity(new Intent(LoginActivity.this, Dashboard.class));
+                                            finish();
+//                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+//                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+//                                            ds.getlastupdateddate();
                                         }
                                         else if (isChecking.equalsIgnoreCase("1"))
                                         {
@@ -539,9 +549,11 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                                                 boolean isAllowed = isWithinRadius(currentLocation, loginLocation, Float.parseFloat(radiusMeter));
                                                 if (isAllowed) {
                                                     Toast.makeText(LoginActivity.this, "Login Successfully....!", Toast.LENGTH_LONG).show();
-                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
-                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
-                                                    ds.getlastupdateddate();
+                                                    startActivity(new Intent(LoginActivity.this, Dashboard.class));
+                                                    finish();
+//                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+//                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+//                                                    ds.getlastupdateddate();
                                                 } else {
                                                     login_button.setEnabled(true);
                                                     Toast.makeText(LoginActivity.this, "You are not allowed to login from this location.", Toast.LENGTH_LONG).show();
@@ -584,9 +596,11 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                                                 boolean inside = isInsideGeofence(currentLocation, geofencePoints);
                                                 if (inside) {
                                                     Toast.makeText(LoginActivity.this, "Login Successfully....!", Toast.LENGTH_LONG).show();
-                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
-                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
-                                                    ds.getlastupdateddate();
+                                                    startActivity(new Intent(LoginActivity.this, Dashboard.class));
+                                                    finish();
+//                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+//                                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+//                                                    ds.getlastupdateddate();
                                                 } else {
                                                     login_button.setEnabled(true);
                                                     Toast.makeText(LoginActivity.this, "You are not allowed to login from this location.", Toast.LENGTH_LONG).show();
@@ -597,9 +611,11 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                                             }
                                         }
                                         else {
-                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
-                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
-                                            ds.getlastupdateddate();
+                                            startActivity(new Intent(LoginActivity.this, Dashboard.class));
+                                            finish();
+//                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+//                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+//                                            ds.getlastupdateddate();
                                         }
                                     }
                                     catch (NullPointerException e){
@@ -607,7 +623,8 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                                     }
                                 }
                                // verifyAndFinish(liveBmp, refUrl);
-                            }else {
+                            }
+                            else {
                                 //*currentLocation*//*
                                 double currentLat = latestFix.getLatitude();
                                 double currentLng = latestFix.getLongitude();
@@ -615,9 +632,11 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                                 currentLocation.setLatitude(currentLat);
                                 currentLocation.setLongitude(currentLng);
                                 if (isChecking.equalsIgnoreCase("2")){
-                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
-                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
-                                    ds.getlastupdateddate();
+                                    startActivity(new Intent(LoginActivity.this, Dashboard.class));
+                                    finish();
+//                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+//                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+//                                    ds.getlastupdateddate();
                                 }
                                 else if (isChecking.equalsIgnoreCase("1"))
                                 {
@@ -634,9 +653,11 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                                         boolean isAllowed = isWithinRadius(currentLocation, loginLocation, Float.parseFloat(radiusMeter));
                                         if (isAllowed) {
                                             Toast.makeText(LoginActivity.this, "Login Successfully....!", Toast.LENGTH_LONG).show();
-                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
-                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
-                                            ds.getlastupdateddate();
+                                            startActivity(new Intent(LoginActivity.this, Dashboard.class));
+                                            finish();
+//                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+//                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+//                                            ds.getlastupdateddate();
                                         } else {
                                             login_button.setEnabled(true);
                                             Toast.makeText(LoginActivity.this, "You are not allowed to login from this location.", Toast.LENGTH_LONG).show();
@@ -679,9 +700,11 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                                         boolean inside = isInsideGeofence(currentLocation, geofencePoints);
                                         if (inside) {
                                             Toast.makeText(LoginActivity.this, "Login Successfully....!", Toast.LENGTH_LONG).show();
-                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
-                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
-                                            ds.getlastupdateddate();
+                                            startActivity(new Intent(LoginActivity.this, Dashboard.class));
+                                            finish();
+//                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+//                                            ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+//                                            ds.getlastupdateddate();
                                         } else {
                                             login_button.setEnabled(true);
                                             Toast.makeText(LoginActivity.this, "You are not allowed to login from this location.", Toast.LENGTH_LONG).show();
@@ -692,15 +715,18 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                                     }
                                 }
                                 else {
-                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
-                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
-                                    ds.getlastupdateddate();
+                                    startActivity(new Intent(LoginActivity.this, Dashboard.class));
+                                    finish();
+//                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DIST_BONUS_PRODUCT);
+//                                    ds.excQuery("delete  from "+ Tables.TABLE_NAME_DataCheck);
+//                                    ds.getlastupdateddate();
                                 }
                             }
                             Log.e("FaceMatchLogin", String.valueOf(faceMatch));
                             Log.e("office_name",getPreference("office_name"));
 
-                                    } else {
+                                    }
+                                    else {
                                         login_button.setEnabled(true);
                                         Toast.makeText(LoginActivity.this , jsonObject.getJSONArray("response").getJSONObject(0).getString("message"), Toast.LENGTH_LONG).show();
                                     }

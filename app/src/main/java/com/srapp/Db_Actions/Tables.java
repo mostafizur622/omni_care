@@ -644,12 +644,17 @@ public class Tables extends Parent {
     public static final String GPS_TRACKER_latitude = "latitude";
     public static final String GPS_TRACKER_longitude = "longitude";
     public static final String GPS_TRACKER_GPS_BTS = "gps_bts";
+    public static final String GPS_TRACKER_STATUS = "status";
+    public static final String GPS_TRACKER_ADDRESS = "address";
+    public static final String GPS_TRACKER_NETWORK_TYPE = "type";
+    public static final String GPS_TRACKER_DISTANCE = "distance";
+
     public static final String GPS_TRACKER_is_pushed = "is_pushed";
     public static final String GPS_TRACKER_created_at = "created_at";
     public static final String GPS_TRACKER_updated_at = "updated_at";
 
     public static final String GPS_TRACKER[] = {TABLE_NAME_GPS_TRACKER,GPS_TRACKER_table_id, GPS_TRACKER_latitude,
-            GPS_TRACKER_longitude, GPS_TRACKER_GPS_BTS, GPS_TRACKER_is_pushed, GPS_TRACKER_created_at, GPS_TRACKER_updated_at};
+            GPS_TRACKER_longitude, GPS_TRACKER_GPS_BTS,GPS_TRACKER_STATUS,GPS_TRACKER_ADDRESS,GPS_TRACKER_NETWORK_TYPE,GPS_TRACKER_DISTANCE, GPS_TRACKER_is_pushed, GPS_TRACKER_created_at, GPS_TRACKER_updated_at};
 
 
     public static final String CREATE_GPS_TRACKER_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME_GPS_TRACKER +
@@ -658,6 +663,10 @@ public class Tables extends Parent {
             GPS_TRACKER_latitude + "  DOUBLE,   " +
             GPS_TRACKER_longitude + "  DOUBLE,   " +
             GPS_TRACKER_GPS_BTS + "  VARCHAR,   " +
+            GPS_TRACKER_STATUS + "  VARCHAR,   " +
+            GPS_TRACKER_ADDRESS + "  VARCHAR,   " +
+            GPS_TRACKER_NETWORK_TYPE + "  VARCHAR,   " +
+            GPS_TRACKER_DISTANCE + "  REAL,   " +
             GPS_TRACKER_is_pushed + "  INTEGER,   " +
             GPS_TRACKER_created_at + "  DATETIME , " +
             GPS_TRACKER_updated_at + "  DATETIME );";
