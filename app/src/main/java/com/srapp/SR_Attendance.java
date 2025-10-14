@@ -420,7 +420,8 @@ public class SR_Attendance extends ParentActivity implements BasicFunctionListen
                                 Log.d("GeoFenceCheck", "Inside geofence? " + inside);
                             }
                             return;
-                        }else if (loginFacility.equalsIgnoreCase("0")){
+                        }
+                        else if (loginFacility.equalsIgnoreCase("0")){
                             authPreference.setCurrentDate(currentDate);
                             authPreference.setCheckInStatus("1");
                             authPreference.setCheckOutStatus("0");
@@ -443,33 +444,20 @@ public class SR_Attendance extends ParentActivity implements BasicFunctionListen
                                 try {
                                     JSONObject jsonObject = new JSONObject(response.body());
                                     dailog.dismiss();
-                                    if (jsonObject.getJSONObject("res").getString("status").equalsIgnoreCase("1")){
-                                        authPreference.setCurrentDate(currentDate);
-                                        authPreference.setCheckInStatus("1");
-                                        authPreference.setCheckOutStatus("0");
-                                        authPreference.setInTime(currentTime);
-                                        checkIntime.setText(authPreference.getInTime());
-                                        attendance_btn.setText("Check Out");
-                                        authPreference.setInLat(String.valueOf(currentLat));
-                                        authPreference.setInLong(String.valueOf(currentLng));
-                                        Toast.makeText(getContext(), "Check in Success...", Toast.LENGTH_SHORT).show();
+                                    date.setText(jsonObject.getJSONObject("res").getString("date"));
+                                    checkIntime.setText(jsonObject.getJSONObject("res").getString("check_in_time"));
+                                    if (jsonObject.getJSONObject("res").has("check_out_time")) {
+                                        if (jsonObject.getJSONObject("res").getString("check_out_time").equalsIgnoreCase("0")) {
+
+                                        }
+
+                                        if (!jsonObject.getJSONObject("res").getString("check_out_time").equalsIgnoreCase("0")) {
+                                            checkouttime.setText(jsonObject.getJSONObject("res").getString("check_out_time"));
+                                            //attendance_btn.setEnabled(false);
+                                        }
                                     }else {
-                                        Toast.makeText(getContext(), jsonObject.getJSONObject("res").getString("msg"), Toast.LENGTH_SHORT).show();
+                                        attendance_btn.setText("Check Out");
                                     }
-//                                    date.setText(jsonObject.getJSONObject("res").getString("date"));
-//                                    checkIntime.setText(jsonObject.getJSONObject("res").getString("check_in_time"));
-//                                    if (jsonObject.getJSONObject("res").has("check_out_time")) {
-//                                        if (jsonObject.getJSONObject("res").getString("check_out_time").equalsIgnoreCase("0")) {
-//
-//                                        }
-//
-//                                        if (!jsonObject.getJSONObject("res").getString("check_out_time").equalsIgnoreCase("0")) {
-//                                            checkouttime.setText(jsonObject.getJSONObject("res").getString("check_out_time"));
-//                                            //attendance_btn.setEnabled(false);
-//                                        }
-//                                    }else {
-//                                        attendance_btn.setText("Check Out");
-//                                    }
 
                                 } catch (JSONException e) {
                                     throw new RuntimeException(e);

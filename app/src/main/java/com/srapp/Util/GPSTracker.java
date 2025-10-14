@@ -338,11 +338,14 @@ public class GPSTracker extends Service implements LocationListener {
         return "";
     }
     private boolean CheckTime_date()  {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        // Get the current date as string in "yyyy-MM-dd" format
+        Calendar calendar = Calendar.getInstance();
+        String currentDate = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
 
         Date starttimme = null;
         try {
-            starttimme = df.parse("1995-01-18 "+getPreference("start_time"));
+            starttimme = df.parse(currentDate + " " + getPreference("start_time"));
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -351,7 +354,7 @@ public class GPSTracker extends Service implements LocationListener {
 
         Date endtime = null;
         try {
-            endtime = df.parse("1995-01-18 "+getPreference("end_time"));
+            endtime = df.parse(currentDate + " " + getPreference("end_time"));
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -362,7 +365,7 @@ public class GPSTracker extends Service implements LocationListener {
 
         Date currennttime = null;
         try {
-            currennttime = df.parse("1995-01-18 "+c.get(Calendar.HOUR_OF_DAY)+":"+c.get(Calendar.MINUTE)+":"+c.get(Calendar.SECOND));
+            currennttime = df.parse(currentDate + " " +c.get(Calendar.HOUR_OF_DAY)+":"+c.get(Calendar.MINUTE)+":"+c.get(Calendar.SECOND));
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
