@@ -24,7 +24,7 @@ public class URL {
    //public static final String Domain = "http://182.160.103.234:8079/api_data_dist150_retrives/"; //after_marge dec 6 2021
 
     //public static final String Domain = "http://202.126.123.157/smc_only_dms/api_data_dist139_retrives/"; //after_marge dec 6 2021
-  public static final String Domain = "http://103.134.90.33:8181/new_life/api_data_dist148_retrives/"; //after_marge dec 6 2021
+   public static final String Domain = "http://103.134.90.33:8181/new_life_tracking/api_data_dist148_retrives/"; //after_marge dec 6 2021
 
 
 

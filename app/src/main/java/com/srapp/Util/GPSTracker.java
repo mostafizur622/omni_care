@@ -1,11 +1,19 @@
 package com.srapp.Util;
 
+import static com.srapp.Util.VivoAutoStartHelper.openAutoStartSettings;
+
 import android.Manifest;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -13,22 +21,32 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
+import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.PowerManager;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.Granularity;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
@@ -37,8 +55,10 @@ import com.google.android.gms.location.Priority;
 import com.srapp.ActivityRecognition.ActivityRecognitionManager;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
+import com.srapp.R;
 
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -48,6 +68,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 public class GPSTracker extends Service implements LocationListener {
 
@@ -79,8 +100,13 @@ public class GPSTracker extends Service implements LocationListener {
     Timer timer =null;
     private FusedLocationProviderClient fused;
     private ActivityRecognitionManager arManager;
-
-
+    public static volatile boolean IS_RUNNING = false;
+    private static final String PREF_STOP_TIME  = "service_last_stop_time";
+    private static final String PREF_STOP_REASON= "service_last_stop_reason";
+    // ---- Accuracy / freshness / plausibility thresholds ----
+    private static final long   MAX_FIX_AGE_MS      = 15_000; // fresh <= 15s
+    private static final float  MAX_ACCURACY_M      = 50f;    // accept if <= 50m (indoor হলে 75-100m করতে পারো)
+    private static final float  MAX_PLAUSIBLE_SPEED = 55f;    // m/s (~198 km/h)
     @Override
     public void onCreate() {
         super.onCreate();
@@ -89,8 +115,14 @@ public class GPSTracker extends Service implements LocationListener {
       //  Handler mainHandler = new Handler(getApplicationContext().getMainLooper());
         arManager = new ActivityRecognitionManager(this);
         arManager.start(Long.parseLong(getPreference("interval")));
+        // 🟢 Step 1: Foreground notification start (Vivo ইস্যু fix)
+        IS_RUNNING = true;
+        startForegroundServiceSafe();
+        //VivoAutoStartHelper.showAutoStartDialogIfNeeded(this);
+        // 🟢 Step 2: Battery optimization ignore request
+        requestIgnoreBatteryOptimization();
 
-
+        scheduleKeepAliveWorker();
 
         if (timerTask==null){
             Log.e("text","Location Service2"+getPreference("interval"));
@@ -109,9 +141,9 @@ public class GPSTracker extends Service implements LocationListener {
                                 //getLocation();
                                 fetchCurrentLocationOnce();
                             }else {
-                             stopSelf();
-                             timerTask.cancel();
-                             timer.cancel();
+                             //stopSelf();
+                             //timerTask.cancel();
+                             //timer.cancel();
                             }
 
                         }
@@ -124,8 +156,148 @@ public class GPSTracker extends Service implements LocationListener {
         if (timer==null){
             Log.e("text","Location Service2"+getPreference("interval"));
             timer = new Timer();
-            timer.schedule(timerTask,5000 , Long.parseLong(getPreference("interval")));
+            try {
+                timer.schedule(timerTask,5000 , Long.parseLong(getPreference("interval")));
+            } catch (Exception e) {
+                Log.e("GPSTracker", "Invalid interval in preference, using default 60000ms");
+            }
+
         }
+    }
+
+
+
+    private void scheduleKeepAliveWorker() {
+        OneTimeWorkRequest keepAliveRequest = new OneTimeWorkRequest.Builder(KeepAliveWorker.class)
+                .setInitialDelay(5, TimeUnit.MINUTES) // Delay before starting
+                .build();
+
+        WorkManager.getInstance(this).enqueueUniqueWork(
+                "keep_alive_task",
+                ExistingWorkPolicy.REPLACE,  // Replace the previous work if exists
+                keepAliveRequest
+        );
+    }
+    // 🔹 Foreground notification
+    private void startForegroundServiceSafe() {
+        String CHANNEL_ID = "gps_channel_01";
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID,
+                    "GPS Tracker",
+                    NotificationManager.IMPORTANCE_LOW
+            );
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            if (manager != null) manager.createNotificationChannel(channel);
+        }
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("GPS Tracking Active")
+                .setContentText("Tracking your location in background")
+                .setSmallIcon(R.drawable.new_life) //
+                .setPriority(NotificationCompat.PRIORITY_HIGH) // Set the priority high to keep it on top
+                .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                .setOngoing(true)  // Makes the notification ongoing (non-dismissable)
+                .setAutoCancel(false)  // Disable auto-cancel
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)  // Make the notification visible
+                .build();
+
+        startForeground(1, notification);
+    }
+    // 🔹 Battery optimization
+    private void requestIgnoreBatteryOptimization() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+            if (pm != null && !pm.isIgnoringBatteryOptimizations(getPackageName())) {
+                try {
+                    Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                    intent.setData(Uri.parse("package:" + getPackageName()));
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Log.e("GPSTracker", "Battery opt ignore error: " + e.getMessage());
+                }
+            }
+        }
+    }
+    public static void showAutoStartDialogIfNeeded(Context ctx) {
+        String manufacturer = Build.MANUFACTURER.toLowerCase();
+
+        if (manufacturer.contains("vivo") ||
+                manufacturer.contains("oppo") ||
+                manufacturer.contains("realme") ||
+                manufacturer.contains("xiaomi")) {
+
+            new AlertDialog.Builder(ctx)
+                    .setTitle("Allow Background Tracking")
+                    .setMessage(
+                            "To ensure location tracking works properly in the background, " +
+                                    "please enable:\n\n" +
+                                    "✅ Auto Start\n" +
+                                    "✅ Battery Optimization Ignore\n" +
+                                    "✅ Lock App in Recents\n\n" +
+                                    "Tap 'Open Settings' to go directly to your phone's settings."
+                    )
+                    .setPositiveButton("Open Settings", (d, w) -> openAutoStartSettings(ctx))
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        }
+    }
+
+    private static class BatteryInfo {
+        int percent = -1;           // 0..100, -1 = unknown
+        boolean isCharging = false;
+        String chargeSource = "none"; // ac | usb | wireless | none
+        float tempC = -1f;            // e.g., 32.1°C
+        int health = BatteryManager.BATTERY_HEALTH_UNKNOWN;
+    }
+    // ▶️ GPSTracker class
+    private BatteryInfo getBatteryInfo() {
+        BatteryInfo out = new BatteryInfo();
+
+        try {
+            // Modern API:  (0–100),
+            BatteryManager bm = (BatteryManager) getSystemService(BATTERY_SERVICE);
+            if (bm != null) {
+                int pct = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
+                if (pct >= 0 && pct <= 100) out.percent = pct;
+            }
+
+            // Sticky broadcast:
+            IntentFilter f = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+            Intent i = registerReceiver(null, f);
+            if (i != null) {
+                int status = i.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+                out.isCharging = (status == BatteryManager.BATTERY_STATUS_CHARGING
+                        || status == BatteryManager.BATTERY_STATUS_FULL);
+
+                int plugged = i.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0);
+                switch (plugged) {
+                    case BatteryManager.BATTERY_PLUGGED_AC:        out.chargeSource = "ac"; break;
+                    case BatteryManager.BATTERY_PLUGGED_USB:       out.chargeSource = "usb"; break;
+                    case BatteryManager.BATTERY_PLUGGED_WIRELESS:  out.chargeSource = "wireless"; break;
+                    default:                                       out.chargeSource = "none";
+                }
+
+                // Temperature:
+                int t = i.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);
+                if (t > 0) out.tempC = t / 10f;
+
+                out.health = i.getIntExtra(BatteryManager.EXTRA_HEALTH, BatteryManager.BATTERY_HEALTH_UNKNOWN);
+
+                // Fallback percent যদি BATTERY_PROPERTY_CAPACITY -1 দেয়
+                if (out.percent < 0) {
+                    int level = i.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+                    int scale = i.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+                    if (level >= 0 && scale > 0) {
+                        out.percent = Math.round((level * 100f) / scale);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Log.e("GPSTracker", "getBatteryInfo error: " + e.getMessage());
+        }
+        return out;
     }
     // ---- core: always get a fresh fix ----
     private void fetchCurrentLocationOnce() {
@@ -134,7 +306,7 @@ public class GPSTracker extends Service implements LocationListener {
             return;
         }
 
-        // Option A: একদম one-shot fresh fix
+/*        // Option A: one-shot fresh fix
         fused.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
                 .addOnSuccessListener(location -> {
                     if (location != null) {
@@ -147,18 +319,66 @@ public class GPSTracker extends Service implements LocationListener {
                 .addOnFailureListener(e -> {
                     Log.e("GPSTrackerNew", "getCurrentLocation failed: " + e.getMessage());
                     requestSingleUpdateFallback();
-                });
+                });*/
+        // Optional: very fresh last-known (<= 5s) গ্রহণ করো
+        fused.getLastLocation().addOnSuccessListener(last -> {
+            if (last != null
+                    && (System.currentTimeMillis() - (last.getTime() > 0 ? last.getTime() : System.currentTimeMillis())) <= 5_000
+                    && isGoodFix(last)) {
+                saveLocationWithExtras(last);
+            }
+        });
+
+        requestSingleUpdateFallback(8_000); // 8s timeout
     }
 
-    // Fallback: একবারের আপডেট নিয়ে removeUpdates করা
-    private void requestSingleUpdateFallback() {
+    private boolean isGoodFix(Location loc) {
+        long t = (loc.getTime() > 0 ? loc.getTime() : System.currentTimeMillis());
+        long age = System.currentTimeMillis() - t;
+        if (age > MAX_FIX_AGE_MS) return false;                 // too old
+
+        if (loc.hasAccuracy() && loc.getAccuracy() > MAX_ACCURACY_M) return false; // too coarse
+
+        // mock detection
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (loc.isMock()) return false;
+        } else {
+            if (loc.isFromMockProvider()) return false;
+        }
+
+        // prefer GPS/fused; if provider == "network" AND accuracy poor, reject
+        String p = loc.getProvider();
+        if ("network".equalsIgnoreCase(p) && loc.hasAccuracy() && loc.getAccuracy() > 35f) return false;
+
+        return true;
+    }
+
+    private boolean isPlausibleJump(@Nullable Location last, @NonNull Location curr) {
+        if (last == null) return true;
+
+        long dt = curr.getTime() - last.getTime();
+        if (dt <= 0) return false;
+
+        float d = last.distanceTo(curr);     // meters
+        float v = d / (dt / 1000f);          // m/s
+
+        // accuracy
+        float accSum = (last.hasAccuracy()? last.getAccuracy():0f) + (curr.hasAccuracy()? curr.getAccuracy():0f);
+        if (accSum > 120f) return v <= (MAX_PLAUSIBLE_SPEED * 1.5f);
+
+        return v <= MAX_PLAUSIBLE_SPEED;
+    }
+    // Fallback:
+    private void requestSingleUpdateFallback(long timeoutMs) {
         if (!hasLocationPermission()) return;
 
-        LocationRequest req = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 2000)
-                .setWaitForAccurateLocation(true)
-                .setMinUpdateIntervalMillis(0)
-                .setMaxUpdates(1)              // একবারই নেবে
+/*        LocationRequest req = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 2000)
+                .setMinUpdateIntervalMillis(15_000L)      // fastest
+                .setMaxUpdateDelayMillis(0L)
+                .setMinUpdateDistanceMeters(0f)
+                .setWaitForAccurateLocation(false)
                 .build();
+
 
         LocationCallback cb = new LocationCallback() {
             @Override
@@ -169,71 +389,157 @@ public class GPSTracker extends Service implements LocationListener {
             }
         };
 
-        fused.requestLocationUpdates(req, cb, Looper.getMainLooper());
-    }
+        fused.requestLocationUpdates(req, cb, Looper.getMainLooper());*/
+        LocationRequest.Builder b = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1_000)
+                .setMinUpdateIntervalMillis(500)
+                .setMinUpdateDistanceMeters(0f)
+                .setMaxUpdateDelayMillis(0)            // no batching
+                .setWaitForAccurateLocation(true);     // ✅ wait for GPS-grade
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            b.setGranularity(Granularity.GRANULARITY_FINE);
+            b.setMaxUpdateAgeMillis(0);
+        }
+
+        LocationRequest req = b.build();
+
+        LocationCallback cb = new LocationCallback() {
+            @Override public void onLocationResult(LocationResult result) {
+                fused.removeLocationUpdates(this);
+                Location loc = result.getLastLocation();
+                if (loc != null && isGoodFix(loc)) {
+                    saveLocationWithExtras(loc);
+                } else {
+                    Log.w("GPSTracker", "bad/none fix dropped");
+                }
+            }
+        };
+
+        fused.requestLocationUpdates(req, cb, Looper.getMainLooper());
+
+        // Hard timeout
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            fused.removeLocationUpdates(cb);
+        }, timeoutMs);
+    }
     private boolean hasLocationPermission() {
         boolean fine = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
         boolean coarse = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
 
-        // যদি background লাগবে:
+        //
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             boolean bg = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED;
-            // আপনার দরকার অনুযায়ী bg না থাকলেও চলতে পারে যদি সার্ভিস foreground হয়
+            //
             return (fine || coarse) && bg;
         }
         return fine || coarse;
     }
-
-    // আপনার ৩টা নতুন ইনফো যুক্ত করে DB তে save
+    //
     private void saveLocationWithExtras(Location loc) {
         double lat = loc.getLatitude();
         double lon = loc.getLongitude();
-        // আগের লোকেশন আনুন
+
+        if (!isGoodFix(loc)) {
+            Log.w("GPS", "Rejected (quality): acc=" + loc.getAccuracy() + " age=" + (System.currentTimeMillis()-loc.getTime()));
+            return;
+        }
+        // 1) last point নিয়ে plausibility check
+        Location lastLoc = fetchLastSavedLocation();
+        if (!isPlausibleJump(lastLoc, loc)) {
+            Log.w("GPS", "Rejected (outlier jump): " +
+                    (lastLoc != null ? lastLoc.getLatitude()+","+lastLoc.getLongitude() : "null") +
+                    " -> " + loc.getLatitude()+","+loc.getLongitude());
+            return;
+        }
+        //
         double[] last = fetchLastSavedLatLon();
         float distanceM = 0f;
         if (last != null) {
             distanceM = distanceMeters(last[0], last[1], lat, lon); // meters
         }
-        // (১) Status (speed-based heuristic)
-        // speed m/s: 0=still, ~1.4 = walking, ~5-8 cycling, >8 vehicle
-        //String status = deriveStatusFromSpeed(loc);
+
         SharedPreferences sp = android.preference.PreferenceManager.getDefaultSharedPreferences(mContext);
         String arStatus = sp.getString("last_activity_status", null);
-
-// যদি AR থেকে পাওয়া থাকে, সেটাই ব্যবহার করুন; না থাকলে আপনার fallback (speed-based)
         String status1 = (arStatus != null && !"unknown".equals(arStatus))
                 ? arStatus
-                : classifyStatus(loc); // আপনার আগের fallback ফাংশন
-
-       // Toast.makeText(mContext, status1, Toast.LENGTH_SHORT).show();
-
-        // (২) Address (reverse geocode) — try/catch + fallback
+                : classifyStatus(loc); //
         String address = reverseGeocode(lat, lon);
 
-        // (৩) Source/provider
-        // Fused হলে provider সাধারণত "fused"; নইলে "gps"/"network"
+        // Source/provider
+
         String provider = loc.getProvider() != null ? loc.getProvider() : "gps";
 
 //        Log.d("GPSTrackerNew",
 //                "Saving: lat=" + lat + " lon=" + lon + " status=" + status + " addr=" + address + " provider=" + provider);
+        BatteryInfo bi = getBatteryInfo();
 
         HashMap<String, String> map = new HashMap<>();
         map.put("latitude", String.valueOf(lat));
         map.put("longitude", String.valueOf(lon));
-        map.put("gps_bts", ""); // চাইলে cell info লিখতে পারেন
+        map.put("gps_bts", ""); //
         map.put("status", status1);
         map.put("address", address);
-        map.put("type", provider);           // আপনার GPS_TRACKER_NETWORK_TYPE = "type"
+        map.put("type", provider);           //
         map.put("distance",  String.valueOf(distanceM));
         map.put("is_pushed", "0");
+        map.put("tracking_date_time", getCurrentDateTime24());
+        map.put("battery_level", String.valueOf(bi.percent));
         map.put("created_at", String.valueOf(System.currentTimeMillis()));
         map.put("updated_at", String.valueOf(System.currentTimeMillis()));
 
         Data_Source ds = new Data_Source(mContext);
         ds.InsertTable(map, "gps_tracker");
+
+        Toast.makeText(mContext, "Service Running", Toast.LENGTH_SHORT).show();
+        Log.d("Service Running","Yes");
+    }
+    public String getCurrentDateTime24()
+    {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        String CurrentDate =dateFormat.format(date);
+        return CurrentDate;
+
     }
     @Nullable
+    private Location fetchLastSavedLocation() {
+        try {
+            String sql = "SELECT latitude, longitude, tracking_date_time " +
+                    "FROM gps_tracker WHERE latitude IS NOT NULL AND longitude IS NOT NULL " +
+                    "ORDER BY created_at DESC LIMIT 1";
+
+            android.database.sqlite.SQLiteDatabase db =
+                    android.database.sqlite.SQLiteDatabase.openDatabase(
+                            mContext.getDatabasePath(Tables.DATABASE_NAME).getPath(),
+                            null,
+                            android.database.sqlite.SQLiteDatabase.OPEN_READONLY
+                    );
+
+            android.database.Cursor c = db.rawQuery(sql, null);
+            Location L = null;
+            if (c.moveToFirst()) {
+                double lat = c.getDouble(0);
+                double lon = c.getDouble(1);
+                String ts  = c.getString(2); // "yyyy-MM-dd HH:mm:ss"
+
+                L = new Location("db");
+                L.setLatitude(lat);
+                L.setLongitude(lon);
+                try {
+                    long t = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).parse(ts).getTime();
+                    L.setTime(t);
+                } catch (Exception ignore) {}
+                L.setAccuracy(25f);
+            }
+            c.close(); db.close();
+            return L;
+        } catch (Exception e) {
+            Log.e("fetchLastSavedLocation", "err: " + e.getMessage());
+            return null;
+        }
+    }
+
+        @Nullable
     private double[] fetchLastSavedLatLon() {
         try {
             String sql = "SELECT latitude, longitude " +
@@ -310,14 +616,6 @@ public class GPSTracker extends Service implements LocationListener {
 
         return status;
     }
-    private String deriveStatusFromSpeed(Location loc) {
-        float speed = loc.hasSpeed() ? loc.getSpeed() : 0f; // m/s
-        if (speed < 0.5f) return "standing";
-        if (speed < 2.5f) return "walking";
-        if (speed < 6.5f) return "bicycle";
-        return "vehicle"; // bus/train/car
-    }
-
     private String reverseGeocode(double lat, double lon) {
         try {
             Geocoder geocoder = new Geocoder(mContext, Locale.getDefault());
@@ -349,20 +647,13 @@ public class GPSTracker extends Service implements LocationListener {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-
-
-
         Date endtime = null;
         try {
             endtime = df.parse(currentDate + " " + getPreference("end_time"));
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-
-
         Calendar c = Calendar.getInstance();
-
-
         Date currennttime = null;
         try {
             currennttime = df.parse(currentDate + " " +c.get(Calendar.HOUR_OF_DAY)+":"+c.get(Calendar.MINUTE)+":"+c.get(Calendar.SECOND));
@@ -370,14 +661,8 @@ public class GPSTracker extends Service implements LocationListener {
             throw new RuntimeException(e);
         }
 
-
-
-
-
         long current_time = currennttime.getTime();
-
         Log.e("Time","current_time= "+currennttime+" start_time_milis= "+starttimme.getTime()+" end_time_milis= "+ endtime.getTime());
-
         if (current_time>starttimme.getTime() && current_time<endtime.getTime()){
             Log.e("Time","true");
             return true;
@@ -385,8 +670,6 @@ public class GPSTracker extends Service implements LocationListener {
             Log.e("Time","false");
             return false;
         }
-
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -482,97 +765,6 @@ public class GPSTracker extends Service implements LocationListener {
 
         return location;
     }
-
-    public Location getLocationonetime(Context context) {
-
-        try {
-
-            locationManager = (LocationManager) context
-                    .getSystemService(LOCATION_SERVICE);
-
-            // getting GPS status
-            isGPSEnabled = locationManager
-                    .isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-            // getting network status
-            isNetworkEnabled = locationManager
-                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-            if (!isGPSEnabled && !isNetworkEnabled) {
-                // no network provider is enabled
-            } else {
-                this.canGetLocation = true;
-                if (isNetworkEnabled) {
-                    if (context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        // TODO: Consider calling
-                        //    Activity#requestPermissions
-                        // here to request the missing permissions, and then overriding
-                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                        //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
-                        // for Activity#requestPermissions for more details.
-                        return location;
-                    }
-                    locationManager.requestLocationUpdates(
-                            LocationManager.NETWORK_PROVIDER,
-                            MIN_TIME_BW_UPDATES,
-                            MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                    Log.d("Network", "Network");
-                    if (locationManager != null) {
-                        location = locationManager
-                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                        if (location != null) {
-                            latitude = location.getLatitude();
-                            longitude = location.getLongitude();
-
-                            Log.e("latitude", "" + latitude);
-                        }
-                    }
-                }
-
-                //change
-
-                // if GPS Enabled get lat/long using GPS Services
-                if (isGPSEnabled) {
-                    if (location == null) {
-                        locationManager.requestLocationUpdates(
-                                LocationManager.GPS_PROVIDER,
-                                MIN_TIME_BW_UPDATES,
-                                MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-                        Log.d("GPS Enabled", "GPS Enabled");
-                        if (locationManager != null) {
-                            location = locationManager
-                                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                            if (location != null) {
-                                latitude = location.getLatitude();
-                                longitude = location.getLongitude();
-                            }
-                        }
-                    }
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            Log.e("getLocation", "getLocation: " + e.getLocalizedMessage());
-        }
-        Log.e("getLocation", "getLocation: " + location);
-
-
-        return location;
-    }
-
-    /**
-     * Stop using GPS listener
-     * Calling this function will stop using GPS in your app
-     */
-    public void stopUsingGPS() {
-        if (locationManager != null) {
-            locationManager.removeUpdates(GPSTracker.this);
-        }
-    }
-
     /**
      * Function to get latitude
      */
@@ -596,48 +788,6 @@ public class GPSTracker extends Service implements LocationListener {
         // return longitude
         return longitude;
     }
-
-    /**
-     * Function to check GPS/wifi enabled
-     *
-     * @return boolean
-     */
-    public boolean canGetLocation() {
-        return this.canGetLocation;
-    }
-
-    /**
-     * Function to show settings alert dialog
-     * On pressing Settings button will lauch Settings Options
-     */
-    public void showSettingsAlert() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
-
-        // Setting Dialog Title
-        alertDialog.setTitle("GPS is settings");
-
-        // Setting Dialog Message
-        alertDialog.setMessage("GPS is not enabled. Do you want to go to settings menu?");
-
-        // On pressing Settings button
-        alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                mContext.startActivity(intent);
-            }
-        });
-
-        // on pressing cancel button
-        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        // Showing Alert Message
-        alertDialog.show();
-    }
-
     @Override
     public void onLocationChanged(Location location) {
     }
@@ -667,6 +817,46 @@ public class GPSTracker extends Service implements LocationListener {
 
         return value;
 
+    }
+
+    @Override
+    public void onDestroy() {
+        IS_RUNNING = false;
+        saveServiceStopTime("onDestroy");
+        scheduleKeepAliveWorker();
+        Log.d("Service,","onDestroy");
+        super.onDestroy();
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        saveServiceStopTime("task_removed");
+        //scheduleKeepAliveWorker();
+        // Relaunch self (best effort)
+        Log.d("Service,","onTaskRemoved");
+        Intent restartService = new Intent(getApplicationContext(), GPSTracker.class);
+        restartService.setPackage(getPackageName());
+        PendingIntent restartPendingIntent =
+                PendingIntent.getService(getApplicationContext(), 1, restartService, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(
+                AlarmManager.ELAPSED_REALTIME,
+                SystemClock.elapsedRealtime() + 1000,
+                restartPendingIntent
+        );
+
+        super.onTaskRemoved(rootIntent);
+        super.onTaskRemoved(rootIntent);
+    }
+
+    private void saveServiceStopTime(String reason) {
+        long now = System.currentTimeMillis();
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .edit()
+                .putLong(PREF_STOP_TIME, now)
+                .putString(PREF_STOP_REASON, reason) // চাইলে পাঠাবে, না চাইলে বাদ
+                .apply();
     }
 
 }

@@ -65,6 +65,7 @@ import com.srapp.FaceDetection.LivenessOverlayActivity;
 import com.srapp.LoginImageCapture.CameraHelper;
 import com.srapp.LoginImageCapture.LocationHelper;
 import com.srapp.LoginImageCapture.LoginWithImage;
+import com.srapp.LoginImageCapture.SimpleFaceCaptureActivity;
 import com.srapp.Util.AuthPreference;
 import com.srapp.Util.JAPIClient;
 import com.srapp.Util.Parent;
@@ -127,6 +128,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
     private LocationHelper locationHelper;
     private volatile Location latestFix;
     private static final int REQ_LIVENESS_OVERLAY = 4411;
+    private static final int REQ_SIMPLE_FACE = 4412;
     ImageView showImage;
     Boolean faceMatch=false;
     public LoginActivity() {
@@ -356,6 +358,26 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                             }
                            authPreference.setDeviceTimeChange("0");
                             if (faceVerification.equalsIgnoreCase("1")){
+                                if (isPreviousImage.isEmpty()&&imageBase64.isEmpty()) {
+                                    // 🔸 Step 1: কোনো reference image নেই → full normal face capture
+                                        cameraHelper = new CameraHelper(LoginActivity.this, new CameraHelper.CameraCallback() {
+                                            @Override
+                                            public void onImageCaptured(Bitmap bitmap, String base64String) {
+                                                imageBase64 = base64String;
+                                                Log.d("ImageBase64", imageBase64);
+                                                Toast.makeText(LoginActivity.this, "Image Captured!", Toast.LENGTH_SHORT).show();
+                                            }
+
+                                            @Override
+                                            public void onPermissionDenied() {
+                                                Toast.makeText(LoginActivity.this, "Camera permission denied", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    // Trigger the camera flow
+                                    cameraHelper.startCameraFlow();
+                                    login_button.setEnabled(true);
+                                    return;
+                                }
                                 if (imageBase64.isEmpty()){
                                     startActivityForResult(new Intent(getApplicationContext(), LivenessOverlayActivity.class), REQ_LIVENESS_OVERLAY);
                                     Toast.makeText(LoginActivity.this, "Please capture your face image first.", Toast.LENGTH_SHORT).show();
@@ -1273,6 +1295,10 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
             cameraHelper.handleActivityResult(requestCode, resultCode, data);
         }
 */
+        if (cameraHelper != null) {
+            cameraHelper.handleActivityResult(requestCode, resultCode, data);
+        }
+
         if (requestCode == REQ_LIVENESS_OVERLAY) {
             if (resultCode == RESULT_OK && data != null) {
                 String base64 = data.getStringExtra(EXTRA_BASE64);
@@ -1299,7 +1325,9 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
+        if (cameraHelper != null) {
+            cameraHelper.handleRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
         if (requestCode == 1) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 checkLocationPermission(); // Call to proceed after permission is granted

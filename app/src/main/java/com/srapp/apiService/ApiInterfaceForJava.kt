@@ -178,6 +178,10 @@ interface ApiInterfaceForJava {
     fun pushLocation(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
+    @POST("pushServiceStop.json")
+    fun pushServiceStop(@Body JSONObject: RequestBody): Call<String>
+
+    @Headers("Content-Type: application/json")
     @POST("create_outlet_visit.json")
     fun pushOutletVisit(@Body JSONObject: RequestBody): Call<String>
 

@@ -9,7 +9,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.widget.Toast;
@@ -18,8 +21,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
 
 public class CameraHelper {
 
@@ -33,7 +39,8 @@ public class CameraHelper {
 
     private final Activity activity;
     private final CameraCallback callback;
-
+    private Uri currentPhotoUri;
+    private File currentPhotoFile;
     public CameraHelper(Activity activity, CameraCallback callback) {
         this.activity = activity;
         this.callback = callback;
@@ -66,14 +73,27 @@ public class CameraHelper {
 
 
     private void openCamera() {
+//        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        if (intent.resolveActivity(activity.getPackageManager()) != null) {
+//            activity.startActivityForResult(intent, CAMERA_REQUEST_CODE);
+//        }
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (intent.resolveActivity(activity.getPackageManager()) != null) {
-            activity.startActivityForResult(intent, CAMERA_REQUEST_CODE);
-        }
+        if (intent.resolveActivity(activity.getPackageManager()) == null) return;
+
+        File dir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        if (dir != null && !dir.exists()) dir.mkdirs();
+        currentPhotoFile = new File(dir, "IMG_" + System.currentTimeMillis() + ".jpg");
+
+        currentPhotoUri = FileProvider.getUriForFile(
+                activity, activity.getPackageName() + ".fileprovider", currentPhotoFile);
+
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, currentPhotoUri);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        activity.startActivityForResult(intent, CAMERA_REQUEST_CODE);
     }
 
 
-    public void handleActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+/*    public void handleActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
             Bundle extras = data.getExtras();
             if (extras != null) {
@@ -84,14 +104,30 @@ public class CameraHelper {
                 }
             }
         }
-    }
+    }*/
 
-
-    private String convertBitmapToBase64(Bitmap bitmap) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
-        byte[] imageBytes = byteArrayOutputStream.toByteArray();
-        return Base64.encodeToString(imageBytes, Base64.DEFAULT);
+    public void handleActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == CAMERA_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            // ফুল-রেজুলিউশন ফাইল থেকে পড়ুন
+            try (InputStream is = activity.getContentResolver().openInputStream(currentPhotoUri)) {
+                Bitmap bmp = BitmapFactory.decodeStream(is); // চাইলে পরে স্কেল করবেন
+                String base64 = convertBitmapToBase64(bmp, 40); // 90–95 ভালো
+                callback.onImageCaptured(bmp, base64);
+            } catch (Exception e) {
+                Toast.makeText(activity, "Read failed", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
+    private String convertBitmapToBase64(Bitmap bitmap, int quality) {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, quality, os);
+        return Base64.encodeToString(os.toByteArray(), Base64.NO_WRAP);
+    }
+//    private String convertBitmapToBase64(Bitmap bitmap) {
+//        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+//        byte[] imageBytes = byteArrayOutputStream.toByteArray();
+//        return Base64.encodeToString(imageBytes, Base64.DEFAULT);
+//    }
 }
 

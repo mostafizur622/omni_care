@@ -905,35 +905,35 @@ public class Create_New_Memo extends Parent implements OnClickListener, DBListen
 
     private void visitAOutlet() {
 
-        GPSTracker gps = new GPSTracker();
-        Location location = null;
-        String lat = "";
-        String lang = "";
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-
-
-            location = gps.getLocationonetime(this);
-            if (location!=null){
-                lat = location.getLatitude()+"";
-                lang = location.getLongitude()+"";
-            }
-            HashMap<String,String> visit =  new HashMap<String,String>();
-            visit.put("latitude",lat);
-            visit.put("outlet_id",_OutletID);
-            visit.put("longitude",lang);
-            visit.put("visit_date",getCurrentDateTime());
-            visit.put("created_at",getCurrentDate());
-            visit.put("isPushed","0");
-            if (!alreadvisited(getCurrentDate(),_OutletID)) {
-                db.InsertTable(visit, "outlet_visit");
-                Toast.makeText(this,"Successfully visited",Toast.LENGTH_LONG).show();
-            }
-            else
-            Toast.makeText(this,"Outlet Already visited",Toast.LENGTH_LONG).show();
-
-        }
-
-        btnNext.setEnabled(true);
+//        GPSTracker gps = new GPSTracker();
+//        Location location = null;
+//        String lat = "";
+//        String lang = "";
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+//
+//
+//            location = gps.getLocationonetime(this);
+//            if (location!=null){
+//                lat = location.getLatitude()+"";
+//                lang = location.getLongitude()+"";
+//            }
+//            HashMap<String,String> visit =  new HashMap<String,String>();
+//            visit.put("latitude",lat);
+//            visit.put("outlet_id",_OutletID);
+//            visit.put("longitude",lang);
+//            visit.put("visit_date",getCurrentDateTime());
+//            visit.put("created_at",getCurrentDate());
+//            visit.put("isPushed","0");
+//            if (!alreadvisited(getCurrentDate(),_OutletID)) {
+//                db.InsertTable(visit, "outlet_visit");
+//                Toast.makeText(this,"Successfully visited",Toast.LENGTH_LONG).show();
+//            }
+//            else
+//            Toast.makeText(this,"Outlet Already visited",Toast.LENGTH_LONG).show();
+//
+//        }
+//
+//        btnNext.setEnabled(true);
 
 
     }

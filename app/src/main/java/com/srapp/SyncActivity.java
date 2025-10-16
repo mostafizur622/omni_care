@@ -461,7 +461,7 @@
 
     }
 
-     private void UpdateLocation() throws JSONException {
+     public void UpdateLocation() throws JSONException {
 
          JSONObject marketObj = new JSONObject();
          JSONArray jsonArray = new JSONArray();
@@ -481,9 +481,11 @@
                  jsonObject.put(Tables.GPS_TRACKER_longitude, c.getString(c.getColumnIndex(Tables.GPS_TRACKER_longitude)));
                  jsonObject.put(Tables.GPS_TRACKER_STATUS, c.getString(c.getColumnIndex(Tables.GPS_TRACKER_STATUS)));
                  jsonObject.put(Tables.GPS_TRACKER_ADDRESS, c.getString(c.getColumnIndex(Tables.GPS_TRACKER_ADDRESS)));
-                 jsonObject.put(Tables.GPS_TRACKER_NETWORK_TYPE, c.getString(c.getColumnIndex(Tables.GPS_TRACKER_NETWORK_TYPE)));
+                 //jsonObject.put(Tables.GPS_TRACKER_NETWORK_TYPE, c.getString(c.getColumnIndex(Tables.GPS_TRACKER_NETWORK_TYPE)));
                  jsonObject.put(Tables.GPS_TRACKER_DISTANCE, c.getString(c.getColumnIndex(Tables.GPS_TRACKER_DISTANCE)));
+                 jsonObject.put(Tables.BATTERY_LEVEL, c.getString(c.getColumnIndex(Tables.BATTERY_LEVEL)));
                  jsonObject.put(Tables.GPS_TRACKER_created_at, c.getString(c.getColumnIndex(Tables.GPS_TRACKER_created_at)));
+
 
 
                  jsonArray.put(jsonObject);

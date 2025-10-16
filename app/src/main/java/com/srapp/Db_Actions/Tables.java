@@ -650,11 +650,13 @@ public class Tables extends Parent {
     public static final String GPS_TRACKER_DISTANCE = "distance";
 
     public static final String GPS_TRACKER_is_pushed = "is_pushed";
+    public static final String GPS_TRACKING_DATE_TIME = "tracking_date_time";
+    public static final String BATTERY_LEVEL = "battery_level";
     public static final String GPS_TRACKER_created_at = "created_at";
     public static final String GPS_TRACKER_updated_at = "updated_at";
 
     public static final String GPS_TRACKER[] = {TABLE_NAME_GPS_TRACKER,GPS_TRACKER_table_id, GPS_TRACKER_latitude,
-            GPS_TRACKER_longitude, GPS_TRACKER_GPS_BTS,GPS_TRACKER_STATUS,GPS_TRACKER_ADDRESS,GPS_TRACKER_NETWORK_TYPE,GPS_TRACKER_DISTANCE, GPS_TRACKER_is_pushed, GPS_TRACKER_created_at, GPS_TRACKER_updated_at};
+            GPS_TRACKER_longitude, GPS_TRACKER_GPS_BTS,GPS_TRACKER_STATUS,GPS_TRACKER_ADDRESS,GPS_TRACKER_NETWORK_TYPE,GPS_TRACKER_DISTANCE, GPS_TRACKER_is_pushed,GPS_TRACKING_DATE_TIME,BATTERY_LEVEL, GPS_TRACKER_created_at, GPS_TRACKER_updated_at};
 
 
     public static final String CREATE_GPS_TRACKER_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME_GPS_TRACKER +
@@ -668,6 +670,8 @@ public class Tables extends Parent {
             GPS_TRACKER_NETWORK_TYPE + "  VARCHAR,   " +
             GPS_TRACKER_DISTANCE + "  REAL,   " +
             GPS_TRACKER_is_pushed + "  INTEGER,   " +
+            GPS_TRACKING_DATE_TIME + "  VARCHAR,   " +
+            BATTERY_LEVEL + "  VARCHAR,   " +
             GPS_TRACKER_created_at + "  DATETIME , " +
             GPS_TRACKER_updated_at + "  DATETIME );";
 

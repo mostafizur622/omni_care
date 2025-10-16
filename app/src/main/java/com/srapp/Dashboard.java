@@ -1,13 +1,21 @@
 package com.srapp;
 
+import static com.srapp.Util.VivoAutoStartHelper.openAutoStartSettings;
+
 import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -19,17 +27,22 @@ import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
+import com.srapp.Util.DeviceAdministrator;
 import com.srapp.Util.GPSTracker;
 import com.srapp.Util.Parent;
-import com.srapp.print.ParentActivity;
+import com.srapp.Util.VivoAutoStartHelper;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
 import org.json.JSONObject;
+
+import java.util.ArrayDeque;
 
 public class Dashboard extends Parent implements BasicFunctionListener {
 
@@ -111,13 +124,21 @@ public class Dashboard extends Parent implements BasicFunctionListener {
         if (roll.equalsIgnoreCase("1")){
             stockAndDeliveryOption.setVisibility(View.GONE);
         }
+        //openOemAutoStart(getApplicationContext());
+        ComponentName componentName = new ComponentName(this, DeviceAdministrator.class);
+        Intent intent = new Intent(android.app.admin.DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+        intent.putExtra(android.app.admin.DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName);
+        intent.putExtra(android.app.admin.DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+                "Please enable device admin to allow background location tracking even in idle mode.");
+        startActivityForResult(intent, 1001);
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-            if (checkSelfPermission(android.Manifest.permission.ACTIVITY_RECOGNITION)
-                    != android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{android.Manifest.permission.ACTIVITY_RECOGNITION}, REQ_AR);
-            }
-        }
+        maybePromptAutoStart(this);
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+//            if (checkSelfPermission(android.Manifest.permission.ACTIVITY_RECOGNITION)
+//                    != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+//                requestPermissions(new String[]{android.Manifest.permission.ACTIVITY_RECOGNITION}, REQ_AR);
+//            }
+//        }
         order_or_delivery = findViewById(R.id.logo);
         if (roll.equalsIgnoreCase("2")){
             order_or_delivery.setVisibility(View.GONE);
@@ -241,16 +262,33 @@ public class Dashboard extends Parent implements BasicFunctionListener {
     @Override
     protected void onResume() {
         super.onResume();
+        Log.e("StartMyService onResume","true");
         cash_number.setText(ds.getTotalCashOfCurrentDay());
         oc_value.setText(ds.getTotalOCofCurrentDay());
         oc.setText(ds.getOc());
 
         try{
-            startService(new Intent(Dashboard.this, GPSTracker.class));
+            //startService(new Intent(Dashboard.this, GPSTracker.class));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                ContextCompat.startForegroundService(
+                        this,
+                        new Intent(this, GPSTracker.class)
+                );
+            } else {
+                startService(new Intent(this, GPSTracker.class));
+            }
         }catch (Exception e){
             Log.e("text",e.getLocalizedMessage());
             try{
-                startService(new Intent(Dashboard.this, GPSTracker.class));
+                //startService(new Intent(Dashboard.this, GPSTracker.class));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    ContextCompat.startForegroundService(
+                            this,
+                            new Intent(this, GPSTracker.class)
+                    );
+                } else {
+                    startService(new Intent(this, GPSTracker.class));
+                }
             }catch (Exception et){
 
                 Log.e("text",et.getLocalizedMessage());
@@ -267,5 +305,83 @@ public class Dashboard extends Parent implements BasicFunctionListener {
     @Override
     public void OnConnetivityError() {
 
+    }
+    public static void openOemAutoStart(Context ctx) {
+        SharedPreferences prefs = ctx.getSharedPreferences("tracking_prefs", Context.MODE_PRIVATE);
+        boolean alreadyOpened = prefs.getBoolean("autostart_allowed", false);
+
+        if (alreadyOpened) return; // skip if already granted or shown once
+
+        Intent i = new Intent();
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        String manufacturer = Build.MANUFACTURER.toLowerCase();
+
+        try {
+            if (manufacturer.contains("xiaomi")) {
+                i.setComponent(new ComponentName("com.miui.securitycenter",
+                        "com.miui.permcenter.permissions.PermissionsEditorActivity"));
+            } else if (manufacturer.contains("oppo")) {
+                i.setComponent(new ComponentName("com.coloros.safecenter",
+                        "com.coloros.safecenter.permission.startup.StartupAppListActivity"));
+            } else if (manufacturer.contains("vivo")) {
+                i.setComponent(new ComponentName("com.iqoo.secure",
+                        "com.iqoo.secure.ui.phoneoptimize.BgStartUpManager"));
+            } else {
+                i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                i.setData(Uri.parse("package:" + ctx.getPackageName()));
+            }
+
+            ctx.startActivity(i);
+
+            // save flag so next time it won’t open again
+            prefs.edit().putBoolean("autostart_allowed", true).apply();
+
+        } catch (Exception e) {
+            // fallback
+            Intent fallback = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            fallback.setData(Uri.parse("package:" + ctx.getPackageName()));
+            fallback.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            ctx.startActivity(fallback);
+        }
+    }
+    public static void maybePromptAutoStart(Context ctx) {
+        // 1) Battery ignore already? তাহলে দরকার নেই
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PowerManager pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
+            if (pm != null && pm.isIgnoringBatteryOptimizations(ctx.getPackageName())) return;
+        }
+        // 2) একবারই দেখাও
+        SharedPreferences p = ctx.getSharedPreferences("tracking_prefs", Context.MODE_PRIVATE);
+        if (p.getBoolean("autostart_prompted", false)) return;
+
+        // 3) শুধু Vivo/Oppo/Realme/Xiaomi হলে দেখাও
+        String m = Build.MANUFACTURER.toLowerCase();
+        if (m.contains("vivo") || m.contains("oppo") || m.contains("realme") || m.contains("xiaomi")) {
+            p.edit().putBoolean("autostart_prompted", true).apply();
+            showAutoStartDialogIfNeeded(ctx); // বা openOemAutoStart(ctx)
+        }
+    }
+    public static void showAutoStartDialogIfNeeded(Context ctx) {
+        String manufacturer = Build.MANUFACTURER.toLowerCase();
+
+        if (manufacturer.contains("vivo") ||
+                manufacturer.contains("oppo") ||
+                manufacturer.contains("realme") ||
+                manufacturer.contains("xiaomi")) {
+
+            new AlertDialog.Builder(ctx)
+                    .setTitle("Allow Background Tracking")
+                    .setMessage(
+                            "To ensure location tracking works properly in the background, " +
+                                    "please enable:\n\n" +
+                                    "✅ Auto Start\n" +
+                                    "✅ Battery Optimization Ignore\n" +
+                                    "✅ Lock App in Recents\n\n" +
+                                    "Tap 'Open Settings' to go directly to your phone's settings."
+                    )
+                    .setPositiveButton("Open Settings", (d, w) -> openAutoStartSettings(ctx))
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        }
     }
 }
