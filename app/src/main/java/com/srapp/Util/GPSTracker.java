@@ -107,6 +107,7 @@ public class GPSTracker extends Service implements LocationListener {
     private static final long   MAX_FIX_AGE_MS      = 15_000; // fresh <= 15s
     private static final float  MAX_ACCURACY_M      = 50f;    // accept if <= 50m (indoor হলে 75-100m করতে পারো)
     private static final float  MAX_PLAUSIBLE_SPEED = 55f;    // m/s (~198 km/h)
+    private PowerManager.WakeLock wakeLock;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -123,6 +124,7 @@ public class GPSTracker extends Service implements LocationListener {
         requestIgnoreBatteryOptimization();
 
         scheduleKeepAliveWorker();
+        acquireWakeLock();
 
         if (timerTask==null){
             Log.e("text","Location Service2"+getPreference("interval"));
@@ -165,7 +167,11 @@ public class GPSTracker extends Service implements LocationListener {
         }
     }
 
-
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        startForegroundServiceSafe();
+        return START_STICKY;
+    }
 
     private void scheduleKeepAliveWorker() {
         OneTimeWorkRequest keepAliveRequest = new OneTimeWorkRequest.Builder(KeepAliveWorker.class)
@@ -390,10 +396,10 @@ public class GPSTracker extends Service implements LocationListener {
         };
 
         fused.requestLocationUpdates(req, cb, Looper.getMainLooper());*/
-        LocationRequest.Builder b = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1_000)
-                .setMinUpdateIntervalMillis(500)
+        LocationRequest.Builder b = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, Long.parseLong(getPreference("interval")))
+                .setMinUpdateIntervalMillis(Long.parseLong(getPreference("interval"))/2)
                 .setMinUpdateDistanceMeters(0f)
-                .setMaxUpdateDelayMillis(0)            // no batching
+                .setMaxUpdateDelayMillis(Long.parseLong(getPreference("interval")))            // no batching
                 .setWaitForAccurateLocation(true);     // ✅ wait for GPS-grade
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -500,6 +506,20 @@ public class GPSTracker extends Service implements LocationListener {
         String CurrentDate =dateFormat.format(date);
         return CurrentDate;
 
+    }
+    private void acquireWakeLock() {
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        if (pm != null && wakeLock == null) {
+            wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "GPSTracker::WakelockTag");
+            wakeLock.acquire();
+        }
+    }
+
+    private void releaseWakeLock() {
+        if (wakeLock != null && wakeLock.isHeld()) {
+            wakeLock.release();
+            wakeLock = null;
+        }
     }
     @Nullable
     private Location fetchLastSavedLocation() {
@@ -825,6 +845,7 @@ public class GPSTracker extends Service implements LocationListener {
         saveServiceStopTime("onDestroy");
         scheduleKeepAliveWorker();
         Log.d("Service,","onDestroy");
+        releaseWakeLock();
         super.onDestroy();
     }
 
