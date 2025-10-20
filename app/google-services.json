@@ -1,37 +1,26 @@
 {
   "project_info": {
-    "project_number": "1067577866924",
-    "firebase_url": "https://smc-sales.firebaseio.com",
-    "project_id": "smc-sales",
-    "storage_bucket": "smc-sales.appspot.com"
+    "project_number": "925756920003",
+    "project_id": "newlife-f3f7d",
+    "storage_bucket": "newlife-f3f7d.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1067577866924:android:0c2ce8f770c85274297d09",
+        "mobilesdk_app_id": "1:925756920003:android:ea5ac21020fbf9e648d276",
         "android_client_info": {
           "package_name": "com.srapp_new_life"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "1067577866924-43jsreif0v6it62fjv2g3q83tguuu64n.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDS-xqqIOA6MZURfnohNuoEcpeHGdVvsBc"
+          "current_key": "AIzaSyDADT3cKXYSXoXTTbCeGQsQqpc7I8kfyMk"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1067577866924-43jsreif0v6it62fjv2g3q83tguuu64n.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

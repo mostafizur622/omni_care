@@ -51,8 +51,12 @@ import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.JsonObject;
 import com.srapp.Db_Actions.DBListener;
 import com.srapp.Db_Actions.Data_Source;
@@ -136,7 +140,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
     }
     String faceVerification="0";
     private AuthPreference authPreference;
-
+    String firebaseToken = "";
 
 
     @Override
@@ -165,6 +169,21 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
         editUsername = (EditText) findViewById(R.id.edit_username);
         editPassword = (EditText) findViewById(R.id.edit_password);
         locationHelper = new LocationHelper(this);
+        FirebaseApp.initializeApp(this);
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (task.isSuccessful()) {
+                            String token = task.getResult();
+                            firebaseToken = token;
+                            Log.e("firebaseToken", firebaseToken);
+                        } else {
+                            Log.e("firebaseToken", "Token retrieval failed", task.getException());
+                        }
+                    }
+                });
+
         if (!locationHelper.hasFinePermission()) {
             locationHelper.requestFinePermission();
         } else {
@@ -261,6 +280,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
 //                        jsonObject.put("image", imageBase64);
                         jsonObject.put("lat", latestFix.getLatitude());
                         jsonObject.put("long", latestFix.getLongitude());
+                        jsonObject.put("token", firebaseToken);
 
                        //  basicFunction.getResponceData(URL.Login, jsonObject.toString(), 101);
                          Log.e("map : ", jsonObject.toString());

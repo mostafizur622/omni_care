@@ -2240,6 +2240,16 @@ public class Data_Source extends Parent {
         }
         return "0";
     }
+/*    public String getPendingLocation() {
+
+        open();
+        Cursor c = sqLiteDatabase.rawQuery("SELECT count(_id) from gps_tracker WHERE is_pushed='0'", null);
+        c.moveToFirst();
+        if (c != null && c.getCount() > 0) {
+            return c.getString(0);
+        }
+        return "0";
+    }*/
 
     public String getPendingMarket() {
 

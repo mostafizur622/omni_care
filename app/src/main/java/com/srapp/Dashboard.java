@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -153,6 +154,12 @@ public class Dashboard extends Parent implements BasicFunctionListener {
                 finish();
             }
         });*/
+      try {
+          deleteBeforeLocationData();
+          deleteBeforeLostTimeData();
+      }catch (NullPointerException e){
+          Log.d("text",e.getLocalizedMessage());
+      }
 
         deliveryBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -382,6 +389,24 @@ public class Dashboard extends Parent implements BasicFunctionListener {
                     .setPositiveButton("Open Settings", (d, w) -> openAutoStartSettings(ctx))
                     .setNegativeButton("Cancel", null)
                     .show();
+        }
+    }
+    public void deleteBeforeLocationData(){
+        ds.sqLiteDatabase.execSQL("DELETE FROM gps_tracker\n" +
+                "WHERE is_pushed = '1'\n" +
+                "  AND created_at < (strftime('%s','now','-3 days') * 1000);");
+        Cursor c = ds.sqLiteDatabase.rawQuery("select * from gps_tracker where is_pushed='0'",null);
+        c.moveToFirst();
+        if (c != null && c.getCount() > 0) {
+        }
+    }
+    public void deleteBeforeLostTimeData(){
+        ds.sqLiteDatabase.execSQL("DELETE FROM gps_tracking_gape_time\n" +
+                "WHERE is_pushed = '1'\n" +
+                "  AND created_at < (strftime('%s','now','-3 days') * 1000);");
+        Cursor c = ds.sqLiteDatabase.rawQuery("select * from gps_tracking_gape_time where is_pushed='0'",null);
+        c.moveToFirst();
+        if (c != null && c.getCount() > 0) {
         }
     }
 }

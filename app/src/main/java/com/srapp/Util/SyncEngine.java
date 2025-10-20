@@ -113,6 +113,72 @@ public class SyncEngine {
         return 0;
     }
 
+    public static int updateLostTime(Context ctx, ApiInterfaceForJava api)
+            throws JSONException, IOException {
+
+
+        ctx = ctx.getApplicationContext();
+        GpsDao dao = new GpsDao(ctx);
+
+
+        // build payload (তোমার আগের মতোই)
+        JSONArray coords = new JSONArray();
+        Cursor c = null;
+        int pendingLost = 0;
+        try {
+            c = dao.raw("SELECT * FROM gps_tracking_gape_time WHERE is_pushed='0'");
+            if (c != null && c.moveToFirst()) {
+                do {
+                    JSONObject row = new JSONObject();
+                    row.put(Tables.GPS_TRACKING_INSERT_TIME,
+                            c.getString(c.getColumnIndexOrThrow(Tables.GPS_TRACKING_INSERT_TIME)));
+                    row.put(Tables.GPS_TRACKING_GAPE_TIME,
+                            c.getString(c.getColumnIndexOrThrow(Tables.GPS_TRACKING_GAPE_TIME)));
+                    row.put(Tables.GPS_TRACKING_GAPE_LAST_TIME,
+                            c.getString(c.getColumnIndexOrThrow(Tables.GPS_TRACKING_GAPE_LAST_TIME)));
+
+                    coords.put(row);
+                    pendingLost++;
+                } while (c.moveToNext());
+            }
+        } finally {
+            if (c != null) c.close();
+        }
+
+        if (pendingLost == 0) return 0;
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(ctx);
+        String mac = sp.getString("mac", "");
+        String salesPersonId = sp.getString("sales_person_id", "");
+
+        JSONObject payload = new JSONObject();
+        payload.put("mac", mac);
+        payload.put("sales_person_id", salesPersonId);
+        payload.put("lost_times", coords);
+
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        RequestBody body = RequestBody.create(JSON, payload.toString());
+
+        // ✅ তোমার ইন্টারফেসেই pushLocation আছে
+        Response<String> resp = api.lostTime(body).execute();
+        if (!resp.isSuccessful() || resp.body() == null) {
+            throw new IOException("pushLostTime failed: code=" + resp.code());
+        }
+
+        JSONObject root = new JSONObject(resp.body());
+        JSONObject r = root.optJSONObject("res");
+        String status = r != null ? r.optString("status", "0") : "0";
+
+        if ("1".equalsIgnoreCase(status)) {
+            // mark pushed
+            dao.exec("UPDATE gps_tracking_gape_time SET is_pushed='1' WHERE is_pushed='0'");
+            int affected = (int) android.database.DatabaseUtils.longForQuery(
+                    dao.db(), "SELECT changes()", null);
+            return affected;
+        }
+        return 0;
+    }
+
     public static int pushServiceStopIfPending(Context ctx, ApiInterfaceForJava api)
             throws Exception {
 

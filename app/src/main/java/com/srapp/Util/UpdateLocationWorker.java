@@ -21,12 +21,12 @@ public class UpdateLocationWorker extends Worker {
 
     @NonNull @Override public Result doWork() {
         try {
-            ApiInterfaceForJava api = getJAPi();  // ✅ টাইপ ম্যাচ
+            ApiInterfaceForJava api = getJAPi();
             int pushed = SyncEngine.updateLocation(getApplicationContext(), api);
             Log.i("UpdateLocationWorker", "pushed rows = " + pushed);
-            // ✅ Service stop time থাকলে পাঠাবে, না থাকলে নীরবেই স্কিপ
             int pushedStop = SyncEngine.pushServiceStopIfPending(getApplicationContext(), api);
             Log.i("UpdateLocationWorker", "pushedLoc=" + pushed + ", pushedStop=" + pushedStop);
+            int pushedLostTime = SyncEngine.updateLostTime(getApplicationContext(), api);
             return Result.success();
         } catch (IOException io) {
             Log.e("UpdateLocationWorker", "io: " + io.getMessage());

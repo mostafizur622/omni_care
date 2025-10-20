@@ -12,8 +12,10 @@ import android.net.NetworkRequest;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import com.srapp.SyncActivity;
@@ -21,6 +23,8 @@ import com.srapp.Util.KeepAliveWorker;
 import com.srapp.Util.UpdateLocationWorker;
 
 import org.json.JSONException;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Administrator
@@ -90,5 +94,20 @@ public class App extends Application {
                 ExistingWorkPolicy.REPLACE,
                 w
         );
+    }
+    private void schedulePeriodicSync(Context ctx) {
+        // প্রতি 15 মিনিট পর পর চলবে (Android min period = 15min)
+        PeriodicWorkRequest periodicSync =
+                new PeriodicWorkRequest.Builder(UpdateLocationWorker.class, 15, TimeUnit.MINUTES)
+                        .addTag("update_location_periodic")
+                        .build();
+
+        WorkManager.getInstance(ctx).enqueueUniquePeriodicWork(
+                "update_location_periodic",           // ইউনিক ওয়ার্ক নাম
+                ExistingPeriodicWorkPolicy.KEEP,      // আগেরটা থাকলে সেটাই রাখবে
+                periodicSync
+        );
+
+        Log.d("SyncScheduler", "✅ Periodic sync scheduled every 15 minutes");
     }
 }

@@ -58,7 +58,7 @@
  public class SyncActivity extends Parent implements DBListener, BasicFunctionListener {
 
     Button sync_btn, viewSummery;
-    TextView pendingMemo,pendingAttendanceStatus,pendingOutlet,pendingMarket;
+    TextView pendingMemo,pendingAttendanceStatus,pendingOutlet,pendingMarket,pendingLocation;
     Data_Source ds;
     int Flag = 0;
     ListView listView;
@@ -105,6 +105,12 @@
         loginFacility = sharedPreferences.getString("attendance_online", null);
         pendingAttendance = findViewById(R.id.pendingAttendance);
          pendingAttendanceStatus = findViewById(R.id.pendingAttendanceStatus);
+        try {
+//            pendingLocation = findViewById(R.id.pendingLocation);
+//            pendingLocation.setText(ds.getPendingLocation());
+        }catch (NullPointerException e){
+           e.printStackTrace();
+        }
 
         if (loginFacility.equalsIgnoreCase("0")){
             if (authPreference.getPendingAttendance().equalsIgnoreCase("1")) {
@@ -495,7 +501,7 @@
          marketObj.put("mac", bf.getPreference("mac"));
          marketObj.put("sales_person_id", bf.getPreference(SR_ID));
          marketObj.put("coordinates", jsonArray);
-         ProgressDialog dailog = CheckConnection(SyncActivity.this,"Checking...");
+         ProgressDialog dailog = CheckConnection(SyncActivity.this,"Push Location...");
          if (dailog==null)
              return;
          getJAPi().pushLocation(convertTORequestdata(marketObj)).enqueue(new Callback<String>() {
@@ -508,13 +514,14 @@
                      if (status.equalsIgnoreCase("1")){
                          ds.excQuery("UPDATE gps_tracker SET is_pushed='1' WHERE is_pushed='0'");
 
-                         if (loginFacility.equalsIgnoreCase("0")){
+                         UpdateLostTime();
+/*                         if (loginFacility.equalsIgnoreCase("0")){
                              getTradeOfferPolicy();
                          }else {
                              Toast.makeText(SyncActivity.this, "Sync Successfully", Toast.LENGTH_SHORT).show();
                              startActivity(new Intent(SyncActivity.this, SyncActivity.class));
                              finish();
-                         }
+                         }*/
 
                      }
                      dailog.dismiss();
@@ -535,6 +542,106 @@
 
      }
 
+     public void UpdateLostTime() throws JSONException {
+
+         JSONObject marketObj = new JSONObject();
+         JSONArray jsonArray = new JSONArray();
+         ds.sqLiteDatabase.execSQL("DELETE FROM gps_tracking_gape_time\n" +
+                 "WHERE _id NOT IN (\n" +
+                 "  SELECT MIN(_id) \n" +
+                 "  FROM gps_tracking_gape_time \n" +
+                 ")");
+         Cursor c = ds.sqLiteDatabase.rawQuery("select * from gps_tracking_gape_time where is_pushed='0'",null);
+         c.moveToFirst();
+         if (c != null && c.getCount() > 0) {
+             do {
+                 JSONObject jsonObject = new JSONObject();
+
+                 jsonObject.put(Tables.GPS_TRACKING_INSERT_TIME, c.getString(c.getColumnIndex(Tables.GPS_TRACKING_INSERT_TIME)));
+                 jsonObject.put(Tables.GPS_TRACKING_GAPE_TIME, c.getString(c.getColumnIndex(Tables.GPS_TRACKING_GAPE_TIME)));
+                 jsonObject.put(Tables.GPS_TRACKING_GAPE_LAST_TIME, c.getString(c.getColumnIndex(Tables.GPS_TRACKING_GAPE_LAST_TIME)));
+                 jsonArray.put(jsonObject);
+             } while (c.moveToNext());
+         }
+
+         marketObj.put("mac", bf.getPreference("mac"));
+         marketObj.put("sales_person_id", bf.getPreference(SR_ID));
+         marketObj.put("lost_times", jsonArray);
+         ProgressDialog dailog = CheckConnection(SyncActivity.this,"Push service lost time...");
+         if (dailog==null)
+             return;
+         getJAPi().lostTime(convertTORequestdata(marketObj)).enqueue(new Callback<String>() {
+             @Override
+             public void onResponse(Call<String> call, Response<String> response) {
+                 try {
+                     JSONObject jsonObject = new JSONObject(response.body());
+                     JSONObject locationObj = jsonObject.getJSONObject("res");
+                     String status = locationObj.getString("status");
+                     if (status.equalsIgnoreCase("1")){
+                         ds.excQuery("UPDATE gps_tracking_gape_time SET is_pushed='1' WHERE is_pushed='0'");
+
+                         if (loginFacility.equalsIgnoreCase("0")){
+                             getTradeOfferPolicy();
+                             sendServiceStopStatus();
+                         }else {
+                             sendServiceStopStatus();
+                             Toast.makeText(SyncActivity.this, "Sync Successfully", Toast.LENGTH_SHORT).show();
+                             startActivity(new Intent(SyncActivity.this, SyncActivity.class));
+                             finish();
+                         }
+
+                     }
+                     dailog.dismiss();
+
+                 } catch (JSONException e) {
+                     throw new RuntimeException(e);
+                 }
+             }
+
+             @Override
+             public void onFailure(Call<String> call, Throwable t) {
+                 dailog.dismiss();
+             }
+         });
+     }
+
+     public void  sendServiceStopStatus(){
+         try {
+             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(SyncActivity.this);
+             long ts = sp.getLong("service_last_stop_time", 0L);
+
+             if (ts <= 0) return;
+
+             JSONObject obJson = new JSONObject();
+             obJson.put(SR_ID, getPreference(SR_ID));
+             obJson.put("version", URL.VERSION);
+             obJson.put("mac", bf.getPreference("mac"));
+             obJson.put("service_stop_time_ms", ts);
+             obJson.put("service_stop_time_str", formatYmdHms(ts)); // human-readable
+             Log.e("++", "Update Time json:" + obJson.toString());
+             getJAPi().pushServiceStop(convertTORequestdata(obJson)).enqueue(new Callback<String>() {
+                 @Override
+                 public void onResponse(Call<String> call, Response<String> response) {
+                         sp.edit()
+                                 .remove("service_last_stop_time")
+                                 .remove("service_last_stop_reason")
+                                 .apply();
+                 }
+
+                 @Override
+                 public void onFailure(Call<String> call, Throwable t) {
+                 }
+             });
+
+         } catch (Exception e) {
+             Log.e("exception", e.getMessage());
+         }
+     }
+     private static String formatYmdHms(long ms) {
+         java.text.SimpleDateFormat sdf =
+                 new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault());
+         return sdf.format(new java.util.Date(ms));
+     }
      private void updateOutletVisit() throws JSONException {
          JSONObject marketObj = new JSONObject();
          JSONArray jsonArray = new JSONArray();

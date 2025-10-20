@@ -47,6 +47,7 @@ import androidx.work.WorkManager;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.Granularity;
+import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
@@ -416,10 +417,12 @@ public class GPSTracker extends Service implements LocationListener {
                 if (loc != null && isGoodFix(loc)) {
                     saveLocationWithExtras(loc);
                 } else {
+                    Toast.makeText(mContext, "Location unavailable. Turn on GPS Allow all the time permission or restart your device if the issue continues.", Toast.LENGTH_SHORT).show();
                     Log.w("GPSTracker", "bad/none fix dropped");
                 }
             }
         };
+
 
         fused.requestLocationUpdates(req, cb, Looper.getMainLooper());
 
@@ -464,6 +467,22 @@ public class GPSTracker extends Service implements LocationListener {
             distanceM = distanceMeters(last[0], last[1], lat, lon); // meters
         }
 
+        Long lastSaved = fetchLastSavedTime();
+        Log.d("LastTrackedTime", "Last saved time: " + lastSaved + " ms");
+        if (lastSaved != null) {
+            long now = System.currentTimeMillis();
+//            long diff = now - lastSaved;
+            long diff = Math.max(0, now - lastSaved);
+            //long interval = Long.parseLong(getPreference("interval"));
+            long interval = 5 * 60 * 1000;  // Fixed 5 minutes in milliseconds
+
+            if (diff >= interval) {
+                String gapText = humanizeDuration(diff);
+                Log.w("GPS-GAP", "Gap detected: " + diff + " ms (expected " + interval + ")");
+                saveGapRecord(diff, now,gapText,lastSaved);
+            }
+        }
+
         SharedPreferences sp = android.preference.PreferenceManager.getDefaultSharedPreferences(mContext);
         String arStatus = sp.getString("last_activity_status", null);
         String status1 = (arStatus != null && !"unknown".equals(arStatus))
@@ -496,8 +515,58 @@ public class GPSTracker extends Service implements LocationListener {
         Data_Source ds = new Data_Source(mContext);
         ds.InsertTable(map, "gps_tracker");
 
-        Toast.makeText(mContext, "Service Running", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(mContext, "Service Running", Toast.LENGTH_SHORT).show();
         Log.d("Service Running","Yes");
+    }
+
+    private void saveGapRecord(long gapeMillis, long insertTime, @NonNull String gapText,long lastSaved) {
+        try {
+            HashMap<String, String> map = new HashMap<>();
+            map.put("insert_time", getCurrentDateTime24());
+            map.put("gape_time", gapText);
+            map.put("last_time", String.valueOf(lastSaved));
+            map.put("is_pushed", "0");
+            map.put("created_at", String.valueOf(System.currentTimeMillis()));
+            map.put("updated_at",String.valueOf(System.currentTimeMillis()));
+
+            Data_Source ds = new Data_Source(mContext);
+            ds.InsertTable(map, Tables.TABLE_NAME_GPS_TRACKING_GAPE_TIME);
+
+            Log.i("GPS-GAP", "Saved gap record: " + gapeMillis + " ms");
+        } catch (Exception e) {
+            Log.e("GPS-GAP", "Failed to save gap: " + e.getMessage());
+        }
+    }
+
+    private static String humanizeDuration(long ms) {
+        if (ms < 0) ms = 0;
+        long totalSec = ms / 1000;
+        long days  = totalSec / 86400;            // 24*60*60
+        long rem1  = totalSec % 86400;
+        long hours = rem1 / 3600;
+        long rem2  = rem1 % 3600;
+        long mins  = rem2 / 60;
+        long secs  = rem2 % 60;
+
+        StringBuilder sb = new StringBuilder();
+        if (days > 0) {
+            sb.append(days).append(" Day");
+            if (hours > 0) sb.append(" ").append(hours).append(" Hours");
+            return sb.toString();
+        }
+        if (hours > 0) {
+            sb.append(hours).append(" Hours");
+            if (mins > 0) sb.append(" ").append(mins).append(" Minutes");
+            return sb.toString();
+        }
+        if (mins > 0) {
+            sb.append(mins).append(" Minutes");
+            if (secs > 0) sb.append(" ").append(secs).append(" Seconds");
+            return sb.toString();
+        }
+        // < 1 minute
+        sb.append(secs).append(" Seconds");
+        return sb.toString();
     }
     public String getCurrentDateTime24()
     {
@@ -587,6 +656,35 @@ public class GPSTracker extends Service implements LocationListener {
             return pair;
         } catch (Exception e) {
             Log.e("fetchLastSavedLatLon", "err: " + e.getMessage());
+            return null;
+        }
+    }
+    @Nullable
+    private Long fetchLastSavedTime() {
+        try {
+            String sql = "SELECT created_at " +
+                    "FROM gps_tracker " +
+                    "WHERE created_at IS NOT NULL " +
+                    "ORDER BY created_at DESC " +
+                    "LIMIT 1 OFFSET 0";
+
+            android.database.sqlite.SQLiteDatabase db =
+                    android.database.sqlite.SQLiteDatabase.openDatabase(
+                            mContext.getDatabasePath(Tables.DATABASE_NAME).getPath(),
+                            null,
+                            android.database.sqlite.SQLiteDatabase.OPEN_READONLY
+                    );
+
+            android.database.Cursor c = db.rawQuery(sql, null);
+            Long lastTime = null;
+            if (c.moveToFirst()) {
+                lastTime = c.getLong(0); // created_at is in millis
+            }
+            c.close();
+            db.close();
+            return lastTime;
+        } catch (Exception e) {
+            Log.e("fetchLastSavedTime", "err: " + e.getMessage());
             return null;
         }
     }
