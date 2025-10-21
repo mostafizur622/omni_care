@@ -471,12 +471,12 @@
 
          JSONObject marketObj = new JSONObject();
          JSONArray jsonArray = new JSONArray();
-         ds.sqLiteDatabase.execSQL("DELETE FROM gps_tracker\n" +
-                 "WHERE _id NOT IN (\n" +
-                 "  SELECT MIN(_id) \n" +
-                 "  FROM gps_tracker \n" +
-                 "  GROUP BY latitude, longitude\n" +
-                 ")");
+//         ds.sqLiteDatabase.execSQL("DELETE FROM gps_tracker\n" +
+//                 "WHERE _id NOT IN (\n" +
+//                 "  SELECT MIN(_id) \n" +
+//                 "  FROM gps_tracker \n" +
+//                 "  GROUP BY latitude, longitude\n" +
+//                 ")");
          Cursor c = ds.sqLiteDatabase.rawQuery("select * from gps_tracker where is_pushed='0'",null);
          c.moveToFirst();
          if (c != null && c.getCount() > 0) {
@@ -546,11 +546,11 @@
 
          JSONObject marketObj = new JSONObject();
          JSONArray jsonArray = new JSONArray();
-         ds.sqLiteDatabase.execSQL("DELETE FROM gps_tracking_gape_time\n" +
-                 "WHERE _id NOT IN (\n" +
-                 "  SELECT MIN(_id) \n" +
-                 "  FROM gps_tracking_gape_time \n" +
-                 ")");
+//         ds.sqLiteDatabase.execSQL("DELETE FROM gps_tracking_gape_time\n" +
+//                 "WHERE _id NOT IN (\n" +
+//                 "  SELECT MIN(_id) \n" +
+//                 "  FROM gps_tracking_gape_time \n" +
+//                 ")");
          Cursor c = ds.sqLiteDatabase.rawQuery("select * from gps_tracking_gape_time where is_pushed='0'",null);
          c.moveToFirst();
          if (c != null && c.getCount() > 0) {
@@ -580,6 +580,59 @@
                      if (status.equalsIgnoreCase("1")){
                          ds.excQuery("UPDATE gps_tracking_gape_time SET is_pushed='1' WHERE is_pushed='0'");
 
+                         UpdateFailedTime();
+
+                     }
+                     dailog.dismiss();
+
+                 } catch (JSONException e) {
+                     throw new RuntimeException(e);
+                 }
+             }
+
+             @Override
+             public void onFailure(Call<String> call, Throwable t) {
+                 dailog.dismiss();
+             }
+         });
+     }
+
+     public void UpdateFailedTime() throws JSONException {
+
+         JSONObject marketObj = new JSONObject();
+         JSONArray jsonArray = new JSONArray();
+//         ds.sqLiteDatabase.execSQL("DELETE FROM gps_tracking_gape_time\n" +
+//                 "WHERE _id NOT IN (\n" +
+//                 "  SELECT MIN(_id) \n" +
+//                 "  FROM gps_tracking_gape_time \n" +
+//                 ")");
+         Cursor c = ds.sqLiteDatabase.rawQuery("select * from gps_tracking_failed_time where is_pushed='0'",null);
+         c.moveToFirst();
+         if (c != null && c.getCount() > 0) {
+             do {
+                 JSONObject jsonObject = new JSONObject();
+
+                 jsonObject.put(Tables.GPS_TRACKING_INSERT_FAILED_TIME, c.getString(c.getColumnIndex(Tables.GPS_TRACKING_INSERT_FAILED_TIME)));
+                 jsonArray.put(jsonObject);
+             } while (c.moveToNext());
+         }
+
+         marketObj.put("mac", bf.getPreference("mac"));
+         marketObj.put("sales_person_id", bf.getPreference(SR_ID));
+         marketObj.put("failed_times", jsonArray);
+         ProgressDialog dailog = CheckConnection(SyncActivity.this,"Push service failed time...");
+         if (dailog==null)
+             return;
+         getJAPi().failedTime(convertTORequestdata(marketObj)).enqueue(new Callback<String>() {
+             @Override
+             public void onResponse(Call<String> call, Response<String> response) {
+                 try {
+                     JSONObject jsonObject = new JSONObject(response.body());
+                     JSONObject locationObj = jsonObject.getJSONObject("res");
+                     String status = locationObj.getString("status");
+                     if (status.equalsIgnoreCase("1")){
+                         ds.excQuery("UPDATE gps_tracking_failed_time SET is_pushed='1' WHERE is_pushed='0'");
+
                          if (loginFacility.equalsIgnoreCase("0")){
                              getTradeOfferPolicy();
                              sendServiceStopStatus();
@@ -604,7 +657,6 @@
              }
          });
      }
-
      public void  sendServiceStopStatus(){
          try {
              SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(SyncActivity.this);

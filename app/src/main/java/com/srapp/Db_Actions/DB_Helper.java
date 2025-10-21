@@ -327,6 +327,7 @@ public class DB_Helper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(Tables.CREATE_GPS_TRACKER_TABLE);
         sqLiteDatabase.execSQL(Tables.CREATE_GPS_TRACKING_TIME_TABLE);
         sqLiteDatabase.execSQL(Tables.CREATE_GPS_TRACKING_GAPE_TIME_TABLE);
+        sqLiteDatabase.execSQL(Tables.CREATE_GPS_TRACKING_FAILED_TIME_TABLE);
         sqLiteDatabase.execSQL(Tables.CREATE_INSTRUMENT_NUMBER_TABLE);
         sqLiteDatabase.execSQL(Tables.CREATE_INSTRUMENT_TYPE_TABLE);
         sqLiteDatabase.execSQL(Tables.CREATE_LOCATION_TABLE);

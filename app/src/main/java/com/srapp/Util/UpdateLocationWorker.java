@@ -27,6 +27,7 @@ public class UpdateLocationWorker extends Worker {
             int pushedStop = SyncEngine.pushServiceStopIfPending(getApplicationContext(), api);
             Log.i("UpdateLocationWorker", "pushedLoc=" + pushed + ", pushedStop=" + pushedStop);
             int pushedLostTime = SyncEngine.updateLostTime(getApplicationContext(), api);
+            int pushedFailedTime = SyncEngine.updateFailedTime(getApplicationContext(), api);
             return Result.success();
         } catch (IOException io) {
             Log.e("UpdateLocationWorker", "io: " + io.getMessage());

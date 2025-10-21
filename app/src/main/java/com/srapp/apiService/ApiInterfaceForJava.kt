@@ -182,6 +182,10 @@ interface ApiInterfaceForJava {
     fun lostTime(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
+    @POST("failed_time_tracking.json")
+    fun failedTime(@Body JSONObject: RequestBody): Call<String>
+
+    @Headers("Content-Type: application/json")
     @POST("push_service_stop.json")
     fun pushServiceStop(@Body JSONObject: RequestBody): Call<String>
 
@@ -296,7 +300,7 @@ interface ApiInterfaceForJava {
     fun tempOutletStatus(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
-    @POST("http://103.134.90.33:8181/new_life/api_data_dist01_retrives/get_system_current_date_time.json")
+    @POST("http://103.134.90.33:8181/new_life/api_data_dist02_retrives/get_system_current_date_time.json")
     fun getTimeDate(@Body JSONObject: RequestBody): Call<String>
 
 

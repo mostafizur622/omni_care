@@ -264,14 +264,18 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
 
 
 
-                if (basicFunction.getPreference("sales_person_id").equalsIgnoreCase("null") || basicFunction.isInternetOn()){
+                //if (basicFunction.getPreference("sales_person_id").equalsIgnoreCase("null") || basicFunction.isInternetOn()){
 
                 JSONObject jsonObject = new JSONObject();
                 try {
                     Log.e("permission", checkForPermission() + "");
                     if (checkForPermission()) {
 
-
+                        String manufacturer = Build.MANUFACTURER;
+                        String model = Build.MODEL;
+                        String versionRelease = Build.VERSION.RELEASE;
+                        String deviceInfo = manufacturer + " " + model + " (Android " + versionRelease + " - SDK "  + ")";
+                        Log.e("DeviceInfo", deviceInfo);
                         basicFunction.savePreference("mac",  basicFunction.getPreference("mac"));
                         jsonObject.put(Difine.USERENAME, editUsername.getText().toString().trim());
                         jsonObject.put("password", editPassword.getText().toString().trim());
@@ -281,6 +285,9 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                         jsonObject.put("lat", latestFix.getLatitude());
                         jsonObject.put("long", latestFix.getLongitude());
                         jsonObject.put("token", firebaseToken);
+                        jsonObject.put("manufacturer", manufacturer);
+                        jsonObject.put("model", model);
+                        jsonObject.put("versionRelease", versionRelease);
 
                        //  basicFunction.getResponceData(URL.Login, jsonObject.toString(), 101);
                          Log.e("map : ", jsonObject.toString());
@@ -790,15 +797,15 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                     e.printStackTrace();
                     Log.e("ServiceHandlerOutlets", e.getMessage());
                 }
-             }else {
-                  ///  basicFunction.savePreference("end_time","20:00:00");
-                    if (basicFunction.getPreference("password").equalsIgnoreCase(editPassword.getText().toString())) {
-                        startActivity(new Intent(LoginActivity.this, Dashboard.class));
-                        finish();
-                    }else {
-                        Toast.makeText(LoginActivity.this, "Wrong Username Or Password", Toast.LENGTH_LONG).show();
-                    }
-                }
+//             }else {
+//                  ///  basicFunction.savePreference("end_time","20:00:00");
+//                    if (basicFunction.getPreference("password").equalsIgnoreCase(editPassword.getText().toString())) {
+//                        startActivity(new Intent(LoginActivity.this, Dashboard.class));
+//                        finish();
+//                    }else {
+//                        Toast.makeText(LoginActivity.this, "Wrong Username Or Password", Toast.LENGTH_LONG).show();
+//                    }
+//                }
             }
 
         });

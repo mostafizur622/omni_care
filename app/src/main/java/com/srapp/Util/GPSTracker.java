@@ -417,6 +417,14 @@ public class GPSTracker extends Service implements LocationListener {
                 if (loc != null && isGoodFix(loc)) {
                     saveLocationWithExtras(loc);
                 } else {
+                    HashMap<String, String> map = new HashMap<>();
+                    map.put("insert_time", getCurrentDateTime24());
+                    map.put("is_pushed", "0");
+                    map.put("created_at", String.valueOf(System.currentTimeMillis()));
+                    map.put("updated_at",String.valueOf(System.currentTimeMillis()));
+
+                    Data_Source ds = new Data_Source(mContext);
+                    ds.InsertTable(map, Tables.TABLE_NAME_GPS_TRACKING_FAILED_TIME);
                     Toast.makeText(mContext, "Location unavailable. Turn on GPS Allow all the time permission or restart your device if the issue continues.", Toast.LENGTH_SHORT).show();
                     Log.w("GPSTracker", "bad/none fix dropped");
                 }
@@ -468,7 +476,6 @@ public class GPSTracker extends Service implements LocationListener {
         }
 
         Long lastSaved = fetchLastSavedTime();
-        Log.d("LastTrackedTime", "Last saved time: " + lastSaved + " ms");
         if (lastSaved != null) {
             long now = System.currentTimeMillis();
 //            long diff = now - lastSaved;

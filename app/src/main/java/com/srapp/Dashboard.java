@@ -157,6 +157,7 @@ public class Dashboard extends Parent implements BasicFunctionListener {
       try {
           deleteBeforeLocationData();
           deleteBeforeLostTimeData();
+          deleteBeforeFailedTimeData();
       }catch (NullPointerException e){
           Log.d("text",e.getLocalizedMessage());
       }
@@ -407,6 +408,16 @@ public class Dashboard extends Parent implements BasicFunctionListener {
         Cursor c = ds.sqLiteDatabase.rawQuery("select * from gps_tracking_gape_time where is_pushed='0'",null);
         c.moveToFirst();
         if (c != null && c.getCount() > 0) {
+        }
+    }
+    public void deleteBeforeFailedTimeData(){
+        ds.sqLiteDatabase.execSQL("DELETE FROM gps_tracking_failed_time\n" +
+                "WHERE is_pushed = '1'\n" +
+                "  AND created_at < (strftime('%s','now','-3 days') * 1000);");
+        Cursor c = ds.sqLiteDatabase.rawQuery("select * from gps_tracking_failed_time where is_pushed='0'",null);
+        c.moveToFirst();
+        if (c != null && c.getCount() > 0) {
+
         }
     }
 }

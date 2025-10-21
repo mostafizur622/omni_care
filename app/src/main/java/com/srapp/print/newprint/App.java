@@ -20,10 +20,12 @@ import androidx.work.WorkManager;
 
 import com.srapp.SyncActivity;
 import com.srapp.Util.KeepAliveWorker;
+import com.srapp.Util.LocationSyncWorker;
 import com.srapp.Util.UpdateLocationWorker;
 
 import org.json.JSONException;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -82,8 +84,16 @@ public class App extends Application {
         }
         mContext = getApplicationContext();
         //KeepAliveWorker.schedule(getApplicationContext());
+        schedulePeriodicSync(getApplicationContext());
+        schedulePendingLocationDataSync(getApplicationContext());
     }
-
+/*    UUID runNow(Context ctx) {
+        OneTimeWorkRequest req =
+                new OneTimeWorkRequest.Builder(LocationSyncWorker.class)
+                        .build(); // no constraints => runs ASAP
+        WorkManager.getInstance(ctx).enqueue(req);
+        return req.getId();
+    }*/
     public static Context getContext() {
         return mContext;
     }
@@ -109,5 +119,20 @@ public class App extends Application {
         );
 
         Log.d("SyncScheduler", "✅ Periodic sync scheduled every 15 minutes");
+    }
+
+    private void schedulePendingLocationDataSync(Context ctx) {
+        PeriodicWorkRequest periodicSync =
+                new PeriodicWorkRequest.Builder(LocationSyncWorker.class, 15, TimeUnit.MINUTES)
+                        .addTag("location_sync_check")
+                        .build();
+
+        WorkManager.getInstance(ctx).enqueueUniquePeriodicWork(
+                "location_sync_check",
+                ExistingPeriodicWorkPolicy.KEEP,
+                periodicSync
+        );
+
+        Log.d("PendingLoScheduler", "✅ Periodic sync for pending data scheduled every 15 minutes");
     }
 }

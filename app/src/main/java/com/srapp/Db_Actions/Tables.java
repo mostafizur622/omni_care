@@ -703,6 +703,28 @@ public class Tables extends Parent {
 
 
 
+    /*..................................GPS TRACKING GAPE TIME......................................... */
+
+    public static final String TABLE_NAME_GPS_TRACKING_FAILED_TIME = "gps_tracking_failed_time";
+
+    public static final String GPS_TRACKING_TIME_FAILED_table_id = "_id";
+    public static final String GPS_TRACKING_INSERT_FAILED_TIME = "insert_time";
+    public static final String GPS_TRACKING_FAILED_IS_PUSH_TIME = "is_pushed";
+    public static final String GPS_TRACKING_TIME_FAILED_created_at = "created_at";
+    public static final String GPS_TRACKING_TIME_FAILED_updated_at = "updated_at";
+
+    public static final String GPS_TRACKING_FAILED_TIME_[] = {TABLE_NAME_GPS_TRACKING_FAILED_TIME,GPS_TRACKING_TIME_FAILED_table_id,GPS_TRACKING_INSERT_FAILED_TIME, GPS_TRACKING_FAILED_IS_PUSH_TIME, GPS_TRACKING_TIME_FAILED_created_at,GPS_TRACKING_TIME_FAILED_updated_at,};
+
+
+    public static final String CREATE_GPS_TRACKING_FAILED_TIME_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME_GPS_TRACKING_FAILED_TIME +
+            " ( " +
+            GPS_TRACKING_TIME_FAILED_table_id + " INTEGER PRIMARY KEY,   " +
+            GPS_TRACKING_INSERT_FAILED_TIME + "  VARCHAR,   " +
+            GPS_TRACKING_FAILED_IS_PUSH_TIME + "  VARCHAR,   " +
+            GPS_TRACKING_TIME_FAILED_created_at + "  INTEGER,   " +
+            GPS_TRACKING_TIME_FAILED_updated_at + "  DATETIME );";
+
+
     /*..................................GPS TRACKING TIME......................................... */
 
     public static final String TABLE_NAME_GPS_TRACKING_TIME = "gps_tracking_time";
