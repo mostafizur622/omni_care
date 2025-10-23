@@ -19,6 +19,8 @@ import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import com.srapp.SyncActivity;
+import com.srapp.Util.AlarmPingScheduler;
+import com.srapp.Util.GPSTracker;
 import com.srapp.Util.KeepAliveWorker;
 import com.srapp.Util.LocationSyncWorker;
 import com.srapp.Util.UpdateLocationWorker;
@@ -86,6 +88,7 @@ public class App extends Application {
         //KeepAliveWorker.schedule(getApplicationContext());
         schedulePeriodicSync(getApplicationContext());
         schedulePendingLocationDataSync(getApplicationContext());
+        AlarmPingScheduler.schedule(getApplicationContext());
     }
 /*    UUID runNow(Context ctx) {
         OneTimeWorkRequest req =
@@ -106,7 +109,6 @@ public class App extends Application {
         );
     }
     private void schedulePeriodicSync(Context ctx) {
-        // প্রতি 15 মিনিট পর পর চলবে (Android min period = 15min)
         PeriodicWorkRequest periodicSync =
                 new PeriodicWorkRequest.Builder(UpdateLocationWorker.class, 15, TimeUnit.MINUTES)
                         .addTag("update_location_periodic")

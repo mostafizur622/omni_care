@@ -109,6 +109,9 @@ public class GPSTracker extends Service implements LocationListener {
     private static final float  MAX_ACCURACY_M      = 50f;    // accept if <= 50m (indoor হলে 75-100m করতে পারো)
     private static final float  MAX_PLAUSIBLE_SPEED = 55f;    // m/s (~198 km/h)
     private PowerManager.WakeLock wakeLock;
+    private Handler handler;
+    private Runnable locationRunnable;
+    private long interval = 60000; // default 1 minute
     @Override
     public void onCreate() {
         super.onCreate();
@@ -126,46 +129,68 @@ public class GPSTracker extends Service implements LocationListener {
 
         scheduleKeepAliveWorker();
         acquireWakeLock();
-
-        if (timerTask==null){
-            Log.e("text","Location Service2"+getPreference("interval"));
-
-            timerTask = new TimerTask() {
-                @RequiresApi(api = Build.VERSION_CODES.M)
-                @Override
-                public void run() {
-
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.e("text","Location Service2"+CheckTime_date());
-                           // getApplicationContext().getMainLooper();
-                            if (CheckTime_date()){
-                                //getLocation();
-                                fetchCurrentLocationOnce();
-                            }else {
-                             //stopSelf();
-                             //timerTask.cancel();
-                             //timer.cancel();
-                            }
-
-                        }
-                    });
-
-
+        if (handler == null) {
+            handler = new Handler(Looper.getMainLooper());
+        }
+        try {
+            interval = Long.parseLong(getPreference("interval"));
+        } catch (Exception e) {
+            Log.e("GPSTracker", "Invalid interval in preference, using default 60000ms");
+        }
+        locationRunnable = new Runnable() {
+            @Override
+            public void run() {
+                Log.e("text", "Location Service (Handler) " + CheckTime_date());
+                if (CheckTime_date()) {
+                    fetchCurrentLocationOnce();
                 }
-            };
-        }
-        if (timer==null){
-            Log.e("text","Location Service2"+getPreference("interval"));
-            timer = new Timer();
-            try {
-                timer.schedule(timerTask,5000 , Long.parseLong(getPreference("interval")));
-            } catch (Exception e) {
-                Log.e("GPSTracker", "Invalid interval in preference, using default 60000ms");
-            }
 
-        }
+
+                // Re-post the runnable after the interval
+                handler.postDelayed(this, interval);
+            }
+        };
+        handler.postDelayed(locationRunnable, 5000);
+
+//        if (timerTask==null){
+//            Log.e("text","Location Service2"+getPreference("interval"));
+//
+//            timerTask = new TimerTask() {
+//                @RequiresApi(api = Build.VERSION_CODES.M)
+//                @Override
+//                public void run() {
+//
+//                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            Log.e("text","Location Service2"+CheckTime_date());
+//                           // getApplicationContext().getMainLooper();
+//                            if (CheckTime_date()){
+//                                //getLocation();
+//                                fetchCurrentLocationOnce();
+//                            }else {
+//                             //stopSelf();
+//                             //timerTask.cancel();
+//                             //timer.cancel();
+//                            }
+//
+//                        }
+//                    });
+//
+//
+//                }
+//            };
+//        }
+//        if (timer==null){
+//            Log.e("text","Location Service2"+getPreference("interval"));
+//            timer = new Timer();
+//            try {
+//                timer.schedule(timerTask,5000 , Long.parseLong(getPreference("interval")));
+//            } catch (Exception e) {
+//                Log.e("GPSTracker", "Invalid interval in preference, using default 60000ms");
+//            }
+//
+//        }
     }
 
     @Override
@@ -950,32 +975,51 @@ public class GPSTracker extends Service implements LocationListener {
         saveServiceStopTime("onDestroy");
         scheduleKeepAliveWorker();
         Log.d("Service,","onDestroy");
+        stopHandler();
         releaseWakeLock();
+        pingAlarmReceiver(this);
         super.onDestroy();
     }
 
     @Override
     public void onTaskRemoved(Intent rootIntent) {
-        saveServiceStopTime("task_removed");
+        super.onTaskRemoved(rootIntent);
         //scheduleKeepAliveWorker();
         // Relaunch self (best effort)
         Log.d("Service,","onTaskRemoved");
-        Intent restartService = new Intent(getApplicationContext(), GPSTracker.class);
-        restartService.setPackage(getPackageName());
-        PendingIntent restartPendingIntent =
-                PendingIntent.getService(getApplicationContext(), 1, restartService, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
+        try {
+            saveServiceStopTime("task_removed");
+            // Stop current handler safely (prevent leaks)
+            stopHandler();
+            Intent restartService = new Intent(getApplicationContext(), GPSTracker.class);
+            restartService.setPackage(getPackageName());
+            PendingIntent restartPendingIntent =
+                    PendingIntent.getService(getApplicationContext(), 1, restartService, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
 
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(
-                AlarmManager.ELAPSED_REALTIME,
-                SystemClock.elapsedRealtime() + 1000,
-                restartPendingIntent
-        );
+            AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            alarmManager.set(
+                    AlarmManager.ELAPSED_REALTIME,
+                    SystemClock.elapsedRealtime() + 1000,
+                    restartPendingIntent
+            );
+            pingAlarmReceiver(this);
+        }catch (Exception e) {
+        Log.e("GPSTracker", "Error in onTaskRemoved", e);
+       }
 
-        super.onTaskRemoved(rootIntent);
-        super.onTaskRemoved(rootIntent);
+
     }
-
+    // ✅ Safe stop method (to prevent leaks / crashes)
+    private void stopHandler() {
+        try {
+            IS_RUNNING = false;
+            if (handler != null && locationRunnable != null) {
+                handler.removeCallbacks(locationRunnable);
+            }
+        } catch (Exception e) {
+            Log.e("GPSTracker", "Error stopping handler", e);
+        }
+    }
     private void saveServiceStopTime(String reason) {
         long now = System.currentTimeMillis();
         PreferenceManager.getDefaultSharedPreferences(this)
@@ -983,6 +1027,10 @@ public class GPSTracker extends Service implements LocationListener {
                 .putLong(PREF_STOP_TIME, now)
                 .putString(PREF_STOP_REASON, reason) // চাইলে পাঠাবে, না চাইলে বাদ
                 .apply();
+    }
+    private void pingAlarmReceiver(Context context) {
+        Intent i = new Intent(context, AlarmReceiver.class);
+        context.sendBroadcast(i);
     }
 
 }

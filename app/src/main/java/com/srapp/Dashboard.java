@@ -34,6 +34,7 @@ import androidx.core.content.ContextCompat;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
+import com.srapp.Util.AlarmReceiver;
 import com.srapp.Util.DeviceAdministrator;
 import com.srapp.Util.GPSTracker;
 import com.srapp.Util.Parent;
@@ -274,6 +275,10 @@ public class Dashboard extends Parent implements BasicFunctionListener {
         cash_number.setText(ds.getTotalCashOfCurrentDay());
         oc_value.setText(ds.getTotalOCofCurrentDay());
         oc.setText(ds.getOc());
+        if (GPSTracker.IS_RUNNING) {
+            AlarmReceiver.stopAlarmPublic();
+            Log.i("Dashboard", "Stopped alarm since service is running");
+        }
 
         try{
             //startService(new Intent(Dashboard.this, GPSTracker.class));

@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -543,6 +544,18 @@ public class SR_Attendance extends ParentActivity implements BasicFunctionListen
             }
         });
 
+
+    }
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // TODO Auto-generated method stub
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            startActivity(new Intent(SR_Attendance.this, Dashboard.class));
+            finishAffinity();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
 
     }
 
