@@ -190,6 +190,10 @@ interface ApiInterfaceForJava {
     fun pushServiceStop(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
+    @POST("push_location_permission_denied.json")
+    fun pushLocationDenied(@Body JSONObject: RequestBody): Call<String>
+
+    @Headers("Content-Type: application/json")
     @POST("create_outlet_visit.json")
     fun pushOutletVisit(@Body JSONObject: RequestBody): Call<String>
 

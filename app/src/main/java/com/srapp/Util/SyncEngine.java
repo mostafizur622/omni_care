@@ -277,6 +277,40 @@ public class SyncEngine {
         return 1;
     }
 
+    public static int pushLocationDeniedIfPending(Context ctx, ApiInterfaceForJava api)
+            throws Exception {
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(ctx);
+        long ts = sp.getLong("location_denied_get_time", 0L);
+        if (ts <= 0) return 0; // কিছু pending নেই
+
+        String reason = sp.getString("location_denied_reason", "unknown");
+
+        // payload বানাও (তোমার server API অনুযায়ী key নাম বসাও)
+        JSONObject payload = new JSONObject();
+        payload.put("mac", sp.getString("mac",""));
+        payload.put("sales_person_id", sp.getString("sales_person_id",""));
+        payload.put("location_denied_time_ms", ts);
+        payload.put("location_denied_time_str", formatYmdHms(ts)); // human-readable
+
+        RequestBody body = RequestBody.create(
+                MediaType.parse("application/json; charset=utf-8"),
+                payload.toString()
+        );
+
+        Response<String> resp = api.pushLocationDenied(body).execute();
+        if (!resp.isSuccessful() || resp.body() == null) {
+            throw new IOException("pushLocationDenied failed: code=" + resp.code());
+        }
+
+        sp.edit()
+                .remove("location_denied_get_time")
+                .remove("location_denied_reason")
+                .apply();
+
+        return 1;
+    }
+
     private static String formatYmdHms(long ms) {
         java.text.SimpleDateFormat sdf =
                 new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault());

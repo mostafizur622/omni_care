@@ -237,7 +237,8 @@ public class SR_Attendance extends ParentActivity implements BasicFunctionListen
                         Location currentLocation = new Location("");
                         currentLocation.setLatitude(currentLat);
                         currentLocation.setLongitude(currentLng);
-                        if (isChecking.equalsIgnoreCase("2")){
+                        if (isChecking.equalsIgnoreCase("2"))
+                        {
                             Log.e("LocationCheck","Attendance");
                             if (locationType.equalsIgnoreCase("1")){
                                 /*LoginLocation*/

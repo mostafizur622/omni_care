@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <uses-feature
         android:name="android.hardware.location.gps"
         android:required="false" />
@@ -27,11 +28,11 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
-    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission
         android:name="android.permission.WRITE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
@@ -39,7 +40,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
     <application
         android:name=".print.newprint.App"
         android:allowBackup="true"
@@ -377,7 +379,8 @@
             android:name=".Util.CachedFileProvider"
             android:authorities="com.srapp_new_life.provider"
             android:grantUriPermissions="true" />
-        <receiver android:name=".Util.TimeChangedReceiver"
+        <receiver
+            android:name=".Util.TimeChangedReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.TIME_SET" />
@@ -386,13 +389,14 @@
         </receiver>
         <receiver
             android:name=".ActivityRecognition.ActivityUpdatesReceiver"
-            android:exported="false" />
-        <!-- Register NetworkChangeReceiver -->
-        <receiver android:name=".Util.NetworkChangeReceiver" android:exported="false"
-            android:enabled="true">
+            android:exported="false" /> <!-- Register NetworkChangeReceiver -->
+        <receiver
+            android:name=".Util.NetworkChangeReceiver"
+            android:enabled="true"
+            android:exported="false">
             <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
-                <action android:name="android.net.wifi.WIFI_STATE_CHANGED"/>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
             </intent-filter>
         </receiver>
         <receiver
@@ -403,7 +407,6 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".Util.DeviceAdministrator"
             android:directBootAware="true"
@@ -433,10 +436,10 @@
             android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
             android:resource="@xml/device_filter" />
 
-        <service android:name=".Util.GPSTracker"
-            android:foregroundServiceType="location"
-            android:exported="false"/>
-
+        <service
+            android:name=".Util.GPSTracker"
+            android:exported="false"
+            android:foregroundServiceType="location" />
         <service
             android:name=".firebase.FirebaseMessagingService"
             android:enabled="true"
@@ -450,7 +453,13 @@
             android:name=".Util.AlarmReceiver"
             android:enabled="true"
             android:exported="false" />
-
+        <receiver
+            android:name=".Util.RestartServiceReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

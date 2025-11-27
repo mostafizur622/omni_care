@@ -329,7 +329,7 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                                        // basicFunction.savePreference(MIN_ORDER_NUMBER,"1");
 
 
-                            basicFunction.savePreference("store_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("store_id"));
+                            basicFunction.savePreference("store_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject( "user_info").getString("store_id"));
                             basicFunction.savePreference("ae_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("ae_id"));
                             basicFunction.savePreference("tso_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("tso_id"));
                             basicFunction.savePreference("db_id",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("db_id"));

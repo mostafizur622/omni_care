@@ -2,6 +2,7 @@ package com.srapp;
 
 import static com.srapp.Util.VivoAutoStartHelper.openAutoStartSettings;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -35,6 +37,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
 import com.srapp.Util.AlarmReceiver;
+import com.srapp.Util.AlarmScheduler;
 import com.srapp.Util.DeviceAdministrator;
 import com.srapp.Util.GPSTracker;
 import com.srapp.Util.Parent;
@@ -60,6 +63,7 @@ public class Dashboard extends Parent implements BasicFunctionListener {
     LinearLayout ecOc;
     CardView listCard;
     private static final int REQ_AR = 7001;
+    private static final String PREF_ASKED_EXACT_ALARM = "asked_exact_alarm";
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // TODO Auto-generated method stub
@@ -265,9 +269,36 @@ public class Dashboard extends Parent implements BasicFunctionListener {
         oc.setText(ds.getOc());
         Log.e("text","Location Service");
 
-
+        //DevKillUtils.scheduleDevKill(this, 60_000, DevKillUtils.KillMode.PROCESS_KILL);
+    }
+    private boolean hasExactAlarmPrivilege() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return true;
+        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        return am != null && am.canScheduleExactAlarms();
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
+    private void promptExactAlarmIfNeeded() {
+        if (hasExactAlarmPrivilege()) return;
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean alreadyAsked = sp.getBoolean(PREF_ASKED_EXACT_ALARM, false);
+        if (alreadyAsked) {
+            // আগে জিজ্ঞেস করা হয়েছে—সরাসরি settings ওপেন করতে পারেন বা শুধু নোটিশ দিন
+            AlarmScheduler.requestExactAlarmPermission(this);
+            return;
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Allow exact alarms")
+                .setMessage("To keep background location reliable during idle/Doze, please allow exact alarms for this app.")
+                .setPositiveButton("Open Settings", (d, w) -> {
+                    sp.edit().putBoolean(PREF_ASKED_EXACT_ALARM, true).apply();
+                    AlarmScheduler.requestExactAlarmPermission(this);
+                })
+                .setNegativeButton("Not now", null)
+                .show();
+    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -275,10 +306,7 @@ public class Dashboard extends Parent implements BasicFunctionListener {
         cash_number.setText(ds.getTotalCashOfCurrentDay());
         oc_value.setText(ds.getTotalOCofCurrentDay());
         oc.setText(ds.getOc());
-        if (GPSTracker.IS_RUNNING) {
-            AlarmReceiver.stopAlarmPublic();
-            Log.i("Dashboard", "Stopped alarm since service is running");
-        }
+
 
         try{
             //startService(new Intent(Dashboard.this, GPSTracker.class));
@@ -291,7 +319,7 @@ public class Dashboard extends Parent implements BasicFunctionListener {
                 startService(new Intent(this, GPSTracker.class));
             }
         }catch (Exception e){
-            Log.e("text",e.getLocalizedMessage());
+            Log.e("textE",e.getLocalizedMessage());
             try{
                 //startService(new Intent(Dashboard.this, GPSTracker.class));
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -304,12 +332,29 @@ public class Dashboard extends Parent implements BasicFunctionListener {
                 }
             }catch (Exception et){
 
-                Log.e("text",et.getLocalizedMessage());
+                Log.e("textE",et.getLocalizedMessage());
             }
 
         }
+        new Handler(getMainLooper()).postDelayed(() -> {
+            boolean healthy = GPSTracker.IS_RUNNING || isGpsHealthy();
+            if (healthy) {
+                AlarmReceiver.stopAlarmPublic();
+            } else {
+                AlarmScheduler.scheduleExactPing(getApplicationContext(), 15 * 60_000L);
+            }
+        }, 600);
+        //2) S+ exact alarm privilege
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (!hasExactAlarmPrivilege()) {
+                promptExactAlarmIfNeeded();
+            }
+        }
     }
-
+    private boolean isGpsHealthy() {
+        long last = PreferenceManager.getDefaultSharedPreferences(this).getLong("gps_hb", 0L);
+        return System.currentTimeMillis() - last <= 60_000L;
+    }
     @Override
     public void OnServerResponce(JSONObject jsonObject, int i) {
 
@@ -400,29 +445,16 @@ public class Dashboard extends Parent implements BasicFunctionListener {
     public void deleteBeforeLocationData(){
         ds.sqLiteDatabase.execSQL("DELETE FROM gps_tracker\n" +
                 "WHERE is_pushed = '1'\n" +
-                "  AND created_at < (strftime('%s','now','-3 days') * 1000);");
-        Cursor c = ds.sqLiteDatabase.rawQuery("select * from gps_tracker where is_pushed='0'",null);
-        c.moveToFirst();
-        if (c != null && c.getCount() > 0) {
-        }
+                "  AND created_at < (strftime('%s','now','-2 days') * 1000);");
     }
     public void deleteBeforeLostTimeData(){
         ds.sqLiteDatabase.execSQL("DELETE FROM gps_tracking_gape_time\n" +
                 "WHERE is_pushed = '1'\n" +
-                "  AND created_at < (strftime('%s','now','-3 days') * 1000);");
-        Cursor c = ds.sqLiteDatabase.rawQuery("select * from gps_tracking_gape_time where is_pushed='0'",null);
-        c.moveToFirst();
-        if (c != null && c.getCount() > 0) {
-        }
+                "  AND created_at < (strftime('%s','now','-2 days') * 1000);");
     }
     public void deleteBeforeFailedTimeData(){
         ds.sqLiteDatabase.execSQL("DELETE FROM gps_tracking_failed_time\n" +
                 "WHERE is_pushed = '1'\n" +
-                "  AND created_at < (strftime('%s','now','-3 days') * 1000);");
-        Cursor c = ds.sqLiteDatabase.rawQuery("select * from gps_tracking_failed_time where is_pushed='0'",null);
-        c.moveToFirst();
-        if (c != null && c.getCount() > 0) {
-
-        }
+                "  AND created_at < (strftime('%s','now','-2 days') * 1000);");
     }
 }

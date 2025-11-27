@@ -29,7 +29,7 @@ public class BootReceiver extends BroadcastReceiver {
                     } else {
                         context.startService(serviceIntent);
                     }
-
+                    AlarmScheduler.scheduleExactPing(context, 15 * 60_000L);
                 } else {
                     Log.w("BootReceiver", "Interval is empty or null. GPSTracker will not start.");
                 }

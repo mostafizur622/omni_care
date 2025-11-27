@@ -18,8 +18,8 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
-import com.srapp.SyncActivity;
-import com.srapp.Util.AlarmPingScheduler;
+
+import com.srapp.Util.AlarmPingWorker;
 import com.srapp.Util.GPSTracker;
 import com.srapp.Util.KeepAliveWorker;
 import com.srapp.Util.LocationSyncWorker;
@@ -88,7 +88,8 @@ public class App extends Application {
         //KeepAliveWorker.schedule(getApplicationContext());
         schedulePeriodicSync(getApplicationContext());
         schedulePendingLocationDataSync(getApplicationContext());
-        AlarmPingScheduler.schedule(getApplicationContext());
+        //AlarmPingScheduler.schedule(getApplicationContext());
+        scheduleAlarmPingWithWorkManager(getApplicationContext());
     }
 /*    UUID runNow(Context ctx) {
         OneTimeWorkRequest req =
@@ -136,5 +137,20 @@ public class App extends Application {
         );
 
         Log.d("PendingLoScheduler", "✅ Periodic sync for pending data scheduled every 15 minutes");
+    }
+
+    private void scheduleAlarmPingWithWorkManager(Context ctx) {
+        PeriodicWorkRequest req =
+                new PeriodicWorkRequest.Builder(AlarmPingWorker.class, 15, TimeUnit.MINUTES)
+                        .addTag(AlarmPingWorker.UNIQUE_NAME)
+
+                        .build();
+
+        WorkManager.getInstance(ctx).enqueueUniquePeriodicWork(
+                AlarmPingWorker.UNIQUE_NAME,
+                ExistingPeriodicWorkPolicy.REPLACE,
+                req
+        );
+        Log.d("PendingServiceStop", "✅ Periodic for service stop  every 15 minutes");
     }
 }

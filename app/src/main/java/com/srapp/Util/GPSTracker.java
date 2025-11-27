@@ -69,6 +69,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class GPSTracker extends Service implements LocationListener {
@@ -104,14 +106,26 @@ public class GPSTracker extends Service implements LocationListener {
     public static volatile boolean IS_RUNNING = false;
     private static final String PREF_STOP_TIME  = "service_last_stop_time";
     private static final String PREF_STOP_REASON= "service_last_stop_reason";
+
+    private static final String PREF_LOCATION_DENIED  = "location_denied_get_time";
+    private static final String PREF_LOCATION_DENIED_REASON= "location_denied_reason";
     // ---- Accuracy / freshness / plausibility thresholds ----
-    private static final long   MAX_FIX_AGE_MS      = 15_000; // fresh <= 15s
+    private static final long   MAX_FIX_AGE_MS      = 15_000L; // fresh <= 15s
     private static final float  MAX_ACCURACY_M      = 50f;    // accept if <= 50m (indoor হলে 75-100m করতে পারো)
     private static final float  MAX_PLAUSIBLE_SPEED = 55f;    // m/s (~198 km/h)
+
+    private static final double SPEED_DT_CAP_S        = 30.0;    // স্পিড ক্যালকে dt upper cap
+    private static final long   LONG_GAP_S            = 5 * 60;  // 5 মিনিটের বেশি = long gap
+    private static final float  TELEPORT_METERS       = 5000f;   // 5 কিমি লাফ
+    private static final long   TELEPORT_WINDOW_S     = 120;     // 2 মিনিটের মধ্যে হলে reject
     private PowerManager.WakeLock wakeLock;
     private Handler handler;
     private Runnable locationRunnable;
     private long interval = 60000; // default 1 minute
+    private boolean loopActive = false;
+    private Handler worker;
+    private HandlerThread workerThread;
+    private static final String HB_KEY = "gps_hb";
     @Override
     public void onCreate() {
         super.onCreate();
@@ -137,7 +151,7 @@ public class GPSTracker extends Service implements LocationListener {
         } catch (Exception e) {
             Log.e("GPSTracker", "Invalid interval in preference, using default 60000ms");
         }
-        locationRunnable = new Runnable() {
+/*        locationRunnable = new Runnable() {
             @Override
             public void run() {
                 Log.e("text", "Location Service (Handler) " + CheckTime_date());
@@ -150,7 +164,13 @@ public class GPSTracker extends Service implements LocationListener {
                 handler.postDelayed(this, interval);
             }
         };
-        handler.postDelayed(locationRunnable, 5000);
+        handler.postDelayed(locationRunnable, 5000);*/
+        workerThread = new HandlerThread("gps-worker");
+        workerThread.start();
+        worker = new Handler(workerThread.getLooper());
+        ensureLoopRunning();
+        AlarmScheduler.scheduleExactPing(getApplicationContext(), 15 * 60_000L);
+        Log.w("onCreateService","GPSTracker Service is running...");
 
 //        if (timerTask==null){
 //            Log.e("text","Location Service2"+getPreference("interval"));
@@ -192,13 +212,71 @@ public class GPSTracker extends Service implements LocationListener {
 //
 //        }
     }
+/*    private void ensureLoopRunning() {
+        if (handler == null) handler = new Handler(Looper.getMainLooper());
+        if (locationRunnable == null) {
+            locationRunnable = new Runnable() {
+                @Override public void run() {
+                    Log.e("text", "Location Service (Handler) " + CheckTime_date());
+                    if (CheckTime_date()) fetchCurrentLocationOnce();
+                    if (loopActive) handler.postDelayed(this, interval);
+                }
+            };
+        }
+        if (!loopActive) {
+            loopActive = true;
+            handler.postDelayed(locationRunnable, 5000);
+            Log.d("GPS","loop started");
+        } else {
+            Log.d("GPS","loop already active");
+        }
+    }*/
+private final Runnable locationRunnable1 = new Runnable() {
+    @Override public void run() {
+        try {
+            boolean inWindow = CheckTime_date();
+            Log.d("GPS","tick; window=" + inWindow);
+            if (inWindow) fetchCurrentLocationOnce();
+            markHeartbeat();
+        } catch (Throwable t) {
+            Log.e("GPS","tick crashed", t); // ✅ crash হলেও লুপ বাঁচবে
+        } finally {
+            if (loopActive && worker != null) {
+                worker.postDelayed(this, interval); // ✅ সব অবস্থায় re-post
+            }
+        }
+    }
+};
 
+    private void ensureLoopRunning() {
+        if (workerThread == null || !workerThread.isAlive()) {
+            workerThread = new HandlerThread("gps-worker");
+            workerThread.start();
+            worker = new Handler(workerThread.getLooper());
+        }
+        if (!loopActive && worker != null) {
+            loopActive = true;
+            worker.postDelayed(locationRunnable1, 2000);
+            Log.d("GPS","loop started");
+        } else {
+            Log.d("GPS","loop already active");
+        }
+    }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        IS_RUNNING = true;
         startForegroundServiceSafe();
+        try { interval = Long.parseLong(getPreference("interval")); } catch (Exception ignore) {}
+        ensureLoopRunning();
+        Log.w("onStartService","GPSTracker Service is running...");
         return START_STICKY;
     }
-
+    private void markHeartbeat() {
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .edit()
+                .putLong(HB_KEY, System.currentTimeMillis())
+                .apply();
+    }
     private void scheduleKeepAliveWorker() {
         OneTimeWorkRequest keepAliveRequest = new OneTimeWorkRequest.Builder(KeepAliveWorker.class)
                 .setInitialDelay(5, TimeUnit.MINUTES) // Delay before starting
@@ -335,6 +413,7 @@ public class GPSTracker extends Service implements LocationListener {
     private void fetchCurrentLocationOnce() {
         if (!hasLocationPermission()) {
             Log.e("GPSTrackerNew", "Location permission missing.");
+            saveLocationPermissionDenied("permissionMissing");
             return;
         }
 
@@ -353,7 +432,7 @@ public class GPSTracker extends Service implements LocationListener {
                     requestSingleUpdateFallback();
                 });*/
         // Optional: very fresh last-known (<= 5s) গ্রহণ করো
-        fused.getLastLocation().addOnSuccessListener(last -> {
+/*        fused.getLastLocation().addOnSuccessListener(last -> {
             if (last != null
                     && (System.currentTimeMillis() - (last.getTime() > 0 ? last.getTime() : System.currentTimeMillis())) <= 5_000
                     && isGoodFix(last)) {
@@ -361,45 +440,124 @@ public class GPSTracker extends Service implements LocationListener {
             }
         });
 
-        requestSingleUpdateFallback(8_000); // 8s timeout
+        requestSingleUpdateFallback(8_000); // 8s timeout*/
+
+
+        // (A) last known, only if very fresh
+//        Executor main = androidx.core.content.ContextCompat.getMainExecutor(this);
+//        fused.getLastLocation().addOnSuccessListener(main, last -> {
+//            boolean accepted = false;
+//            if (last != null) {
+//                long t   = last.getTime() > 0 ? last.getTime() : 0L;
+//                long age = (t > 0) ? (System.currentTimeMillis() - t) : Long.MAX_VALUE;
+//
+//                String prov = (last.getProvider() != null) ? last.getProvider() : "";
+//                boolean isGpsOrFused =
+//                        "gps".equalsIgnoreCase(prov) || "fused".equalsIgnoreCase(prov);
+//
+//                boolean strictGood =
+//                        age <= 3_000 &&
+//                                isGoodFix(last) &&
+//                                isGpsOrFused &&
+//                                last.hasAccuracy() && last.getAccuracy() <= 25f;
+//
+//                if (strictGood) {
+//                    // ✅ প্লজিবিলিটি (আগের সেভড পয়েন্টের সাথে) — অবাস্তব ‘টেলিপোর্ট’ ব্লক
+//                    Location prev = fetchLastSavedLocation(); // তোমারই মেথড
+//                    if (prev == null || isPlausibleJump(prev, last)) {
+//                        saveLocationWithExtras(last);
+//                        accepted = true;
+//                    }
+//                }
+//            }
+//            if (!accepted) {
+                // (B) fresh request with timeout
+                requestSingleUpdateFallback(8_000);
+//            }
+//        });
     }
 
-    private boolean isGoodFix(Location loc) {
-        long t = (loc.getTime() > 0 ? loc.getTime() : System.currentTimeMillis());
-        long age = System.currentTimeMillis() - t;
-        if (age > MAX_FIX_AGE_MS) return false;                 // too old
+    private boolean isGoodFix(@NonNull Location loc) {
+        // age (clock-skew safe): elapsedRealtime ভিত্তিক
+        long ageMs;
+        if (loc.getElapsedRealtimeNanos() > 0) {
+            ageMs = (SystemClock.elapsedRealtimeNanos() - loc.getElapsedRealtimeNanos()) / 1_000_000L;
+        } else {
+            long tWall = (loc.getTime() > 0 ? loc.getTime() : System.currentTimeMillis());
+            ageMs = Math.max(0, System.currentTimeMillis() - tWall);
+        }
+        if (ageMs > MAX_FIX_AGE_MS) return false;
 
-        if (loc.hasAccuracy() && loc.getAccuracy() > MAX_ACCURACY_M) return false; // too coarse
+        if (!loc.hasAccuracy()) return false;
+        float acc = loc.getAccuracy();
+        if (acc > MAX_ACCURACY_M) return false;
 
-        // mock detection
+        // mock/spoof
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (loc.isMock()) return false;
-        } else {
-            if (loc.isFromMockProvider()) return false;
-        }
+        } else if (loc.isFromMockProvider()) return false;
 
-        // prefer GPS/fused; if provider == "network" AND accuracy poor, reject
-        String p = loc.getProvider();
-        if ("network".equalsIgnoreCase(p) && loc.hasAccuracy() && loc.getAccuracy() > 35f) return false;
+        // provider gate: coarse network/fused বাদ
+        String p = (loc.getProvider() == null) ? "" : loc.getProvider().toLowerCase(Locale.US);
+        if ("network".equals(p) && acc > 25f) return false;
+        if ("fused".equals(p)   && acc > 25f) return false;
 
         return true;
     }
 
-    private boolean isPlausibleJump(@Nullable Location last, @NonNull Location curr) {
-        if (last == null) return true;
+//    private boolean isPlausibleJump(@Nullable Location last, @NonNull Location curr) {
+//        if (last == null) return true;
+//
+//        long dt = curr.getTime() - last.getTime();
+//        if (dt <= 0) return false;
+//
+//        float d = last.distanceTo(curr);     // meters
+//        float v = d / (dt / 1000f);          // m/s
+//
+//        // accuracy
+//        float accSum = (last.hasAccuracy()? last.getAccuracy():0f) + (curr.hasAccuracy()? curr.getAccuracy():0f);
+//        if (accSum > 120f) return v <= (MAX_PLAUSIBLE_SPEED * 1.5f);
+//
+//        return v <= MAX_PLAUSIBLE_SPEED;
+//    }
+private boolean isPlausibleJump(@androidx.annotation.Nullable Location prev,
+                                @androidx.annotation.Nullable Location curr) {
+    // ✅ hard null-guards
+    if (curr == null) return false; // invalid
+    if (prev == null) return true;  // no baseline → accept
 
-        long dt = curr.getTime() - last.getTime();
-        if (dt <= 0) return false;
+    // dt হিসাব: elapsedRealtime থাকলে সেটা, নইলে wall-clock
+    long prevErn = prev.getElapsedRealtimeNanos();
+    long currErn = curr.getElapsedRealtimeNanos();
 
-        float d = last.distanceTo(curr);     // meters
-        float v = d / (dt / 1000f);          // m/s
-
-        // accuracy
-        float accSum = (last.hasAccuracy()? last.getAccuracy():0f) + (curr.hasAccuracy()? curr.getAccuracy():0f);
-        if (accSum > 120f) return v <= (MAX_PLAUSIBLE_SPEED * 1.5f);
-
-        return v <= MAX_PLAUSIBLE_SPEED;
+    double dt;
+    if (prevErn > 0 && currErn > 0) {
+        dt = (currErn - prevErn) / 1e9;
+    } else {
+        dt = (curr.getTime() - prev.getTime()) / 1000.0;
     }
+
+    // dt খারাপ হলে conservative accept করো (baseline issue)
+    if (dt <= 0) return true;
+
+    float dist = prev.distanceTo(curr);
+
+    // 1) খুব ছোট উইন্ডোতে বিশাল লাফ → reject
+    if (dt < TELEPORT_WINDOW_S && dist > TELEPORT_METERS) return false;
+
+    // 2) Long gap হলে speed-check skip → accept; gap upstream-এ লগ কোরো
+    if (dt >= LONG_GAP_S) return true;
+
+    // 3) speed dilution ঠেকাতে dt cap
+    double dtUsed = Math.min(dt, SPEED_DT_CAP_S);
+    double v = dist / dtUsed;
+
+    float accSum = (prev.hasAccuracy()? prev.getAccuracy():0f)
+            + (curr.hasAccuracy()? curr.getAccuracy():0f);
+    double vLimit = (accSum > 120f) ? (MAX_PLAUSIBLE_SPEED * 1.5) : MAX_PLAUSIBLE_SPEED;
+
+    return v <= vLimit;
+}
     // Fallback:
     private void requestSingleUpdateFallback(long timeoutMs) {
         if (!hasLocationPermission()) return;
@@ -422,25 +580,44 @@ public class GPSTracker extends Service implements LocationListener {
         };
 
         fused.requestLocationUpdates(req, cb, Looper.getMainLooper());*/
-        LocationRequest.Builder b = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, Long.parseLong(getPreference("interval")))
-                .setMinUpdateIntervalMillis(Long.parseLong(getPreference("interval"))/2)
+        LocationRequest.Builder b = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 0)
+                .setMinUpdateIntervalMillis(0)
                 .setMinUpdateDistanceMeters(0f)
-                .setMaxUpdateDelayMillis(Long.parseLong(getPreference("interval")))            // no batching
-                .setWaitForAccurateLocation(true);     // ✅ wait for GPS-grade
+                .setMaxUpdateDelayMillis(0)            // no batching
+                .setWaitForAccurateLocation(true)
+                .setMaxUpdateAgeMillis(0)// ✅ wait for GPS-grade
+                .setMaxUpdates(Integer.MAX_VALUE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             b.setGranularity(Granularity.GRANULARITY_FINE);
-            b.setMaxUpdateAgeMillis(0);
+
         }
 
         LocationRequest req = b.build();
-
+        final Location prev = fetchLastSavedLocation(); // plausibility-এর জন্য
+        final Handler main = new Handler(Looper.getMainLooper());
         LocationCallback cb = new LocationCallback() {
             @Override public void onLocationResult(LocationResult result) {
-                fused.removeLocationUpdates(this);
-                Location loc = result.getLastLocation();
-                if (loc != null && isGoodFix(loc)) {
-                    saveLocationWithExtras(loc);
+                if (result == null) return;
+                //fused.removeLocationUpdates(this);
+               // Location loc = result.getLastLocation();
+                if (result != null ) {
+                    // ব্যাচ iterate; শুধু last নেবেন না
+                    for (Location loc : result.getLocations()) {
+                        if (loc == null) continue;
+                        if (!isGoodFix(loc)) continue;
+                        if (prev != null && !isPlausibleJump(prev, loc)) {
+                            Log.w("GPS","reject implausible jump");
+                            continue;
+                        }
+
+                        // ✅ এক্সেপ্টেড—সেভ করে listening থামাও
+                        saveLocationWithExtras(loc);
+                        Log.d("GPS","accepted acc=" + loc.getAccuracy() + " prov=" + loc.getProvider());
+                        try { fused.removeLocationUpdates(this); } catch (Exception ignore) {}
+                        return;
+                    }
+
                 } else {
                     HashMap<String, String> map = new HashMap<>();
                     map.put("insert_time", getCurrentDateTime24());
@@ -460,8 +637,9 @@ public class GPSTracker extends Service implements LocationListener {
         fused.requestLocationUpdates(req, cb, Looper.getMainLooper());
 
         // Hard timeout
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            fused.removeLocationUpdates(cb);
+        main.postDelayed(() -> {
+            try { fused.removeLocationUpdates(cb); } catch (Exception ignore) {}
+            Log.w("GPS", "timeout: no acceptable fresh fix");
         }, timeoutMs);
     }
     private boolean hasLocationPermission() {
@@ -549,6 +727,7 @@ public class GPSTracker extends Service implements LocationListener {
 
         //Toast.makeText(mContext, "Service Running", Toast.LENGTH_SHORT).show();
         Log.d("Service Running","Yes");
+        markHeartbeat();
     }
 
     private void saveGapRecord(long gapeMillis, long insertTime, @NonNull String gapText,long lastSaved) {
@@ -612,7 +791,8 @@ public class GPSTracker extends Service implements LocationListener {
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         if (pm != null && wakeLock == null) {
             wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "GPSTracker::WakelockTag");
-            wakeLock.acquire();
+            wakeLock.setReferenceCounted(false);
+            wakeLock.acquire(30 * 60 * 1000L); // 30min
         }
     }
 
@@ -822,7 +1002,7 @@ public class GPSTracker extends Service implements LocationListener {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+/*    @RequiresApi(api = Build.VERSION_CODES.M)
     public Location getLocation() {
 
         try {
@@ -914,7 +1094,7 @@ public class GPSTracker extends Service implements LocationListener {
 
 
         return location;
-    }
+    }*/
     /**
      * Function to get latitude
      */
@@ -977,6 +1157,11 @@ public class GPSTracker extends Service implements LocationListener {
         Log.d("Service,","onDestroy");
         stopHandler();
         releaseWakeLock();
+        loopActive = false;
+        if (worker != null) worker.removeCallbacksAndMessages(null);
+        if (workerThread != null) { workerThread.quitSafely(); workerThread = null; }
+        try { if (arManager != null) arManager.stop(); } catch (Exception ignore) {}
+        AlarmScheduler.scheduleExactPing(getApplicationContext(), 15 * 60_000L);
         pingAlarmReceiver(this);
         super.onDestroy();
     }
@@ -1026,6 +1211,14 @@ public class GPSTracker extends Service implements LocationListener {
                 .edit()
                 .putLong(PREF_STOP_TIME, now)
                 .putString(PREF_STOP_REASON, reason) // চাইলে পাঠাবে, না চাইলে বাদ
+                .apply();
+    }
+    private void saveLocationPermissionDenied(String reason) {
+        long now = System.currentTimeMillis();
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .edit()
+                .putLong(PREF_LOCATION_DENIED, now)
+                .putString(PREF_LOCATION_DENIED_REASON, reason)
                 .apply();
     }
     private void pingAlarmReceiver(Context context) {

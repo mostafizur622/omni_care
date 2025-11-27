@@ -47,7 +47,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 /*        // keep rechecking every 10s even after one broadcast
         handler.removeCallbacks(checkRunnable);
         handler.postDelayed(checkRunnable, 10_000);*/
-        AlarmPingScheduler.rescheduleNext(context);
+        //AlarmPingScheduler.rescheduleNext(context);
     }
 
     /** ✅ Tracking hour checker (same logic as your CheckTime_date) */
