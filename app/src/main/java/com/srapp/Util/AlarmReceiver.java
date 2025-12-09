@@ -76,7 +76,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     private void startAlarm(Context ctx) {
         try {
             if (player == null) {
-                player = MediaPlayer.create(ctx.getApplicationContext(), R.raw.voicemaker_speech); // put alert_tone.mp3 under res/raw/
+                player = MediaPlayer.create(ctx.getApplicationContext(), R.raw.voicemaker_speech_common); // put alert_tone.mp3 under res/raw/
                 player.setLooping(true);
                 player.setVolume(1.0f, 1.0f);
                 player.start();

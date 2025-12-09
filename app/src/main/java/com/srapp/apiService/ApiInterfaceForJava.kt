@@ -194,6 +194,10 @@ interface ApiInterfaceForJava {
     fun pushLocationDenied(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
+    @POST("tracking_snapshot.json")
+    fun trackingSnapshot(@Body JSONObject: RequestBody): Call<String>
+
+    @Headers("Content-Type: application/json")
     @POST("create_outlet_visit.json")
     fun pushOutletVisit(@Body JSONObject: RequestBody): Call<String>
 

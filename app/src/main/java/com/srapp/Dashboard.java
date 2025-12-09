@@ -2,8 +2,12 @@ package com.srapp;
 
 import static com.srapp.Util.VivoAutoStartHelper.openAutoStartSettings;
 
+import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.app.admin.DevicePolicyManager;
+import android.app.usage.UsageStatsManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,6 +16,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,6 +24,7 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.service.notification.StatusBarNotification;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -36,6 +42,7 @@ import androidx.core.content.ContextCompat;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.srapp.Db_Actions.Data_Source;
 import com.srapp.Db_Actions.Tables;
+import com.srapp.Model.GpsDao;
 import com.srapp.Util.AlarmReceiver;
 import com.srapp.Util.AlarmScheduler;
 import com.srapp.Util.DeviceAdministrator;
@@ -46,7 +53,7 @@ import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
 
 import org.json.JSONObject;
-
+import android.Manifest;
 import java.util.ArrayDeque;
 
 public class Dashboard extends Parent implements BasicFunctionListener {
@@ -457,4 +464,202 @@ public class Dashboard extends Parent implements BasicFunctionListener {
                 "WHERE is_pushed = '1'\n" +
                 "  AND created_at < (strftime('%s','now','-2 days') * 1000);");
     }
+/*    public static JSONObject buildTrackingDiagnostics(Context ctx) {
+        JSONObject j = new JSONObject();
+
+        try {
+            PackageManager pm = ctx.getPackageManager();
+            String pkg = ctx.getPackageName();
+
+            // --- Device info ---
+            j.put("brand", Build.BRAND);
+            j.put("manufacturer", Build.MANUFACTURER);
+            j.put("model", Build.MODEL);
+            j.put("sdkInt", Build.VERSION.SDK_INT);
+            j.put("release", Build.VERSION.RELEASE);
+
+            // --- Permissions ---
+            JSONObject perms = new JSONObject();
+            perms.put("fine", hasPerm(ctx, Manifest.permission.ACCESS_FINE_LOCATION));
+            perms.put("coarse", hasPerm(ctx, Manifest.permission.ACCESS_COARSE_LOCATION));
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                perms.put("background_location", hasPerm(ctx, Manifest.permission.ACCESS_BACKGROUND_LOCATION));
+                perms.put("activity_recognition", hasPerm(ctx, Manifest.permission.ACTIVITY_RECOGNITION));
+            } else {
+                perms.put("background_location", true); // pre-Q implicit
+                perms.put("activity_recognition", true);
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                perms.put("foreground_service", hasPerm(ctx, Manifest.permission.FOREGROUND_SERVICE));
+            }
+
+            j.put("permissions", perms);
+
+            // --- Location enabled ---
+            LocationManager lm = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
+            boolean locEnabled = lm != null && lm.isLocationEnabled();
+            j.put("location_enabled", locEnabled);
+
+            // --- Battery optimization / restriction ---
+            PowerManager power = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
+            boolean ignoringOpt = false;
+            boolean powerSave = false;
+            if (power != null) {
+                powerSave = power.isPowerSaveMode();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    ignoringOpt = power.isIgnoringBatteryOptimizations(pkg);
+                }
+            }
+            j.put("power_save_mode", powerSave);
+            j.put("ignoring_battery_optimizations", ignoringOpt);
+
+            // ✅ Foreground notification alive?
+            j.put("foreground_notification_alive",
+                    hasForegroundNotification(ctx));
+
+
+            ActivityManager am = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
+            if (am != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                j.put("background_restricted", am.isBackgroundRestricted());
+            } else {
+                j.put("background_restricted", false);
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                UsageStatsManager usm = (UsageStatsManager) ctx.getSystemService(Context.USAGE_STATS_SERVICE);
+                if (usm != null) {
+                    int bucket = usm.getAppStandbyBucket();
+                    j.put("standby_bucket", bucket); // 10=active, 20=working_set, 30=frequent, 40=rare, 50=never
+                }
+            }
+
+            // --- Device Admin state ---
+            DevicePolicyManager dpm = (DevicePolicyManager) ctx.getSystemService(Context.DEVICE_POLICY_SERVICE);
+            ComponentName admin = new ComponentName(ctx, DeviceAdministrator.class);
+
+            JSONObject adminObj = new JSONObject();
+            if (dpm != null) {
+                adminObj.put("device_admin_active", dpm.isAdminActive(admin));
+                adminObj.put("device_owner", dpm.isDeviceOwnerApp(pkg));
+            } else {
+                adminObj.put("device_admin_active", false);
+                adminObj.put("device_owner", false);
+            }
+            j.put("device_admin", adminObj);
+
+            // --- Notification enabled (Foreground service visibility) ---
+            NotificationManager nm = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+            boolean notiEnabled = true;
+            if (nm != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                notiEnabled = nm.areNotificationsEnabled();
+            }
+            j.put("notifications_enabled", notiEnabled);
+
+        } catch (Exception e) {
+            // swallow
+        }
+
+        return j;
+    }
+
+    public static JSONObject buildHealthSnapshot(Context ctx) {
+        JSONObject j = new JSONObject();
+        long now = System.currentTimeMillis();
+
+        try {
+            // ---- last saved time from DB ----
+            Long lastSaved = fetchLastSavedTimeStatic(ctx); // helper below
+            j.put("last_saved_time_ms", lastSaved != null ? lastSaved : 0L);
+            j.put("minutes_since_last_save",
+                    lastSaved != null ? (now - lastSaved) / 60000.0 : -1);
+
+            // ---- heartbeat ----
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(ctx);
+            long hb = sp.getLong("gps_hb", 0L);
+            j.put("last_heartbeat_ms", hb);
+            j.put("minutes_since_heartbeat",
+                    hb > 0 ? (now - hb) / 60000.0 : -1);
+
+            // ---- service stop context ----
+            long stopMs = sp.getLong("service_last_stop_time", 0L);
+            String stopReason = sp.getString("service_last_stop_reason", null);
+
+            JSONObject service = new JSONObject();
+            service.put("last_stop_time_ms", stopMs);
+            service.put("last_stop_reason", stopReason);
+            service.put("minutes_since_stop",
+                    stopMs > 0 ? (now - stopMs) / 60000.0 : -1);
+
+            // IS_RUNNING flag prefs-এ না থাকলে omit করা যায়
+            service.put("is_running_pref", sp.getBoolean("gps_is_running", false));
+
+            j.put("service", service);
+
+            // ---- AR health ----
+            String arStatus = sp.getString("last_activity_status", null);
+            long arTs = sp.getLong("last_activity_ts", 0L);
+
+            JSONObject ar = new JSONObject();
+            ar.put("last_status", arStatus);
+            ar.put("last_ts_ms", arTs);
+            ar.put("minutes_since_ar",
+                    arTs > 0 ? (now - arTs) / 60000.0 : -1);
+
+            j.put("activity_recognition", ar);
+
+        } catch (Exception ignore) {}
+
+        return j;
+    }
+    private static Long fetchLastSavedTimeStatic(Context ctx) {
+        try {
+            GpsDao dao = new GpsDao(ctx.getApplicationContext());
+            Cursor c = dao.raw(
+                    "SELECT created_at FROM gps_tracker " +
+                            "WHERE created_at IS NOT NULL " +
+                            "ORDER BY created_at DESC LIMIT 1"
+            );
+            Long t = null;
+            if (c != null && c.moveToFirst()) {
+                t = c.getLong(0);
+            }
+            if (c != null) c.close();
+            return t;
+        } catch (Exception e) {
+            Log.e("fetchLastSaved","err="+e.getMessage());
+            return null;
+        }
+    }
+    public static boolean hasPerm(Context c, String p) {
+        return ActivityCompat.checkSelfPermission(c, p) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public static boolean hasForegroundNotification(Context ctx) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            // Android < 6 এ activeNotifications API নাই,
+            // ধরে নাও foreground হলে notification থাকার কথা
+            return true;
+        }
+
+        try {
+            NotificationManager nm =
+                    (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (nm == null) return false;
+
+            StatusBarNotification[] active = nm.getActiveNotifications();
+            if (active == null) return false;
+
+            for (StatusBarNotification sbn : active) {
+                if (sbn.getId() == 1) {   // ✅ তোমার startForeground(1, notification)
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            // কোন OEM/permission ইস্যু হলে safe fallback false
+            Log.e("GPS-DIAG", "hasForegroundNotification err: " + e.getMessage());
+        }
+        return false;
+    }*/
 }

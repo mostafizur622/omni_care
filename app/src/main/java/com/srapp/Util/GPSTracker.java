@@ -72,6 +72,7 @@ import java.util.TimerTask;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GPSTracker extends Service implements LocationListener {
 
@@ -115,7 +116,7 @@ public class GPSTracker extends Service implements LocationListener {
     private static final float  MAX_PLAUSIBLE_SPEED = 55f;    // m/s (~198 km/h)
 
     private static final double SPEED_DT_CAP_S        = 30.0;    // স্পিড ক্যালকে dt upper cap
-    private static final long   LONG_GAP_S            = 5 * 60;  // 5 মিনিটের বেশি = long gap
+    private static final long   LONG_GAP_S            = 2 * 60;  // 2 মিনিটের বেশি = long gap
     private static final float  TELEPORT_METERS       = 5000f;   // 5 কিমি লাফ
     private static final long   TELEPORT_WINDOW_S     = 120;     // 2 মিনিটের মধ্যে হলে reject
     private PowerManager.WakeLock wakeLock;
@@ -126,6 +127,19 @@ public class GPSTracker extends Service implements LocationListener {
     private Handler worker;
     private HandlerThread workerThread;
     private static final String HB_KEY = "gps_hb";
+    private LocationCallback contCallback;
+    private boolean contUpdatesStarted = false;
+    private volatile Location lastWarmLocation = null;
+    private final Object reqLock = new Object();
+    private boolean reqInFlight = false;
+    private final Object saveLock = new Object();
+    private volatile long lastSaveWallMs = 0L; // in-memory throttle
+    // fallback attempt time (priority guard)
+    private static final long CONT_BACKUP_GAP_MS = 60_000L; // 1 minute
+    private volatile long lastContSaveMs = 0L; // cont side memory gate (optional)
+    private Double lastLat = null;
+    private Double lastLon = null;
+    private Long lastTs = null;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -133,7 +147,8 @@ public class GPSTracker extends Service implements LocationListener {
         fused = LocationServices.getFusedLocationProviderClient(this);
       //  Handler mainHandler = new Handler(getApplicationContext().getMainLooper());
         arManager = new ActivityRecognitionManager(this);
-        arManager.start(Long.parseLong(getPreference("interval")));
+        //arManager.start(Long.parseLong(getPreference("interval")));
+        arManager.start(15_000L);
         // 🟢 Step 1: Foreground notification start (Vivo ইস্যু fix)
         IS_RUNNING = true;
         startForegroundServiceSafe();
@@ -142,7 +157,7 @@ public class GPSTracker extends Service implements LocationListener {
         requestIgnoreBatteryOptimization();
 
         scheduleKeepAliveWorker();
-        acquireWakeLock();
+        //acquireWakeLock();
         if (handler == null) {
             handler = new Handler(Looper.getMainLooper());
         }
@@ -168,6 +183,7 @@ public class GPSTracker extends Service implements LocationListener {
         workerThread = new HandlerThread("gps-worker");
         workerThread.start();
         worker = new Handler(workerThread.getLooper());
+        startContinuousUpdatesIfNeeded();
         ensureLoopRunning();
         AlarmScheduler.scheduleExactPing(getApplicationContext(), 15 * 60_000L);
         Log.w("onCreateService","GPSTracker Service is running...");
@@ -234,6 +250,7 @@ public class GPSTracker extends Service implements LocationListener {
 private final Runnable locationRunnable1 = new Runnable() {
     @Override public void run() {
         try {
+            ensureWakeLock();
             boolean inWindow = CheckTime_date();
             Log.d("GPS","tick; window=" + inWindow);
             if (inWindow) fetchCurrentLocationOnce();
@@ -254,12 +271,228 @@ private final Runnable locationRunnable1 = new Runnable() {
             workerThread.start();
             worker = new Handler(workerThread.getLooper());
         }
-        if (!loopActive && worker != null) {
-            loopActive = true;
-            worker.postDelayed(locationRunnable1, 2000);
-            Log.d("GPS","loop started");
-        } else {
-            Log.d("GPS","loop already active");
+//        if (!loopActive && worker != null) {
+//            loopActive = true;
+//            worker.postDelayed(locationRunnable1, 2000);
+//            Log.d("GPS","loop started");
+//        } else {
+//            Log.d("GPS","loop already active");
+//        }
+        if (worker == null) return;
+
+        // ✅ always re-arm the loop
+        worker.removeCallbacks(locationRunnable1);
+        worker.postDelayed(locationRunnable1, 2000);
+
+        loopActive = true;
+        Log.d("GPS","loop (re)armed");
+    }
+
+    // ✅ every tick ensure CPU stays awake
+    private void ensureWakeLock() {
+        try {
+            PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            if (pm == null) return;
+
+            if (wakeLock == null || !wakeLock.isHeld()) {
+                wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
+                        "GPSTracker::WakelockTag");
+                wakeLock.setReferenceCounted(false);
+                wakeLock.acquire(45 * 60 * 1000L); // 45 min, will renew again
+                Log.d("GPS", "wakelock (re)acquired");
+            }
+        } catch (Exception e) {
+            Log.e("GPS", "ensureWakeLock failed", e);
+        }
+    }
+//    private void startContinuousUpdatesIfNeeded() {
+//        if (contUpdatesStarted) return;
+//        if (!hasLocationPermission()) return;
+//
+//        try {
+//            LocationRequest req = new LocationRequest.Builder(
+//                    Priority.PRIORITY_BALANCED_POWER_ACCURACY, 30_000L)
+//                    .setMinUpdateIntervalMillis(15_000L)
+//                    .setWaitForAccurateLocation(false)
+//                    .build();
+//
+//            contCallback = new LocationCallback() {
+//                @Override
+//                public void onLocationResult(@NonNull LocationResult r) {
+//                    try {
+//                        Location loc = r.getLastLocation();
+//                        if (loc == null) return;
+//                        if (!isGoodFix(loc)) return;
+//
+//                        lastWarmLocation = loc;
+//                        Log.d("GPS", "warm cached acc=" + loc.getAccuracy());
+//                        // ✅ Priority guard: fallback tried recently → skip cont save
+//                        long now = System.currentTimeMillis();
+//                        if (now - lastFallbackAttemptMs < FALLBACK_PRIORITY_WINDOW_MS) {
+//                            Log.d("GPS-Save", "skip cont save (fallback priority window)");
+//                            return;
+//                        }
+//                        if (!shouldSaveNow(loc)) return;
+//
+//                        Location prev = fetchLastSavedLocation();
+//                        if (prev != null && !isPlausibleJump(prev, loc)) return;
+//
+//                        Location toSave = loc;
+//                        Handler main = new Handler(Looper.getMainLooper());
+//                        main.post(() -> {
+//                            try {
+//                                saveLocationWithExtras(toSave);
+//                                Log.d("GPS-Save", "saved from continuous callback");
+//                            } catch (Throwable t) {
+//                                Log.e("GPS-Save", "saveLocationWithExtras failed on main", t);
+//                            }
+//                        });
+//
+//                    } catch (Throwable t) {
+//                        Log.e("GPS", "contCallback crashed", t);
+//                    }
+//                }
+//            };
+//
+//            fused.requestLocationUpdates(req, contCallback, workerThread.getLooper());
+//            contUpdatesStarted = true;
+//            Log.d("GPS", "continuous keep-alive started");
+//        } catch (Exception e) {
+//            Log.e("GPS", "startContinuousUpdatesIfNeeded fail", e);
+//        }
+//    }
+private void startContinuousUpdatesIfNeeded() {
+    if (!hasLocationPermission()) return;
+
+    // ✅ ensure worker thread alive (contCallback runs on this looper)
+    if (workerThread == null || !workerThread.isAlive()) {
+        workerThread = new HandlerThread("gps-worker");
+        workerThread.start();
+        worker = new Handler(workerThread.getLooper());
+        Log.d("GPS", "workerThread restarted for continuous updates");
+    }
+
+    try {
+        // ✅ if already running, refresh cleanly
+        if (fused != null && contCallback != null) {
+            fused.removeLocationUpdates(contCallback);
+            contCallback = null;
+        }
+        contUpdatesStarted = false;
+    } catch (Exception ignore) {}
+
+    try {
+        LocationRequest req = new LocationRequest.Builder(
+                Priority.PRIORITY_BALANCED_POWER_ACCURACY, 30_000L)
+                .setMinUpdateIntervalMillis(15_000L)
+                .setWaitForAccurateLocation(false)
+                .build();
+
+        contCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult r) {
+                try {
+                    Location loc = r.getLastLocation();
+                    if (loc == null) return;
+                    if (!isGoodFix(loc)) return;
+
+                    lastWarmLocation = loc;
+                    Log.d("GPS", "warm cached acc=" + loc.getAccuracy());
+
+                    long now = System.currentTimeMillis();
+
+                    // ✅ DB থেকে last save time দেখো
+                    Long lastSavedDb = fetchLastSavedTime();
+                    long lastSavedMs = (lastSavedDb != null) ? lastSavedDb : 0L;
+
+                    // ✅ 1 মিনিটের মধ্যে fallback/অন্য জায়গা থেকে save হয়ে গেলে cont save করবে না
+                    if (now - lastSavedMs < CONT_BACKUP_GAP_MS) {
+                        Log.d("GPS-Save", "cont skip: last save " + (now-lastSavedMs) + "ms ago");
+                        return;
+                    }
+
+                    // ✅ cont নিজেও 1 মিনিটের মধ্যে একবারের বেশি save করবে না
+                    if (now - lastContSaveMs < CONT_BACKUP_GAP_MS) {
+                        Log.d("GPS-Save", "cont throttled by cont memory gate");
+                        return;
+                    }
+
+                    Location prev = fetchLastSavedLocation();
+                    if (prev != null && !isPlausibleJump(prev, loc)) return;
+
+                    Location toSave = loc;
+
+                    // ✅ main-thread safe save (Lifecycle crash avoid)
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        try {
+                            saveLocationWithExtras(toSave);
+                            lastContSaveMs = System.currentTimeMillis();
+                            Log.d("GPS-Save", "saved from continuous callback (backup)");
+                        } catch (Throwable t) {
+                            Log.e("GPS-Save", "saveLocationWithExtras failed on main", t);
+                        }
+                    });
+
+                } catch (Throwable t) {
+                    Log.e("GPS", "contCallback crashed", t);
+                }
+            }
+        };
+
+        // ✅ NOW runs on workerThread looper
+        fused.requestLocationUpdates(req, contCallback, workerThread.getLooper());
+        contUpdatesStarted = true;
+
+        Log.d("GPS", "continuous keep-alive started on workerThread");
+    } catch (Exception e) {
+        Log.e("GPS", "startContinuousUpdatesIfNeeded fail", e);
+    }
+}
+    private void stopContinuousUpdates() {
+        try {
+            if (fused != null && contCallback != null) {
+                fused.removeLocationUpdates(contCallback);
+            }
+        } catch (Exception ignore) {}
+        contUpdatesStarted = false;
+        contCallback = null;
+        Log.d("GPS", "continuous updates stopped");
+    }
+
+    private boolean shouldSaveNow(@NonNull Location loc) {
+        // ✅ time window check
+        if (!CheckTime_date()) return false;
+
+        // ✅ interval preference (ms)
+        long prefInterval;
+        try {
+            prefInterval = Long.parseLong(getPreference("interval"));
+        } catch (Exception e) {
+            prefInterval = 60000L; // default 1 minute
+        }
+      //  prefInterval += 9000L;
+        // ✅ minimum safety clamp
+        if (prefInterval < 15_000L) prefInterval = 15_000L;
+
+        long now = System.currentTimeMillis();
+
+        synchronized (saveLock) {
+            // ✅ in-memory gate (race stop)
+            if (now - lastSaveWallMs < prefInterval) return false;
+
+            // ✅ DB gate
+            Long lastSavedDb = fetchLastSavedTime();
+            if (lastSavedDb != null) {
+                long diffDb = Math.max(0, now - lastSavedDb);
+                if (diffDb < prefInterval) {
+                    lastSaveWallMs = lastSavedDb; // memory sync
+                    return false;
+                }
+            }
+
+            // ✅ reserve this save slot
+            lastSaveWallMs = now;
+            return true;
         }
     }
     @Override
@@ -267,6 +500,7 @@ private final Runnable locationRunnable1 = new Runnable() {
         IS_RUNNING = true;
         startForegroundServiceSafe();
         try { interval = Long.parseLong(getPreference("interval")); } catch (Exception ignore) {}
+        startContinuousUpdatesIfNeeded();
         ensureLoopRunning();
         Log.w("onStartService","GPSTracker Service is running...");
         return START_STICKY;
@@ -416,7 +650,10 @@ private final Runnable locationRunnable1 = new Runnable() {
             saveLocationPermissionDenied("permissionMissing");
             return;
         }
-
+        synchronized (reqLock) {
+            if (reqInFlight) return;
+            reqInFlight = true;
+        }
 /*        // Option A: one-shot fresh fix
         fused.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
                 .addOnSuccessListener(location -> {
@@ -472,13 +709,17 @@ private final Runnable locationRunnable1 = new Runnable() {
 //            }
 //            if (!accepted) {
                 // (B) fresh request with timeout
+            try {
                 requestSingleUpdateFallback(8_000);
+            } catch (Exception e) {
+                Log.e("GPS","fallback start failed", e);
+                synchronized (reqLock) { reqInFlight = false; } // ✅ unlock on start failure
+            }
 //            }
 //        });
     }
 
     private boolean isGoodFix(@NonNull Location loc) {
-        // age (clock-skew safe): elapsedRealtime ভিত্তিক
         long ageMs;
         if (loc.getElapsedRealtimeNanos() > 0) {
             ageMs = (SystemClock.elapsedRealtimeNanos() - loc.getElapsedRealtimeNanos()) / 1_000_000L;
@@ -486,21 +727,58 @@ private final Runnable locationRunnable1 = new Runnable() {
             long tWall = (loc.getTime() > 0 ? loc.getTime() : System.currentTimeMillis());
             ageMs = Math.max(0, System.currentTimeMillis() - tWall);
         }
-        if (ageMs > MAX_FIX_AGE_MS) return false;
 
         if (!loc.hasAccuracy()) return false;
         float acc = loc.getAccuracy();
-        if (acc > MAX_ACCURACY_M) return false;
 
-        // mock/spoof
+        // mock/spoof block
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (loc.isMock()) return false;
-        } else if (loc.isFromMockProvider()) return false;
+        } else if (loc.isFromMockProvider()) {
+            return false;
+        }
 
-        // provider gate: coarse network/fused বাদ
         String p = (loc.getProvider() == null) ? "" : loc.getProvider().toLowerCase(Locale.US);
-        if ("network".equals(p) && acc > 25f) return false;
-        if ("fused".equals(p)   && acc > 25f) return false;
+        float speed = loc.hasSpeed() ? loc.getSpeed() : 0f;
+
+        long maxAge;
+        float maxAcc;
+
+        if (acc <= 25f) {
+            maxAge = 30_000L;
+            maxAcc = 25f;
+
+        } else if (acc <= 100f) {
+            maxAge = 20_000L;
+            maxAcc = 100f;
+
+        } else {
+            // ✅ GPS-only relax for hill/rural
+            if ("gps".equals(p) && acc <= 150f && ageMs <= 45_000L && speed <= 25f) {
+                maxAge = 45_000L;
+                maxAcc = 150f;
+            } else {
+                return false; // network/fused 100m+ reject
+            }
+        }
+
+        if (ageMs > maxAge) return false;
+        if (acc > maxAcc) return false;
+        // ✅ strict network/fused gate (city drift stop)
+        boolean moving = speed > 4f; // ~15 km/h+
+        if ("network".equals(p) || "fused".equals(p)) {
+            if (!moving) {
+                if (acc > 45f) return false;
+                if (ageMs > 6_000L) return false;
+            }else {
+                if (acc > 100f) return false;
+                if (ageMs > 20_000L) return false;
+                if (speed > 22f && acc > 60f) return false; // optional extra
+            }
+//            if (acc > 40f) return false;
+//            if (ageMs > 6_000L) return false;
+//            if (speed > 8f && acc > 25f) return false;
+        }
 
         return true;
     }
@@ -560,27 +838,13 @@ private boolean isPlausibleJump(@androidx.annotation.Nullable Location prev,
 }
     // Fallback:
     private void requestSingleUpdateFallback(long timeoutMs) {
-        if (!hasLocationPermission()) return;
+        if (!hasLocationPermission()) {
+            synchronized (reqLock) { reqInFlight = false; }
+            return;
+        }
 
-/*        LocationRequest req = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 2000)
-                .setMinUpdateIntervalMillis(15_000L)      // fastest
-                .setMaxUpdateDelayMillis(0L)
-                .setMinUpdateDistanceMeters(0f)
-                .setWaitForAccurateLocation(false)
-                .build();
-
-
-        LocationCallback cb = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult result) {
-                fused.removeLocationUpdates(this);
-                Location loc = result.getLastLocation();
-                if (loc != null) saveLocationWithExtras(loc);
-            }
-        };
-
-        fused.requestLocationUpdates(req, cb, Looper.getMainLooper());*/
-        LocationRequest.Builder b = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 0)
+        LocationRequest.Builder b = new LocationRequest.Builder(
+                Priority.PRIORITY_HIGH_ACCURACY, 0)
                 .setMinUpdateIntervalMillis(0)
                 .setMinUpdateDistanceMeters(0f)
                 .setMaxUpdateDelayMillis(0)            // no batching
@@ -590,35 +854,60 @@ private boolean isPlausibleJump(@androidx.annotation.Nullable Location prev,
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             b.setGranularity(Granularity.GRANULARITY_FINE);
-
         }
 
-        LocationRequest req = b.build();
-        final Location prev = fetchLastSavedLocation(); // plausibility-এর জন্য
+        final LocationRequest req = b.build();
+        final Location prev = fetchLastSavedLocation();
         final Handler main = new Handler(Looper.getMainLooper());
-        LocationCallback cb = new LocationCallback() {
-            @Override public void onLocationResult(LocationResult result) {
-                if (result == null) return;
-                //fused.removeLocationUpdates(this);
-               // Location loc = result.getLastLocation();
-                if (result != null ) {
-                    // ব্যাচ iterate; শুধু last নেবেন না
-                    for (Location loc : result.getLocations()) {
-                        if (loc == null) continue;
-                        if (!isGoodFix(loc)) continue;
-                        if (prev != null && !isPlausibleJump(prev, loc)) {
-                            Log.w("GPS","reject implausible jump");
-                            continue;
-                        }
 
-                        // ✅ এক্সেপ্টেড—সেভ করে listening থামাও
-                        saveLocationWithExtras(loc);
-                        Log.d("GPS","accepted acc=" + loc.getAccuracy() + " prov=" + loc.getProvider());
-                        try { fused.removeLocationUpdates(this); } catch (Exception ignore) {}
-                        return;
+        // ✅ This guards against late callbacks after timeout/accept
+        final AtomicBoolean done = new AtomicBoolean(false);
+
+        final LocationCallback cb = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult result) {
+
+                // ✅ If timeout already happened OR accepted earlier, ignore late results
+                if (done.get()) return;
+
+                boolean accepted = false;
+
+                try {
+                    if (result != null) {
+                        for (Location loc : result.getLocations()) {
+                            if (loc == null) continue;
+                            if (!isGoodFix(loc)) continue;
+                            if (prev != null && !isPlausibleJump(prev, loc)) {
+                                Log.w("GPS","reject implausible jump");
+                                continue;
+                            }
+
+                            // ✅ Accept
+                            accepted = true;
+
+                            // mark done BEFORE heavy work & removeUpdates
+                            if (done.compareAndSet(false, true)) {
+                                try { fused.removeLocationUpdates(this); } catch (Exception ignore) {}
+                                saveLocationWithExtras(loc);
+                                Log.d("GPS","accepted acc=" + loc.getAccuracy() +
+                                        " prov=" + loc.getProvider());
+                            }
+                            return;
+                        }
                     }
 
-                } else {
+                } finally {
+                    // ✅ unlock only when this request is fully "done"
+                    if (accepted) {
+                        synchronized (reqLock) { reqInFlight = false; }
+                    }
+                }
+
+                // ❌ Not accepted path
+                // If timeout didn't happen yet, then record FAILED
+                if (!accepted && done.compareAndSet(false, true)) {
+                    synchronized (reqLock) { reqInFlight = false; }
+
                     HashMap<String, String> map = new HashMap<>();
                     map.put("insert_time", getCurrentDateTime24());
                     map.put("is_pushed", "0");
@@ -633,13 +922,28 @@ private boolean isPlausibleJump(@androidx.annotation.Nullable Location prev,
             }
         };
 
-
-        fused.requestLocationUpdates(req, cb, Looper.getMainLooper());
-
-        // Hard timeout
+        //fused.requestLocationUpdates(req, cb, Looper.getMainLooper());
+        // ✅ ONLY CHANGE: wrap requestLocationUpdates with try/catch
+        try {
+            fused.requestLocationUpdates(req, cb, Looper.getMainLooper());
+        } catch (Exception e) {
+            Log.e("GPS", "requestLocationUpdates failed", e);
+            // prevent reqInFlight stuck
+            synchronized (reqLock) { reqInFlight = false; }
+            return;
+        }
+        // ✅ Hard timeout
         main.postDelayed(() -> {
+            // if already accepted/failed, do nothing
+            if (!done.compareAndSet(false, true)) return;
+
             try { fused.removeLocationUpdates(cb); } catch (Exception ignore) {}
+
+            synchronized (reqLock) { reqInFlight = false; }
+
             Log.w("GPS", "timeout: no acceptable fresh fix");
+            // NOTE: timeout হলে এখানে আর FAILED_TIME ইনসার্ট করছি না,
+            // কারণ late callback ignore হবে এবং false fail গণনা হবে না।
         }, timeoutMs);
     }
     private boolean hasLocationPermission() {
@@ -695,7 +999,9 @@ private boolean isPlausibleJump(@androidx.annotation.Nullable Location prev,
 
         SharedPreferences sp = android.preference.PreferenceManager.getDefaultSharedPreferences(mContext);
         String arStatus = sp.getString("last_activity_status", null);
-        String status1 = (arStatus != null && !"unknown".equals(arStatus))
+        long arTs = sp.getLong("last_activity_ts", 0L);
+        boolean arFresh = (System.currentTimeMillis() - arTs) <= 30_000L;
+        String status1 = (arFresh && arStatus != null && !"unknown".equals(arStatus))
                 ? arStatus
                 : classifyStatus(loc); //
         String address = reverseGeocode(lat, lon);
@@ -787,14 +1093,14 @@ private boolean isPlausibleJump(@androidx.annotation.Nullable Location prev,
         return CurrentDate;
 
     }
-    private void acquireWakeLock() {
+/*    private void acquireWakeLock() {
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         if (pm != null && wakeLock == null) {
             wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "GPSTracker::WakelockTag");
             wakeLock.setReferenceCounted(false);
             wakeLock.acquire(30 * 60 * 1000L); // 30min
         }
-    }
+    }*/
 
     private void releaseWakeLock() {
         if (wakeLock != null && wakeLock.isHeld()) {
@@ -910,8 +1216,7 @@ private boolean isPlausibleJump(@androidx.annotation.Nullable Location prev,
         final float WALK_MAX     = 2.2f;     // ~8 km/h
         final float BIKE_MAX     = 6.9f;     // ~25 km/h
         final float MAX_VALID_ACCURACY = 50f; // meters
-        Double lastLat = null, lastLon = null;
-        Long lastTs = null; // epoch millis
+
         if (loc.hasAccuracy() && loc.getAccuracy() > MAX_VALID_ACCURACY) {
             return "unknown";
         }
@@ -925,9 +1230,9 @@ private boolean isPlausibleJump(@androidx.annotation.Nullable Location prev,
         if ((speed <= STANDING_MAX || !loc.hasSpeed()) && lastLat != null && lastLon != null && lastTs != null) {
             float d = distanceMeters(lastLat, lastLon, loc.getLatitude(), loc.getLongitude());
             float dt = (now - lastTs) / 1000f; // seconds
-            if (dt >= 2f) { // খুব ছোট Δt হলে noise বেশি হয়
+            if (dt >= 5f) { // খুব ছোট Δt হলে noise বেশি হয়
                 float v = d / dt; // m/s
-                if (v > 0.3f) speed = v;
+                if (v > 0.5f) speed = v;
             }
         }
         final String status;
@@ -1157,6 +1462,7 @@ private boolean isPlausibleJump(@androidx.annotation.Nullable Location prev,
         Log.d("Service,","onDestroy");
         stopHandler();
         releaseWakeLock();
+        stopContinuousUpdates();
         loopActive = false;
         if (worker != null) worker.removeCallbacksAndMessages(null);
         if (workerThread != null) { workerThread.quitSafely(); workerThread = null; }
@@ -1198,6 +1504,8 @@ private boolean isPlausibleJump(@androidx.annotation.Nullable Location prev,
     private void stopHandler() {
         try {
             IS_RUNNING = false;
+            loopActive = false; // ✅ add this
+            if (worker != null) worker.removeCallbacks(locationRunnable1);
             if (handler != null && locationRunnable != null) {
                 handler.removeCallbacks(locationRunnable);
             }
