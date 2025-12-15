@@ -751,7 +751,7 @@ public class Data_Source extends Parent {
         //Loge(TableName, "   :" + "INSERTED");
         open();
         insertedID = sqLiteDatabase.insert(TableName, null, values);
-
+        Log.d("DB-INSERT", "table=" + TableName + " id=" + insertedID + " values=" + values);
         close();
         return insertedID;
 

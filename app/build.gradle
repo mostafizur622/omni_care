@@ -11,7 +11,7 @@ android {
         multiDexEnabled true
         targetSdkVersion 33
         versionCode 11
-        versionName "4.0.0"
+        versionName "4.0.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

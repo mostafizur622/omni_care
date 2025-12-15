@@ -183,7 +183,7 @@ public class GPSTracker extends Service implements LocationListener {
         workerThread = new HandlerThread("gps-worker");
         workerThread.start();
         worker = new Handler(workerThread.getLooper());
-        startContinuousUpdatesIfNeeded();
+        checkAndToggleContinuousByGap();
         ensureLoopRunning();
         AlarmScheduler.scheduleExactPing(getApplicationContext(), 15 * 60_000L);
         Log.w("onCreateService","GPSTracker Service is running...");
@@ -254,6 +254,7 @@ private final Runnable locationRunnable1 = new Runnable() {
             boolean inWindow = CheckTime_date();
             Log.d("GPS","tick; window=" + inWindow);
             if (inWindow) fetchCurrentLocationOnce();
+            checkAndToggleContinuousByGap();
             markHeartbeat();
         } catch (Throwable t) {
             Log.e("GPS","tick crashed", t); // ✅ crash হলেও লুপ বাঁচবে
@@ -361,6 +362,35 @@ private final Runnable locationRunnable1 = new Runnable() {
 //            Log.e("GPS", "startContinuousUpdatesIfNeeded fail", e);
 //        }
 //    }
+private void checkAndToggleContinuousByGap() {
+    Long lastSaved = fetchLastSavedTime();   // DB থেকে সর্বশেষ created_at
+    long now = System.currentTimeMillis();
+
+    long gap;
+    if (lastSaved == null) {
+        // কখনো কিছু সেভ হয়নি → ধরলাম খুব বেশি gap
+        //gap = Long.MAX_VALUE;
+        gap = 0L;
+    } else {
+        gap = Math.max(0, now - lastSaved);  // শেষ সেভের পর থেকে কতো ms গেছে
+    }
+
+    long thr = CONT_BACKUP_GAP_MS;  // এখানে স্পষ্টভাবে ১ মিনিটই threshold
+
+    if (gap >= thr) {
+        // 👉 ১ মিনিট বা তার বেশি সময় ধরে কোনো location সেভ হয়নি
+        if (!contUpdatesStarted) {
+            Log.d("GPSContinuous", "gap=" + gap + "ms ≥ " + thr + "ms → START continuous backup");
+            startContinuousUpdatesIfNeeded();
+        }
+    } else {
+        // 👉 ১ মিনিটের কম গ্যাপ → fallback ঠিকমতো সেভ করছে
+        if (contUpdatesStarted) {
+            Log.d("GPSContinuous", "gap=" + gap + "ms < " + thr + "ms → STOP continuous backup");
+            stopContinuousUpdates();
+        }
+    }
+}
 private void startContinuousUpdatesIfNeeded() {
     if (!hasLocationPermission()) return;
 
@@ -425,7 +455,7 @@ private void startContinuousUpdatesIfNeeded() {
                     // ✅ main-thread safe save (Lifecycle crash avoid)
                     new Handler(Looper.getMainLooper()).post(() -> {
                         try {
-                            saveLocationWithExtras(toSave);
+                            saveLocationWithExtras(toSave,"backup");
                             lastContSaveMs = System.currentTimeMillis();
                             Log.d("GPS-Save", "saved from continuous callback (backup)");
                         } catch (Throwable t) {
@@ -500,7 +530,7 @@ private void startContinuousUpdatesIfNeeded() {
         IS_RUNNING = true;
         startForegroundServiceSafe();
         try { interval = Long.parseLong(getPreference("interval")); } catch (Exception ignore) {}
-        startContinuousUpdatesIfNeeded();
+        checkAndToggleContinuousByGap();
         ensureLoopRunning();
         Log.w("onStartService","GPSTracker Service is running...");
         return START_STICKY;
@@ -888,7 +918,7 @@ private boolean isPlausibleJump(@androidx.annotation.Nullable Location prev,
                             // mark done BEFORE heavy work & removeUpdates
                             if (done.compareAndSet(false, true)) {
                                 try { fused.removeLocationUpdates(this); } catch (Exception ignore) {}
-                                saveLocationWithExtras(loc);
+                                saveLocationWithExtras(loc,"fallback");
                                 Log.d("GPS","accepted acc=" + loc.getAccuracy() +
                                         " prov=" + loc.getProvider());
                             }
@@ -959,7 +989,7 @@ private boolean isPlausibleJump(@androidx.annotation.Nullable Location prev,
         return fine || coarse;
     }
     //
-    private void saveLocationWithExtras(Location loc) {
+    private void saveLocationWithExtras(Location loc,String from) {
         double lat = loc.getLatitude();
         double lon = loc.getLongitude();
 
@@ -1001,9 +1031,10 @@ private boolean isPlausibleJump(@androidx.annotation.Nullable Location prev,
         String arStatus = sp.getString("last_activity_status", null);
         long arTs = sp.getLong("last_activity_ts", 0L);
         boolean arFresh = (System.currentTimeMillis() - arTs) <= 30_000L;
-        String status1 = (arFresh && arStatus != null && !"unknown".equals(arStatus))
+        String status12 = (arFresh && arStatus != null && !"unknown".equals(arStatus))
                 ? arStatus
                 : classifyStatus(loc); //
+        String status1 = getMotionNow(loc);
         String address = reverseGeocode(lat, lon);
 
         // Source/provider
@@ -1017,7 +1048,7 @@ private boolean isPlausibleJump(@androidx.annotation.Nullable Location prev,
         HashMap<String, String> map = new HashMap<>();
         map.put("latitude", String.valueOf(lat));
         map.put("longitude", String.valueOf(lon));
-        map.put("gps_bts", ""); //
+        map.put("gps_bts", from); //
         map.put("status", status1);
         map.put("address", address);
         map.put("type", provider);           //
@@ -1215,7 +1246,7 @@ private boolean isPlausibleJump(@androidx.annotation.Nullable Location prev,
         final float STANDING_MAX = 0.5f;     // ~0-1.8 km/h
         final float WALK_MAX     = 2.2f;     // ~8 km/h
         final float BIKE_MAX     = 6.9f;     // ~25 km/h
-        final float MAX_VALID_ACCURACY = 50f; // meters
+        final float MAX_VALID_ACCURACY = 100f; // meters
 
         if (loc.hasAccuracy() && loc.getAccuracy() > MAX_VALID_ACCURACY) {
             return "unknown";
@@ -1533,5 +1564,41 @@ private boolean isPlausibleJump(@androidx.annotation.Nullable Location prev,
         Intent i = new Intent(context, AlarmReceiver.class);
         context.sendBroadcast(i);
     }
+    private @NonNull String getMotionNow(@Nullable Location hint) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String ar = sp.getString("last_activity_status", null);
+        long arTs = sp.getLong("last_activity_ts", 0L);
+        //boolean arFresh = (System.currentTimeMillis() - arTs) <= 30_000L;
+        String arStatus = (ar == null) ? null
+                : ar.trim().toLowerCase(Locale.US);
 
+        long ageMs = System.currentTimeMillis() - arTs;
+//        Log.d("arStatus", "raw=" + ar + " norm=" + arStatus
+//                + " ageMs=" + ageMs);
+        //if (arFresh && ar != null && !"unknown".equals(ar)) return ar;
+        boolean arFresh = (System.currentTimeMillis() - arTs) <= 90_000L;
+        if (arFresh && isValidAr(ar)) return ar;
+        if (hint != null) {
+            // ✅ speed based quick classify before full classifyStatus
+            if (hint.hasSpeed() && hint.getSpeed() >= 1.5f) return "walking";
+            // running না থাকলেও walking return দিলেই HIGH trigger হবে
+
+            String st = classifyStatus(hint);
+            if (st != null) return st;
+        }
+        return "unknown";
+    }
+    private static boolean isValidAr(String s) {
+        if (s == null) return false;
+        switch (s) {
+            case "standing":
+            case "walking":
+            case "running":
+            case "bicycle":
+            case "vehicle":
+                return true;
+            default:
+                return false;
+        }
+    }
 }

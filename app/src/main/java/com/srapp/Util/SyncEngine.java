@@ -408,8 +408,22 @@ public class SyncEngine {
             j.put("permissions", perms);
 
             // Location enabled
+            boolean locEnabled = false;
             LocationManager lm = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
-            j.put("location_enabled", lm != null && lm.isLocationEnabled());
+
+            if (lm != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) { // API 28+
+                    locEnabled = lm.isLocationEnabled();
+                } else {
+                    // API < 28 fallback
+                    try {
+                        locEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER)
+                                || lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+                    } catch (Exception ignore) {}
+                }
+            }
+            j.put("location_enabled", locEnabled);
+
 
             // Battery restriction
             PowerManager pm = (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);

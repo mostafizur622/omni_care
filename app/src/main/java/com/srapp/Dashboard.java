@@ -48,6 +48,7 @@ import com.srapp.Util.AlarmScheduler;
 import com.srapp.Util.DeviceAdministrator;
 import com.srapp.Util.GPSTracker;
 import com.srapp.Util.Parent;
+import com.srapp.Util.TrackingChecklist;
 import com.srapp.Util.VivoAutoStartHelper;
 import com.tanvir.BasicFun.BasicFunction;
 import com.tanvir.BasicFun.BasicFunctionListener;
@@ -313,7 +314,7 @@ public class Dashboard extends Parent implements BasicFunctionListener {
         cash_number.setText(ds.getTotalCashOfCurrentDay());
         oc_value.setText(ds.getTotalOCofCurrentDay());
         oc.setText(ds.getOc());
-
+        //TrackingChecklist.maybeShowChecklist(this);
 
         try{
             //startService(new Intent(Dashboard.this, GPSTracker.class));
