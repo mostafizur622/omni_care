@@ -38,7 +38,7 @@
  import com.srapp.Db_Actions.URL;
  import com.srapp.Util.AuthPreference;
  import com.srapp.Util.Parent;
- import com.srapp.print.ParentActivity;
+ import com.srapp.Util.ParentActivity;
  import com.tanvir.BasicFun.BasicFunction;
  import com.tanvir.BasicFun.BasicFunctionListener;
 
@@ -215,12 +215,25 @@
              dataObject.put("so_id",bf.getPreference(SR_ID));
              dataObject.put("mac",bf.getPreference("mac"));
              dataObject.put("date",authPreference.getCheckInDate());
-             dataObject.put("in_time",authPreference.getInTime());
-             dataObject.put("out_time",authPreference.getOutTime());
-             dataObject.put("in_lat",authPreference.getInLat());
-             dataObject.put("in_long",authPreference.getInLong());
-             dataObject.put("out_lat",authPreference.getOutLat());
-             dataObject.put("out_long",authPreference.getOutLong());
+             if (authPreference.getCheckInDate().equals(ParentActivity.getCurrentDate()) && authPreference.getCheckInStatus().equalsIgnoreCase("1")){
+                 dataObject.put("in_time",authPreference.getInTime());
+                 dataObject.put("in_lat",authPreference.getInLat());
+                 dataObject.put("in_long",authPreference.getInLong());
+             }else {
+                    dataObject.put("in_time","");
+                    dataObject.put("in_lat","");
+                    dataObject.put("in_long","");
+             }
+             if(authPreference.getCheckInDate().equals(ParentActivity.getCurrentDate())){
+                 dataObject.put("out_time",authPreference.getOutTime());
+                 dataObject.put("out_lat",authPreference.getOutLat());
+                 dataObject.put("out_long",authPreference.getOutLong());
+             }else {
+                    dataObject.put("out_time","");
+                    dataObject.put("out_lat","");
+                    dataObject.put("out_long","");
+             }
+
              Log.e("Payload", dataObject.toString());
              getJAPi().Policy_Bonus_Applicable(convertTORequestdata(dataObject)).enqueue(new Callback<String>() {
                  @Override

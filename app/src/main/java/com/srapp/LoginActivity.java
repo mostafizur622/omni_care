@@ -347,9 +347,13 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                             String isChecking= jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("login_checking");
                             String radiusMeter= jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("radius_miter");
                             String locationType= jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("login_type");
-                            /*centerLocation*/
+                            /*centerLocationLogin*/
                             String loginLatStr = jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getJSONArray("coordinates").optJSONObject(0).getString("lat");
                             String loginLngStr = jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getJSONArray("coordinates").optJSONObject(0).getString("lng");
+
+                            /*centerLocationLogOut*/
+                            String logOutLatStr = jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getJSONArray("logout_coordinates").optJSONObject(0).getString("lat");
+                            String logOutLngStr = jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getJSONArray("logout_coordinates").optJSONObject(0).getString("lng");
                             /*GeoFenceLocation*/
                             JSONArray geoFence = jsonObject.getJSONArray("response")
                                     .getJSONObject(0)
@@ -367,6 +371,8 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                             editor.putString("isChecking", isChecking);
                             editor.putString("centerPointLat", loginLatStr);
                             editor.putString("centerPointLong", loginLngStr);
+                            editor.putString("logOutLatStr", logOutLatStr);
+                            editor.putString("logOutLngStr", logOutLngStr);
                             editor.putString("location_check", locationType);
                             editor.putString("geoFence", geoFence.toString());
                             editor.putString("attendance_online", jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("attendance_online"));

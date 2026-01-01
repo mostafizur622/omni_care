@@ -654,7 +654,13 @@ public class ParentActivity extends AppCompatActivity {
 		return CurrentDate;
 
 	}
+	public static String getCurrentTime_() {
+		DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss a");
+		Date date = new Date();
+		String currentTime = dateFormat.format(date);
 
+		return currentTime;
+	}
 	public String getPrvious3monthsDate()
 	{
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");

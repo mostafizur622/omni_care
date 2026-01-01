@@ -424,7 +424,7 @@ private void startContinuousUpdatesIfNeeded() {
                 try {
                     Location loc = r.getLastLocation();
                     if (loc == null) return;
-                    if (!isGoodFix(loc)) return;
+                    if (!isGoodFix(loc,true)) return;
 
                     lastWarmLocation = loc;
                     Log.d("GPS", "warm cached acc=" + loc.getAccuracy());
@@ -749,13 +749,14 @@ private void startContinuousUpdatesIfNeeded() {
 //        });
     }
 
-    private boolean isGoodFix(@NonNull Location loc) {
+    private boolean isGoodFix(@NonNull Location loc, boolean isBackup) {
+        long nowWall = System.currentTimeMillis();
         long ageMs;
         if (loc.getElapsedRealtimeNanos() > 0) {
             ageMs = (SystemClock.elapsedRealtimeNanos() - loc.getElapsedRealtimeNanos()) / 1_000_000L;
         } else {
-            long tWall = (loc.getTime() > 0 ? loc.getTime() : System.currentTimeMillis());
-            ageMs = Math.max(0, System.currentTimeMillis() - tWall);
+            long tWall = (loc.getTime() > 0 ? loc.getTime() : nowWall);
+            ageMs = Math.max(0, nowWall - tWall);
         }
 
         if (!loc.hasAccuracy()) return false;
@@ -794,20 +795,58 @@ private void startContinuousUpdatesIfNeeded() {
 
         if (ageMs > maxAge) return false;
         if (acc > maxAcc) return false;
+
+        // ------------------------------------------------------
+        // ✅ Standing drift control (primary strict, backup relaxed only when GAP)
+        // ------------------------------------------------------
+        boolean isNetOrFused = ("network".equals(p) || "fused".equals(p));
+        boolean standing = "standing".equalsIgnoreCase(getMotionNow(loc));
+
+        if (standing && isNetOrFused) {
+
+            // DB gap (last saved time)
+            long gapMs = 0L;
+            Long lastSaved = fetchLastSavedTime(); // created_at millis
+            if (lastSaved != null) gapMs = Math.max(0, nowWall - lastSaved);
+
+            boolean gapTooLong = (lastSaved == null) || (gapMs >= CONT_BACKUP_GAP_MS);
+
+            if (!isBackup) {
+                // ✅ PRIMARY (fallback) = strict always
+                if (acc > 35f) return false;
+                if (ageMs > 5_000L) return false;
+
+            } else {
+                // ✅ BACKUP (continuous)
+                if (!gapTooLong) {
+                    // gap কম → backup থেকেও strict (drift avoid)
+                    if (acc > 35f) return false;
+                    if (ageMs > 5_000L) return false;
+                } else {
+                    // gap ≥ 60s → backup allow degraded fix (data must be saved)
+                    if (acc > 80f) return false;
+                    if (ageMs > 15_000L) return false;
+                }
+            }
+        }
+
+
         // ✅ strict network/fused gate (city drift stop)
         boolean moving = speed > 4f; // ~15 km/h+
-        if ("network".equals(p) || "fused".equals(p)) {
-            if (!moving) {
-                if (acc > 45f) return false;
-                if (ageMs > 6_000L) return false;
-            }else {
-                if (acc > 100f) return false;
-                if (ageMs > 20_000L) return false;
-                if (speed > 22f && acc > 60f) return false; // optional extra
-            }
+        if (isNetOrFused && !standing) {
+            if ("network".equals(p) || "fused".equals(p)) {
+                if (!moving) {
+                    if (acc > 45f) return false;
+                    if (ageMs > 6_000L) return false;
+                }else {
+                    if (acc > 100f) return false;
+                    if (ageMs > 20_000L) return false;
+                    if (speed > 22f && acc > 60f) return false; // optional extra
+                }
 //            if (acc > 40f) return false;
 //            if (ageMs > 6_000L) return false;
 //            if (speed > 8f && acc > 25f) return false;
+            }
         }
 
         return true;
@@ -906,7 +945,7 @@ private boolean isPlausibleJump(@androidx.annotation.Nullable Location prev,
                     if (result != null) {
                         for (Location loc : result.getLocations()) {
                             if (loc == null) continue;
-                            if (!isGoodFix(loc)) continue;
+                            if (!isGoodFix(loc,false)) continue;
                             if (prev != null && !isPlausibleJump(prev, loc)) {
                                 Log.w("GPS","reject implausible jump");
                                 continue;
@@ -993,10 +1032,10 @@ private boolean isPlausibleJump(@androidx.annotation.Nullable Location prev,
         double lat = loc.getLatitude();
         double lon = loc.getLongitude();
 
-        if (!isGoodFix(loc)) {
-            Log.w("GPS", "Rejected (quality): acc=" + loc.getAccuracy() + " age=" + (System.currentTimeMillis()-loc.getTime()));
-            return;
-        }
+//        if (!isGoodFix(loc)) {
+//            Log.w("GPS", "Rejected (quality): acc=" + loc.getAccuracy() + " age=" + (System.currentTimeMillis()-loc.getTime()));
+//            return;
+//        }
         // 1) last point নিয়ে plausibility check
         Location lastLoc = fetchLastSavedLocation();
         if (!isPlausibleJump(lastLoc, loc)) {
@@ -1580,7 +1619,7 @@ private boolean isPlausibleJump(@androidx.annotation.Nullable Location prev,
         if (arFresh && isValidAr(ar)) return ar;
         if (hint != null) {
             // ✅ speed based quick classify before full classifyStatus
-            if (hint.hasSpeed() && hint.getSpeed() >= 1.5f) return "walking";
+            if (hint.hasSpeed() && hint.getSpeed() >= 1.2f) return "walking";
             // running না থাকলেও walking return দিলেই HIGH trigger হবে
 
             String st = classifyStatus(hint);

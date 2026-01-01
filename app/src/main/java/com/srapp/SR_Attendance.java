@@ -63,17 +63,17 @@ public class SR_Attendance extends ParentActivity implements BasicFunctionListen
     String checkout="";
     String radiusMeter;
     String is_geofence_radius;
-    String loginLatStr;
-    String loginLngStr;
+    String loginLatStr,logOutLatStr;
+    String loginLngStr,logOutLngStr;
     String locationType;
     String isChecking;
     private LocationHelper locationHelper;
     private volatile Location latestFix;
     JSONArray geoFenceArray;
     private AuthPreference authPreference;
-    String currentDate="";
+    //String currentDate="";
     String serverTime="";
-    String currentTime="";
+    //String currentTime="";
     String loginFacility="0";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,10 +90,10 @@ public class SR_Attendance extends ParentActivity implements BasicFunctionListen
         userIdTV = findViewById(R.id.user_txt_view);
         titleTV = findViewById(R.id.title_tv);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            currentDate=new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
-            currentTime = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
+            //currentDate=new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime());
+            //currentTime = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
         }
-        date.setText(currentDate);
+        date.setText(ParentActivity.getCurrentDate());
 
         locationHelper = new LocationHelper(this);
         if (!locationHelper.hasFinePermission()) {
@@ -108,6 +108,8 @@ public class SR_Attendance extends ParentActivity implements BasicFunctionListen
         is_geofence_radius = sharedPreferences.getString("location_type", null);
         loginLatStr = sharedPreferences.getString("centerPointLat", null);
         loginLngStr = sharedPreferences.getString("centerPointLong", null);
+        logOutLatStr = sharedPreferences.getString("logOutLatStr", null);
+        logOutLngStr = sharedPreferences.getString("logOutLngStr", null);
         locationType = sharedPreferences.getString("location_check", null);
         loginFacility = sharedPreferences.getString("attendance_online", null);
         //print all value
@@ -135,7 +137,7 @@ public class SR_Attendance extends ParentActivity implements BasicFunctionListen
         history.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                authPreference.clearAllPreferences();
+                //authPreference.clearAllPreferences();
                 startActivity(new Intent( SR_Attendance.this, Attendance_history.class));
                 finishAffinity();
             }
@@ -205,7 +207,7 @@ public class SR_Attendance extends ParentActivity implements BasicFunctionListen
         }
 
         }else {
-            if (authPreference.getCheckInDate().equals(currentDate) && authPreference.getCheckInStatus().equalsIgnoreCase("1")){
+            if (authPreference.getCheckInDate().equals(ParentActivity.getCurrentDate()) && authPreference.getCheckInStatus().equalsIgnoreCase("1")){
                 checkIntime.setText(authPreference.getInTime());
                 attendance_btn.setText("Check Out");
                 if (authPreference.getCheckOutStatus().equalsIgnoreCase("2")){
@@ -256,10 +258,10 @@ public class SR_Attendance extends ParentActivity implements BasicFunctionListen
                                         return;
                                     }
                                     if (loginFacility.equalsIgnoreCase("0")){
-                                        authPreference.setCurrentDate(currentDate);
+                                        authPreference.setCurrentDate(ParentActivity.getCurrentDate());
                                         authPreference.setCheckInStatus("1");
                                         authPreference.setCheckOutStatus("0");
-                                        authPreference.setInTime(currentTime);
+                                        authPreference.setInTime(ParentActivity.getCurrentTime_());
                                         checkIntime.setText(authPreference.getInTime());
                                         attendance_btn.setText("Check Out");
                                         authPreference.setInLat(String.valueOf(currentLat));
@@ -357,10 +359,10 @@ public class SR_Attendance extends ParentActivity implements BasicFunctionListen
                                         return;
                                     }
                                     if (loginFacility.equalsIgnoreCase("0")){
-                                        authPreference.setCurrentDate(currentDate);
+                                        authPreference.setCurrentDate(ParentActivity.getCurrentDate());
                                         authPreference.setCheckInStatus("1");
                                         authPreference.setCheckOutStatus("0");
-                                        authPreference.setInTime(currentTime);
+                                        authPreference.setInTime(ParentActivity.getCurrentTime_());
                                         checkIntime.setText(authPreference.getInTime());
                                         attendance_btn.setText("Check Out");
                                         authPreference.setInLat(String.valueOf(currentLat));
@@ -424,10 +426,10 @@ public class SR_Attendance extends ParentActivity implements BasicFunctionListen
                             return;
                         }
                         else if (loginFacility.equalsIgnoreCase("0")){
-                            authPreference.setCurrentDate(currentDate);
+                            authPreference.setCurrentDate(ParentActivity.getCurrentDate());
                             authPreference.setCheckInStatus("1");
                             authPreference.setCheckOutStatus("0");
-                            authPreference.setInTime(currentTime);
+                            authPreference.setInTime(ParentActivity.getCurrentTime_());
                             checkIntime.setText(authPreference.getInTime());
                             attendance_btn.setText("Check Out");
                             authPreference.setInLat(String.valueOf(currentLat));
@@ -481,11 +483,94 @@ public class SR_Attendance extends ParentActivity implements BasicFunctionListen
                         Toast.makeText(getContext(), "Your device time has been changed. Please contact with admin or login again.", Toast.LENGTH_LONG).show();
                         return;
                     }
+                    double currentLat = latestFix.getLatitude();
+                    double currentLng = latestFix.getLongitude();
+                    Location currentLocation = new Location("");
+                    currentLocation.setLatitude(currentLat);
+                    currentLocation.setLongitude(currentLng);
+
+                    if (isChecking.equalsIgnoreCase("2") && !logOutLngStr.equalsIgnoreCase("") && !logOutLngStr.isEmpty()){
+                        Log.e("", "Login Location: " + logOutLatStr + ", " + logOutLngStr);
+                        double logOutLat = Double.parseDouble(logOutLatStr);
+                        double logOutLng = Double.parseDouble(logOutLngStr);
+                        Location logOutLocation = new Location("");
+                        logOutLocation.setLatitude(logOutLat);
+                        logOutLocation.setLongitude(logOutLng);
+
+                        boolean isAllowed = isWithinRadius(currentLocation, logOutLocation, Float.parseFloat(radiusMeter));
+
+                        if (isAllowed){
+                            if (loginFacility.equalsIgnoreCase("0")){
+                                authPreference.setCheckOutStatus("2");
+                                authPreference.setOutTime(ParentActivity.getCurrentTime_());
+                                checkIntime.setText(authPreference.getInTime());
+                                checkouttime.setText(ParentActivity.getCurrentTime_());
+//                        //attendance_btn.setEnabled(false);
+                                authPreference.setOutLat(String.valueOf(latestFix.getLatitude()));
+                                authPreference.setOutLong(String.valueOf(latestFix.getLongitude()));
+                                authPreference.setPendingAttendance("1");
+                                Toast.makeText(getContext(), "Check out Success...", Toast.LENGTH_SHORT).show();
+                            }else {
+                                if (authPreference.getDeviceTimeChange().equalsIgnoreCase("1")){
+                                    Toast.makeText(getContext(), "Your device time has been changed. Please contact with admin or login again.", Toast.LENGTH_LONG).show();
+                                    return;
+                                }
+                                try {
+                                    //   bf.getResponceData(URL.SET_ATTENDANCE_STATUS, String.valueOf(new JSONObject().put("so_id",bf.getPreference(SR_ID)).put("mac",bf.getPreference("mac")).put("type","1")),101);
+                                    ProgressDialog dailog = CheckConnection(SR_Attendance.this,"Checking...");
+                                    if (dailog==null)
+                                        return;
+                                    getJAPi().SET_ATTENDANCE_STATUS(convertTORequestdata(new JSONObject().put("so_id",bf.getPreference(SR_ID)).put("mac",bf.getPreference("mac")).put("type","1").put("lat",latestFix.getLatitude()).put("long",latestFix.getLongitude()))).enqueue(new Callback<String>() {
+                                        @Override
+                                        public void onResponse(Call<String> call, Response<String> response) {
+                                            try {
+                                                JSONObject jsonObject = new JSONObject(response.body());
+                                                dailog.dismiss();
+                                                date.setText(jsonObject.getJSONObject("res").getString("date"));
+                                                checkIntime.setText(jsonObject.getJSONObject("res").getString("check_in_time"));
+                                                if (jsonObject.getJSONObject("res").has("check_out_time")) {
+                                                    if (jsonObject.getJSONObject("res").getString("check_out_time").equalsIgnoreCase("0")) {
+                                                        attendance_btn.setText("Check Out");
+                                                    }
+
+                                                    if (!jsonObject.getJSONObject("res").getString("check_out_time").equalsIgnoreCase("0")) {
+                                                        checkouttime.setText(jsonObject.getJSONObject("res").getString("check_out_time"));
+                                                        //attendance_btn.setEnabled(false);
+                                                    }
+                                                }else {
+                                                    attendance_btn.setText("Check Out");
+                                                }
+
+                                            } catch (JSONException e) {
+                                                throw new RuntimeException(e);
+                                            }
+                                        }
+                                        @Override
+                                        public void onFailure(Call<String> call, Throwable t) {
+                                            dailog.dismiss();
+                                        }
+                                    });
+
+
+                                }
+                                catch (JSONException e) {
+                                    e.printStackTrace();
+
+
+                                }
+                            }
+                        } else {
+                            Toast.makeText(SR_Attendance.this, "You are not allowed to attendance from this location.", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+                        return;
+                    }
                     if (loginFacility.equalsIgnoreCase("0")){
                         authPreference.setCheckOutStatus("2");
-                        authPreference.setOutTime(currentTime);
+                        authPreference.setOutTime(ParentActivity.getCurrentTime_());
                         checkIntime.setText(authPreference.getInTime());
-                        checkouttime.setText(currentTime);
+                        checkouttime.setText(ParentActivity.getCurrentTime_());
 //                        //attendance_btn.setEnabled(false);
                         authPreference.setOutLat(String.valueOf(latestFix.getLatitude()));
                         authPreference.setOutLong(String.valueOf(latestFix.getLongitude()));
