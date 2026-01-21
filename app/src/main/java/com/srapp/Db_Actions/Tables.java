@@ -2365,7 +2365,34 @@ public class Tables extends Parent {
             + _FRACTION_PRODUCT_ID + " TEXT, "
             + _FRACTION_UPDATE_AT + " DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME')) "
             + ")";
+    /*..................................VisitImage......................................... */
+    public static final String TABLE_Name_Visit_Image = "visit_image";
 
+    public static final String Visit_TYPE_id = "_id";
+    public static final String Visit_Center_ID = "center_id";
+    public static final String Visit_image = "imageBase64";
+    public static final String Visit_lat = "lat";
+    public static final String Visit_long = "long";
+    public static final String Visit_Remarks = "remarks";
+    public static final String Visit_IsPush = "is_pushed";
+
+    public static final String Visit__UPDATED_AT = "updated_at";
+
+/*    public static final String OFFER_TYPES[] = {TABLE_Name_OFFER_TYPE,OFFER_TYPE_id,
+            OFFER_TYPE_offer_ID, OFFER_TYPE_Offer_Name, OFFER_TYPE_status, OFFER_TYPE_start_date,
+            OFFER_TYPE_end_date, OFFER_TYPE__UPDATED_AT,
+    };*/
+
+    public static final String CREATE_VISIT_Image_TABLE = "CREATE TABLE IF NOT EXISTS "+TABLE_Name_Visit_Image+" ( "
+            + Visit_TYPE_id + " INTEGER PRIMARY KEY," +
+            Visit_Center_ID + " INTEGER," +
+            Visit_image + " VARCHAR," +
+            Visit_lat + " VARCHAR," +
+            Visit_long + " VARCHAR," +
+            Visit_Remarks + " VARCHAR," +
+            Visit_IsPush + " VARCHAR," +
+            Visit__UPDATED_AT + " DATETIME DEFAULT (DATETIME(CURRENT_TIMESTAMP, 'LOCALTIME'))" +
+            ")";
     public static final String All_TABLE_NAME[] = {TABLE_NAME_DISCOUNT,TABLE_NAME_BANK_BRANCH, TABLE_NAME_BONUS_PARTY, TABLE_NAME_BONUSES, TABLE_NAME_CREDIT_COLLECTION, TABLE_NAME_CURRENT_PROMOTION_PRODUCTS, TABLE_NAME_DEPOSIT_BALANCE
             , TABLE_NAME_DEPOSITS, TABLE_NAME_DESIGNATION, TABLE_NAME_DISTRIBUTOR_PRODUCT_PRICES, TABLE_NAME_DISTRIBUTOR_PRODUCT_COMBINATIONS, TABLE_NAME_GENERAL_NOTICE, TABLE_NAME_GIFT_ISSUE, TABLE_NAME_GIFT_ISSUE_DETAILS, TABLE_NAME_GPS_TRACKING_TIME, TABLE_NAME_INSTRUMENT_NUMBER, TABLE_NAME_INSTRUMENT_TYPE
             , TABLE_NAME_LOCATION, TABLE_NAME_MARKETS, TABLE_NAME_MATERIALS, TABLE_NAME_MEMO_DETAILS,TABLE_Name_OFFER_TYPE, TABLE_NAME_MEMOS, TABLE_NAME_MEMOS, TABLE_NAME_MONTHLY_EFFECTIVE_CALL, TABLE_NAME_NCP_CHALLAN_DETAILS, TABLE_NAME_NCP_RETURN

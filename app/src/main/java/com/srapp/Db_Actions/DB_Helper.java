@@ -377,6 +377,7 @@ public class DB_Helper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(Tables.CREATE_TEMP_OUTLETS_TABLE);
         sqLiteDatabase.execSQL(CREATE_IGNORE_OUTLET_FOR_POLICY_TABLE);
         sqLiteDatabase.execSQL(Tables.CREATE_TABLE_FRACTION);
+        sqLiteDatabase.execSQL(Tables.CREATE_VISIT_Image_TABLE);
 
         Log.e("DB Create test", "onCreate:  created db" );
 

@@ -41,7 +41,8 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
     <application
         android:name=".print.newprint.App"
         android:allowBackup="true"
@@ -55,6 +56,9 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:icon">
+        <activity
+            android:name=".VisitActivity"
+            android:exported="false" />
         <activity
             android:name=".LeaveApply"
             android:exported="false" />
@@ -375,10 +379,12 @@
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
         <provider
             android:name=".Util.CachedFileProvider"
-            android:authorities="com.srapp_new_life.provider"
+            android:authorities="com.srapp_omni_care.provider"
             android:grantUriPermissions="true" />
+
         <receiver
             android:name=".Util.TimeChangedReceiver"
             android:exported="true">
@@ -423,6 +429,7 @@
                 android:name="android.app.device_admin"
                 android:resource="@xml/device_admin" />
         </receiver>
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -432,6 +439,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
         <meta-data
             android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
             android:resource="@xml/device_filter" />
@@ -457,7 +465,7 @@
             android:name=".Util.RestartServiceReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
     </application>

@@ -60,7 +60,7 @@ import java.util.ArrayDeque;
 public class Dashboard extends Parent implements BasicFunctionListener {
 
     Button  toolsBtn ;
-    LinearLayout stockBtn,deliveryBtn,syncBtn,accountBtn;
+    LinearLayout stockBtn,deliveryBtn,syncBtn,accountBtn,visitBtn;
     ImageView backBtn, homeBtn;
     LinearLayout order_or_delivery;
     TextView cash_number, oc_value, userIdTV, titleTV,oc,srName;
@@ -171,6 +171,7 @@ public class Dashboard extends Parent implements BasicFunctionListener {
           deleteBeforeLocationData();
           deleteBeforeLostTimeData();
           deleteBeforeFailedTimeData();
+          deletedVisitData();
       }catch (NullPointerException e){
           Log.d("text",e.getLocalizedMessage());
       }
@@ -216,6 +217,16 @@ public class Dashboard extends Parent implements BasicFunctionListener {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Dashboard.this, Tools.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        visitBtn = findViewById(R.id.visit_btn);
+        visitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Dashboard.this, VisitActivity.class);
                 startActivity(intent);
                 finish();
             }
@@ -465,6 +476,11 @@ public class Dashboard extends Parent implements BasicFunctionListener {
                 "WHERE is_pushed = '1'\n" +
                 "  AND created_at < (strftime('%s','now','-2 days') * 1000);");
     }
+    public void deletedVisitData(){
+        ds.sqLiteDatabase.execSQL("DELETE FROM visit_image\n" +
+                "WHERE is_pushed = '1'\n" +
+                "  AND updated_at < (strftime('%s','now','-2 days') * 1000);");
+    }
 /*    public static JSONObject buildTrackingDiagnostics(Context ctx) {
         JSONObject j = new JSONObject();
 
@@ -664,3 +680,4 @@ public class Dashboard extends Parent implements BasicFunctionListener {
         return false;
     }*/
 }
+//last-change

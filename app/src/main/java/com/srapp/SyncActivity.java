@@ -238,7 +238,11 @@
              getJAPi().Policy_Bonus_Applicable(convertTORequestdata(dataObject)).enqueue(new Callback<String>() {
                  @Override
                  public void onResponse(Call<String> call, Response<String> response) {
-
+                     try {
+                         sendVisitData();
+                     } catch (JSONException e) {
+                         throw new RuntimeException(e);
+                     }
                      Log.e("onResponse", "onResponse: "+response.toString() );
 
                      dailog.dismiss();
@@ -675,7 +679,7 @@
              SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(SyncActivity.this);
              long ts = sp.getLong("service_last_stop_time", 0L);
 
-             if (ts <= 0) return;
+             //if (ts <= 0) return;
 
              JSONObject obJson = new JSONObject();
              obJson.put(SR_ID, getPreference(SR_ID));
@@ -687,7 +691,12 @@
              getJAPi().pushServiceStop(convertTORequestdata(obJson)).enqueue(new Callback<String>() {
                  @Override
                  public void onResponse(Call<String> call, Response<String> response) {
-                         sp.edit()
+                     try {
+                         sendVisitData();
+                     } catch (JSONException e) {
+                         throw new RuntimeException(e);
+                     }
+                     sp.edit()
                                  .remove("service_last_stop_time")
                                  .remove("service_last_stop_reason")
                                  .apply();
@@ -701,6 +710,56 @@
          } catch (Exception e) {
              Log.e("exception", e.getMessage());
          }
+     }
+
+     public  void sendVisitData() throws JSONException{
+         JSONObject marketObj = new JSONObject();
+         JSONArray jsonArray = new JSONArray();
+
+         Cursor c = ds.sqLiteDatabase.rawQuery("select * from visit_image where is_pushed='0'",null);
+         c.moveToFirst();
+         if (c != null && c.getCount() > 0) {
+             do {
+                 JSONObject jsonObject = new JSONObject();
+
+                 jsonObject.put("diagnostics_center_id", c.getString(c.getColumnIndex(Tables.Visit_Center_ID)));
+                 jsonObject.put("image", c.getString(c.getColumnIndex(Tables.Visit_image)));
+                 jsonObject.put("latitude", c.getString(c.getColumnIndex(Tables.Visit_lat)));
+                 jsonObject.put("longitude", c.getString(c.getColumnIndex(Tables.Visit_long)));
+                 jsonObject.put("remarks", c.getString(c.getColumnIndex(Tables.Visit_Remarks)));
+                 jsonObject.put("visit_date_time", c.getString(c.getColumnIndex(Tables.Visit__UPDATED_AT)));
+                 jsonArray.put(jsonObject);
+             } while (c.moveToNext());
+         }
+
+         marketObj.put("mac", bf.getPreference("mac"));
+         marketObj.put("sales_person_id", bf.getPreference(SR_ID));
+         marketObj.put("visits", jsonArray);
+//         ProgressDialog dailog = CheckConnection(SyncActivity.this,"Push visit image...");
+//         if (dailog==null)
+//             return;
+         getJAPi().saveUserDiagnosticsVisit(convertTORequestdata(marketObj)).enqueue(new Callback<String>() {
+             @Override
+             public void onResponse(Call<String> call, Response<String> response) {
+                 try {
+                     JSONObject jsonObject = new JSONObject(response.body());
+                     JSONObject locationObj = jsonObject.getJSONObject("res");
+                     String status = locationObj.getString("status");
+                     if (status.equalsIgnoreCase("1")){
+                         ds.excQuery("UPDATE visit_image SET is_pushed='1' WHERE is_pushed='0'");
+                     }
+
+                     //dailog.dismiss();
+                 } catch (JSONException e) {
+                     throw new RuntimeException(e);
+                 }
+             }
+
+             @Override
+             public void onFailure(Call<String> call, Throwable t) {
+                // dailog.dismiss();
+             }
+         });
      }
      private static String formatYmdHms(long ms) {
          java.text.SimpleDateFormat sdf =

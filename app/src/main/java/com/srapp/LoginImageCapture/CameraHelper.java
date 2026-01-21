@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -22,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.exifinterface.media.ExifInterface;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -111,8 +113,10 @@ public class CameraHelper {
             // ফুল-রেজুলিউশন ফাইল থেকে পড়ুন
             try (InputStream is = activity.getContentResolver().openInputStream(currentPhotoUri)) {
                 Bitmap bmp = BitmapFactory.decodeStream(is); // চাইলে পরে স্কেল করবেন
-                String base64 = convertBitmapToBase64(bmp, 40); // 90–95 ভালো
-                callback.onImageCaptured(bmp, base64);
+                // ✅ rotate bitmap using EXIF from the actual file
+                Bitmap rotated = rotateBitmapIfRequired(bmp, currentPhotoFile);
+                String base64 = convertBitmapToBase64(rotated, 30); // 90–95 ভালো
+                callback.onImageCaptured(rotated, base64);
             } catch (Exception e) {
                 Toast.makeText(activity, "Read failed", Toast.LENGTH_SHORT).show();
             }
@@ -129,5 +133,48 @@ public class CameraHelper {
 //        byte[] imageBytes = byteArrayOutputStream.toByteArray();
 //        return Base64.encodeToString(imageBytes, Base64.DEFAULT);
 //    }
+private Bitmap rotateBitmapIfRequired(Bitmap bitmap, File photoFile) {
+    try {
+        ExifInterface exif = new ExifInterface(photoFile.getAbsolutePath());
+        int orientation = exif.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_NORMAL
+        );
+
+        Matrix matrix = new Matrix();
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                matrix.postRotate(90);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                matrix.postRotate(180);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                matrix.postRotate(270);
+                break;
+
+            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                matrix.preScale(-1, 1);
+                break;
+            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                matrix.preScale(1, -1);
+                break;
+
+            default:
+                return bitmap;
+        }
+
+        Bitmap rotated = Bitmap.createBitmap(bitmap, 0, 0,
+                bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+
+        // Optional: free original if different
+        if (rotated != bitmap) bitmap.recycle();
+
+        return rotated;
+
+    } catch (Exception e) {
+        return bitmap;
+    }
+}
 }
 

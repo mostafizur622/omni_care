@@ -48,6 +48,10 @@ interface ApiInterfaceForJava {
     @Headers("Content-Type: application/json")
     @POST("get_dist_sr_leave_types.json")
     fun leaveType(@Body JSONObject: RequestBody): Call<String>
+
+    @Headers("Content-Type: application/json")
+    @POST("diagnostics_list.json")
+    fun diagnosticsList(@Body JSONObject: RequestBody): Call<String>
     @Headers("Content-Type: application/json")
     @POST("create_dist_sr_leave.json")
     fun leaveCreate(@Body JSONObject: RequestBody): Call<String>
@@ -184,6 +188,10 @@ interface ApiInterfaceForJava {
     @Headers("Content-Type: application/json")
     @POST("failed_time_tracking.json")
     fun failedTime(@Body JSONObject: RequestBody): Call<String>
+
+    @Headers("Content-Type: application/json")
+    @POST("save_user_diagnostics_visit.json")
+    fun saveUserDiagnosticsVisit(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
     @POST("push_service_stop.json")
