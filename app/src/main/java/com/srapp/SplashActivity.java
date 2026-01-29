@@ -295,8 +295,14 @@ public void onRequestPermissionsResult(int requestCode, @NonNull String[] permis
 }
     // Method to proceed with starting LoginActivity
     private void startLoginActivity() {
-        finish();
-        Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
-        startActivity(intent);
+        if (basicFunction.getPreference("saveLogin").equalsIgnoreCase("1")){
+            Intent intent = new Intent(SplashActivity.this, Dashboard.class);
+            startActivity(intent);
+            finish();
+        }else {
+            finish();
+            Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
+            startActivity(intent);
+        }
     }
 }

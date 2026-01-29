@@ -197,7 +197,7 @@ public class Dashboard extends Parent implements BasicFunctionListener {
         accountBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Dashboard.this, LeaveList.class);
+                Intent intent = new Intent(Dashboard.this, BreakTimeManagement.class);
                 startActivity(intent);
                 finish();
             }
@@ -245,6 +245,7 @@ public class Dashboard extends Parent implements BasicFunctionListener {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                basicFunction.savePreference("saveLogin","0");
                                 Intent intent = new Intent(Dashboard.this, LoginActivity.class);
                                 startActivity(intent);
                                 finishAffinity();
@@ -680,4 +681,4 @@ public class Dashboard extends Parent implements BasicFunctionListener {
         return false;
     }*/
 }
-//last-change
+//last-change    fd

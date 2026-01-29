@@ -51,7 +51,7 @@ public class AlarmReceiver extends BroadcastReceiver {
     }
 
     /** ✅ Tracking hour checker (same logic as your CheckTime_date) */
-    private boolean isTrackingTime(Context ctx) {
+/*    private boolean isTrackingTime(Context ctx) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Calendar calendar = Calendar.getInstance();
         String currentDate = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
@@ -70,8 +70,46 @@ public class AlarmReceiver extends BroadcastReceiver {
             Log.e("AlarmReceiver", "parse err: " + e.getMessage());
             return false;
         }
-    }
+    }*/
+    private boolean isTrackingTime(Context ctx) {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Calendar calendar = Calendar.getInstance();
+        String currentDate = new SimpleDateFormat("yyyy-MM-dd")
+                .format(calendar.getTime());
 
+        try {
+            // Working time
+            Date start = df.parse(currentDate + " " + getPreference("start_time"));
+            Date end   = df.parse(currentDate + " " + getPreference("end_time"));
+
+            // Break time
+            Date breakStart = df.parse(currentDate + " " +
+                    getPreference("break_out_start_time"));
+            Date breakEnd   = df.parse(currentDate + " " +
+                    getPreference("break_in_start_time"));
+
+            // Current time
+            Date now = df.parse(currentDate + " " +
+                    calendar.get(Calendar.HOUR_OF_DAY) + ":" +
+                    calendar.get(Calendar.MINUTE) + ":" +
+                    calendar.get(Calendar.SECOND));
+
+            long t = now.getTime();
+
+            boolean isWithinWorkingTime =
+                    t > start.getTime() && t < end.getTime();
+
+            boolean isWithinBreakTime =
+                    t >= breakStart.getTime() && t <= breakEnd.getTime();
+
+            // Tracking only if working time AND NOT break time
+            return isWithinWorkingTime && !isWithinBreakTime;
+
+        } catch (ParseException e) {
+            Log.e("AlarmReceiver", "parse err: " + e.getMessage());
+            return false;
+        }
+    }
     /** 🔊 Start music alarm */
     private void startAlarm(Context ctx) {
         try {

@@ -337,9 +337,12 @@ public class LoginActivity extends Parent implements BasicFunctionListener, DBLi
                             basicFunction.savePreference("sr_code",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("sr_code"));
                             basicFunction.savePreference("start_time",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("start_time"));
                             basicFunction.savePreference("end_time",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("end_time"));
+                            basicFunction.savePreference("break_out_start_time",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("break_out_start_time"));
+                            basicFunction.savePreference("break_in_start_time",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("break_in_start_time"));
                             basicFunction.savePreference("interval",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("interval"));
                             basicFunction.savePreference("deliveryTime",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("show_delivery_date_time"));
                             basicFunction.savePreference("roll",jsonObject.getJSONArray("response").getJSONObject(0).getJSONObject("user_info").getString("user_type"));
+                            basicFunction.savePreference("saveLogin","1");
 
 
 

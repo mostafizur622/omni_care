@@ -19,6 +19,14 @@ interface ApiInterfaceForJava {
     fun GET_ATTENDANCE_STATUS(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
+    @POST("get_sr_check_in_out_bk.json")
+    fun GET_ATTENDANCE_STATUS_BK(@Body JSONObject: RequestBody): Call<String>
+
+    @Headers("Content-Type: application/json")
+    @POST("set_sr_check_in_out_bk.json")
+    fun SET_ATTENDANCE_STATUS_Bk(@Body JSONObject: RequestBody): Call<String>
+
+    @Headers("Content-Type: application/json")
     @POST("set_sr_check_in_out.json")
     fun SET_ATTENDANCE_STATUS(@Body JSONObject: RequestBody): Call<String>
 
@@ -316,7 +324,7 @@ interface ApiInterfaceForJava {
     fun tempOutletStatus(@Body JSONObject: RequestBody): Call<String>
 
     @Headers("Content-Type: application/json")
-    @POST("http://103.134.90.33:8181/new_life/api_data_dist02_retrives/get_system_current_date_time.json")
+    @POST("http://103.134.90.33:8181/field_force_omnicare/api_data_dist03_retrives/get_system_current_date_time.json")
     fun getTimeDate(@Body JSONObject: RequestBody): Call<String>
 
 

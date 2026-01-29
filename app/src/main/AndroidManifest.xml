@@ -46,16 +46,19 @@
     <application
         android:name=".print.newprint.App"
         android:allowBackup="true"
-        android:icon="@mipmap/field_force"
+        android:icon="@mipmap/omni_care"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@mipmap/field_force"
+        android:roundIcon="@mipmap/omni_care"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:icon">
+        <activity
+            android:name=".BreakTimeManagement"
+            android:exported="false" />
         <activity
             android:name=".VisitActivity"
             android:exported="false" />

@@ -402,7 +402,7 @@
                                 android:layout_marginLeft="5dp"
                                 android:textColor="@color/white"
                                 android:layout_gravity="center"
-                                android:text="Leave Activity"/>
+                                android:text="Break Activity"/>
 
                         </LinearLayout>
 
@@ -472,7 +472,7 @@
                                 android:gravity="center"
                                 android:layout_marginLeft="5dp"
                                 android:background="@drawable/circle_white"
-                                android:src="@drawable/n_sync"
+                                android:src="@drawable/outline_watch_later_24"
                                 android:padding="5dp"
                                 android:layout_margin="5dp"
                                 android:singleLine="false"/>

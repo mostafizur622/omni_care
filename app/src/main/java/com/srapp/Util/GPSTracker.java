@@ -455,7 +455,9 @@ private void startContinuousUpdatesIfNeeded() {
                     // ✅ main-thread safe save (Lifecycle crash avoid)
                     new Handler(Looper.getMainLooper()).post(() -> {
                         try {
-                            saveLocationWithExtras(toSave,"backup");
+                            if (CheckTime_date()){
+                                saveLocationWithExtras(toSave,"backup");
+                            }
                             lastContSaveMs = System.currentTimeMillis();
                             Log.d("GPS-Save", "saved from continuous callback (backup)");
                         } catch (Throwable t) {
@@ -1346,33 +1348,34 @@ private boolean isPlausibleJump(@androidx.annotation.Nullable Location prev,
         Calendar calendar = Calendar.getInstance();
         String currentDate = new SimpleDateFormat("yyyy-MM-dd").format(calendar.getTime());
 
-        Date starttimme = null;
         try {
-            starttimme = df.parse(currentDate + " " + getPreference("start_time"));
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        Date endtime = null;
-        try {
-            endtime = df.parse(currentDate + " " + getPreference("end_time"));
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        Calendar c = Calendar.getInstance();
-        Date currennttime = null;
-        try {
-            currennttime = df.parse(currentDate + " " +c.get(Calendar.HOUR_OF_DAY)+":"+c.get(Calendar.MINUTE)+":"+c.get(Calendar.SECOND));
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+            Date startTime = df.parse(currentDate + " " + getPreference("start_time")); // 10:00:00
+            Date endTime = df.parse(currentDate + " " + getPreference("end_time"));     // 20:00:00
 
-        long current_time = currennttime.getTime();
-        Log.e("Time","current_time= "+currennttime+" start_time_milis= "+starttimme.getTime()+" end_time_milis= "+ endtime.getTime());
-        if (current_time>starttimme.getTime() && current_time<endtime.getTime()){
-            Log.e("Time","true");
-            return true;
-        }else {
-            Log.e("Time","false");
+            Date breakStart = df.parse(currentDate + " " + getPreference("break_out_start_time")); // 13:00:00
+            Date breakEnd = df.parse(currentDate + " " + getPreference("break_in_start_time"));     // 15:00:00
+
+            Date currentTime = calendar.getTime();
+
+            long now = currentTime.getTime();
+
+            boolean isWithinTrackingTime =
+                    now >= startTime.getTime() && now <= endTime.getTime();
+
+            boolean isWithinBreakTime =
+                    now >= breakStart.getTime() && now <= breakEnd.getTime();
+
+            // Tracking হবে শুধু তখনই, যখন break time না হয়
+            if (isWithinTrackingTime && !isWithinBreakTime) {
+                Log.w("Time", "Tracking ON");
+                return true;
+            } else {
+                Log.w("Time", "Tracking OFF");
+                return false;
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
             return false;
         }
     }
